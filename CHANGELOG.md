@@ -1,3 +1,26 @@
+## 0.12.0 (2026-11-23)
+
+### 🚀 Features
+
+- ⚠️  **ui-react:** move every Slash package to the @slashsuite npm scope ([#206](https://github.com/slashsuite/uislash/pull/206))
+
+### 🩹 Fixes
+
+- **ui-react:** the README says the package was @hackcove/ui-react and points at the migration ([#220](https://github.com/slashsuite/uislash/pull/220))
+- **ui-react:** the docs print no internal type names, and badges pin to the end corner ([#209](https://github.com/slashsuite/uislash/pull/209))
+- **ui-react:** the code strip's tab stop is named, so a screen reader says what it is ([#199](https://github.com/slashsuite/uislash/pull/199))
+- **ui-react:** pack-check no longer rebuilds dist under the tasks that read it ([#198](https://github.com/slashsuite/uislash/pull/198))
+- **site:** name the product UISlash on the site, the UI review and the theme headers ([#197](https://github.com/slashsuite/uislash/pull/197))
+
+### ⚠️  Breaking Changes
+
+- **ui-react:** move every Slash package to the @slashsuite npm scope  ([#206](https://github.com/slashsuite/uislash/pull/206))
+
+### ❤️ Thank You
+
+- Jacobus @madangryscientist
+- Jacobus Langner @madangryscientist
+
 ## 0.3.2 (2026-11-19)
 
 ### 🩹 Fixes
