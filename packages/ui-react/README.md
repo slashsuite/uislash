@@ -5,7 +5,8 @@ with a theme from `@slashsuite/themes`, such as `@slashsuite/themes/catppuccin-m
 class on `<html>` (`.dark` for Mocha). With no theme they render in Tailwind's own default colours,
 a plain light look; it works, but it is not a look UISlash designs or checks.
 
-Status: `0.x`, published to npm. License: MIT.
+Status: `0.x`, published to npm. License: MIT. This package was `@hackcove/ui-react` up to 0.11.2; that name is deprecated,
+and `MIGRATING.md` has the switch.
 
 ## Install
 
