@@ -64,7 +64,9 @@ async function get(path: string): Promise<{ status: number; body: string } | { l
     const response = await fetch(url, { headers: { Authorization: `Bearer ${token()}` } });
     return { status: response.status, body: await response.text() };
   } catch (error) {
-    return { line: `cannot fetch ${url}: ${error instanceof Error ? error.message : String(error)}` };
+    return {
+      line: `cannot fetch ${url}: ${error instanceof Error ? error.message : String(error)}`,
+    };
   }
 }
 
