@@ -33,6 +33,15 @@ tasks:
     outputs: ["/packages/ui-react/docs/props.json", "/packages/ui-react/docs/types.json"]
     options:
       cache: false
+  # The docs shipped in @slashsuite/ui-react (packages/ui-react/agent-docs/, committed): an index
+  # and one Markdown file per component page, from the same sources as /ui/llms.txt. Never cached;
+  # it rewrites the same bytes when nothing changed, and test/agentDocs.test.ts fails when the
+  # committed copy differs from a fresh render.
+  agent-docs:
+    command: "bun run agent-docs"
+    deps: ["~:props", "^:build"]
+    options:
+      cache: false
   # BUILD_COMMIT is an input, so a build for another commit is never a cache hit that ships the
   # previous commit's sha in the build-commit meta.
   build:

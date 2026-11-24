@@ -11,6 +11,7 @@
     "test": "vitest run",
     "deploy": "./deploy.sh",
     "props": "bun scripts/props.ts",
+    "agent-docs": "bun scripts/agent-docs.ts",
     "test:e2e": "playwright test",
     "smoke": "playwright test -c playwright.smoke.config.ts"
   },
@@ -35,6 +36,7 @@
     "storybook": "^10.6.7",
     "tailwindcss": "^4.3.5",
     "typescript": "^5.7.0",
+    "vite": "^8.3.4",
     "vitest": "5.1.0",
     "wrangler": "4.163.0"
   },
