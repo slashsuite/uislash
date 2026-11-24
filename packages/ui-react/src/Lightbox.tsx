@@ -12,10 +12,12 @@ import { Tipped } from "./Tooltip.js";
 
 /**
  * The full-screen viewer, painted with its own scrim: `bg-black/90` and the light text on it are the
- * palette's media-scrim role, which every theme keeps near-black, light themes included.
+ * palette's media-scrim role, which every theme keeps near-black, light themes included. Its colour
+ * scheme is dark in every theme, so a `<video>`'s native controls match the scrim. A scroll on it
+ * never carries on to the page behind.
  */
 const VIEWER =
-  "fixed inset-0 m-0 size-full max-h-none max-w-none flex-col border-0 bg-black/90 p-0 text-white opacity-0 transition-[opacity,overlay,display] transition-discrete duration-200 open:flex open:opacity-100 starting:open:opacity-0 motion-reduce:transition-none";
+  "fixed inset-0 m-0 size-full max-h-none max-w-none flex-col overflow-hidden overscroll-contain border-0 bg-black/90 scheme-dark p-0 text-white opacity-0 transition-[opacity,overlay,display] transition-discrete duration-200 open:flex open:opacity-100 starting:open:opacity-0 motion-reduce:transition-none";
 
 /** A round control on the scrim, with a light focus ring: the accent is too dark on near-black in a light theme. */
 const CONTROL =

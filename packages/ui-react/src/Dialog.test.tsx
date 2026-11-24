@@ -2,7 +2,7 @@
 import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
 import { Dialog } from "./Dialog.js";
 import { showModal, stubDialog } from "./dom.harness.js";
-import { act, render, screen, user } from "./render.harness.js";
+import { act, follows, render, screen, user } from "./render.harness.js";
 
 // stubDialog supplies the modal <dialog> methods jsdom lacks; it does not act through the DOM.
 beforeEach(stubDialog);
@@ -80,6 +80,34 @@ describe("Dialog", () => {
     expect(screen.getByRole<HTMLDialogElement>("dialog", { name: "Only" }).textContent).toBe(
       "Only",
     );
+  });
+
+  it("closes from its close button, named Close or by closeLabel", async () => {
+    const onClose = vi.fn<() => void>();
+    const { unmount } = render(<Dialog title="t" onClose={() => {}} />);
+    expect(screen.getByRole("button", { name: "Close" })).not.toBeNull();
+    unmount();
+    render(<Dialog title="t" closeLabel="Dismiss" onClose={onClose} />);
+    await user().click(screen.getByRole("button", { name: "Dismiss" }));
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("puts the close button last in keyboard order, so opening focuses the first field", () => {
+    render(
+      <Dialog title="t" footer={<button type="button">Save</button>} onClose={() => {}}>
+        <input aria-label="Name" />
+      </Dialog>,
+    );
+    expect(screen.getAllByRole("button")).toEqual([
+      screen.getByRole("button", { name: "Save" }),
+      screen.getByRole("button", { name: "Close" }),
+    ]);
+    expect(
+      follows(
+        screen.getByRole("textbox", { name: "Name" }),
+        screen.getByRole("button", { name: "Close" }),
+      ),
+    ).toBe(true);
   });
 
   it("calls onClose when the dialog closes (Esc and form method=dialog fire the same event)", async () => {

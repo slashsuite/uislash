@@ -49,23 +49,12 @@ export const Default: S = {
   ),
 };
 
-/** The shortcut list: a small dialog with a body and one Close button on a `method="dialog"` form. */
+/** The shortcut list: a small dialog with a body and nothing to do but read it, so no footer: the close button in the corner is the way out. */
 export const Small: S = {
   render: () => (
     <Opened>
       {(close) => (
-        <Dialog
-          title="Keyboard shortcuts"
-          width="sm"
-          onClose={close}
-          footer={
-            <form method="dialog">
-              <Button type="submit" variant="outline" autoFocus>
-                Close
-              </Button>
-            </form>
-          }
-        >
+        <Dialog title="Keyboard shortcuts" width="sm" onClose={close}>
           <KeyValueList>
             <KeyValue label="Next shot">
               <Kbd>j</Kbd>
@@ -85,14 +74,6 @@ export const Small: S = {
 
 export const TitleOnly: S = {
   render: () => <Opened>{(close) => <Dialog title="Saved" onClose={close} />}</Opened>,
-};
-
-export const DoConfirm: S = {
-  render: examples.DoConfirm,
-};
-
-export const DontConfirm: S = {
-  render: examples.DontConfirm,
 };
 
 export const DoNotice: S = {
@@ -142,8 +123,8 @@ export const Large: S = {
 
 /**
  * `width="full"`: the whole screen, for media or a player. The body takes the height between the
- * header and the footer, and there is no backdrop to click, so the footer holds a close action
- * on a `method="dialog"` form.
+ * header and the bottom edge, and there is no backdrop to click, so the close button in the corner
+ * is the way out.
  */
 export const Full: S = {
   render: () => (
@@ -154,13 +135,6 @@ export const Full: S = {
           description="Anna · Today, 09:12"
           width="full"
           onClose={close}
-          footer={
-            <form method="dialog">
-              <Button type="submit" variant="outline" autoFocus>
-                Close
-              </Button>
-            </form>
-          }
         >
           <Stack gap="sm">
             <img src={sampleScenes[0]?.src} alt={sampleScenes[0]?.alt} />

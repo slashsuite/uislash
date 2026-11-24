@@ -86,6 +86,12 @@ export const actions: ComponentSection = {
       summary: "A button that opens a short list of actions.",
       whenToUse:
         "A row, card or header with more actions than fit: put the one main action in view and the rest in a Menu.",
+      siblings: [
+        {
+          slug: "popover",
+          when: "The button opens a few lines to read or a small form, not actions.",
+        },
+      ],
       pairs: ["Menu/Overflow", "Menu/Destructive"],
       usage: {
         do: [
@@ -93,7 +99,7 @@ export const actions: ComponentSection = {
           "`items` is data: each a `label` with `onSelect`, or a link with `href` (through the app's `LinkProvider`; `external` opens a new tab). `icon` adds a leading glyph from the `Icon` set and `disabled` dims one.",
           'A destructive item is `tone="danger"` and goes last, so it is never the first thing the arrows reach.',
           'The default trigger is a ghost three-dot button named by `label`; `trigger="button"` is an outline button reading `label`, for a menu whose name is worth a word ("Export"). `size="sm"` inside a row or a card header.',
-          "In a `ListRow` with `revealOnHover`, the row keeps its actions shown while the menu is open.",
+          "In a `ListRow`, a row's `Menu` goes in its `actions`, shown on every row.",
         ],
         dont: [
           "Never put the only action of a row in a `Menu`: one action is a `Button` or an `IconButton`.",
@@ -147,7 +153,7 @@ export const actions: ComponentSection = {
       pairs: ["CopyButton/Clipboard"],
       usage: {
         do: [
-          "`text` is what is copied; `copiedLabel` shows in place of the label for two seconds once it is on the clipboard.",
+          '`text` is what is copied; `copiedLabel` shows in place of the label for two seconds once it is on the clipboard, and `failedLabel` ("Failed") when the browser refuses the copy or has no clipboard.',
           'Name what is copied in `label` and `copiedLabel` (`"Copy token"`, `"Token copied"`) when the page has more than one.',
           "A command or token in its own box is a `CopyLine`, which carries this button.",
           "Place a `CopyButton` yourself only when neither a `CopyLine` nor `copy` on a `CodeBlock` or `CodeExample` fits.",
@@ -157,8 +163,9 @@ export const actions: ComponentSection = {
       },
       accessibility: [
         'A native `<button>` with `type="button"` and a focus ring from the component.',
-        "The accessible name is always `label`. A copy shows `copiedLabel` for two seconds and a polite status region beside the button announces it, again on every copy.",
-        "A refused or missing clipboard leaves the label unchanged; nothing is announced.",
+        "The accessible name is always `label`. A copy shows `copiedLabel` (or `failedLabel`) for two seconds and a polite status region beside the button announces it, again on every press; the region empties when the label goes back.",
+        "The button is at least 24px square, the WCAG minimum target.",
+        "No `<style>` element: the two seconds are a Web Animation, so the label works under a strict, nonce-based CSP.",
       ],
       api: ["CopyButton"],
       functions: [
@@ -185,6 +192,7 @@ export const actions: ComponentSection = {
       usage: {
         do: [
           "Give the whole line as `text`; the box shows it and the button copies it.",
+          'Say what the line is in `label` (`"install command"`, `"API token"`): the button is named "Copy install command", so two lines on one page are told apart. It still reads "Copy".',
           "Several lines are a `CodeBlock`; `CopyLine` is one line.",
           "A long token wraps inside the box.",
           "`disabled` disables the button, for a line shown before the page is interactive.",
@@ -192,7 +200,7 @@ export const actions: ComponentSection = {
       },
       accessibility: [
         "The text is a `<code>` element, so a reader can select it by hand as well.",
-        "The button is a `CopyButton`: a native button named `Copy`, whose status region announces `Copied` after each copy.",
+        'The button is a `CopyButton`: a native button named "Copy" and `label`, whose status region announces "Copied" (or "Failed") after each press.',
       ],
       api: ["CopyLine"],
     },

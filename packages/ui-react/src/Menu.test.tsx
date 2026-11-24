@@ -18,7 +18,6 @@ function Row() {
   const [hidden, setHidden] = useState(false);
   return (
     <ListRow
-      revealOnHover
       actions={
         <Menu
           size="sm"
@@ -213,7 +212,7 @@ describe("Menu", () => {
     expect(both.label).toBe("x");
   });
 
-  it("keeps a revealOnHover row's actions reachable while its menu is open", async () => {
+  it("runs an action from a row's own menu", async () => {
     render(<Row />);
     const u = user();
     const trigger = screen.getByRole("button", { name: "Row actions" });

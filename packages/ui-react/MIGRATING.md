@@ -422,6 +422,41 @@ values are still `CalendarDate`s. TypeScript flags nothing.
 New, nothing to change: `DateTimeField` (a `CalendarDateTime`, posted as `YYYY-MM-DDTHH:mm`),
 `toISODateTime`, `fromISODateTime` and the `CalendarDateTime` type.
 
+### ListRow's `revealOnHover` is gone
+
+A static row's `actions` are always shown. An action that appears only on hover is one a touch or
+keyboard user cannot find. TypeScript flags every `revealOnHover`: delete it. Where the row now
+looks busy, keep one action in view and put the rest in a `Menu` in `actions`.
+
+### CopyLine takes a required `label`
+
+`CopyLine`'s button was named "Copy" on every line, so two lines on a page could not be told apart.
+`label` says what the line is, and the button is named "Copy " and it; it still reads "Copy".
+TypeScript flags every `CopyLine` without one: `<CopyLine text="bun add x" label="install command" />`.
+A test that finds the button by the name "Copy" finds it by "Copy install command".
+
+### Dialog has its own close button
+
+Every `Dialog` now has a close button in its top corner, named "Close" (`closeLabel` renames it).
+A footer whose only button was a Close or Done that just closes the dialog is now a second way out:
+drop it. Keep a footer whose button does something (Save, Delete).
+
+### CopyButton shows a failed copy
+
+A refused or missing clipboard now shows "Failed" for two seconds and announces it, where it showed
+nothing; `failedLabel` renames it. The button is at least 24px square, so a row of small text may
+grow by a few pixels. It renders no `<style>` element any more, so it works under a strict CSP.
+A test that finds the `data-copied` attribute finds the copied label's visibility instead.
+
+### ToastRegion reads toasts as text, and waits for a modal
+
+A toast that leaves on its own now stays eight seconds, not five. Its status reads the title and
+body as one line of text, and a toast with `actions` adds "Actions available" (`actionsLabel`), so
+the buttons are no longer inside the `role="status"`: a test that finds a toast's title or button
+within the status finds it in the region instead. While a `Dialog`, `Drawer` or `Lightbox` is open,
+new toasts wait and show once it closes. Dismissing a toast moves the focus to the next toast's
+close button, or back to where it was.
+
 ## 0.9 → 0.10: Avatar `2xl` is 64px, the old 96px is `3xl`
 
 `Avatar` gained a 64px size. The sizes keep their order (`xs`, `sm`, `md`, `lg`, `xl`, `2xl`, `3xl`),

@@ -1,4 +1,4 @@
-import { type RefObject, useLayoutEffect, useRef } from "react";
+import { type RefObject, useLayoutEffect, useRef, useSyncExternalStore } from "react";
 
 /** Resolves when the transitions running on the dialog (and its backdrop) have ended. */
 async function exitTransitions(dialog: HTMLDialogElement): Promise<void> {
@@ -6,6 +6,29 @@ async function exitTransitions(dialog: HTMLDialogElement): Promise<void> {
   if (typeof dialog.getAnimations !== "function") return;
   const running = dialog.getAnimations({ subtree: true }).filter((a) => "transitionProperty" in a);
   await Promise.allSettled(running.map((a) => a.finished));
+}
+
+/** How many of the library's modals are open, and who wants to hear when that changes. */
+let openModals = 0;
+const watchers = new Set<() => void>();
+const opened = (by: number) => {
+  openModals += by;
+  for (const watcher of watchers) watcher();
+};
+
+/**
+ * Whether a `Dialog`, `Drawer` or `Lightbox` is open. `ToastRegion` holds its toasts back while one
+ * is: the page behind a modal is inert, so a toast there could be neither read nor reached.
+ */
+export function useModalOpen(): boolean {
+  return useSyncExternalStore(
+    (watcher) => {
+      watchers.add(watcher);
+      return () => watchers.delete(watcher);
+    },
+    () => openModals > 0,
+    () => false,
+  );
 }
 
 /**
@@ -27,9 +50,11 @@ export function useModal(
     const el = dialog.current;
     mounted.current = true;
     el?.showModal();
+    opened(1);
     return () => {
       mounted.current = false;
       el?.close();
+      opened(-1);
     };
   }, [dialog]);
 

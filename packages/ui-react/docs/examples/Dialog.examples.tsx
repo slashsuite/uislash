@@ -1,58 +1,6 @@
 import { useState } from "react";
 import { Button, Callout, Dialog, Field, Input, Stack, Text } from "@slashsuite/ui-react";
 
-/** A confirmation is a title that names the action, one line of consequence, and Cancel beside the action. It is rendered only while open. */
-export const DoConfirm = () => {
-  const [open, setOpen] = useState(false);
-  return (
-    <>
-      <Button variant="outline" onClick={() => setOpen(true)}>
-        Delete build
-      </Button>
-      {open && (
-        <Dialog
-          title="Delete build"
-          description="This removes the build and every snapshot in it."
-          onClose={() => setOpen(false)}
-          footer={
-            <>
-              <Button variant="ghost" onClick={() => setOpen(false)}>
-                Cancel
-              </Button>
-              <Button tone="danger" onClick={() => setOpen(false)}>
-                Delete
-              </Button>
-            </>
-          }
-        />
-      )}
-    </>
-  );
-};
-
-/** With no Cancel and no consequence, the only way out of the dialog is the one button that destroys the build. */
-export const DontConfirm = () => {
-  const [open, setOpen] = useState(false);
-  return (
-    <>
-      <Button variant="outline" onClick={() => setOpen(true)}>
-        Delete build
-      </Button>
-      {open && (
-        <Dialog
-          title="Are you sure?"
-          onClose={() => setOpen(false)}
-          footer={
-            <Button tone="danger" onClick={() => setOpen(false)}>
-              Delete
-            </Button>
-          }
-        />
-      )}
-    </>
-  );
-};
-
 /** A result that needs no answer is a `Callout` in the page, where it does not take the page away. */
 export const DoNotice = () => (
   <Stack gap="sm">

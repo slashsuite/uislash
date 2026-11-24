@@ -15,6 +15,7 @@ import { InCard } from "./cardContext.js";
 import { cx } from "./cx.js";
 import { DensityProvider } from "./density.js";
 import { HeadingLevelProvider } from "./headingLevel.js";
+import { IconButton } from "./IconButton.js";
 import { useBackdropClose, useModal } from "./modal.js";
 import type { Passthrough } from "./props.js";
 import { scrollStopProps, TABBABLE, useScrollStop } from "./scrollStop.js";
@@ -41,10 +42,11 @@ const CAP = "max-h-[calc(100dvh-8rem-2px)]";
  * the ring whole (4px: a 2px outline at a 2px offset), and the negative margins give that room back,
  * so the body sits where an unpadded one would.
  */
-const SCROLL_BODY = "mt-3 -mb-1 -mx-1 min-h-0 flex-1 scroll-py-1 overflow-y-auto px-1 pt-1 pb-1";
+const SCROLL_BODY =
+  "mt-3 -mb-1 -mx-1 min-h-0 flex-1 scroll-py-1 overflow-y-auto overscroll-contain px-1 pt-1 pb-1";
 /** The whole viewport, edge to edge: no margin, radius, border or shadow, and a column so the body can fill it. */
 const FULL =
-  "fixed inset-0 m-0 size-full max-h-none max-w-none flex-col overflow-hidden rounded-none border-0 open:flex";
+  "fixed inset-0 m-0 size-full max-h-none max-w-none flex-col overflow-hidden overscroll-contain rounded-none border-0 open:flex";
 
 /**
  * The body's keyboard side. In a windowed dialog Chromium's `showModal()` focuses a scrolling box
@@ -78,7 +80,10 @@ function useScrollingBody(
   return {
     attach,
     props,
-    className: cx(full ? "mt-4 min-h-0 flex-1 overflow-auto" : SCROLL_BODY, ring),
+    className: cx(
+      full ? "mt-4 min-h-0 flex-1 overflow-auto overscroll-contain" : SCROLL_BODY,
+      ring,
+    ),
   };
 }
 
@@ -109,14 +114,22 @@ export type DialogProps = {
    * The panel's width: `sm` (320px) is a list, `md` (440px) holds a form, `lg` (640px) a wider
    * form or a table. `full` fills the whole screen, for media or a player: the body takes the
    * height between the header and the footer and scrolls if it is taller. It has no backdrop to
-   * click, so give it a close action in the `footer` (a `<form method="dialog">` button).
+   * click: its close button and Esc close it.
    *
    * A single photo or video is a `Lightbox`.
    * @default md
    */
   width?: Size | "full";
-  /** Called when the dialog closes: Esc, a click on the backdrop, or a `<form method="dialog">` submit. */
+  /**
+   * Called when the dialog closes: its close button, Esc, a click on the backdrop, or a
+   * `<form method="dialog">` submit.
+   */
   onClose: () => void;
+  /**
+   * The name of the close button in the top corner, for an app in another language.
+   * @default Close
+   */
+  closeLabel?: string | undefined;
 } & Passthrough;
 
 /**
@@ -145,10 +158,21 @@ export function BodyContext({ children }: { children: ReactNode }): ReactElement
 /**
  * A modal on the browser's own `<dialog>`: it is opened with `showModal()` on mount, so render it
  * only while it is open. The page behind goes inert, Esc closes it and focus stays inside; a click
- * on the backdrop (the `<dialog>` element itself, not its contents) closes it too. A windowed dialog is
- * never taller than the screen: a tall body scrolls and the title and footer stay on screen.
+ * on the backdrop (the `<dialog>` element itself, not its contents) closes it too, and so does the
+ * close button in its top corner, which every dialog has. The close button comes last in the
+ * keyboard order, so the open focuses the first field, not it. A windowed dialog is never taller
+ * than the screen: a tall body scrolls and the title and footer stay on screen, and a scroll inside
+ * it never carries on to the page behind.
  */
-export function Dialog({
+export function Dialog(props: DialogProps): ReactElement {
+  return <DialogFrame {...props} />;
+}
+
+/**
+ * The `Dialog` itself, with the one thing the library's own dialogs set that a consumer does not:
+ * `role="alertdialog"`, for `ConfirmDialog`.
+ */
+export function DialogFrame({
   title,
   description,
   children,
@@ -157,8 +181,10 @@ export function Dialog({
   error,
   width = "md",
   onClose,
+  closeLabel = "Close",
+  role,
   ...rest
-}: DialogProps): ReactElement {
+}: DialogProps & { role?: "alertdialog" }): ReactElement {
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
 
@@ -177,15 +203,18 @@ export function Dialog({
       <dialog
         {...rest}
         ref={dialog}
+        role={role}
         aria-labelledby={titleId}
         onClose={closed}
         {...backdrop}
         className={cx(BASE, width === "full" ? FULL : `${WINDOW} ${WIDTH[width]}`)}
       >
         <div className={cx("flex flex-col p-5.5", full ? "min-h-0 flex-1" : CAP)}>
-          <SectionHeading id={titleId}>{title}</SectionHeading>
+          <div className="pe-8">
+            <SectionHeading id={titleId}>{title}</SectionHeading>
+          </div>
           {description && (
-            <div className="mt-1">
+            <div className="mt-1 pe-8">
               <HeaderText>{description}</HeaderText>
             </div>
           )}
@@ -202,6 +231,16 @@ export function Dialog({
             )}
             {footer && <div className="mt-5 flex shrink-0 justify-end gap-2">{footer}</div>}
           </FormColumn>
+        </div>
+        {/* Last in the DOM, so `showModal()` focuses the first field ahead of it; drawn in the corner. */}
+        <div className="absolute end-4 top-4.5">
+          <IconButton
+            size="sm"
+            variant="ghost"
+            label={closeLabel}
+            icon="close"
+            onClick={() => dialog.current?.close()}
+          />
         </div>
       </dialog>
     </ModalScope>

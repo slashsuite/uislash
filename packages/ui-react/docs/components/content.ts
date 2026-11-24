@@ -212,6 +212,12 @@ export const content: ComponentSection = {
       summary: "A summary line that opens and closes a body under it.",
       whenToUse:
         "Detail the person may not need on first sight: a history, an FAQ answer, the fine print.",
+      siblings: [
+        {
+          slug: "popover",
+          when: "The detail floats beside its button and leaves the page as it is.",
+        },
+      ],
       pairs: ["Disclosure/Secondary", "Disclosure/Essential"],
       usage: {
         do: [

@@ -58,14 +58,6 @@ const FOCUSED = "outline-2 -outline-offset-2 outline-violet-600";
 /** A thumbnail's width. A direct-child image fills it. */
 const THUMBNAIL = "block w-32 [&>img]:block [&>img]:h-auto [&>img]:w-full";
 
-/**
- * Hidden until the row is hovered or has focus inside it; always shown where any pointer is coarse
- * (a touch screen, hybrids included), and while a `Menu` in it is open, since its menu takes the
- * focus out of the row.
- */
-const REVEAL =
-  "opacity-0 group-hover/row:opacity-100 group-focus-within/row:opacity-100 any-pointer-coarse:opacity-100 has-[[aria-expanded=true]]:opacity-100";
-
 const PAD: Record<Size, string> = { sm: "px-3 py-2", md: "px-4 py-3", lg: "px-5 py-4" };
 
 type Pieces = { start: ReactNode; label: ReactNode; end: ReactNode };
@@ -75,12 +67,12 @@ function isStatic(props: ListRowProps): props is ListRowStaticProps {
   return props.href === undefined && props.onClick === undefined;
 }
 
-/** The row's background: the selected fill, else the hover fill unless a plain static row has none. */
+/** The row's background: the selected fill, else the hover fill; a static row has none. */
 function fillOf(props: ListRowProps): string | undefined {
   if (props.selected) return SELECTED;
   if (props.highlighted) return HIGHLIGHTED;
   if (isDisabled(props)) return undefined;
-  return isStatic(props) && !props.revealOnHover ? undefined : FILL;
+  return isStatic(props) ? undefined : FILL;
 }
 
 /** A button row with `disabled` or `disabledReason`: it fades and takes no hover fill. */
@@ -118,12 +110,11 @@ function StaticRow(props: ListRowStaticProps & Pieces): ReactElement {
     leadingWidth: _lw,
     trailing: _t,
     focused: _f,
-    highlighted = false,
+    highlighted: _hl,
     selected,
     size: _s,
     divided: _d,
     actions,
-    revealOnHover = false,
     panel,
     expanded: _e,
     onClick: _o,
@@ -134,11 +125,7 @@ function StaticRow(props: ListRowStaticProps & Pieces): ReactElement {
     ...rest
   } = props;
   const buttons = actions != null && (
-    <span
-      className={cx("flex shrink-0 items-center gap-2", revealOnHover && !highlighted && REVEAL)}
-    >
-      {actions}
-    </span>
+    <span className="flex shrink-0 items-center gap-2">{actions}</span>
   );
   const withPanel = hasPanel(panel);
   return (
@@ -197,7 +184,6 @@ function LinkRow(props: ListRowLinkProps & Pieces): ReactElement {
     size: _s,
     divided: _d,
     actions: _a,
-    revealOnHover: _rh,
     panel: _p,
     start,
     label,
@@ -241,7 +227,6 @@ function ButtonRow(props: ListRowButtonProps & Pieces & { labelId: string }): Re
     size: _s,
     divided: _d,
     actions: _a,
-    revealOnHover: _rh,
     panel: _p,
     href: _h,
     start,
@@ -290,7 +275,7 @@ function ButtonRow(props: ListRowButtonProps & Pieces & { labelId: string }): Re
  * every form; on a button or linked row the pointer handlers go on the row itself). The label is a
  * `<div>`, so it can hold block content (a name over a path). A row with no `href` and no
  * `onClick` is a plain `<div>` with no action of its own, for one that holds its own buttons:
- * `actions` follow `trailing`, and `revealOnHover` shows them only on hover or focus. Such a row
+ * `actions` follow `trailing`, always shown, so a touch, a keyboard and a pointer find them alike. Such a row
  * also takes a `panel`, content under the row that starts where the label does (a conversation
  * that opens under its chat); `divided` draws the line above the whole row, panel included, so a
  * list of them is `divided={index > 0}` on each. Inside a row a `Stack` is `xs` apart, and a `sm`

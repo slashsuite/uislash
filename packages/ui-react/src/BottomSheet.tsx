@@ -10,7 +10,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { focusRing } from "./cx.js";
+import { cx, focusRing } from "./cx.js";
 import type { Passthrough } from "./props.js";
 import { GapProvider } from "./stackGap.js";
 import {
@@ -24,10 +24,37 @@ import {
 
 export type { BottomSheetSnap } from "./sheetSnap.js";
 
+/** The sheet's surface and its docking at the bottom edge, at every width. */
 const SHEET =
-  "absolute inset-x-0 bottom-0 z-10 flex max-h-full flex-col overflow-hidden rounded-t-2xl border border-b-0 border-slate-200 bg-white pb-[env(safe-area-inset-bottom)] text-slate-900 shadow-2xl transition-[height] duration-200 ease-out data-dragging:transition-none motion-reduce:transition-none md:start-4 md:end-auto md:w-96";
+  "absolute inset-x-0 bottom-0 z-10 flex max-h-full flex-col overflow-hidden rounded-t-2xl border border-b-0 border-slate-200 bg-white pb-[env(safe-area-inset-bottom)] text-slate-900 shadow-2xl transition-[height] duration-200 ease-out data-dragging:transition-none motion-reduce:transition-none";
+
+/** From `md` up, a sheet that is not inline is a panel at the start edge. */
+const PANEL = "md:start-4 md:end-auto md:w-96";
+
+/**
+ * From `md` up: a panel at the start edge, or, with `inlineFrom`, plain content in the parent's flow
+ * from that width (no docking, no height of its own, no handle), so the parent's grid places it;
+ * its body still scrolls within the parent's height.
+ */
+const WIDE: Record<"panel" | InlineFrom, { sheet: string; handle: string; header: string }> = {
+  panel: { sheet: PANEL, handle: "", header: "" },
+  md: {
+    sheet:
+      "md:static md:z-auto md:h-auto! md:max-h-full md:rounded-none md:border-0 md:pb-0 md:shadow-none",
+    handle: "md:hidden",
+    header: "md:pt-3.5",
+  },
+  lg: {
+    sheet: `${PANEL} lg:static lg:z-auto lg:h-auto! lg:w-auto lg:max-h-full lg:rounded-none lg:border-0 lg:pb-0 lg:shadow-none`,
+    handle: "lg:hidden",
+    header: "lg:pt-3.5",
+  },
+};
 
 const HANDLE = `flex h-6 w-full shrink-0 cursor-grab touch-none items-center justify-center text-slate-400 active:cursor-grabbing ${focusRing} focus-visible:-outline-offset-2`;
+
+/** The arrow keys on the handle, and the step through the snaps each makes. */
+const STEP: Partial<Record<string, number>> = { ArrowUp: 1, ArrowDown: -1 };
 
 /** Pointer travel (px) under which a press on the handle is a tap, not a drag. */
 const TAP = 6;
@@ -38,6 +65,9 @@ const GRIP = (
     <rect width="36" height="4" rx="2" />
   </svg>
 );
+
+/** The widths from which a sheet is plain content in the page: Tailwind's `md` (768px) and `lg` (1024px). */
+export type InlineFrom = "md" | "lg";
 
 export type BottomSheetProps = {
   /** The sheet's accessible name, as a region, and its handle button's. */
@@ -58,10 +88,18 @@ export type BottomSheetProps = {
   /** The scrolling body. */
   children?: ReactNode;
   /**
-   * Called with the height (px) the sheet rests at: on mount, on every change of `snap` and when the
-   * parent resizes. Pad a map camera by it.
+   * Called with the sheet's height (px): on mount, on every change of `snap`, when the parent
+   * resizes, and on every move of a drag, so a map camera padded by it follows the finger.
    */
   onHeightChange?: (px: number) => void;
+  /**
+   * From this width up the sheet is no sheet: its header, body and footer sit in the page's flow
+   * with no handle, no snaps and no height of its own, so the parent's grid places it (a list
+   * column beside a map). Below it, it is the sheet. One tree, switched by CSS: nothing renders
+   * twice, so `onHeightChange` still reports the snap's height: there the view has nothing under
+   * the list to pad. Without it the sheet is a panel at the start edge from `md` up.
+   */
+  inlineFrom?: InlineFrom | undefined;
 } & Passthrough;
 
 type Drag = {
@@ -77,24 +115,38 @@ type Drag = {
 const parentOf = (el: HTMLElement): HTMLElement | null =>
   el.offsetParent instanceof HTMLElement ? el.offsetParent : el.parentElement;
 
-/** Report the height the sheet rests at: now, on a change of snap, and when its parent resizes. */
+/** Report the sheet's height: now, on a change of snap, when its parent resizes and through a drag. */
 function useReportedHeight(
   sheet: RefObject<HTMLElement | null>,
   resting: BottomSheetSnap,
+  dragHeight: number | null,
   onHeightChange: ((px: number) => void) | undefined,
 ): void {
   const report = useRef(onHeightChange);
   const reported = useRef<number | null>(null);
+  const dragging = useRef(false);
   useEffect(() => {
     report.current = onHeightChange;
   });
+  // A drag reports each height it passes through, and its end the height the sheet rests at (the
+  // same snap included, which the effect below does not hear about).
+  useEffect(() => {
+    const el = sheet.current;
+    const parent = el && parentOf(el);
+    dragging.current = dragHeight !== null;
+    const px = dragHeight ?? (parent ? snapPx(resting, parent.clientHeight) : null);
+    if (px === null || px === reported.current) return;
+    reported.current = px;
+    report.current?.(px);
+  }, [sheet, resting, dragHeight]);
   useEffect(() => {
     const el = sheet.current;
     const parent = el && parentOf(el);
     if (!parent) return undefined;
+    // A resize mid-drag reports nothing: the drag reports the height the sheet is at.
     const send = () => {
       const px = snapPx(resting, parent.clientHeight);
-      if (px === reported.current) return;
+      if (dragging.current || px === reported.current) return;
       reported.current = px;
       report.current?.(px);
     };
@@ -178,10 +230,20 @@ function useSheetDrag(
     if (!swallow) onSnapChange((snap + 1) % snaps.length);
   };
 
+  /** ArrowUp steps one snap taller and ArrowDown one shorter, stopping at the ends. */
+  const onKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+    const step = STEP[event.key];
+    if (step === undefined) return;
+    event.preventDefault();
+    const next = Math.min(Math.max(snap + step, 0), snaps.length - 1);
+    if (next !== snap) onSnapChange(next);
+  };
+
   return {
     dragHeight,
     handle: {
       onClick,
+      onKeyDown,
       onPointerDown,
       onPointerMove,
       onPointerUp: (event: PointerEvent<HTMLButtonElement>) => release(event, false),
@@ -193,9 +255,10 @@ function useSheetDrag(
 /**
  * A non-modal panel docked to the bottom edge of its positioned parent, over a full-screen view (a
  * map, a canvas) that stays usable behind it. It rests at one of its `snaps`; the handle steps
- * through them (Enter and Space), a drag of the handle moves it and releases to the nearest snap
- * (a fling steps on), and Escape inside it returns it to the first. Nothing is made inert and focus
- * never moves. Full width below `md`, a panel at the start edge from `md` up.
+ * through them (Enter and Space; ArrowUp and ArrowDown one up or down), a drag of the handle moves
+ * it and releases to the nearest snap (a fling steps on), and Escape inside it returns it to the
+ * first. Nothing is made inert and focus never moves. Full width below `md`, a panel at the start
+ * edge from `md` up, or, with `inlineFrom`, plain content in the page from that width.
  */
 export function BottomSheet({
   label,
@@ -206,13 +269,15 @@ export function BottomSheet({
   footer,
   children,
   onHeightChange,
+  inlineFrom,
   ...rest
 }: BottomSheetProps): ReactElement {
   const sheet = useRef<HTMLElement>(null);
   const bodyId = useId();
   const resting = snaps[snap] ?? snaps[0];
-  useReportedHeight(sheet, resting, onHeightChange);
   const { dragHeight, handle } = useSheetDrag(sheet, { snaps, snap, onSnapChange });
+  useReportedHeight(sheet, resting, dragHeight, onHeightChange);
+  const wide = WIDE[inlineFrom ?? "panel"];
 
   const onKeyDown = (event: KeyboardEvent<HTMLElement>) => {
     if (event.key !== "Escape" || event.defaultPrevented || snap === 0) return;
@@ -230,7 +295,7 @@ export function BottomSheet({
       aria-label={label}
       onKeyDown={onKeyDown}
       data-dragging={dragHeight === null ? undefined : ""}
-      className={SHEET}
+      className={cx(SHEET, wide.sheet)}
       style={{ height: dragHeight === null ? snapCss(resting) : `${dragHeight}px` }}
     >
       <button
@@ -239,12 +304,17 @@ export function BottomSheet({
         aria-label={label}
         aria-expanded={snap > 0}
         aria-controls={bodyId}
-        className={HANDLE}
+        className={cx(HANDLE, wide.handle)}
       >
         {GRIP}
       </button>
       {header != null && (
-        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-200 px-5.5 pb-3.5">
+        <div
+          className={cx(
+            "flex shrink-0 items-center justify-between gap-3 border-b border-slate-200 px-5.5 pb-3.5",
+            wide.header,
+          )}
+        >
           {header}
         </div>
       )}

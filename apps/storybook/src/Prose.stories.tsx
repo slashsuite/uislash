@@ -65,7 +65,7 @@ export const CodeExampleInProse: S = {
           <CodeBlock label="bash" language="bash">
             bun add @slashsuite/ui-react
           </CodeBlock>
-          <CopyLine text="bun add @slashsuite/themes" />
+          <CopyLine text="bun add @slashsuite/themes" label="install command" />
         </Stack>
       </Prose>
     </div>

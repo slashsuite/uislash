@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 const story = (id: string) => `/iframe.html?id=${id}&viewMode=story`;
 
-// The hide is a CSS animation, five seconds and a fade; the spec finishes it rather than waiting
+// The hide is a CSS animation, eight seconds and a fade; the spec finishes it rather than waiting
 // for it, which proves the keyframes run and their end reaches `onDismiss`.
 const finishAnimations = async (page: import("@playwright/test").Page) =>
   page.evaluate(() => {
@@ -16,10 +16,15 @@ for (const reducedMotion of ["no-preference", "reduce"] as const) {
     await page.emulateMedia({ reducedMotion });
     await page.goto(story("feedback-toast--do-saved"));
     await page.getByRole("button", { name: "Save" }).click();
-    const status = page.getByRole("region", { name: "Notifications" }).getByRole("status");
-    await expect(status.getByText("Saved")).toBeVisible();
+    const region = page.getByRole("region", { name: "Notifications" });
+    const status = region.getByRole("status");
+    // The status reads the toast as text, so the toast on screen is found by its own close button.
+    const toast = region.getByRole("button", { name: "Dismiss" });
+    await expect(status).toContainText("Saved");
+    await expect(toast).toBeVisible();
     await finishAnimations(page);
-    await expect(status.getByText("Saved")).toHaveCount(0);
+    await expect(toast).toHaveCount(0);
+    await expect(status).toHaveText("");
   });
 }
 
@@ -27,10 +32,11 @@ test("a toast with an action stays when the animations finish, and Dismiss remov
   page,
 }) => {
   await page.goto(story("feedback-toast--do-action"));
-  const toast = page.getByText("Update available");
+  const toast = page.getByText("Update available", { exact: true });
   await expect(toast).toBeVisible();
   await finishAnimations(page);
   await expect(toast).toBeVisible();
+  await expect(page.getByRole("status")).toHaveText(/Update available\. .*Actions available/);
   await page.getByRole("button", { name: "Dismiss" }).click();
   await expect(toast).toHaveCount(0);
 });
