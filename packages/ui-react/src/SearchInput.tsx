@@ -33,7 +33,7 @@ const CLEAR_SIZE: Record<ControlSize, { box: string; icon: string }> = {
   lg: { box: "right-2.5 h-7 w-7", icon: "h-4 w-4" },
 };
 
-const CLEAR_BUTTON = `absolute top-1/2 -translate-y-1/2 inline-flex items-center justify-center rounded text-slate-500 hover:bg-slate-100 ${focusRing}`;
+const CLEAR_BUTTON = `absolute top-1/2 -translate-y-1/2 inline-flex cursor-pointer items-center justify-center rounded text-slate-500 hover:bg-slate-100 ${focusRing}`;
 
 type ValueDescriptor = { set?: (this: HTMLInputElement, value: string) => void };
 

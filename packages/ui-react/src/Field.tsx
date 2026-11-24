@@ -3,47 +3,97 @@ import { cx } from "./cx.js";
 import { FieldContext, type FieldControlContext } from "./fieldControl.js";
 import type { Passthrough } from "./props.js";
 import { ControlBone } from "./fieldWait.js";
+import { useErrorAnnouncement } from "./fieldAnnounce.js";
+import { Icon } from "./Icon.js";
 import { BusyLabel, busy, type LoadingProps, useLoading } from "./skeleton.js";
 
-/** The line under a control or a row: an error (`role="alert"`) replaces the hint; neither draws nothing. */
+/**
+ * The error line: an alert icon (so the error is not told by colour alone) and the text in red. It
+ * carries no `role="alert"`: the text is announced once through the page's (or its dialog's) one polite live region.
+ */
+export function ErrorLine({
+  id,
+  error,
+}: {
+  id?: string | undefined;
+  error: ReactNode;
+}): ReactElement {
+  const { anchor, announcement } = useErrorAnnouncement(error);
+  return (
+    <span ref={anchor} id={id} className="flex items-start gap-1 text-xs text-red-700">
+      <span className="flex h-4 shrink-0 items-center">
+        <Icon name="alert" size="sm" />
+      </span>
+      <span className="min-w-0">{error}</span>
+      {announcement}
+    </span>
+  );
+}
+
+/**
+ * The lines under a control or a row: the muted hint, and under it the error when there is one.
+ * The hint stays while an error shows, so the rule is still in view while the value is fixed.
+ * Neither draws nothing.
+ */
 export function fieldNote(
   hint: ReactNode,
   error: ReactNode,
   ids?: { hint: string; error: string },
 ): ReactElement | null {
-  if (error) {
-    return (
-      <p id={ids?.error} role="alert" className="text-xs text-red-700">
-        {error}
-      </p>
-    );
-  }
-  if (hint) {
-    return (
-      <p id={ids?.hint} className="text-xs text-slate-500">
-        {hint}
-      </p>
-    );
-  }
-  return null;
+  if (!hint && !error) return null;
+  return (
+    <div className="flex flex-col gap-0.5">
+      {hint ? (
+        <p id={ids?.hint} className="text-xs text-slate-500">
+          {hint}
+        </p>
+      ) : null}
+      {error ? <ErrorLine id={ids?.error} error={error} /> : null}
+    </div>
+  );
 }
 
-/** The control's id, the note's id and the note itself: the error, or else the hint, or nothing. */
+/** The ids a control's `aria-describedby` names for its note: the hint's, then the error's. */
+export function noteDescribedBy(
+  hint: ReactNode,
+  error: ReactNode,
+  ids: { hint: string; error: string },
+): string | undefined {
+  const named = [hint ? ids.hint : undefined, error ? ids.error : undefined].filter(Boolean);
+  return named.length > 0 ? named.join(" ") : undefined;
+}
+
+/** The control's id, the note's ids and the note itself: the hint, the error under it, or nothing. */
 function useFieldNote(
   htmlFor: string | undefined,
   hint: ReactNode,
   error: ReactNode,
+  required: boolean,
 ): { control: FieldControlContext; note: ReactElement | null } {
   const generatedId = useId();
   const ids = { hint: useId(), error: useId() };
-  const note = fieldNote(hint, error, ids);
-  let describedBy: string | undefined;
-  if (error) describedBy = ids.error;
-  else if (hint) describedBy = ids.hint;
   return {
-    control: { id: htmlFor ?? generatedId, describedBy, invalid: Boolean(error) },
-    note,
+    control: {
+      id: htmlFor ?? generatedId,
+      describedBy: noteDescribedBy(hint, error, ids),
+      invalid: Boolean(error),
+      required,
+    },
+    note: fieldNote(hint, error, ids),
   };
+}
+
+/**
+ * The marker after a required field's label: a red asterisk, hidden from assistive tech, since the
+ * control itself carries `required` and is read as required.
+ */
+export function RequiredMark({ required }: { required: boolean | undefined }): ReactNode {
+  if (!required) return null;
+  return (
+    <span aria-hidden="true" className="text-red-700">
+      {" *"}
+    </span>
+  );
 }
 
 /** A field's label: hidden, or drawn, and free to wrap anywhere beside a control in a row. */
@@ -54,7 +104,9 @@ function labelLook(hidden: boolean, row: boolean): string {
 }
 
 /**
- * A label above a control, with a hint or an error line under it. An error replaces the hint.
+ * A label above a control, with a hint line under it and, when set, an error line under the hint
+ * (an alert icon and red text, announced politely). The hint stays while the error shows.
+ * `required` marks the label with a red asterisk and makes the control inside `required`.
  * Inside a `FormGrid`, `span="full"` runs the field across both columns. The `Input`, `Select`,
  * `Textarea` or `FileDrop` inside takes the label, the note (`aria-describedby`) and, with an error,
  * `aria-invalid` and a red edge by itself: give it no `id` and the Field no `htmlFor`. While
@@ -66,6 +118,7 @@ export function Field({
   htmlFor,
   hint,
   error,
+  required = false,
   span,
   layout = "column",
   labelHidden = false,
@@ -80,8 +133,14 @@ export function Field({
   htmlFor?: string | undefined;
   /** A muted line under the control that says more. */
   hint?: ReactNode;
-  /** Replaces the hint when set. */
+  /** A red line under the hint, with an alert icon; the control is `aria-invalid` while it shows. */
   error?: ReactNode;
+  /**
+   * The control must be filled: a red asterisk after the label (hidden from assistive tech) and
+   * `required` on the `Input`, `Select`, `Textarea` or `FileDrop` inside.
+   * @default false
+   */
+  required?: boolean | undefined;
   /** `full` spans every column of a `FormGrid`; unset takes one. It does nothing outside a `FormGrid`. */
   span?: "full" | undefined;
   /**
@@ -103,7 +162,7 @@ export function Field({
 } & LoadingProps &
   Passthrough): ReactElement {
   const row = layout === "row" && !labelHidden;
-  const { control, note } = useFieldNote(htmlFor, hint, error);
+  const { control, note } = useFieldNote(htmlFor, hint, error, required);
   const { loading: waiting, owner } = useLoading(loading);
   return (
     <div
@@ -116,6 +175,7 @@ export function Field({
     >
       <label htmlFor={control.id} className={labelLook(labelHidden, row)}>
         {label}
+        <RequiredMark required={required} />
       </label>
       <FieldContext.Provider value={control}>
         {waiting ? <ControlBone /> : children}

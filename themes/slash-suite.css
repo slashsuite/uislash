@@ -407,6 +407,8 @@
 }
 .slash-suite .border-red-200,
 .slash-suite .aria-invalid\:border-red-200[aria-invalid="true"],
+.slash-suite .user-invalid\:border-red-200:user-invalid,
+.slash-suite .has-user-invalid\:border-red-200:has(:user-invalid),
 .slash-suite .has-aria-invalid\:border-red-200:has([aria-invalid="true"]) {
   border-color: rgba(
     210,

@@ -52,6 +52,7 @@ export function Select({
         controlClass(size, width ?? (inField ? "full" : "auto"), step),
         SELECT_HEIGHT[size],
         CONTROL_PAD[size].x,
+        "cursor-pointer disabled:cursor-not-allowed",
       )}
     >
       {items.map((item) => (

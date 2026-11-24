@@ -152,7 +152,7 @@
   "IconName": {
     "name": "IconName",
     "description": "The names of the icon set: feature ideas, then UI glyphs, then the ideas the docs sections stand for.",
-    "definition": "\"baseline\" | \"diff\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"search\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"grid\" | \"window\" | \"type\" | \"card\" | \"pointer\" | \"field\" | \"table\" | \"compass\" | \"page\" | \"briefcase\""
+    "definition": "\"baseline\" | \"diff\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"search\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"alert\" | \"plus\" | \"more\" | \"grid\" | \"window\" | \"type\" | \"card\" | \"pointer\" | \"field\" | \"table\" | \"compass\" | \"page\" | \"briefcase\""
   },
   "ImageAspect": {
     "name": "ImageAspect",

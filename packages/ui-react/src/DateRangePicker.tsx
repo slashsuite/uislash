@@ -24,6 +24,7 @@ import {
   Notes,
 } from "./DateField.js";
 import { PICKER_SIZE, useDialogContainer, usePickerFrame } from "./DateFieldCalendar.js";
+import { RequiredMark } from "./Field.js";
 import { definedProps, type Passthrough } from "./props.js";
 import { ShownInput, type ShownRange, useShownRange } from "./shownDate.js";
 
@@ -162,9 +163,14 @@ export function DateRangePicker({
         shouldForceLeadingZeros
         className="flex flex-col gap-1.5"
       >
-        {({ isInvalid }) => (
+        {() => (
           <>
-            {label ? <Label className={labelClass}>{label}</Label> : null}
+            {label ? (
+              <Label className={labelClass}>
+                {label}
+                <RequiredMark required={required} />
+              </Label>
+            ) : null}
             <Group className={(state) => cx(frameClass(state), frame)}>
               <SideInput
                 slot="start"
@@ -182,7 +188,7 @@ export function DateRangePicker({
             </Group>
             <ShownInput name={startName} shown={shown.startShown} isDisabled={disabled} />
             <ShownInput name={endName} shown={shown.endShown} isDisabled={disabled} />
-            <Notes hint={hint} error={error} impossible={shown.problem} isInvalid={isInvalid} />
+            <Notes hint={hint} error={error} impossible={shown.problem} />
             <RangeCalendarPopover
               container={container}
               presets={presets}

@@ -34,7 +34,9 @@ describe("Input numeric", () => {
     );
     const price = screen.getByRole("textbox", { name: "Price" });
     expect(price.getAttribute("aria-invalid")).toBe("true");
-    expect(price.getAttribute("aria-describedby")).toBe(screen.getByText("Enter an amount.").id);
+    expect(screen.getByRole("textbox", { name: "Price", description: "Enter an amount." })).toBe(
+      price,
+    );
     expect(price.getAttribute("inputmode")).toBe("decimal");
   });
 

@@ -22,6 +22,7 @@ import {
   iconButtonLook,
   labelClass,
 } from "./DateField.js";
+import { RequiredMark } from "./Field.js";
 import { definedProps } from "./props.js";
 import { ShownInput, useShownDate } from "./shownDate.js";
 import type { Size } from "./size.js";
@@ -116,9 +117,14 @@ export function CalendarDateField({
         shouldForceLeadingZeros
         className="flex flex-col gap-1.5"
       >
-        {({ isInvalid }) => (
+        {() => (
           <>
-            {label ? <Label className={labelClass}>{label}</Label> : null}
+            {label ? (
+              <Label className={labelClass}>
+                {label}
+                <RequiredMark required={required} />
+              </Label>
+            ) : null}
             <Group className={(state) => cx(frameClass(state), frame)}>
               <div className="contents" onBlurCapture={onBlurCapture}>
                 <PickerInput leaving={leaving} onLeft={onLeft}>
@@ -137,7 +143,7 @@ export function CalendarDateField({
               </Button>
             </Group>
             <ShownInput name={name} shown={shown} isDisabled={disabled} />
-            <Notes hint={hint} error={error} impossible={impossible} isInvalid={isInvalid} />
+            <Notes hint={hint} error={error} impossible={impossible} />
             <CalendarPopover container={container} labels={labels} />
           </>
         )}

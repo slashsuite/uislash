@@ -70,7 +70,7 @@ const FRAME =
   "min-w-44 max-w-[calc(100vw-2rem)] rounded-xl border border-slate-200 bg-white p-1 text-slate-900 shadow-lg outline-none";
 
 const ITEM =
-  "flex cursor-default items-center gap-2 rounded-lg px-3 py-1.5 text-sm outline-none select-none data-disabled:cursor-not-allowed data-disabled:opacity-50";
+  "flex cursor-pointer items-center gap-2 rounded-lg px-3 py-1.5 text-sm outline-none select-none data-disabled:cursor-not-allowed data-disabled:opacity-50";
 
 const ITEM_TONE: Record<IconButtonTone, { ink: string; focused: string }> = {
   neutral: { ink: "text-slate-900", focused: "bg-slate-100" },

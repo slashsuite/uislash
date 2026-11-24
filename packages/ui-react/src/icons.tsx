@@ -26,6 +26,7 @@ const NAMES = [
   "settings",
   "bell",
   "check",
+  "alert",
   "plus",
   "more",
   "grid",
@@ -146,6 +147,13 @@ const GLYPHS: Record<IconName, ReactNode> = {
   ),
   /** Done or selected: a single tick. */
   check: <path d="m4.5 12.5 5 5L19.5 7" />,
+  /** Something is wrong: an exclamation mark in a ring. */
+  alert: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7.5v5.5M12 16.5v.01" />
+    </>
+  ),
   /** Add or create: two strokes crossing, upright. */
   plus: <path d="M12 5v14M5 12h14" />,
   /** More actions behind a menu: three dots in a row. */

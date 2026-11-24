@@ -237,7 +237,7 @@ export function Switcher({
               }}
               className={cx(
                 parts.option(item.value === value, off(item)),
-                off(item) && "cursor-not-allowed opacity-50",
+                off(item) ? "cursor-not-allowed opacity-50" : "cursor-pointer",
               )}
             >
               <Label item={item} />

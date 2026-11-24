@@ -1,5 +1,5 @@
 import { type ComponentPropsWithoutRef, type ReactElement, type ReactNode, useId } from "react";
-import { fieldNote } from "./Field.js";
+import { fieldNote, noteDescribedBy } from "./Field.js";
 import type { Unstyled } from "./props.js";
 
 /**
@@ -7,8 +7,8 @@ import type { Unstyled } from "./props.js";
  * belong together, or the filter chips of one facet (a `ButtonGroup` of `outline` `sm` pressed
  * `Button`s). It is a `<fieldset>` named by its `label`, drawn as its `<legend>` in the `Field`
  * label's look, over the children in one column; a `ButtonGroup` or a `FormGrid` inside lays out a
- * row. `hint` is a muted line under the group and its `aria-describedby`; `error` replaces it in red
- * with `role="alert"`. `disabled` disables every control inside. One choice of several is a
+ * row. `hint` is a muted line under the group and its `aria-describedby`; `error` adds a red line
+ * under it with an alert icon, announced politely. `disabled` disables every control inside. One choice of several is a
  * `RadioGroup`, never inside a `Fieldset`. Other props go on the `<fieldset>`.
  */
 export function Fieldset({
@@ -23,15 +23,13 @@ export function Fieldset({
   label: ReactNode;
   /** A muted line under the group. */
   hint?: ReactNode;
-  /** A red line under the group, in place of the hint, announced as an alert. */
+  /** A red line under the hint, with an alert icon, announced politely. */
   error?: ReactNode;
   /** `Checkbox`es, `Field`s (in a `FormGrid` for a row), or a `ButtonGroup` of chips. */
   children: ReactNode;
 } & Unstyled<ComponentPropsWithoutRef<"fieldset">>): ReactElement {
   const ids = { hint: useId(), error: useId() };
-  let note: string | undefined;
-  if (error) note = ids.error;
-  else if (hint) note = ids.hint;
+  const note = noteDescribedBy(hint, error, ids);
   const describedBy = [ownDescribedBy, note].filter(Boolean).join(" ");
   return (
     <fieldset

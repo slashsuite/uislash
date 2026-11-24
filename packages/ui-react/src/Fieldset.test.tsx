@@ -4,7 +4,7 @@ import { Checkbox } from "./Checkbox.js";
 import { Field } from "./Field.js";
 import { Fieldset } from "./Fieldset.js";
 import { Input } from "./Input.js";
-import { render, screen, user } from "./render.harness.js";
+import { announced, render, screen, user } from "./render.harness.js";
 
 const LABEL = "What is wrong?";
 const group = () => screen.getByRole("group", { name: LABEL });
@@ -37,15 +37,15 @@ describe("Fieldset", () => {
     expect(description(group())).toEqual(["Tick all that apply."]);
   });
 
-  it("is described by its error alone, an alert in place of the hint", () => {
+  it("is described by its hint and then its error, announced politely", () => {
     render(
       <Fieldset label={LABEL} hint="Tick all that apply." error="Pick at least one.">
         {boxes}
       </Fieldset>,
     );
-    expect(description(group())).toEqual(["Pick at least one."]);
-    expect(screen.getByRole("alert").textContent).toBe("Pick at least one.");
-    expect(screen.queryByText("Tick all that apply.")).toBeNull();
+    expect(description(group())).toEqual(["Tick all that apply.", "Pick at least one."]);
+    expect(screen.queryByRole("alert")).toBeNull();
+    expect(announced()).toEqual(["Pick at least one."]);
     expect(group().hasAttribute("aria-invalid")).toBe(false);
   });
 
@@ -87,7 +87,7 @@ describe("Fieldset", () => {
       </Fieldset>,
     );
     const monday = screen.getByRole("textbox", { name: "Monday" });
-    expect(monday.hasAttribute("aria-invalid")).toBe(false);
+    expect(monday.getAttribute("aria-invalid")).toBe("false");
     expect(monday.hasAttribute("aria-describedby")).toBe(false);
   });
 

@@ -80,7 +80,7 @@ export function PrefixShell({
     <div
       className={cx(
         controlClass(size, width, step),
-        "flex items-center has-aria-invalid:border-red-200 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-violet-600",
+        "flex items-center has-aria-invalid:border-red-200 has-user-invalid:border-red-200 has-autofill:shadow-[inset_3px_0_0_0_currentColor] has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-violet-600",
         width === "auto" && "inline-flex",
         disabled && "opacity-50",
       )}

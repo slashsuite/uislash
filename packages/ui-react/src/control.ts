@@ -49,6 +49,15 @@ export const CONTROL_PAD: Record<ControlSize, { x: string; icon: string }> = {
   lg: { x: "px-4", icon: "pr-4 pl-11" },
 };
 
+/**
+ * The edge of a control the browser itself finds invalid once the person has left it (`:user-invalid`:
+ * a `required` one left empty, an `email` with no @), the same red as an `aria-invalid` one, and the
+ * mark of a value the browser autofilled: a bar of the text colour inside the start edge, so
+ * autofill is told by a shape and not only by the browser's own tint.
+ */
+export const CONTROL_STATES =
+  "user-invalid:border-red-200 autofill:shadow-[inset_3px_0_0_0_currentColor]";
+
 /** Shared look of text controls; `size` and the type `step` set the height and type, `width` the one width class. */
 export function controlClass(
   size: ControlSize = "md",
@@ -60,6 +69,7 @@ export function controlClass(
     CONTROL_PAD_Y[size],
     controlText(size, step, true),
     `rounded-lg border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 text-ellipsis transition hover:border-violet-400 aria-invalid:border-red-200 disabled:opacity-50 ${focusRing}`,
+    CONTROL_STATES,
   ]
     .filter(Boolean)
     .join(" ");

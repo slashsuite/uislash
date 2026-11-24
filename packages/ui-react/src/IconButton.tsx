@@ -16,7 +16,7 @@ export type IconButtonVariant = "outline" | "ghost";
 /** An IconButton's tones: `neutral` (the default) and `danger`. */
 export type IconButtonTone = Extract<Tone, "neutral" | "danger">;
 
-const BASE = `relative inline-flex items-center justify-center rounded-lg border transition disabled:pointer-events-none disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 ${focusRing}`;
+const BASE = `relative inline-flex cursor-pointer items-center justify-center rounded-lg border transition disabled:pointer-events-none disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 ${focusRing}`;
 
 /** The same heights as a `Button` of the size: 26px, 38px and 46px. */
 const SIZE: Record<Size, string> = { sm: "size-6.5", md: "size-9.5", lg: "size-11.5" };

@@ -2,7 +2,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { stubDialog } from "./dom.harness.js";
 import { FieldDialog } from "./FieldDialog.js";
-import { act, fireEvent, render, screen, user } from "./render.harness.js";
+import { act, announced, fireEvent, render, screen, user, within } from "./render.harness.js";
 
 // stubDialog supplies the modal <dialog> methods jsdom lacks; it does not act through the DOM.
 beforeEach(stubDialog);
@@ -111,7 +111,9 @@ describe("FieldDialog", () => {
     open(onSubmit, onClose);
     await user().type(field(), "alpha");
     await user().click(button("Create"));
-    expect(screen.getByRole("alert").textContent).toBe("Name taken");
+    expect(announced()).toEqual(["Name taken"]);
+    // A modal dialog makes the page inert, so its fields announce from a region inside it.
+    expect(within(screen.getByRole("dialog")).getAllByText("Name taken")).toHaveLength(2);
     expect(onClose).not.toHaveBeenCalled();
     expect(button("Create").getAttribute("aria-disabled")).toBeNull();
     await user().click(button("Create"));
@@ -123,7 +125,7 @@ describe("FieldDialog", () => {
     open(() => Promise.reject("nope"));
     await user().type(field(), "alpha");
     await user().click(button("Create"));
-    expect(screen.getByRole("alert").textContent).toBe("nope");
+    expect(announced()).toEqual(["nope"]);
   });
 
   it("closes through the dialog on Cancel", async () => {
