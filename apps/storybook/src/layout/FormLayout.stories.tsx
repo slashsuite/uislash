@@ -54,6 +54,35 @@ export const WithError: S = {
   ),
 };
 
+/** A closing remark about the whole form is the layout's `note`: a muted line set apart under the actions. */
+export const WithNote: S = {
+  render: () => (
+    <FormLayout
+      title="Ask for a repair"
+      description="Tell us what broke."
+      onSubmit={(event) => event.preventDefault()}
+      note="We reply within two working days. A repair under R500 goes ahead without a quote."
+      actions={
+        <>
+          <Button type="submit">Send request</Button>
+          <Button variant="ghost">Cancel</Button>
+        </>
+      }
+    >
+      <Card title="Item">
+        <Stack>
+          <Field label="What is it?" required>
+            <Input placeholder="Kettle" />
+          </Field>
+          <Field label="Your email" required>
+            <Input type="email" placeholder="naledi@example.com" />
+          </Field>
+        </Stack>
+      </Card>
+    </FormLayout>
+  ),
+};
+
 export const DoForm: S = {
   render: examples.DoForm,
 };

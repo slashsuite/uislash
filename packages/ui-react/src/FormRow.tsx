@@ -9,23 +9,25 @@ import { BusyLabel, busy, type LoadingProps, useLoading } from "./skeleton.js";
 export type FormRowSpan = 1 | 2 | 3 | 4;
 
 const SPAN: Record<FormRowSpan, string> = {
-  1: "md:flex-1",
-  2: "md:flex-2",
-  3: "md:flex-3",
-  4: "md:flex-4",
+  1: "@xl:flex-1",
+  2: "@xl:flex-2",
+  3: "@xl:flex-3",
+  4: "@xl:flex-4",
 };
 
 /**
- * Two columns of `Field`s from `md`, one below it. A `Field` takes one column; `span="full"` runs
- * it across both, and a `FormRow` is always full width.
+ * Two columns of `Field`s once the grid is 36rem wide, one below that. It folds by its own width,
+ * not the viewport's, so it stays one column in a `Dialog` or a side column. A `Field` takes one
+ * column; `span="full"` runs it across both, and a `FormRow` is always full width.
  */
 export function FormGrid({
   children,
   ...rest
 }: { children: ReactNode } & Passthrough): ReactElement {
   return (
-    <div {...rest} className="grid grid-cols-1 gap-4 md:grid-cols-2">
-      {children}
+    // A container query needs an element around the grid; the attributes go on it.
+    <div {...rest} className="@container w-full">
+      <div className="grid grid-cols-1 gap-4 @xl:grid-cols-2">{children}</div>
     </div>
   );
 }
@@ -34,7 +36,8 @@ export function FormGrid({
  * An inline-edit row: several controls side by side with proportional widths (`FormRowField`
  * `span` 1 to 4), optional `actions` after them (a save button), and one `hint` or `error` line
  * under the whole row. Every control sits on the bottom edge, so the actions line up with them
- * whatever the labels do. Under `md` the fields and the actions stack.
+ * whatever the labels do. Narrower than 36rem (the row's own width, not the viewport's) the fields
+ * and the actions stack.
  *
  * The row owns the note, so the fields beside each other keep their height: a `FormRowField` has
  * no `hint` or `error` of its own.
@@ -56,10 +59,10 @@ export function FormRow({
 } & Passthrough): ReactElement {
   const note = fieldNote(hint, error);
   return (
-    <div {...rest} className="col-span-full flex flex-col gap-1.5">
-      <div className="flex flex-col gap-3 md:flex-row md:items-end">
+    <div {...rest} className="@container col-span-full flex flex-col gap-1.5">
+      <div className="flex flex-col gap-3 @xl:flex-row @xl:items-end">
         {children}
-        {actions && <div className="flex items-center gap-2 md:shrink-0">{actions}</div>}
+        {actions && <div className="flex items-center gap-2 @xl:shrink-0">{actions}</div>}
       </div>
       {note}
     </div>

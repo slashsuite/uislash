@@ -37,6 +37,7 @@ export const overlayPages: ComponentPage[] = [
       'A click on the backdrop closes it, and so does a submit of a `<form method="dialog">`; every close calls `onClose`.',
       "The browser focuses the first focusable element in it when it opens; put `autoFocus` on the button that should have focus first.",
       "A tall body that holds nothing focusable, such as plain text, takes a tab stop so the arrow keys can scroll it. A tall form keeps its first focus on its first field.",
+      'Once a form\'s `onSubmit` settles (a returned promise resolves or rejects), the focus moves to the first field marked invalid (`aria-invalid="true"`), so a failed submit puts the reader on what to fix.',
     ],
     api: ["Dialog"],
   },
@@ -158,7 +159,7 @@ export const overlayPages: ComponentPage[] = [
     accessibility: [
       "It is a `Dialog`: native `<dialog>`, page behind inert, focus kept inside, Esc closes, named by its `title`.",
       "The input has focus when it opens and is named by `label`.",
-      "While the field is empty the submit button is disabled and its `emptyReason` is the button's title and the field's hint.",
+      "The submit button is never disabled: an empty submit marks the field invalid, shows `emptyReason` as its error (announced politely) and moves the focus to it. Typing clears the error.",
       "While `onSubmit` is pending the button is busy (`aria-busy`); a rejection shows in the field's error line, announced politely from a live region inside the dialog.",
     ],
     api: ["FieldDialog"],

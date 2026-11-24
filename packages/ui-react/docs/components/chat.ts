@@ -57,7 +57,7 @@ export const chatPages: ComponentPage[] = [
     usage: {
       do: [
         "Give it a `label` and `onSend`. It keeps its own text and calls `onSend` with it trimmed, then clears the box.",
-        "Enter sends and Shift+Enter is a newline. Empty or whitespace-only text does not send, and Send is disabled.",
+        'Enter sends and Shift+Enter is a newline. Send stays enabled on an empty box: empty or whitespace-only text sends nothing and shows `emptyReason` ("Write a message first.") under the box, announced politely, until the next keystroke. The box grows with its text from 2 rows to 8.',
         "`busy` is a reply on its way: the button is Stop and calls `onStop`, Enter does not send, and the reader can go on typing. With no `onStop`, Send stays disabled and no Stop is drawn.",
         "`disabled` is for a chat that cannot take a message at all; it disables the box and the button.",
         "`sendLabel` and `stopLabel` are the button's words, Send and Stop by default.",
@@ -66,7 +66,7 @@ export const chatPages: ComponentPage[] = [
     accessibility: [
       "`label` is the box's name, in a visually hidden `<label>`.",
       "Enter during an IME composition commits the text and does not send.",
-      "After Send is pressed the focus goes back to the box, since the button has just been disabled under it.",
+      "After Send is pressed the focus goes back to the box, to type the next message or the missing one.",
     ],
     api: ["ChatComposer"],
   },

@@ -87,6 +87,7 @@ export const pagelayouts: ComponentSection = {
           'Save and Cancel go in `actions`, at the end of the form: a `type="submit"` Button first, then a ghost Cancel. The header has no `actions` here.',
           "Handle the submit with `onSubmit`: other props go on the `<form>` itself.",
           "A failed submit (the server refused it, no connection) is `error`: an alert directly above the `actions`. An error about one field is that `Field`'s `error`.",
+          "A closing remark about the whole form (when you will hear back, what happens next) is `note`: a muted line set apart under the `actions`. A remark about one field is that `Field`'s `hint`.",
           "A form in a small panel is a `Dialog` or `FieldDialog`; a sign-in is `CenteredLayout`.",
         ],
         dont: ["Do not put Save in the header of a `ListLayout`: that is not a form."],

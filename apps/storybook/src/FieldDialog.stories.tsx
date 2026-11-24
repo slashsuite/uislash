@@ -36,7 +36,7 @@ function Opened({ onSubmit }: { onSubmit: (value: string) => Promise<unknown> })
   );
 }
 
-/** Empty: the Create button is blocked and the hint says why. A submit stays busy until Cancel. */
+/** Empty, with Create enabled: an empty submit reports `emptyReason` on the field. A submit stays busy until Cancel. */
 export const Default: S = {
   render: () => <Opened onSubmit={never} />,
 };
@@ -48,9 +48,18 @@ export const Pending: S = {
     if (!field) throw new Error("no open FieldDialog");
     Reflect.set(HTMLInputElement.prototype, "value", "my-project", field);
     field.dispatchEvent(new Event("input", { bubbles: true }));
-    // React flushes that input's update in a microtask queued before this one: the submit is enabled.
+    // React flushes that input's update in a microtask queued before this one: the value is in state.
     await new Promise<void>((resolve) => queueMicrotask(resolve));
     field.form?.requestSubmit();
+  },
+};
+/** Submitted empty: the field is invalid, `emptyReason` is its error under the hint, and it has the focus. */
+export const EmptySubmit: S = {
+  render: () => <Opened onSubmit={never} />,
+  play: ({ canvasElement }) => {
+    const form = canvasElement.ownerDocument.querySelector("dialog[open] form");
+    if (!(form instanceof HTMLFormElement)) throw new Error("no open FieldDialog");
+    form.requestSubmit();
   },
 };
 /** Type a name and submit: the dialog closes. */

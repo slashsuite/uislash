@@ -3,9 +3,11 @@ import {
   type HTMLAttributes,
   type ReactElement,
   type ReactNode,
+  useEffect,
   useId,
   useLayoutEffect,
   useRef,
+  useState,
   type RefObject,
 } from "react";
 import { Callout } from "./Callout.js";
@@ -92,7 +94,8 @@ export type DialogProps = {
    * Makes the dialog a form: one `<form noValidate>` holds the body, the `error` and the footer,
    * so a `Button type="submit"` in the footer or Enter in a field submits it, with no `form`
    * attribute or id. The default is prevented before this runs, and a rejection is yours to
-   * catch and show as `error`. Put no `<form method="dialog">` in the footer of a form dialog:
+   * catch and show as `error`. Once the submit settles, the focus moves to the first field marked
+   * invalid (`aria-invalid="true"`), if any. Put no `<form method="dialog">` in the footer of a form dialog:
    * it would nest a form.
    */
   onSubmit?: ((event: FormEvent<HTMLFormElement>) => void | Promise<unknown>) | undefined;
@@ -216,17 +219,35 @@ function FormColumn({
   onSubmit: DialogProps["onSubmit"];
   children: ReactNode;
 }): ReactElement {
+  const form = useRef<HTMLFormElement>(null);
+  const settled = useFocusFirstInvalid(form);
   if (!onSubmit) return <>{children}</>;
   return (
     <form
+      ref={form}
       noValidate
       className="flex min-h-0 flex-1 flex-col"
       onSubmit={(event) => {
         event.preventDefault();
-        void onSubmit(event);
+        // A rejection stays the caller's to catch, as before; `finally` passes it on.
+        void Promise.resolve(onSubmit(event)).finally(settled);
       }}
     >
       {children}
     </form>
   );
+}
+
+/**
+ * After each submit settles, moves the focus to the form's first field marked `aria-invalid="true"`,
+ * so a failed submit lands the reader on what to fix. It runs once per submit, after the render
+ * that shows the submit's errors, and never while the reader types.
+ */
+function useFocusFirstInvalid(form: RefObject<HTMLFormElement | null>): () => void {
+  const [submits, setSubmits] = useState(0);
+  useEffect(() => {
+    if (submits === 0) return;
+    form.current?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+  }, [form, submits]);
+  return () => setSubmits((n) => n + 1);
 }
