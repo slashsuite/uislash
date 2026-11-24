@@ -141,6 +141,9 @@ Chromium only, so the rest of the floor is declared, not tested. Use of a featur
 [web.dev/baseline](https://web.dev/baseline) or MDN) raises the `browserslist` in the same
 change, and says so in the README's "Browser support". The visual check is Chromium-only.
 
+When you build or change a component, follow Chrome's Modern Web Guidance within this floor:
+`docs/research/chrome-modern-web-guidance.md` maps each guide to the library, met or a ticketed gap.
+
 ## Commits: conventional, because nx reads them
 
 Every commit is `<type>(<scope>): <subject>`, as in `fix(ui-react): keep the Pill label on one line`:
