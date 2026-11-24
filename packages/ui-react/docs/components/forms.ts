@@ -1,5 +1,6 @@
 import { groupPages } from "./groups";
 import { datePages } from "./dates";
+import { numberPages } from "./numbers";
 import type { ComponentSection } from "./types";
 
 export const forms: ComponentSection = {
@@ -22,7 +23,7 @@ export const forms: ComponentSection = {
           "`required` puts a red asterisk after the label (hidden from a screen reader, which hears the control's own required state) and marks the control required.",
           "A validation message is `error`, not `hint`: a red line with an alert icon under the hint, which stays in view while the value is fixed.",
           'Inside a `FormGrid` a `Field` takes one column; `span="full"` runs it across both.',
-          "A `Checkbox`, a `Switch`, a `RadioGroup` and a `DateField` draw their own `label` and note (a `hint`, and an `error` under it); do not wrap them in a `Field`. A group of them is a `Fieldset`.",
+          "A `Checkbox`, a `Switch`, a `RadioGroup`, a `DateField` and a `NumberField` draw their own `label` and note (a `hint`, and an `error` under it); do not wrap them in a `Field`. A group of them is a `Fieldset`.",
           '`layout="row"` puts the label beside the control, for a compact setting or a drawer row: the hint or error sits under the control, and stacked rows line their controls up.',
         ],
       },
@@ -110,6 +111,7 @@ export const forms: ComponentSection = {
       ],
       api: ["Select"],
     },
+    ...numberPages,
     {
       slug: "checkbox",
       name: "Checkbox",

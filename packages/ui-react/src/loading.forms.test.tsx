@@ -4,6 +4,7 @@ import { isInaccessible, queryAllByAttribute } from "@testing-library/dom";
 import { describe, expect, it } from "vitest";
 import { Checkbox } from "./Checkbox.js";
 import { DateField } from "./DateField.js";
+import { NumberField } from "./NumberField.js";
 import { Field } from "./Field.js";
 import { FormRow, FormRowField } from "./FormRow.js";
 import { Input } from "./Input.js";
@@ -44,6 +45,7 @@ const parts: Record<string, (loading?: boolean) => ReactNode> = {
     </RadioGroup>
   ),
   DateField: (loading) => <DateField label="Delivery" loading={loading} />,
+  NumberField: (loading) => <NumberField label="Delivery" loading={loading} />,
 };
 
 describe("loading form parts", () => {

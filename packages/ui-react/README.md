@@ -71,7 +71,7 @@ root (`DateField`) puts `data-*` on its wrapper and `aria-describedby` on the fi
 
 One scale runs through the library: `Size` is `"sm" | "md" | "lg"`, and `md` is the default
 wherever a component takes `size`. The controls (`Button` (also as a link), `IconButton`,
-`ColourSchemeToggle`, `Input` (also `type="search"`), `Select`, `Textarea`, `Checkbox`, `Switch`, `RadioGroup`,
+`ColourSchemeToggle`, `Input` (also `type="search"`), `Select`, `NumberField`, `Slider`, `Textarea`, `Checkbox`, `Switch`, `RadioGroup`,
 `DateField` (also with `calendar`), `SegmentedControl`, `Tabs orientation="vertical"`)
 share heights at each step (`sm` 26px, `md` 38px, `lg` 46px, the same on a `Select` and a `DateField` as on an `Input`; a Playwright check measures them side by side in every theme), so a row of mixed controls at one size lines up. The text of a `Button`, `Input`, `Select`, `Textarea`, `DateField`, `DateRangePicker`, `SegmentedControl` and vertical `Tabs` is `text-sm`, `text-base` and `text-lg` at `sm`, `md` and `lg`, one step down under `AppShell density="compact"`, and a field is never under 16px on a touch screen; a `Checkbox`, `Switch` or `RadioGroup` label takes the type of a text control of its size. `RadioGroup` and `Checkbox` take `variant="card"` for option cards: a bordered box, the label its title and the hint its description. `Button`, `IconButton`, `SegmentedControl` and `Icon` also take a `ResponsiveSize`, `{ base, md }`, which changes at the `md` breakpoint in CSS. `Card`, `ListRow`,
 `FileDrop`, `Dialog`, `Drawer`, `Avatar`, `SubsectionHeading`, `TextLink` and the bars take the

@@ -513,7 +513,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": false,
         "description": "An icon from the `Icon` set before the label, decorative, at the button's size.",
         "native": false
@@ -621,7 +621,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": false,
         "description": "One of the library's icons, at the start of the box beside the text.",
         "native": false
@@ -810,7 +810,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": false,
         "description": "One of the library's icons, drawn at feature size in the accent colour above the title: the\nmark of a feature card. Ignored with `bar` and `flush`.\n\nPick it by the idea it stands for.",
         "native": false
@@ -2401,7 +2401,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": false,
         "description": "One of the library's icons, at feature size in the muted ink above the title.",
         "native": false
@@ -3142,7 +3142,7 @@
       },
       {
         "name": "name",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": false,
         "description": "One of the library's icons, named for the idea it stands for.",
         "native": false
@@ -3198,7 +3198,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": true,
         "description": "The one icon it holds, from the `Icon` set, at the button's size.",
         "native": false
@@ -3365,7 +3365,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": false,
         "description": "A leading icon inside the field, by name (`search`). Not with `prefix`.",
         "native": false
@@ -4320,6 +4320,157 @@
         "type": "ReactNode",
         "required": false,
         "description": "Replaces the default heading.",
+        "native": false
+      }
+    ]
+  },
+  "NumberField": {
+    "name": "NumberField",
+    "description": "A number with a minus and a plus button either side of it, for a quantity, a count or an amount:\nReact Aria's `NumberField`. The person types the number or steps it by `step` with the buttons,\nthe arrow keys, Page Up and Page Down; `minValue` and `maxValue` stop the buttons and clamp a\ntyped number when the field is left. `formatOptions` writes it as a currency, a percent or with\nfixed decimals in the app's locale, and the person types in that format. `label`, `hint`, `error`,\n`required` and `disabled` are a `DateField`'s; `size` and `width` an `Input`'s. While `loading`\nthe label is drawn and the field is a bone of its height.",
+    "props": [
+      {
+        "name": "decrementLabel",
+        "type": "string",
+        "required": false,
+        "default": "Decrease",
+        "description": "The name of the minus button, for an app in another language.",
+        "native": false
+      },
+      {
+        "name": "defaultValue",
+        "type": "number",
+        "required": false,
+        "description": "The number it starts with, uncontrolled.",
+        "native": false
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "required": false,
+        "description": "Disables the field and its buttons.",
+        "native": false
+      },
+      {
+        "name": "error",
+        "type": "ReactNode",
+        "required": false,
+        "description": "Marks the field invalid and shows this in red under the hint, announced politely.",
+        "native": false
+      },
+      {
+        "name": "formatOptions",
+        "type": "NumberFormatOptions",
+        "required": false,
+        "description": "How the number is written, in the locale of the app's `I18nProvider` or else the browser's:\n`{ style: \"currency\", currency: \"EUR\" }`, `{ style: \"percent\" }`, `{ maximumFractionDigits: 2 }`.\nThe person types in the same format.",
+        "native": false
+      },
+      {
+        "name": "hint",
+        "type": "ReactNode",
+        "required": false,
+        "description": "A muted line under the field that says more; it stays while an error shows under it.",
+        "native": false
+      },
+      {
+        "name": "id",
+        "type": "string",
+        "required": false,
+        "description": "The root element's `id`: an anchor, or the target of a `for` or an `aria-describedby`.",
+        "native": false
+      },
+      {
+        "name": "incrementLabel",
+        "type": "string",
+        "required": false,
+        "default": "Increase",
+        "description": "The name of the plus button, for an app in another language.",
+        "native": false
+      },
+      {
+        "name": "label",
+        "type": "ReactNode",
+        "required": false,
+        "description": "The field's visible label, above it. Without one, name the field with `aria-label`.",
+        "native": false
+      },
+      {
+        "name": "loading",
+        "type": "boolean",
+        "required": false,
+        "description": "The data is not here yet: an empty slot draws a bone of its shape, a filled one draws as usual.\nLeft out, the part takes the nearest loading layout's or part's; `false` opts it out inside one.",
+        "native": false
+      },
+      {
+        "name": "loadingLabel",
+        "type": "string",
+        "required": false,
+        "default": "Loading",
+        "description": "What a screen reader hears while this part is loading, when its own `loading` is set.",
+        "native": false
+      },
+      {
+        "name": "maxValue",
+        "type": "number",
+        "required": false,
+        "description": "The largest number allowed: the plus button stops there, and a larger typed one is lowered to it.",
+        "native": false
+      },
+      {
+        "name": "minValue",
+        "type": "number",
+        "required": false,
+        "description": "The smallest number allowed: the minus button stops there, and a smaller typed one is raised to it.",
+        "native": false
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "required": false,
+        "description": "Posts the number in a form under this key, as plain digits whatever the format.",
+        "native": false
+      },
+      {
+        "name": "onChange",
+        "type": "((value: number) => void)",
+        "required": false,
+        "description": "Called with the new number when it is committed (a step, or leaving the field); `NaN` when it is cleared.",
+        "native": false
+      },
+      {
+        "name": "required",
+        "type": "boolean",
+        "required": false,
+        "description": "Marks the number required: the field is `aria-required`, and an empty one is invalid.",
+        "native": false
+      },
+      {
+        "name": "size",
+        "type": "Size | ResponsiveSize",
+        "required": false,
+        "default": "md",
+        "description": "`sm` is compact, `text-sm` with less padding, for dense forms and table rows; `md` is `text-base`;\n`lg` is `text-lg` with more padding, for a hero form. Under an `AppShell density=\"compact\"` each\nis one type step down, and on a touch screen a field is never under 16px.\n`{ base: \"md\", md: \"lg\" }` changes size at the `md` breakpoint (48rem), in CSS, as a `Button`'s\ndoes: give the field and the buttons in its row the same value, so the row stays aligned.",
+        "native": false
+      },
+      {
+        "name": "step",
+        "type": "number",
+        "required": false,
+        "default": "1",
+        "description": "How far one press of a button or an arrow key moves the number; a typed number snaps to it.",
+        "native": false
+      },
+      {
+        "name": "value",
+        "type": "number",
+        "required": false,
+        "description": "The number shown, controlled, with `onChange`. `NaN` is an empty field.",
+        "native": false
+      },
+      {
+        "name": "width",
+        "type": "\"sm\" | \"md\" | \"lg\" | \"xs\" | \"auto\" | \"fill\" | \"full\"",
+        "required": false,
+        "description": "`full` (default) fills the parent; `fill` grows to fill the room left in a row beside other items (it can shrink to nothing, so buttons stay on the line); `xs`, `sm`, `md`, `lg` are fixed; `auto` adds no width class, so the control is as wide as the browser makes it.",
         "native": false
       }
     ]
@@ -5624,6 +5775,56 @@
         "required": false,
         "default": "Results",
         "description": "The name of the list of matches, for an app in another language.",
+        "native": false
+      }
+    ]
+  },
+  "Slider": {
+    "name": "Slider",
+    "description": "A range slider for one number between `min` and `max` (0 and 100 unless given), in steps of\n`step`: the browser's own `<input type=\"range\">` in the accent colour, with its value written\nbeside the track (`formatOptions` sets how) and read out the same way. Put it in a `Field`, which\nnames it and draws the hint and the error, as an `Input`. Arrow keys, Page Up, Page Down, Home and\nEnd move it. `size` sets its height and the value's type, to line up with an `Input` of that size;\n`width` is an `Input`'s. `onChange` is the input's own, on every move. The `ref` reaches the `<input>`.",
+    "props": [
+      {
+        "name": "defaultValue",
+        "type": "number",
+        "required": false,
+        "description": "The number it starts with, uncontrolled. Without one it starts halfway, as the browser's does.",
+        "native": false
+      },
+      {
+        "name": "formatOptions",
+        "type": "NumberFormatOptions",
+        "required": false,
+        "description": "How the value beside the track is written, in the locale of the app's `I18nProvider` or else\nthe browser's: `{ style: \"percent\" }` (for a value from 0 to 1), `{ style: \"currency\",\ncurrency: \"EUR\" }`, `{ style: \"unit\", unit: \"kilogram\" }`. Assistive tech reads it the same way.",
+        "native": false
+      },
+      {
+        "name": "ref",
+        "type": "Ref<HTMLInputElement>",
+        "required": false,
+        "description": "The `<input>` itself, for focus control.",
+        "native": false
+      },
+      {
+        "name": "size",
+        "type": "Size | ResponsiveSize",
+        "required": false,
+        "default": "md",
+        "description": "`sm` is compact, `text-sm` with less padding, for dense forms and table rows; `md` is `text-base`;\n`lg` is `text-lg` with more padding, for a hero form. Under an `AppShell density=\"compact\"` each\nis one type step down, and on a touch screen a field is never under 16px.\n`{ base: \"md\", md: \"lg\" }` changes size at the `md` breakpoint (48rem), in CSS, as a `Button`'s\ndoes: give the field and the buttons in its row the same value, so the row stays aligned.",
+        "native": false
+      },
+      {
+        "name": "value",
+        "type": "number",
+        "required": false,
+        "description": "The number it holds, controlled, with `onChange`.",
+        "native": false
+      },
+      {
+        "name": "width",
+        "type": "\"sm\" | \"md\" | \"lg\" | \"xs\" | \"auto\" | \"fill\" | \"full\"",
+        "required": false,
+        "default": "full",
+        "description": "`full` (default) fills the parent; `fill` grows to fill the room left in a row beside other items (it can shrink to nothing, so buttons stay on the line); `xs`, `sm`, `md`, `lg` are fixed; `auto` adds no width class, so the control is as wide as the browser makes it.",
         "native": false
       }
     ]

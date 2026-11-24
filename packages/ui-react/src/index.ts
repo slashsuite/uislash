@@ -147,6 +147,8 @@ export { MetaList, type MetaListSeparator } from "./MetaList.js";
 export { Kbd } from "./Kbd.js";
 export { KeyValue, KeyValueList } from "./KeyValueList.js";
 export { Select } from "./Select.js";
+export { NumberField } from "./NumberField.js";
+export { Slider } from "./Slider.js";
 export { Textarea } from "./Textarea.js";
 export { Video } from "./Video.js";
 export { Image, type ImageAspect, type ImageWidth } from "./Image.js";

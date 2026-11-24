@@ -28,6 +28,7 @@ const NAMES = [
   "check",
   "alert",
   "plus",
+  "minus",
   "more",
   "grid",
   "window",
@@ -156,6 +157,8 @@ const GLYPHS: Record<IconName, ReactNode> = {
   ),
   /** Add or create: two strokes crossing, upright. */
   plus: <path d="M12 5v14M5 12h14" />,
+  /** Less: one bar, the plus without its upright (a stepper's decrement). */
+  minus: <path d="M5 12h14" />,
   /** More actions behind a menu: three dots in a row. */
   more: (
     <>

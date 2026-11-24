@@ -7,15 +7,18 @@ import {
   Checkbox,
   DateField,
   DateTimeField,
+  Field,
   Fieldset,
   fromISODate,
   fromISODateTime,
   Markdown,
+  NumberField,
   Overline,
   Pagination,
   PageHeading,
   SectionHeading,
   SiteSearch,
+  Slider,
   Select,
   SubsectionHeading,
   Text,
@@ -171,6 +174,16 @@ export const gallerySections: GallerySection[] = [
           <DateField calendar label="Date of birth" defaultValue={fromISODate("1990-05-17")} />
           <DateField label="Visited on" hint="The day you were there." />
           <DateTimeField label="Arrives at" defaultValue={fromISODateTime("2026-11-29T14:05")} />
+          <NumberField label="Quantity" defaultValue={2} minValue={1} width="sm" />
+          <Field label="Overlay opacity">
+            <Slider
+              defaultValue={0.6}
+              min={0}
+              max={1}
+              step={0.05}
+              formatOptions={{ style: "percent" }}
+            />
+          </Field>
           <Fieldset label="What is wrong?" error="Pick at least one.">
             <Checkbox label="Wrong hours" />
             <Checkbox label="Closed for good" />

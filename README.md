@@ -132,6 +132,10 @@ Stories: `Layout/AppShell › HeaderSlots`, `LinkedBrand`, `RouterBrand` and `Hi
 `DateField` is a segmented date field in the browser's locale (`locale` overrides it); `calendar` adds a calendar popover. `DateTimeField` adds the time. Values are `CalendarDate`s; `toISODate` and `fromISODate` convert to and from `"1990-05-17"`.
 See [`packages/ui-react/README.md`](packages/ui-react/README.md#dates).
 
+## Numbers
+
+`NumberField` is a number with minus and plus buttons, for a quantity or an amount: `minValue`, `maxValue` and `step` bound it, and `formatOptions` writes it as a currency or a percent in the app's locale. `Slider` is a native range in a `Field` for a level set by eye, its value written beside the track.
+
 ## Light and dark
 
 `@slashsuite/ui-react` ships the switch for the `.dark` class: inline `colourSchemeScript` in `<head>` (it
