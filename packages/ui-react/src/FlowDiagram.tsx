@@ -95,10 +95,10 @@ export function FlowDiagram({
 
   if (waiting && nodes.length === 0) {
     return (
-      <div {...rest} {...busy(owner, waiting)} aria-label={label} className="flex flex-col">
+      <figure {...rest} {...busy(owner, waiting)} aria-label={label} className="flex flex-col">
         <Bone shape="block h-48 rounded-lg" />
         <BusyLabel owner={owner} loading={waiting} label={loadingLabel} />
-      </div>
+      </figure>
     );
   }
 
@@ -110,7 +110,7 @@ export function FlowDiagram({
     <div {...rest} className="flex min-w-0 flex-col">
       <div
         role="img"
-        aria-label={`${label}: ${known.size} boxes and ${shown.length} arrows`}
+        aria-label={`${label}: ${count(known.size, "box", "boxes")} and ${count(shown.length, "arrow", "arrows")}`}
         // A diagram wider than its room scrolls, so it takes the focus for the arrow keys.
         tabIndex={0}
         className="max-w-full overflow-auto rounded-lg outline-offset-2 focus-visible:outline-2 focus-visible:outline-violet-600"
@@ -132,6 +132,9 @@ export function FlowDiagram({
     </div>
   );
 }
+
+/** `1 box`, `3 boxes`. */
+const count = (n: number, one: string, many: string): string => `${n} ${n === 1 ? one : many}`;
 
 /** The drawing itself: the group frames, the arrows, their labels and the boxes. */
 function FlowCanvas({

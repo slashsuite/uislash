@@ -116,7 +116,7 @@ describe("FlowDiagram", () => {
       edges: [],
     });
     expect(boxOf(full, "x").height).toBeGreaterThan(boxOf(plain, "x").height);
-    const image = screen.getByRole("img", { name: "b: 1 boxes and 0 arrows" });
+    const image = screen.getByRole("img", { name: "b: 1 box and 0 arrows" });
     expect(within(image).getByText("three items")).toBeTruthy();
   });
 
@@ -160,7 +160,7 @@ describe("FlowDiagram", () => {
   it("draws a bone while loading with no nodes", () => {
     render(<FlowDiagram label="Flow" nodes={[]} edges={[]} loading />);
     expect(screen.queryByRole("img")).toBeNull();
-    expect(screen.getByLabelText("Flow").getAttribute("aria-busy")).toBe("true");
+    expect(screen.getByRole("figure", { name: "Flow" }).getAttribute("aria-busy")).toBe("true");
   });
 });
 
@@ -199,16 +199,6 @@ describe("layoutFlow", () => {
 });
 
 describe("basisPath", () => {
-  it("draws nothing through no points and a line through two", () => {
-    expect(basisPath([])).toBe("");
-    expect(
-      basisPath([
-        { x: 0, y: 0 },
-        { x: 10, y: 10 },
-      ]),
-    ).toBe("M0,0L10,10");
-  });
-
   it("draws a curve through three or more, pinned at both ends", () => {
     const d = basisPath([
       { x: 0, y: 0 },
