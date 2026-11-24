@@ -28,6 +28,16 @@ in the stylesheet that imports Tailwind (the path is relative to that file):
 @source "../node_modules/@slashsuite/ui-react/dist";
 ```
 
+## Agent skill
+
+The package ships a skill, `skills/uislash/SKILL.md`, that tells a coding agent (Claude Code, or any agent that reads `.claude/skills`) to build with the docs that ship in the package, `agent-docs/`, and to typecheck when it is done. Copy it into your app once, from the app's root:
+
+```sh
+mkdir -p .claude/skills && cp -r node_modules/@slashsuite/ui-react/skills/uislash .claude/skills/
+```
+
+Copy it again after an upgrade, so it matches the installed docs.
+
 ## Use
 
 ```tsx

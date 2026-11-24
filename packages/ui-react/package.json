@@ -29,6 +29,7 @@
   "files": [
     "dist",
     "agent-docs",
+    "skills",
     "MIGRATING.md"
   ],
   "type": "module",

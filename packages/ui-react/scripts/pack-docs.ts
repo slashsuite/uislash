@@ -1,12 +1,13 @@
 /**
  * Fails `pack-check` when the tarball's agent docs are incomplete (`packedDocs.ts` says what they
- * must hold). Reads the file list from `npm pack --dry-run`, so it checks what would ship, not the
- * working tree. The docs are written by `bunx moon run ui-react:agent-docs`.
+ * must hold), or its `uislash` skill is missing or names a docs file it lacks (`packedSkill.ts`).
+ * Reads the file list from `npm pack --dry-run`, so it checks what would ship, not the working tree. The docs are written by `bunx moon run ui-react:agent-docs`.
  */
 import { readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { componentPages } from "../docs/components/index";
 import { packedDocsProblems } from "./packedDocs";
+import { packedSkillProblems, skillFile } from "./packedSkill";
 
 const root = resolve(import.meta.dirname, "..");
 const pack = Bun.spawnSync(["npm", "pack", "--dry-run", "--json", "--ignore-scripts"], {
@@ -42,4 +43,11 @@ if (problems.length > 0) {
   throw new Error(
     `the tarball's agent docs are incomplete (run \`bunx moon run ui-react:agent-docs\`):\n${problems.join("\n")}`,
   );
+}
+const skillProblems = packedSkillProblems(
+  files,
+  files.includes(skillFile) ? readFileSync(join(root, skillFile), "utf8") : undefined,
+);
+if (skillProblems.length > 0) {
+  throw new Error(`the tarball's skill is incomplete:\n${skillProblems.join("\n")}`);
 }
