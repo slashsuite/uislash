@@ -1,6 +1,6 @@
 import type { CalendarDateTime, DateValue } from "@internationalized/date";
 import type { ReactElement } from "react";
-import { type FieldProps, labelClass } from "./DateField.js";
+import { type FieldProps, useLabelClass } from "./DateField.js";
 import { SegmentedField } from "./SegmentedField.js";
 import { WaitingField } from "./fieldWait.js";
 import { DATE_TIME } from "./shownDate.js";
@@ -42,6 +42,7 @@ export function DateTimeField({
   loadingLabel,
   ...field
 }: DateTimeFieldProps): ReactElement {
+  const labelClass = useLabelClass();
   if (useLoading(loading).loading) {
     return (
       <WaitingField

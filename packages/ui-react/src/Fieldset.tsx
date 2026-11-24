@@ -1,4 +1,6 @@
 import { type ComponentPropsWithoutRef, type ReactElement, type ReactNode, useId } from "react";
+import { cx } from "./cx.js";
+import { useFieldType } from "./density.js";
 import { fieldNote, noteDescribedBy } from "./Field.js";
 import type { Unstyled } from "./props.js";
 
@@ -37,7 +39,7 @@ export function Fieldset({
       aria-describedby={describedBy === "" ? undefined : describedBy}
       className="min-w-0"
     >
-      <legend className="text-sm font-medium text-slate-700">{label}</legend>
+      <legend className={cx(useFieldType().label, "font-medium text-slate-700")}>{label}</legend>
       <div className="mt-2 flex flex-col gap-2.5">{children}</div>
       {(error || hint) && <div className="mt-1.5">{fieldNote(hint, error, ids)}</div>}
     </fieldset>

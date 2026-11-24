@@ -4,6 +4,7 @@ import { FieldContext, type FieldControlContext } from "./fieldControl.js";
 import type { Passthrough } from "./props.js";
 import { ControlBone } from "./fieldWait.js";
 import { useErrorAnnouncement } from "./fieldAnnounce.js";
+import { useFieldType } from "./density.js";
 import { Icon } from "./Icon.js";
 import { BusyLabel, busy, type LoadingProps, useLoading } from "./skeleton.js";
 
@@ -19,9 +20,10 @@ export function ErrorLine({
   error: ReactNode;
 }): ReactElement {
   const { anchor, announcement } = useErrorAnnouncement(error);
+  const type = useFieldType();
   return (
-    <span ref={anchor} id={id} className="flex items-start gap-1 text-xs text-red-700">
-      <span className="flex h-4 shrink-0 items-center">
+    <span ref={anchor} id={id} className={cx("flex items-start gap-1 text-red-700", type.note)}>
+      <span className={cx("flex shrink-0 items-center", type.line)}>
         <Icon name="alert" size="sm" />
       </span>
       <span className="min-w-0">{error}</span>
@@ -41,15 +43,39 @@ export function fieldNote(
   ids?: { hint: string; error: string },
 ): ReactElement | null {
   if (!hint && !error) return null;
+  return <NoteLines hint={hint} error={error} ids={ids} />;
+}
+
+/** `fieldNote`'s lines, a component so the hint can read the type step. */
+function NoteLines({
+  hint,
+  error,
+  ids,
+}: {
+  hint: ReactNode;
+  error: ReactNode;
+  ids: { hint: string; error: string } | undefined;
+}): ReactElement {
   return (
     <div className="flex flex-col gap-0.5">
-      {hint ? (
-        <p id={ids?.hint} className="text-xs text-slate-500">
-          {hint}
-        </p>
-      ) : null}
+      {hint ? <Hint id={ids?.hint}>{hint}</Hint> : null}
       {error ? <ErrorLine id={ids?.error} error={error} /> : null}
     </div>
+  );
+}
+
+/** The muted hint under a control, one type step below its label. */
+export function Hint({
+  id,
+  children,
+}: {
+  id?: string | undefined;
+  children: ReactNode;
+}): ReactElement {
+  return (
+    <span id={id} className={cx("block text-slate-500", useFieldType().note)}>
+      {children}
+    </span>
   );
 }
 
@@ -97,10 +123,10 @@ export function RequiredMark({ required }: { required: boolean | undefined }): R
 }
 
 /** A field's label: hidden, or drawn, and free to wrap anywhere beside a control in a row. */
-function labelLook(hidden: boolean, row: boolean): string {
+function labelLook(hidden: boolean, row: boolean, type: string): string {
   return hidden
     ? "sr-only"
-    : cx("text-sm font-medium text-slate-700", row && "min-w-0 wrap-anywhere");
+    : cx(type, "font-medium text-slate-700", row && "min-w-0 wrap-anywhere");
 }
 
 /**
@@ -164,6 +190,7 @@ export function Field({
   const row = layout === "row" && !labelHidden;
   const { control, note } = useFieldNote(htmlFor, hint, error, required);
   const { loading: waiting, owner } = useLoading(loading);
+  const labelType = useFieldType().label;
   return (
     <div
       {...rest}
@@ -173,7 +200,7 @@ export function Field({
         span === "full" && "col-span-full",
       )}
     >
-      <label htmlFor={control.id} className={labelLook(labelHidden, row)}>
+      <label htmlFor={control.id} className={labelLook(labelHidden, row, labelType)}>
         {label}
         <RequiredMark required={required} />
       </label>

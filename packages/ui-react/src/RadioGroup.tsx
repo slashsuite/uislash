@@ -7,18 +7,22 @@ import {
   Text,
 } from "react-aria-components";
 import { cx } from "./cx.js";
-import { ErrorLine, RequiredMark } from "./Field.js";
+import { controlText, useFieldType, useTypeStep } from "./density.js";
+import { ErrorLine, Hint, RequiredMark } from "./Field.js";
 import { TOUCH_TARGET } from "./target.js";
 import { definedProps, type Passthrough } from "./props.js";
 import type { Size } from "./size.js";
 import { WaitingChoice } from "./fieldWait.js";
 import { BusyLabel, busy, type LoadingProps, LoadingScope, useLoading } from "./skeleton.js";
 
-/** A radio's circle, its dot, its drop onto the label's first line and the label's text, by the group's `size`. */
-const SIZE: Record<Size, { circle: string; dot: string; label: string; gap: string }> = {
-  sm: { circle: "mt-px h-3.5 w-3.5", dot: "h-1.5 w-1.5", label: "text-xs", gap: "gap-2" },
-  md: { circle: "mt-0.5 h-4 w-4", dot: "h-2 w-2", label: "text-sm", gap: "gap-2.5" },
-  lg: { circle: "mt-0.5 h-5 w-5", dot: "h-2.5 w-2.5", label: "text-base", gap: "gap-3" },
+/**
+ * A radio's circle, its dot and its drop onto the label's first line, by the group's `size`. The
+ * label's type is a control's of that size (`controlText`), whose line height the drop is set for.
+ */
+const SIZE: Record<Size, { circle: string; dot: string; gap: string }> = {
+  sm: { circle: "mt-px h-3.5 w-3.5", dot: "h-1.5 w-1.5", gap: "gap-2" },
+  md: { circle: "mt-0.5 h-4 w-4", dot: "h-2 w-2", gap: "gap-2.5" },
+  lg: { circle: "mt-0.5 h-5 w-5", dot: "h-2.5 w-2.5", gap: "gap-3" },
 };
 
 /** The group's `size`, read by each `Radio` in it. */
@@ -75,6 +79,7 @@ export function RadioGroup({
 } & LoadingProps &
   Passthrough): ReactElement {
   const { loading: waiting, owner } = useLoading(loading);
+  const type = useFieldType();
   return (
     <AriaRadioGroup
       {...definedProps(rest)}
@@ -83,7 +88,7 @@ export function RadioGroup({
       {...(required ? { isRequired: true } : {})}
       className="flex flex-col gap-2"
     >
-      <Label className="text-sm font-medium text-slate-700">
+      <Label className={cx(type.label, "font-medium text-slate-700")}>
         {label}
         <RequiredMark required={required} />
       </Label>
@@ -95,7 +100,7 @@ export function RadioGroup({
         <BusyLabel owner={owner} loading={waiting} label={loadingLabel} />
       </div>
       {hint ? (
-        <Text slot="description" className="text-xs text-slate-500">
+        <Text slot="description" className={cx("text-slate-500", type.note)}>
           {hint}
         </Text>
       ) : null}
@@ -108,7 +113,7 @@ export function RadioGroup({
 
 function ringTone(invalid: boolean, selected: boolean): string {
   if (invalid) return "border-red-200";
-  return selected ? "border-violet-600" : "border-slate-300";
+  return cx(selected ? "border-violet-600" : "border-slate-300", "hover:border-violet-400");
 }
 
 /** The props of a `Radio`. */
@@ -129,14 +134,16 @@ export function Radio({
   loadingLabel,
   ...props
 }: RadioProps & LoadingProps): ReactElement {
-  const size = SIZE[useContext(RadioSize)];
+  const step = useContext(RadioSize);
+  const size = SIZE[step];
+  const text = controlText(step, useTypeStep(), false);
   if (useLoading(loading).loading) {
     return (
       <WaitingChoice
         own={loading}
         loadingLabel={loadingLabel}
         label={props.label}
-        look={cx(size.gap, size.label)}
+        look={cx(size.gap, text)}
         shape={cx(size.circle, "rounded-full")}
         attrs={props}
       />
@@ -155,7 +162,9 @@ function ShownRadio({
   ...rest
 }: RadioProps): ReactElement {
   const descriptionId = useId();
-  const size = SIZE[useContext(RadioSize)];
+  const step = useContext(RadioSize);
+  const size = SIZE[step];
+  const text = controlText(step, useTypeStep(), false);
   return (
     <AriaRadio
       {...definedProps(rest)}
@@ -182,7 +191,7 @@ function ShownRadio({
           <span
             aria-hidden="true"
             className={cx(
-              "flex shrink-0 items-center justify-center rounded-full border bg-white transition hover:border-violet-400",
+              "flex shrink-0 items-center justify-center rounded-full border bg-white transition",
               size.circle,
               ringTone(isInvalid, isSelected),
             )}
@@ -190,12 +199,8 @@ function ShownRadio({
             {isSelected ? <span className={cx("rounded-full bg-violet-600", size.dot)} /> : null}
           </span>
           <span className="flex flex-col gap-0.5">
-            <span className={cx("text-slate-700", size.label)}>{label}</span>
-            {hint ? (
-              <span id={descriptionId} className="text-xs text-slate-500">
-                {hint}
-              </span>
-            ) : null}
+            <span className={cx("text-slate-700", text)}>{label}</span>
+            {hint ? <Hint id={descriptionId}>{hint}</Hint> : null}
           </span>
         </>
       )}

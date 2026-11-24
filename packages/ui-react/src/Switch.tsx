@@ -1,5 +1,7 @@
 import { type ComponentPropsWithoutRef, type ReactElement, type ReactNode, useState } from "react";
+import { INVALID_EDGE } from "./control.js";
 import { cx, focusRing } from "./cx.js";
+import { controlText, useTypeStep } from "./density.js";
 import { type NoteIds, useNote, Words } from "./labelWords.js";
 import type { Unstyled } from "./props.js";
 import type { Size } from "./size.js";
@@ -9,14 +11,14 @@ import { WaitingChoice } from "./fieldWait.js";
 import { type LoadingProps, useLoading } from "./skeleton.js";
 
 /**
- * The label's gap and text, the track, its thumb and the thumb's slide, by `size`. The track is a
+ * The label's gap, the track, its thumb and the thumb's slide, by `size`. The track is a
  * 2px border plus 2px of padding, so the thumb is the track's height less 8px and slides the
  * track's width less 8px less its own width.
  */
-const SIZE: Record<Size, { label: string; track: string; thumb: string; slide: string }> = {
-  sm: { label: "gap-2 text-xs", track: "h-5 w-9", thumb: "h-3 w-3", slide: "translate-x-4" },
-  md: { label: "gap-2.5 text-sm", track: "h-6 w-11", thumb: "h-4 w-4", slide: "translate-x-5" },
-  lg: { label: "gap-3 text-base", track: "h-7 w-13", thumb: "h-5 w-5", slide: "translate-x-6" },
+const SIZE: Record<Size, { gap: string; track: string; thumb: string; slide: string }> = {
+  sm: { gap: "gap-2", track: "h-5 w-9", thumb: "h-3 w-3", slide: "translate-x-4" },
+  md: { gap: "gap-2.5", track: "h-6 w-11", thumb: "h-4 w-4", slide: "translate-x-5" },
+  lg: { gap: "gap-3", track: "h-7 w-13", thumb: "h-5 w-5", slide: "translate-x-6" },
 };
 
 // Off is an outline of the text colour with a thumb of the same colour; on is the accent filled,
@@ -115,7 +117,8 @@ function Track({
       aria-disabled={busy || undefined}
       disabled={disabled}
       className={cx(
-        "inline-flex shrink-0 items-center rounded-full border-2 p-0.5 aria-invalid:border-red-200",
+        "inline-flex shrink-0 items-center rounded-full border-2 p-0.5",
+        INVALID_EDGE,
         track,
         size === "sm" && MIN_TARGET,
         checked ? ON : OFF,
@@ -181,7 +184,8 @@ function Labelled({
       className={cx(
         "inline-flex text-slate-700",
         start ? "items-start" : "items-center",
-        SIZE[size].label,
+        SIZE[size].gap,
+        controlText(size, useTypeStep(), false),
         wash,
       )}
     >
@@ -211,6 +215,7 @@ export function Switch({
   loadingLabel,
   ...props
 }: SwitchProps & LoadingProps): ReactElement {
+  const step = useTypeStep();
   if (useLoading(loading).loading) {
     const size = props.size ?? "md";
     return (
@@ -218,7 +223,7 @@ export function Switch({
         own={loading}
         loadingLabel={loadingLabel}
         label={props.label}
-        look={cx("items-center", SIZE[size].label)}
+        look={cx("items-center", SIZE[size].gap, controlText(size, step, false))}
         shape={cx(SIZE[size].track, "rounded-full")}
         attrs={props}
       />

@@ -1,4 +1,5 @@
 import type { ComponentPropsWithoutRef, ReactElement, ReactNode } from "react";
+import { INVALID_EDGE_WITHIN } from "./control.js";
 import { cx } from "./cx.js";
 import { useFieldControl } from "./fieldControl.js";
 import type { Unstyled } from "./props.js";
@@ -30,8 +31,9 @@ export function FileDrop({
   return (
     <label
       className={cx(
-        "relative flex items-center justify-center rounded-lg border border-dashed border-slate-300 text-center text-sm text-slate-500 transition hover:border-violet-400 has-aria-invalid:border-red-200 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-violet-600",
+        "relative flex items-center justify-center rounded-lg border border-dashed border-slate-300 text-center text-sm text-slate-500 transition hover:border-violet-400 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-violet-600",
         PAD[size],
+        INVALID_EDGE_WITHIN,
         rest.disabled && "opacity-50",
       )}
     >

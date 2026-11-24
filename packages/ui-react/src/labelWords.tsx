@@ -1,5 +1,5 @@
 import { type ReactNode, useId } from "react";
-import { ErrorLine, noteDescribedBy } from "./Field.js";
+import { ErrorLine, Hint, noteDescribedBy } from "./Field.js";
 
 /** Whether a note is set: `null`, `undefined`, `false` and `""` draw nothing. */
 const given = (note: ReactNode): boolean => note != null && note !== false && note !== "";
@@ -26,11 +26,7 @@ export function Words({
   return (
     <span className="flex flex-col gap-0.5">
       <span>{label}</span>
-      {given(hint) ? (
-        <span id={ids.hint} className="text-xs text-slate-500">
-          {hint}
-        </span>
-      ) : null}
+      {given(hint) ? <Hint id={ids.hint}>{hint}</Hint> : null}
       {given(error) ? <ErrorLine id={ids.error} error={error} /> : null}
     </span>
   );
