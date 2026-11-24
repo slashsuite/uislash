@@ -3,7 +3,7 @@ import type { ReactElement } from "react";
 import { DateField as AriaDateField, DateInput } from "react-aria-components";
 import { cx } from "./cx.js";
 import {
-  FIELD_SIZE,
+  fieldPad,
   FieldLabel,
   type FieldProps,
   FieldSegment,
@@ -71,7 +71,7 @@ export function SegmentedField<T extends CalendarDate | CalendarDateTime>({
             <div className="contents" onBlurCapture={onBlurCapture}>
               <DateInput
                 className={(state) =>
-                  cx(frameClass(state), FIELD_SIZE[size], controlText(size, step, true))
+                  cx(frameClass(state), fieldPad(size), controlText(size, step, true))
                 }
               >
                 {(segment) => (

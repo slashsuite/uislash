@@ -48,6 +48,7 @@ export const forms: ComponentSection = {
           '`prefix` is short text inside the border before the value, such as a currency symbol. It is for a plain field, not one with an `icon` or `type="search"`.',
           'A figure is `numeric`: an amount is `<Input prefix="R" numeric />` in a `Field`, and a count or a whole number is `<Input numeric inputMode="numeric" />`. It right-aligns the digits in tabular figures and brings up the number keypad. A unit other than a currency goes in the `label` ("UIF rate (%)").',
           '`size="sm"` is for a dense form or a table row, `size="lg"` for a sign-in or search form that stands alone; `md` is the default.',
+          'A field beside a `Button` that changes size with the screen takes the same responsive size, `size={{ base: "lg", md: "md" }}`, so the two stay one height at both widths.',
           "`width` is `full` by default; `xs`, `sm`, `md` and `lg` are fixed widths for a short value; `fill` grows to the room beside other items in a row; `auto` is as wide as the browser makes it.",
           "A paragraph is a `Textarea`; a choice from a list is a `Select`; a date is a `DateField`.",
         ],

@@ -21,7 +21,7 @@ import {
   Notes,
 } from "./DateField.js";
 import { DateLocale } from "./dateLocale.js";
-import { PICKER_SIZE, useDialogContainer, usePickerFrame } from "./DateFieldCalendar.js";
+import { pickerButton, useDialogContainer, usePickerFrame } from "./DateFieldCalendar.js";
 import { definedProps, type Passthrough } from "./props.js";
 import { ShownInput, type ShownRange, useShownRange } from "./shownDate.js";
 
@@ -175,7 +175,7 @@ export function DateRangePicker({
                 to
               </span>
               <SideInput slot="end" name="End date" side={shown.end} onRead={shown.onReadEnd} />
-              <Button className={cx(iconButtonLook, PICKER_SIZE[size].button, "ml-auto")}>
+              <Button className={cx(iconButtonLook, pickerButton(size), "ml-auto")}>
                 {calendarIcon}
               </Button>
             </Group>

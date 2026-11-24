@@ -15,15 +15,21 @@ type S = StoryObj;
 type Size = "sm" | "md" | "lg";
 const SIZES: Size[] = ["sm", "md", "lg"];
 
+/** The responsive row's size: `sm` on a phone, `lg` from the `md` breakpoint (48rem) up. */
+const RESPONSIVE = { base: "sm", md: "lg" } as const;
+
 const items = [
   { value: "a", label: "Day" },
   { value: "b", label: "Week" },
 ];
 
 /** Every control a row can hold, at one `size`. Each carries `data-control` so the e2e can measure it. */
-function Row({ size }: { size: Size }) {
+function Row({ size }: { size: Size | typeof RESPONSIVE }) {
   return (
-    <div data-size={size} className="flex flex-wrap items-start gap-3">
+    <div
+      data-size={typeof size === "string" ? size : "responsive"}
+      className="flex flex-wrap items-start gap-3"
+    >
       <Input data-control="Input" aria-label="Input" size={size} width="sm" />
       <Select
         data-control="Select"
@@ -59,13 +65,18 @@ function Row({ size }: { size: Size }) {
   );
 }
 
-/** The controls of one size stand at one height: 26px at `sm`, 38px at `md`, 46px at `lg`. The e2e measures this row by row. */
+/**
+ * The controls of one size stand at one height: 26px at `sm`, 38px at `md`, 46px at `lg`. The last
+ * row is `size={{ base: "sm", md: "lg" }}`: 26px on a phone, 46px from 48rem up, every control
+ * together. The e2e (`control-heights.spec.ts`) measures it row by row, at both widths.
+ */
 export const Heights: S = {
   render: () => (
     <div className="flex flex-col gap-6">
       {SIZES.map((size) => (
         <Row key={size} size={size} />
       ))}
+      <Row size={RESPONSIVE} />
     </div>
   ),
 };

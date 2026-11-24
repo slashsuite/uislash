@@ -13,6 +13,7 @@ import { cx, focusRing } from "./cx.js";
 import { useTypeStep } from "./density.js";
 import { InputShell } from "./InputShell.js";
 import type { Unstyled } from "./props.js";
+import { type ResponsiveSize, sizeClass } from "./size.js";
 import { Tipped } from "./Tooltip.js";
 
 /** The browser's own search look is reset: no `searchfield` appearance, no cancel button or decoration. The clear button below replaces them. */
@@ -20,17 +21,57 @@ const SEARCH_RESET =
   "appearance-none [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-webkit-search-results-button]:hidden [&::-webkit-search-results-decoration]:hidden";
 
 /** A search field's padding: the leading side as a plain field or with an icon, the trailing side clear of the clear button. */
-const SEARCH_PAD: Record<ControlSize, { plain: string; icon: string }> = {
-  sm: { plain: "pl-2 pr-7", icon: "pl-7 pr-7" },
-  md: { plain: "pl-3 pr-9", icon: "pl-9 pr-9" },
-  lg: { plain: "pl-4 pr-11", icon: "pl-11 pr-11" },
+const SEARCH_PAD: Record<ControlSize, string> = {
+  sm: "pl-2 pr-7",
+  md: "pl-3 pr-9",
+  lg: "pl-4 pr-11",
+};
+const SEARCH_PAD_MD: Record<ControlSize, string> = {
+  sm: "md:pl-2 md:pr-7",
+  md: "md:pl-3 md:pr-9",
+  lg: "md:pl-4 md:pr-11",
+};
+/** With a leading icon. */
+const SEARCH_PAD_ICON: Record<ControlSize, string> = {
+  sm: "pl-7 pr-7",
+  md: "pl-9 pr-9",
+  lg: "pl-11 pr-11",
+};
+const SEARCH_PAD_ICON_MD: Record<ControlSize, string> = {
+  sm: "md:pl-7 md:pr-7",
+  md: "md:pl-9 md:pr-9",
+  lg: "md:pl-11 md:pr-11",
 };
 
-/** The clear button's place and box, and its icon, by the field's size. */
-const CLEAR_SIZE: Record<ControlSize, { box: string; icon: string }> = {
-  sm: { box: "right-1 h-5 w-5", icon: "h-3 w-3" },
-  md: { box: "right-2 h-6 w-6", icon: "h-3.5 w-3.5" },
-  lg: { box: "right-2.5 h-7 w-7", icon: "h-4 w-4" },
+/** The clear button's place and box, by the field's size. */
+const CLEAR_BOX: Record<ControlSize, string> = {
+  sm: "right-1 h-5 w-5",
+  md: "right-2 h-6 w-6",
+  lg: "right-2.5 h-7 w-7",
+};
+const CLEAR_BOX_MD: Record<ControlSize, string> = {
+  sm: "md:right-1 md:h-5 md:w-5",
+  md: "md:right-2 md:h-6 md:w-6",
+  lg: "md:right-2.5 md:h-7 md:w-7",
+};
+/** The clear button's icon, by the field's size. */
+const CLEAR_ICON: Record<ControlSize, string> = { sm: "h-3 w-3", md: "h-3.5 w-3.5", lg: "h-4 w-4" };
+const CLEAR_ICON_MD: Record<ControlSize, string> = {
+  sm: "md:h-3 md:w-3",
+  md: "md:h-3.5 md:w-3.5",
+  lg: "md:h-4 md:w-4",
+};
+
+/** A search field's size tables and their `md:` twins (each `_MD` is its table from the `md` breakpoint up), for the data test. */
+export const searchSizeTables = {
+  pad: SEARCH_PAD,
+  padMd: SEARCH_PAD_MD,
+  padIcon: SEARCH_PAD_ICON,
+  padIconMd: SEARCH_PAD_ICON_MD,
+  clearBox: CLEAR_BOX,
+  clearBoxMd: CLEAR_BOX_MD,
+  clearIcon: CLEAR_ICON,
+  clearIconMd: CLEAR_ICON_MD,
 };
 
 const CLEAR_BUTTON = `absolute top-1/2 -translate-y-1/2 inline-flex cursor-pointer items-center justify-center rounded text-slate-500 hover:bg-slate-100 ${focusRing}`;
@@ -53,7 +94,7 @@ function ClearButton({
   label,
   onClear,
 }: {
-  size: ControlSize;
+  size: ControlSize | ResponsiveSize;
   label: string;
   onClear: () => void;
 }): ReactElement {
@@ -65,13 +106,13 @@ function ClearButton({
           aria-label={label}
           {...tip}
           onClick={onClear}
-          className={cx(CLEAR_BUTTON, CLEAR_SIZE[size].box)}
+          className={cx(CLEAR_BUTTON, sizeClass(CLEAR_BOX, CLEAR_BOX_MD, size))}
         >
           <svg
             viewBox="0 0 20 20"
             fill="currentColor"
             aria-hidden="true"
-            className={CLEAR_SIZE[size].icon}
+            className={sizeClass(CLEAR_ICON, CLEAR_ICON_MD, size)}
           >
             <path d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L8.94 10l-4.72 4.72a.75.75 0 1 0 1.06 1.06L10 11.06l4.72 4.72a.75.75 0 1 0 1.06-1.06L11.06 10l4.72-4.72a.75.75 0 0 0-1.06-1.06L10 8.94 5.28 4.22Z" />
           </svg>
@@ -125,7 +166,9 @@ export function SearchInput({
         }}
         className={cx(
           controlClass(size, width === "auto" ? "auto" : "full", step),
-          SEARCH_PAD[size][icon === undefined ? "plain" : "icon"],
+          icon === undefined
+            ? sizeClass(SEARCH_PAD, SEARCH_PAD_MD, size)
+            : sizeClass(SEARCH_PAD_ICON, SEARCH_PAD_ICON_MD, size),
           SEARCH_RESET,
         )}
       />

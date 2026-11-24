@@ -1,5 +1,5 @@
 import type { ComponentPropsWithoutRef, ReactElement, Ref } from "react";
-import { CONTROL_PAD, controlClass, type ControlProps, NUMERIC_VALUE } from "./control.js";
+import { controlClass, controlPad, type ControlProps, NUMERIC_VALUE } from "./control.js";
 import { cx } from "./cx.js";
 import { useTypeStep } from "./density.js";
 import { Icon } from "./Icon.js";
@@ -88,10 +88,7 @@ export function Input({
   }
   if (glyph === undefined) {
     return (
-      <input
-        {...rest}
-        className={cx(controlClass(size, width, step), CONTROL_PAD[size].x, value)}
-      />
+      <input {...rest} className={cx(controlClass(size, width, step), controlPad(size), value)} />
     );
   }
   return (
@@ -100,7 +97,7 @@ export function Input({
         {...rest}
         className={cx(
           controlClass(size, width === "auto" ? "auto" : "full", step),
-          CONTROL_PAD[size].icon,
+          controlPad(size, true),
           value,
         )}
       />
