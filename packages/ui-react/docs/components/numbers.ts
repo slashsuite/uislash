@@ -1,7 +1,32 @@
 import type { ComponentPage } from "./types";
 
-/** The pages for entering numbers: they sit in the Forms section of the rail, after Select. */
+/** The pages for choosing and entering numbers: they sit in the Forms section of the rail, after Select. */
 export const numberPages: ComponentPage[] = [
+  {
+    slug: "combobox",
+    name: "Combobox",
+    summary: "A text field that filters a list of choices as the person types.",
+    whenToUse:
+      "One choice from more items than a `Select` reads well: a country, a time zone, a teammate.",
+    pairs: ["Combobox/TimeZone"],
+    usage: {
+      do: [
+        "Give it a `label`; it draws its own label, `hint` and `error`, so it is never put in a `Field`.",
+        "`items` are a `Select`'s: `{ value, label, disabled? }`. Typing filters them by label; the chevron opens the whole list.",
+        "Keep it with `defaultValue`, or control it with `value` and `onChange(value)`; `name` posts the chosen `value`.",
+        "Say what an empty filter means in another language with `emptyLabel`.",
+        "`size` and `width` are the same choices as on `Input`. Up to a dozen choices is a `Select`, and up to five a `RadioGroup`.",
+      ],
+      dont: ["Do not make the person scroll a long `Select` for their entry."],
+    },
+    accessibility: [
+      "React Aria's combobox: the input is a `combobox` with the label as its name, and the list a `listbox` it controls.",
+      "Arrow keys move through the list, Enter picks, Escape closes it; the chevron button is out of the tab order.",
+      "A `hint` and an `error` are the field's description; an `error` marks it `aria-invalid` and is announced politely.",
+      "Inside a modal `Dialog` the list draws in the dialog, so it stays reachable.",
+    ],
+    api: ["Combobox"],
+  },
   {
     slug: "number-field",
     name: "NumberField",

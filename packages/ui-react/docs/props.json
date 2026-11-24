@@ -1482,6 +1482,127 @@
       }
     ]
   },
+  "Combobox": {
+    "name": "Combobox",
+    "description": "A text field that filters a list of choices as the person types, for a choice from more items\nthan a `Select` reads well (a country, a time zone, a teammate): React Aria's `ComboBox`. Typing\nnarrows the list by label; arrow keys move through it, Enter picks, Escape closes it. The chevron\nopens the whole list. Its value is the chosen item's `value`, posted under `name`. `label`, `hint`,\n`error`, `required` and `disabled` are a `DateField`'s; `size` and `width` an `Input`'s. Inside a\nmodal `Dialog` the list draws in the dialog. While `loading` the label is drawn and the field is a\nbone of its height.",
+    "props": [
+      {
+        "name": "defaultValue",
+        "type": "string | null",
+        "required": false,
+        "description": "The item's `value` it starts with, uncontrolled.",
+        "native": false
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "required": false,
+        "description": "Disables the field and its button.",
+        "native": false
+      },
+      {
+        "name": "emptyLabel",
+        "type": "string",
+        "required": false,
+        "default": "No matches",
+        "description": "The line the list shows when nothing matches what was typed, for an app in another language.",
+        "native": false
+      },
+      {
+        "name": "error",
+        "type": "ReactNode",
+        "required": false,
+        "description": "Marks the field invalid and shows this in red under the hint, announced politely.",
+        "native": false
+      },
+      {
+        "name": "hint",
+        "type": "ReactNode",
+        "required": false,
+        "description": "A muted line under the field that says more; it stays while an error shows under it.",
+        "native": false
+      },
+      {
+        "name": "id",
+        "type": "string",
+        "required": false,
+        "description": "The root element's `id`: an anchor, or the target of a `for` or an `aria-describedby`.",
+        "native": false
+      },
+      {
+        "name": "items",
+        "type": "readonly { value: string; label: string; disabled?: boolean }[]",
+        "required": true,
+        "description": "The choices, in order; typing filters them by label.",
+        "native": false
+      },
+      {
+        "name": "label",
+        "type": "ReactNode",
+        "required": false,
+        "description": "The field's visible label, above it. Without one, name the field with `aria-label`.",
+        "native": false
+      },
+      {
+        "name": "loading",
+        "type": "boolean",
+        "required": false,
+        "description": "The data is not here yet: an empty slot draws a bone of its shape, a filled one draws as usual.\nLeft out, the part takes the nearest loading layout's or part's; `false` opts it out inside one.",
+        "native": false
+      },
+      {
+        "name": "loadingLabel",
+        "type": "string",
+        "required": false,
+        "default": "Loading",
+        "description": "What a screen reader hears while this part is loading, when its own `loading` is set.",
+        "native": false
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "required": false,
+        "description": "Posts the chosen item's `value` in a form under this key.",
+        "native": false
+      },
+      {
+        "name": "onChange",
+        "type": "((value: string | null) => void)",
+        "required": false,
+        "description": "Called with the chosen item's `value`, or `null` when the choice is cleared.",
+        "native": false
+      },
+      {
+        "name": "required",
+        "type": "boolean",
+        "required": false,
+        "description": "Marks a choice required: the field is `aria-required`, and an empty one is invalid.",
+        "native": false
+      },
+      {
+        "name": "size",
+        "type": "Size | ResponsiveSize",
+        "required": false,
+        "default": "md",
+        "description": "`sm` is compact, `text-sm` with less padding, for dense forms and table rows; `md` is `text-base`;\n`lg` is `text-lg` with more padding, for a hero form. Under an `AppShell density=\"compact\"` each\nis one type step down, and on a touch screen a field is never under 16px.\n`{ base: \"md\", md: \"lg\" }` changes size at the `md` breakpoint (48rem), in CSS, as a `Button`'s\ndoes: give the field and the buttons in its row the same value, so the row stays aligned.",
+        "native": false
+      },
+      {
+        "name": "value",
+        "type": "string | null",
+        "required": false,
+        "description": "The chosen item's `value`, controlled, with `onChange`. `null` is nothing chosen.",
+        "native": false
+      },
+      {
+        "name": "width",
+        "type": "\"sm\" | \"md\" | \"lg\" | \"xs\" | \"auto\" | \"fill\" | \"full\"",
+        "required": false,
+        "description": "`full` (default) fills the parent; `fill` grows to fill the room left in a row beside other items (it can shrink to nothing, so buttons stay on the line); `xs`, `sm`, `md`, `lg` are fixed; `auto` adds no width class, so the control is as wide as the browser makes it.",
+        "native": false
+      }
+    ]
+  },
   "Container": {
     "name": "Container",
     "description": "The one content edge: every page's width and side padding. This file is the only place they are\ndefined, so a header, a page and a footer inside a Container start at the same x.",

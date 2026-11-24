@@ -134,7 +134,7 @@ See [`packages/ui-react/README.md`](packages/ui-react/README.md#dates).
 
 ## Numbers
 
-`NumberField` is a number with minus and plus buttons, for a quantity or an amount: `minValue`, `maxValue` and `step` bound it, and `formatOptions` writes it as a currency or a percent in the app's locale. `Slider` is a native range in a `Field` for a level set by eye, its value written beside the track.
+`NumberField` is a number with minus and plus buttons, for a quantity or an amount: `minValue`, `maxValue` and `step` bound it, and `formatOptions` writes it as a currency or a percent in the app's locale. `Slider` is a native range in a `Field` for a level set by eye, its value written beside the track. `Combobox` is a text field that filters a long list of `Select` items as the person types.
 
 ## Light and dark
 

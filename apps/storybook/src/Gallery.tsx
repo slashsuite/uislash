@@ -12,6 +12,7 @@ import {
   fromISODate,
   fromISODateTime,
   Markdown,
+  Combobox,
   NumberField,
   Overline,
   Pagination,
@@ -175,6 +176,15 @@ export const gallerySections: GallerySection[] = [
           <DateField label="Visited on" hint="The day you were there." />
           <DateTimeField label="Arrives at" defaultValue={fromISODateTime("2026-11-29T14:05")} />
           <NumberField label="Quantity" defaultValue={2} minValue={1} width="sm" />
+          <Combobox
+            label="Country"
+            defaultValue="nl"
+            items={[
+              { value: "nl", label: "Netherlands" },
+              { value: "nz", label: "New Zealand" },
+              { value: "za", label: "South Africa" },
+            ]}
+          />
           <Field label="Overlay opacity">
             <Slider
               defaultValue={0.6}

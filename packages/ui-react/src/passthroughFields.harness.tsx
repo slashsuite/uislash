@@ -11,6 +11,7 @@ export function fieldCases(a: Record<string, string>): Record<string, () => Reac
     DateTimeField: () => (
       <ui.DateTimeField label="At" defaultValue={new CalendarDateTime(2026, 1, 2, 9, 30)} {...a} />
     ),
+    Combobox: () => <ui.Combobox label="Pick" items={[]} {...a} />,
     NumberField: () => <ui.NumberField label="Count" {...a} />,
     Slider: () => <ui.Slider aria-label="Level" {...a} />,
   };
