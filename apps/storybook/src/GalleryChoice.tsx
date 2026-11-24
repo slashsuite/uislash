@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Disclosure, Radio, RadioGroup, Switch, Text } from "@slashsuite/ui-react";
+import { Checkbox, Disclosure, Radio, RadioGroup, Switch, Text } from "@slashsuite/ui-react";
 
-/** The Switch (off, on, a hint, busy, disabled, bare), the RadioGroup (a hint, an error) and the Disclosure (closed, open, `bordered`) of the Gallery. */
+/** The Switch (off, on, a hint, busy, disabled, bare), the RadioGroup (a hint, an error, cards), a card Checkbox and the Disclosure (closed, open, `bordered`) of the Gallery. */
 export function GalleryChoice() {
   const [live, setLive] = useState(true);
   const [staging, setStaging] = useState(false);
@@ -34,6 +34,11 @@ export function GalleryChoice() {
         <Radio value="vintage" label="Vintage" />
         <Radio value="books" label="Books" />
       </RadioGroup>
+      <RadioGroup label="Delivery" variant="card" defaultValue="standard">
+        <Radio value="standard" label="Standard" hint="Three to five working days." />
+        <Radio value="express" label="Express" hint="Next working day." />
+      </RadioGroup>
+      <Checkbox variant="card" label="Weekly summary" hint="One email on Mondays." defaultChecked />
       <div className="flex flex-col">
         <Disclosure summary="Override trail" defaultOpen>
           <Text>Three overrides, the latest on Tuesday.</Text>

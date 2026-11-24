@@ -52,6 +52,30 @@ export const WithDescriptions: S = {
     </RadioGroup>
   ),
 };
+/** `variant="card"` makes each radio a bordered card: its label the title, its hint the description, the chosen one with an accent edge. */
+export const Cards: S = {
+  render: () => (
+    <div className="w-96">
+      <RadioGroup label="Delivery" variant="card" defaultValue="standard" name="delivery">
+        <Radio value="standard" label="Standard" hint="Three to five working days. Free over 40." />
+        <Radio value="express" label="Express" hint="Next working day if you order by 2pm." />
+        <Radio value="collect" label="Collect in store" hint="Ready in two hours." />
+        <Radio value="locker" label="Parcel locker" hint="Not in your area yet." disabled />
+      </RadioGroup>
+    </div>
+  ),
+};
+/** A card group with an `error` red-edges every card. */
+export const CardsWithError: S = {
+  render: () => (
+    <div className="w-96">
+      <RadioGroup label="Plan" variant="card" error="Choose a plan to continue." size="sm">
+        <Radio value="free" label="Free" hint="One shop, ten listings." />
+        <Radio value="pro" label="Pro" hint="Unlimited shops and listings." />
+      </RadioGroup>
+    </div>
+  ),
+};
 /** An `error` is a red line under the options, announced when it appears; it marks every circle red. */
 export const WithError: S = {
   render: () => (

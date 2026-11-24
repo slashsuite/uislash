@@ -1181,7 +1181,7 @@
   },
   "Checkbox": {
     "name": "Checkbox",
-    "description": "A checkbox with its label. It is a real `<input type=\"checkbox\">`, drawn by the library (an\nempty outlined box, then a filled accent one with a check mark) so it reads the same in every\ntheme and browser. Every prop but the label goes on the input, and `ref` reaches it.\n`size=\"sm\"` is `text-xs` and a smaller box, for a dense row; `size=\"lg\"` is `text-base` and a\nlarger box. Leave `label` out for a bare box in a table cell, and name it with `aria-label`. The\nbox sits on the label's first line, so a label that wraps reads from the box. `hint` is a muted\nline under the label that says more, like a `Field`'s; `error` adds a red line under it, with an alert\nicon, and makes the box `aria-invalid` and red-edged. The note is the box's `aria-describedby`.\n`onChange` gets the new checked state; take `checked` with it, or `defaultChecked` alone.\n`indeterminate` draws a dash for a select-all box over a partly chosen list. Under a finger the\nhit area grows to 44px.\nWhile `loading` the label is drawn and the box is a bone of its size.",
+    "description": "A checkbox with its label. It is a real `<input type=\"checkbox\">`, drawn by the library (an\nempty outlined box, then a filled accent one with a check mark) so it reads the same in every\ntheme and browser. Every prop but the label goes on the input, and `ref` reaches it.\n`size=\"sm\"` is `text-xs` and a smaller box, for a dense row; `size=\"lg\"` is `text-base` and a\nlarger box. Leave `label` out for a bare box in a table cell, and name it with `aria-label`. The\nbox sits on the label's first line, so a label that wraps reads from the box. `hint` is a muted\nline under the label that says more, like a `Field`'s; `error` adds a red line under it, with an alert\nicon, and makes the box `aria-invalid` and red-edged. The note is the box's `aria-describedby`.\n`onChange` gets the new checked state; take `checked` with it, or `defaultChecked` alone.\n`indeterminate` draws a dash for a select-all box over a partly chosen list. `variant=\"card\"`\ndraws it as an option card: a bordered box with the label as its title and the hint under it. Under a finger the\nhit area grows to 44px.\nWhile `loading` the label is drawn and the box is a bone of its size.",
     "props": [
       {
         "name": "disabledReason",
@@ -1254,6 +1254,14 @@
         "required": false,
         "default": "md",
         "description": "The label's text size and the box with it.",
+        "native": false
+      },
+      {
+        "name": "variant",
+        "type": "\"card\" | \"plain\"",
+        "required": false,
+        "default": "plain",
+        "description": "`plain` is the box and its words. `card` puts them in a bordered box the width of its parent,\nthe label a title and the `hint` its description: for a few options that each need a line of\nexplaining. The whole card is the click target, and a ticked one takes an accent edge.",
         "native": false
       }
     ]
@@ -4954,7 +4962,7 @@
   },
   "RadioGroup": {
     "name": "RadioGroup",
-    "description": "A named group of radios, one chosen. The `label` names the group; `hint` is a muted line under\nthe options that says more (the group's description); an `error` adds a red line with an alert\nicon under it, announced politely, and marks the group invalid. `required` puts a red asterisk\nafter the label. Give it `value` and `onChange`, or\n`defaultValue` and let it keep the choice. `name` posts the choice in a form.\nThe arrow keys move between the radios and choose, and the group is one tab stop. `size` sizes\nevery radio in the group, the same scale as a `Checkbox`. While `loading` the labels are drawn and\neach circle is a bone.",
+    "description": "A named group of radios, one chosen. The `label` names the group; `hint` is a muted line under\nthe options that says more (the group's description); an `error` adds a red line with an alert\nicon under it, announced politely, and marks the group invalid. `required` puts a red asterisk\nafter the label. Give it `value` and `onChange`, or\n`defaultValue` and let it keep the choice. `name` posts the choice in a form.\nThe arrow keys move between the radios and choose, and the group is one tab stop. `size` sizes\nevery radio in the group, the same scale as a `Checkbox`. `variant=\"card\"` draws each radio as an\noption card: a bordered box, its label the title and its hint the description, the chosen one\nwith an accent edge. While `loading` the labels are drawn and each circle is a bone.",
     "props": [
       {
         "name": "children",
@@ -5054,6 +5062,14 @@
         "type": "string",
         "required": false,
         "description": "The `value` of the chosen radio.",
+        "native": false
+      },
+      {
+        "name": "variant",
+        "type": "\"card\" | \"plain\"",
+        "required": false,
+        "default": "plain",
+        "description": "`plain` is a column of circles and their words. `card` makes each radio a bordered box the\nwidth of the group, its label a title and its `hint` the description: for a few options that\neach need a line of explaining (a plan, a delivery speed). The whole card is the click target.",
         "native": false
       }
     ]

@@ -124,6 +124,7 @@ export const forms: ComponentSection = {
           "A setting that takes effect the moment it is flipped, usually by saving it, is a `Switch`. A `Checkbox` is ticked and then submitted with the form.",
           "Choosing one of several is a `RadioGroup`, a `Select` or a `SegmentedControl`, not a row of checkboxes.",
           "Several checkboxes for one question go in a `Fieldset`.",
+          '`variant="card"` is an option card, the label its title and the `hint` its description, for a few options that each need a sentence; give every box in the `Fieldset` the same variant.',
           "Say why the box cannot change with `disabledReason`.",
         ],
         dont: ["Do not wrap a `Checkbox` in a `Field`; it is its own label."],
@@ -177,7 +178,7 @@ export const forms: ComponentSection = {
         do: [
           "Give the `RadioGroup` a `label` that names the question, and a `Radio` per option with its own `label` and a `value`.",
           "Keep the choice with `defaultValue`, or control it with `value` and `onChange(value)`. `name` posts it in a form.",
-          "A `hint` on a `Radio` is a muted line under its label, for the option that needs a sentence; a `hint` on the group is a line under the group's label.",
+          'A `hint` on a `Radio` is a muted line under its label, for the option that needs a sentence; a `hint` on the group is a line under the group\'s label. When every option needs one (a plan, a delivery speed), `variant="card"` makes each a bordered card, the label its title.',
           "An `error` on the group is a red line under the options and marks every circle red; it is the same wording rule as `Field`'s. The group draws its own label and error, so it is never put in a `Field`.",
           "`disabled` on the group disables every option; on a `Radio` it disables that one. Say why in the group's `hint`.",
           "`required` marks a choice the form cannot submit without; the group is `aria-required`.",

@@ -155,3 +155,23 @@ describe("RadioGroup hint and error", () => {
     expect(group.getAttribute("aria-invalid")).toBe("true");
   });
 });
+
+describe("RadioGroup cards", () => {
+  it("chooses an option from a click on its description", async () => {
+    const onChange = vi.fn<(value: string) => void>();
+    scope({ variant: "card", onChange });
+    await user().click(screen.getByText("Only the file you opened."));
+    expect(chosen()).toEqual([true, false, false]);
+    expect(onChange).toHaveBeenCalledExactlyOnceWith("file");
+  });
+
+  it("keeps the hint as the option's description and the arrow keys moving the choice", async () => {
+    scope({ variant: "card", defaultValue: "file" });
+    expect(
+      screen.getByRole("radio", { name: /^This file/, description: "Only the file you opened." }),
+    ).not.toBeNull();
+    await user().tab();
+    await user().keyboard("{ArrowDown}");
+    expect(chosen()).toEqual([false, true, false]);
+  });
+});
