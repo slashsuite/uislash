@@ -1,5 +1,11 @@
 import type { ReactElement, ReactNode } from "react";
-import { CONTROL_WIDTH, type ControlProps, type ControlSize, controlClass } from "./control.js";
+import {
+  CONTROL_WIDTH,
+  type ControlProps,
+  type ControlSize,
+  controlClass,
+  INVALID_EDGE_WITHIN,
+} from "./control.js";
 import { cx } from "./cx.js";
 import { useTypeStep } from "./density.js";
 import { sizeClass } from "./size.js";
@@ -98,7 +104,8 @@ export function PrefixShell({
     <div
       className={cx(
         controlClass(size, width, step),
-        "flex items-center has-aria-invalid:border-red-200 has-user-invalid:border-red-200 has-autofill:shadow-[inset_3px_0_0_0_currentColor] has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-violet-600",
+        "flex items-center has-autofill:shadow-[inset_3px_0_0_0_currentColor] has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-violet-600",
+        INVALID_EDGE_WITHIN,
         width === "auto" && "inline-flex",
         disabled && "opacity-50",
       )}

@@ -21,6 +21,7 @@ import { ErrorLine, RequiredMark } from "./Field.js";
 import type { Passthrough } from "./props.js";
 import { WaitingField } from "./fieldWait.js";
 import { type LoadingProps, useLoading } from "./skeleton.js";
+import { useFieldType } from "./density.js";
 import { DATE } from "./shownDate.js";
 import { SegmentedField } from "./SegmentedField.js";
 import { monthNames, shownIn } from "./dateLocale.js";
@@ -257,10 +258,11 @@ export function Notes({
   time?: boolean;
 }): ReactElement {
   const { locale } = useLocale();
+  const { note } = useFieldType();
   return (
     <>
       {hint ? (
-        <Text slot="description" className="text-xs text-slate-500">
+        <Text slot="description" className={cx("text-slate-500", note)}>
           {hint}
         </Text>
       ) : null}
@@ -295,7 +297,10 @@ export function fieldPad(size: Size | ResponsiveSize): string {
   return sizeClass(FIELD_SIZE, FIELD_SIZE_MD, size);
 }
 
-export const labelClass = "text-sm font-medium text-slate-700";
+/** A date field's label look at the type step in force: a `Field`'s. */
+export function useLabelClass(): string {
+  return cx(useFieldType().label, "font-medium text-slate-700");
+}
 
 /** A date field's visible label, with the required mark. */
 export function FieldLabel({
@@ -305,8 +310,9 @@ export function FieldLabel({
   label: ReactNode;
   required: boolean | undefined;
 }): ReactElement | null {
+  const look = useLabelClass();
   return label ? (
-    <Label className={labelClass}>
+    <Label className={look}>
       {label}
       <RequiredMark required={required} />
     </Label>
@@ -331,6 +337,7 @@ export function DateField({
   loadingLabel,
   ...field
 }: DateFieldProps): ReactElement {
+  const labelClass = useLabelClass();
   if (useLoading(loading).loading) {
     return (
       <WaitingField

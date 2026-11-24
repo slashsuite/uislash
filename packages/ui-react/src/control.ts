@@ -110,13 +110,24 @@ export function controlPad(size: ControlSize | ResponsiveSize, icon = false): st
 }
 
 /**
- * The edge of a control the browser itself finds invalid once the person has left it (`:user-invalid`:
- * a `required` one left empty, an `email` with no @), the same red as an `aria-invalid` one, and the
- * mark of a value the browser autofilled: a bar of the text colour inside the start edge, so
+ * The one invalid look of every control, a red edge: on a control that is `aria-invalid` (its
+ * `error` is set) and on one the browser itself finds invalid once the person has left it
+ * (`:user-invalid`: a `required` one left empty, an `email` with no @). It holds under the pointer:
+ * Tailwind orders `user-invalid:` before `hover:`, so the `hover:` pair keeps the red over the hover
+ * edge. `Checkbox`, `Switch`, `RadioGroup`, `DateField` and the text fields all draw it.
+ */
+export const INVALID_EDGE =
+  "aria-invalid:border-red-200 user-invalid:border-red-200 hover:aria-invalid:border-red-200 hover:user-invalid:border-red-200";
+
+/** `INVALID_EDGE` on a frame round the control (an `Input` with an icon or a prefix, a `FileDrop`). */
+export const INVALID_EDGE_WITHIN =
+  "has-aria-invalid:border-red-200 has-user-invalid:border-red-200 hover:has-aria-invalid:border-red-200 hover:has-user-invalid:border-red-200";
+
+/**
+ * The mark of a value the browser autofilled: a bar of the text colour inside the start edge, so
  * autofill is told by a shape and not only by the browser's own tint.
  */
-export const CONTROL_STATES =
-  "user-invalid:border-red-200 autofill:shadow-[inset_3px_0_0_0_currentColor]";
+const AUTOFILL = "autofill:shadow-[inset_3px_0_0_0_currentColor]";
 
 /** Shared look of text controls; `size` and the type `step` set the height and type, `width` the one width class. */
 export function controlClass(
@@ -128,8 +139,9 @@ export function controlClass(
     CONTROL_WIDTH[width],
     sizeClass(CONTROL_PAD_Y, CONTROL_PAD_Y_MD, size),
     controlText(size, step, true),
-    `rounded-lg border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 text-ellipsis transition hover:border-violet-400 aria-invalid:border-red-200 disabled:opacity-50 ${focusRing}`,
-    CONTROL_STATES,
+    `rounded-lg border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 text-ellipsis transition hover:border-violet-400 disabled:opacity-50 ${focusRing}`,
+    INVALID_EDGE,
+    AUTOFILL,
   ]
     .filter(Boolean)
     .join(" ");

@@ -129,3 +129,22 @@ export function controlText(
   const small = [table[base], table[wide]].some((text) => !/text-(base|lg)/.test(text));
   return `${plain}${md}${entry && small ? ` ${TOUCH_TEXT}` : ""}`;
 }
+
+/**
+ * The type of a field's words at each step: the label is the type of a `md` control (16px, 14px
+ * compact), so a label sits at the size of the text typed under it, and the notes under a control
+ * (the hint and the error) are one step below. `line` is the height of a note's first line, for the
+ * error's alert icon.
+ */
+const FIELD_TYPE: Record<"default" | TypeStep, { label: string; note: string; line: string }> = {
+  default: { label: "text-base", note: "text-sm", line: "h-5" },
+  compact: { label: "text-sm", note: "text-xs", line: "h-4" },
+};
+
+/** The field type table, for the data test. */
+export const fieldTypeTable = FIELD_TYPE;
+
+/** The type of a field's label and its notes at the step in force. */
+export function useFieldType(): { label: string; note: string; line: string } {
+  return FIELD_TYPE[useTypeStep() ?? "default"];
+}

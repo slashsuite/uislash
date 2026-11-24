@@ -1,5 +1,7 @@
 import type { ChangeEvent, ComponentPropsWithoutRef, ReactElement, ReactNode, Ref } from "react";
+import { INVALID_EDGE } from "./control.js";
 import { cx, focusRing } from "./cx.js";
+import { controlText, useTypeStep } from "./density.js";
 import { useNote, Words } from "./labelWords.js";
 import type { Unstyled } from "./props.js";
 import type { Size } from "./size.js";
@@ -8,11 +10,14 @@ import { WaitingChoice } from "./fieldWait.js";
 import { type LoadingProps, useLoading } from "./skeleton.js";
 import { useBlocked } from "./blocked.js";
 
-/** The label's gap and text, the box, and the box's drop onto the label's first line, by `size`. */
-const SIZE: Record<Size, { label: string; box: string; start: string }> = {
-  sm: { label: "gap-1.5 text-xs", box: "h-3.5 w-3.5", start: "mt-px" },
-  md: { label: "gap-2 text-sm", box: "h-4 w-4", start: "mt-0.5" },
-  lg: { label: "gap-2.5 text-base", box: "h-5 w-5", start: "mt-0.5" },
+/**
+ * The label's gap, the box, and the box's drop onto the label's first line, by `size`. The label's
+ * type is a control's of that size (`controlText`), whose line height the drop is set for.
+ */
+const SIZE: Record<Size, { gap: string; box: string; start: string }> = {
+  sm: { gap: "gap-1.5", box: "h-3.5 w-3.5", start: "mt-px" },
+  md: { gap: "gap-2", box: "h-4 w-4", start: "mt-0.5" },
+  lg: { gap: "gap-2.5", box: "h-5 w-5", start: "mt-0.5" },
 };
 
 /** The mark over a checked box: a tick, or a dash for a mixed one. */
@@ -117,6 +122,7 @@ export function Checkbox({
   loadingLabel,
   ...props
 }: CheckboxProps & LoadingProps): ReactElement {
+  const step = useTypeStep();
   if (useLoading(loading).loading) {
     const size = props.size ?? "md";
     return (
@@ -124,7 +130,7 @@ export function Checkbox({
         own={loading}
         loadingLabel={loadingLabel}
         label={props.label}
-        look={SIZE[size].label}
+        look={cx(SIZE[size].gap, controlText(size, step, false))}
         shape={cx(SIZE[size].box, props.label != null && SIZE[size].start, "rounded")}
         attrs={props}
       />
@@ -147,6 +153,7 @@ function ShownCheckbox({
   ...rest
 }: CheckboxProps): ReactElement {
   const { ids: noteIds, describedIds, invalid } = useNote(hint, error, describedBy);
+  const step = useTypeStep();
   const {
     props: guard,
     tooltip,
@@ -167,7 +174,8 @@ function ShownCheckbox({
           blocked
             ? "cursor-not-allowed opacity-50"
             : "cursor-not-allowed opacity-50 has-enabled:cursor-pointer has-enabled:opacity-100",
-          SIZE[size].label,
+          SIZE[size].gap,
+          controlText(size, step, false),
         )}
       >
         <Tick size={size} onFirstLine={label != null} mark="tick" />
@@ -178,7 +186,8 @@ function ShownCheckbox({
             SIZE[size].box,
             "shrink-0",
             label != null && SIZE[size].start,
-            "appearance-none rounded border border-slate-300 bg-white hover:border-violet-400 aria-invalid:border-red-200",
+            "appearance-none rounded border border-slate-300 bg-white hover:border-violet-400",
+            INVALID_EDGE,
             focusRing,
           )}
           aria-invalid={invalid}

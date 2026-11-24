@@ -3,7 +3,7 @@ import { buttonSizeTables } from "./Button.js";
 import { controlSizeTables } from "./control.js";
 import { fieldSizeTables } from "./DateField.js";
 import { pickerSizeTables } from "./DateFieldCalendar.js";
-import { controlText, controlTextTables } from "./density.js";
+import { controlText, controlTextTables, fieldTypeTable } from "./density.js";
 import { iconSizeTables } from "./Icon.js";
 import { iconButtonSizeTables } from "./IconButton.js";
 import { shellSizeTables } from "./InputShell.js";
@@ -79,4 +79,14 @@ describe("controlText's touch floor", () => {
   it("is left out of a control nobody types in", () => {
     expect(controlText({ base: "sm", md: "sm" }, undefined, false)).not.toContain(FLOOR);
   });
+});
+
+describe("field words", () => {
+  it.each(["default", "compact"] as const)(
+    "at the %s step, a label is the type of a md control and a note of a sm one",
+    (step) => {
+      expect(fieldTypeTable[step].label).toBe(controlTextTables.text[step].md);
+      expect(fieldTypeTable[step].note).toBe(controlTextTables.text[step].sm);
+    },
+  );
 });

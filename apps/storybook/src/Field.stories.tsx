@@ -1,5 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Field, Input, Textarea } from "@slashsuite/ui-react";
+import {
+  Checkbox,
+  DateField,
+  Field,
+  FileDrop,
+  Input,
+  Radio,
+  RadioGroup,
+  Select,
+  Switch,
+  Textarea,
+} from "@slashsuite/ui-react";
 import * as examples from "../../../packages/ui-react/docs/examples/Field.examples.js";
 
 const meta: Meta = { title: "Forms/Field" };
@@ -18,6 +29,43 @@ export const WithError: S = {
     <Field label="Display name" hint="Shown on your reviews." error="Pick a shorter name.">
       <Input />
     </Field>
+  ),
+};
+/**
+ * One invalid look: every control with an `error` has the same red edge, and keeps it under the
+ * pointer.
+ */
+export const InvalidLook: S = {
+  render: () => (
+    <div className="flex max-w-md flex-col gap-4">
+      <Field label="Input" error="Pick a shorter name.">
+        <Input />
+      </Field>
+      <Field label="Input with an icon" error="Pick a shorter name.">
+        <Input icon="search" />
+      </Field>
+      <Field label="Select" error="Choose a size.">
+        <Select
+          items={[
+            { value: "s", label: "Small" },
+            { value: "l", label: "Large" },
+          ]}
+        />
+      </Field>
+      <Field label="Textarea" error="Write a few words.">
+        <Textarea />
+      </Field>
+      <DateField label="DateField" error="Pick a date." />
+      <Checkbox label="Checkbox" error="Accept the terms." />
+      <Switch label="Switch" error="Turn it on." />
+      <RadioGroup label="RadioGroup" error="Choose one.">
+        <Radio label="One" value="one" />
+        <Radio label="Two" value="two" />
+      </RadioGroup>
+      <Field label="FileDrop" error="Add a file.">
+        <FileDrop>Drop a file</FileDrop>
+      </Field>
+    </div>
   ),
 };
 /** `required` puts a red asterisk after the label and marks the control required. */
