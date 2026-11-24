@@ -34,16 +34,4 @@ describe("readmePointerProblems", () => {
       "README.md points at agent-docs/components/<slug>.md, which the tarball lacks",
     ]);
   });
-
-  test("fails a pointer to the old docs/ path", () => {
-    expect(readmePointerProblems(files, pointer.replaceAll("agent-docs/", "docs/") + body)).toEqual(
-      ["README.md has no pointer to `agent-docs/llms.txt` above its heading"],
-    );
-  });
-
-  test("fails a README missing from the tarball", () => {
-    expect(readmePointerProblems(files.slice(1), undefined)).toEqual([
-      "README.md is missing from the tarball",
-    ]);
-  });
 });

@@ -3,8 +3,7 @@
  * `agent-docs/llms.txt`. Every `agent-docs/` path the pointer names in backticks must be in the
  * tarball; a path with a `<placeholder>` needs at least one file under the part before it.
  */
-export function readmePointerProblems(files: string[], readme: string | undefined): string[] {
-  if (readme === undefined) return ["README.md is missing from the tarball"];
+export function readmePointerProblems(files: string[], readme: string): string[] {
   const heading = readme.search(/^# /m);
   const pointer = heading === -1 ? readme : readme.slice(0, heading);
   const paths = [...pointer.matchAll(/`(agent-docs\/[^`]+)`/g)].flatMap((match) =>

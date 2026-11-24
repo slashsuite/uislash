@@ -37,9 +37,8 @@ const files = packs.flatMap((p) => p.files.map((file) => file.path));
 const index = files.includes("agent-docs/llms.txt")
   ? readFileSync(join(root, "agent-docs/llms.txt"), "utf8")
   : undefined;
-const readme = files.includes("README.md")
-  ? readFileSync(join(root, "README.md"), "utf8")
-  : undefined;
+// npm packs the README whatever `files` lists.
+const readme = readFileSync(join(root, "README.md"), "utf8");
 const problems = [
   ...packedDocsProblems(
     files,
