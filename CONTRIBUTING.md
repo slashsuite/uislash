@@ -129,6 +129,22 @@ classic compiler API for it to parse them with.
    placement that works without it. React Aria is only for the large keyboard patterns the
    platform has no element for (the date picker, the combobox, the number field), and its popup
    is portalled into the open dialog, so it is never under the dialog's top layer.
+8. **A new part lands with its first consumer.** A component added for a need ships in the same
+   change as the swap on `apps/hack-cove-site` (or a consumer app) that uses it, so the library
+   grows only from a need that is real and a part nobody uses does not wait in the package.
+9. **A card is not a choice.** `Card` and `MediaTile` have no selected state. A pick among cards is an
+   option card (`RadioGroup` or `Checkbox` with `variant="card"`), so the choice is a form value with its
+   own keyboard and its own announcement, never a highlighted link.
+
+## Items or children
+
+A component whose parts are all one shape, each a label, a value or a link, takes them as data in
+an `items` prop and draws every part itself: `Menu`, `SiteSearch`, `Breadcrumbs` and
+`SegmentedControl`. A component whose parts hold other content, so one part's layout can differ
+from the next, takes them as children parts: `Stack`, `Card` and `Table` (`TableRow`, `TableCell`).
+Do give a new component of the first kind `items` typed as an array of plain objects. Don't take
+children parts for a list of labels (a `MenuItem` child), or an `items` array for blocks of
+content, since either way a consumer can pass in what the component cannot lay out.
 
 ## Adding a theme
 

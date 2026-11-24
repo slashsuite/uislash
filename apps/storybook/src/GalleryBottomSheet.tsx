@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BottomSheet, ListRow, Pill, SectionHeading } from "@slashsuite/ui-react";
+import { BottomSheet, ListRow, Pill, SectionHeading, Stack } from "@slashsuite/ui-react";
 
 /** A BottomSheet at its first snap over a dummy full-screen view, with a header and three rows. */
 export function GalleryBottomSheet() {
@@ -18,13 +18,11 @@ export function GalleryBottomSheet() {
           </>
         }
       >
-        <ListRow trailing="0.2 km">Shop 1</ListRow>
-        <ListRow divided trailing="0.5 km">
-          Shop 2
-        </ListRow>
-        <ListRow divided trailing="0.8 km">
-          Shop 3
-        </ListRow>
+        <Stack divided>
+          <ListRow trailing="0.2 km">Shop 1</ListRow>
+          <ListRow trailing="0.5 km">Shop 2</ListRow>
+          <ListRow trailing="0.8 km">Shop 3</ListRow>
+        </Stack>
       </BottomSheet>
     </div>
   );

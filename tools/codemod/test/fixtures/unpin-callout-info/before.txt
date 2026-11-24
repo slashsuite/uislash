@@ -1,0 +1,7 @@
+import { Callout } from "@hackcove/ui-react";
+
+export const view = (
+  <Callout tone="info" title="Heads up">
+    Note
+  </Callout>
+);

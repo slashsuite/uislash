@@ -1,6 +1,6 @@
 import type { ReactElement, ReactNode } from "react";
 import { cx, focusRing } from "./cx.js";
-import type { Align } from "./tableRow.js";
+import type { CellAlign } from "./tableRow.js";
 
 /** Where a sortable column stands: ARIA's own words. `none` is a column the table is not sorted by. */
 export type TableSort = "ascending" | "descending" | "none";
@@ -24,7 +24,7 @@ function nextSort(sort: TableSort): "ascending" | "descending" {
   return sort === "ascending" ? "descending" : "ascending";
 }
 
-const JUSTIFY: Record<Align, string> = {
+const JUSTIFY: Record<CellAlign, string> = {
   start: "justify-start",
   center: "justify-center",
   end: "justify-end",
@@ -51,7 +51,7 @@ export function SortButton({
   onSort,
   align,
   children,
-}: SortProps & { align: Align; children: ReactNode }): ReactElement {
+}: SortProps & { align: CellAlign; children: ReactNode }): ReactElement {
   return (
     <button
       type="button"

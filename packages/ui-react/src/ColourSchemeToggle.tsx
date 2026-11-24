@@ -86,7 +86,7 @@ const never = (): (() => void) => () => {};
  * markup, the hydrating client and the `<html>` class agree; persist a change from `onChange`.
  * The icon and the button's accessible name follow the class on `<html>` through CSS (the name is
  * two visually hidden "Switch to …" spans, one hidden by `display:none`), so even without `defaultValue`
- * a dark page shows the sun and is named "Switch to light theme" from the first frame, with no
+ * a dark page shows the sun and is named `lightLabel` ("Switch to light theme") from the first frame, with no
  * script. Only the tooltip catches up once the client has hydrated.
  * `store={false}` skips `localStorage`, for an app that keeps the choice in a server cookie and
  * writes it from `onChange`. Every other button prop (`id`, `data-*`, `aria-*`) goes on the button.
@@ -97,6 +97,8 @@ export function ColourSchemeToggle({
   defaultValue,
   store = true,
   size = "md",
+  darkLabel = "Switch to dark theme",
+  lightLabel = "Switch to light theme",
   ...rest
 }: {
   /**
@@ -115,6 +117,16 @@ export function ColourSchemeToggle({
   defaultValue?: ColourScheme | undefined;
   /** Remember the choice in `localStorage`. `false` leaves persisting to `onChange`. */
   store?: boolean | undefined;
+  /**
+   * The button's accessible name and tooltip on a light page, where it switches to dark.
+   * @default Switch to dark theme
+   */
+  darkLabel?: string | undefined;
+  /**
+   * The button's accessible name and tooltip on a dark page, where it switches to light.
+   * @default Switch to light theme
+   */
+  lightLabel?: string | undefined;
 } & Unstyled<
   Omit<
     ComponentPropsWithoutRef<"button">,
@@ -132,8 +144,9 @@ export function ColourSchemeToggle({
     () => false,
   );
   const next: ColourScheme = scheme === "dark" ? "light" : "dark";
+  const nextLabel = next === "dark" ? darkLabel : lightLabel;
   return (
-    <Tipped text={hydrated ? `Switch to ${next} theme` : undefined} describes={false} own={rest}>
+    <Tipped text={hydrated ? nextLabel : undefined} describes={false} own={rest}>
       {(tip) => (
         <button
           type="button"
@@ -150,10 +163,10 @@ export function ColourSchemeToggle({
           {sun}
           {moon}
           <span className="sr-only" data-scheme-name="dark">
-            Switch to dark theme
+            {darkLabel}
           </span>
           <span className="sr-only" data-scheme-name="light">
-            Switch to light theme
+            {lightLabel}
           </span>
         </button>
       )}

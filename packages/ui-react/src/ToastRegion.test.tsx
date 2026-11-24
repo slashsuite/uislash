@@ -12,7 +12,12 @@ import { type Toast, ToastRegion } from "./ToastRegion.js";
 // (toast-region.spec.ts); here a fired `animationend` stands in for its end, an event no person
 // makes, as the harness allows.
 
-const SAVED: Toast = { id: "saved", tone: "positive", title: "Saved", body: "Your draft is safe." };
+const SAVED: Toast = {
+  id: "saved",
+  tone: "positive",
+  title: "Saved",
+  description: "Your draft is safe.",
+};
 
 /** A button, then two toasts that stay, held in state so Dismiss removes them. */
 function TwoToasts() {
@@ -24,19 +29,19 @@ function TwoToasts() {
     <>
       <button type="button">Save</button>
       <ToastRegion
-        toasts={toasts}
+        items={toasts}
         onDismiss={(id) => setToasts((all) => all.filter((t) => t.id !== id))}
       />
     </>
   );
 }
 
-/** A Dialog that may be open, over a region showing `toasts`. */
-function Shown({ open, toasts }: { open: boolean; toasts: Toast[] }) {
+/** A Dialog that may be open, over a region showing `items`. */
+function Shown({ open, items }: { open: boolean; items: Toast[] }) {
   return (
     <>
       {open && <Dialog title="Rename" onClose={() => undefined} />}
-      <ToastRegion toasts={toasts} onDismiss={() => undefined} />
+      <ToastRegion items={items} onDismiss={() => undefined} />
     </>
   );
 }
@@ -63,27 +68,45 @@ const hideEnd = (title: string) => animationEnd(toastOf(title));
 
 describe("ToastRegion", () => {
   it("keeps a named region with an empty status in the page when there are no toasts", () => {
-    render(<ToastRegion toasts={[]} onDismiss={() => undefined} />);
+    render(<ToastRegion items={[]} onDismiss={() => undefined} />);
     const region = screen.getByRole("region", { name: "Notifications" });
     const status = within(region).getByRole("status");
     expect(status.textContent).toBe("");
     expect(status.getAttribute("aria-live")).toBe("polite");
   });
 
-  it("reads a toast's title and body in the status, once, and takes them out when it goes", () => {
-    const { rerender } = render(<ToastRegion toasts={[SAVED]} onDismiss={() => undefined} />);
+  it("reads a toast's title and description in the status, once, and takes them out when it goes", () => {
+    const { rerender } = render(<ToastRegion items={[SAVED]} onDismiss={() => undefined} />);
     const status = screen.getByRole("status");
     expect(status.textContent).toBe("Saved. Your draft is safe.");
-    rerender(<ToastRegion toasts={[]} onDismiss={() => undefined} />);
+    rerender(<ToastRegion items={[]} onDismiss={() => undefined} />);
     expect(status.textContent).toBe("");
+  });
+
+  it("reads a danger toast through the alert, not the polite status", () => {
+    const { rerender } = render(
+      <ToastRegion
+        items={[
+          {
+            id: "x",
+            tone: "danger",
+            title: "Not saved",
+            description: "The server did not answer.",
+          },
+        ]}
+        onDismiss={() => undefined}
+      />,
+    );
+    expect(screen.getByRole("alert").textContent).toBe("Not saved. The server did not answer.");
+    expect(screen.getByRole("status").textContent).toBe("");
+    rerender(<ToastRegion items={[]} onDismiss={() => undefined} />);
+    expect(screen.getByRole("alert").textContent).toBe("");
   });
 
   it("reads only the words of a toast with actions, then Actions available, never its buttons", () => {
     render(
       <ToastRegion
-        toasts={[
-          { id: "u", title: "Update available", actions: <Button size="sm">Reload</Button> },
-        ]}
+        items={[{ id: "u", title: "Update available", actions: <Button size="sm">Reload</Button> }]}
         onDismiss={() => undefined}
         actionsLabel="Choose an action"
       />,
@@ -109,11 +132,11 @@ describe("ToastRegion", () => {
 
   it("holds toasts back while a Dialog is open, and shows and reads them once it closes", async () => {
     stubDialog();
-    const { rerender } = render(<Shown open toasts={[]} />);
-    rerender(<Shown open toasts={[SAVED]} />);
+    const { rerender } = render(<Shown open items={[]} />);
+    rerender(<Shown open items={[SAVED]} />);
     expect(screen.queryByText("Saved")).toBeNull();
     expect(screen.getByRole("status").textContent).toBe("");
-    await act(async () => rerender(<Shown open={false} toasts={[SAVED]} />));
+    await act(async () => rerender(<Shown open={false} items={[SAVED]} />));
     expect(screen.getByText("Saved")).toBeTruthy();
     expect(screen.getByRole("status").textContent).toBe("Saved. Your draft is safe.");
   });
@@ -121,9 +144,9 @@ describe("ToastRegion", () => {
   it("keeps a toast already shown when a Dialog opens, and holds back only the new one", () => {
     stubDialog();
     const late: Toast = { id: "late", tone: "danger", title: "Not sent" };
-    const { rerender } = render(<Shown open={false} toasts={[SAVED]} />);
-    rerender(<Shown open toasts={[SAVED]} />);
-    rerender(<Shown open toasts={[SAVED, late]} />);
+    const { rerender } = render(<Shown open={false} items={[SAVED]} />);
+    rerender(<Shown open items={[SAVED]} />);
+    rerender(<Shown open items={[SAVED, late]} />);
     expect(screen.getByText("Saved")).toBeTruthy();
     expect(screen.queryByText("Not sent")).toBeNull();
     expect(screen.getByRole("status").textContent).toBe("Saved. Your draft is safe.");
@@ -131,14 +154,14 @@ describe("ToastRegion", () => {
 
   it("calls onDismiss once with the id when Dismiss is clicked", async () => {
     const onDismiss = vi.fn<(id: string) => void>();
-    render(<ToastRegion toasts={[SAVED]} onDismiss={onDismiss} />);
+    render(<ToastRegion items={[SAVED]} onDismiss={onDismiss} />);
     await user().click(screen.getByRole("button", { name: "Dismiss" }));
     expect(onDismiss.mock.calls).toEqual([["saved"]]);
   });
 
   it("calls onDismiss when a positive toast with no actions ends its hide", () => {
     const onDismiss = vi.fn<(id: string) => void>();
-    render(<ToastRegion toasts={[SAVED]} onDismiss={onDismiss} />);
+    render(<ToastRegion items={[SAVED]} onDismiss={onDismiss} />);
     hideEnd("Saved");
     expect(onDismiss.mock.calls).toEqual([["saved"]]);
   });
@@ -147,7 +170,7 @@ describe("ToastRegion", () => {
     const onDismiss = vi.fn<(id: string) => void>();
     render(
       <ToastRegion
-        toasts={[
+        items={[
           { id: "w", tone: "warn", title: "Offline" },
           { id: "d", tone: "danger", title: "Not saved" },
           {
@@ -171,9 +194,7 @@ describe("ToastRegion", () => {
     const onDismiss = vi.fn<(id: string) => void>();
     render(
       <ToastRegion
-        toasts={[
-          { id: "u", title: "Update available", actions: <Button size="sm">Reload</Button> },
-        ]}
+        items={[{ id: "u", title: "Update available", actions: <Button size="sm">Reload</Button> }]}
         onDismiss={onDismiss}
       />,
     );
@@ -181,9 +202,9 @@ describe("ToastRegion", () => {
     expect(onDismiss).not.toHaveBeenCalled();
   });
 
-  it("draws only what is in toasts: a toast left out is gone", () => {
-    const { rerender } = render(<ToastRegion toasts={[SAVED]} onDismiss={() => undefined} />);
-    rerender(<ToastRegion toasts={[]} onDismiss={() => undefined} />);
+  it("draws only what is in items: a toast left out is gone", () => {
+    const { rerender } = render(<ToastRegion items={[SAVED]} onDismiss={() => undefined} />);
+    rerender(<ToastRegion items={[]} onDismiss={() => undefined} />);
     expect(screen.queryByText("Saved")).toBeNull();
     expect(screen.getByRole("region", { name: "Notifications" })).toBeTruthy();
   });
@@ -191,7 +212,7 @@ describe("ToastRegion", () => {
   it("takes label and dismissLabel in place of the default names", () => {
     render(
       <ToastRegion
-        toasts={[SAVED]}
+        items={[SAVED]}
         onDismiss={() => undefined}
         label="Meldings"
         dismissLabel="Maak toe"
@@ -202,7 +223,7 @@ describe("ToastRegion", () => {
   });
 
   it("defaults a toast to the neutral tone, which hides on its own", () => {
-    render(<ToastRegion toasts={[{ id: "c", title: "Copied" }]} onDismiss={() => undefined} />);
+    render(<ToastRegion items={[{ id: "c", title: "Copied" }]} onDismiss={() => undefined} />);
     expect(toastOf("Copied").hasAttribute("data-toast-hide")).toBe(true);
   });
 });

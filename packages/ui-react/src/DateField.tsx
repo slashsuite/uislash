@@ -84,6 +84,11 @@ type CalendarNames = {
    * @default Year
    */
   yearLabel?: string | undefined;
+  /**
+   * The calendar's footer button that empties the field, for an app in another language.
+   * @default Clear
+   */
+  clearLabel?: string | undefined;
 };
 
 export type DateFieldProps = FieldProps &
@@ -98,6 +103,8 @@ export type DateFieldProps = FieldProps &
         monthLabel?: undefined;
         /** Only a `calendar` field takes `yearLabel`. */
         yearLabel?: undefined;
+        /** Only a `calendar` field takes `clearLabel`. */
+        clearLabel?: undefined;
       }
     | ({
         calendar: true;
@@ -333,6 +340,7 @@ export function DateField({
   defaultOpen,
   monthLabel = "Month",
   yearLabel = "Year",
+  clearLabel = "Clear",
   loading,
   loadingLabel,
   ...field
@@ -354,7 +362,7 @@ export function DateField({
     return (
       <CalendarDateField
         {...field}
-        labels={{ monthLabel, yearLabel }}
+        labels={{ monthLabel, yearLabel, clearLabel }}
         {...(defaultOpen === undefined ? {} : { defaultOpen })}
       />
     );

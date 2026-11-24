@@ -55,14 +55,14 @@ export const feedback: ComponentSection = {
       usage: {
         do: [
           "Mount one `ToastRegion` at the root of the app, beside `AppShell`, and hold the list in state: add a `Toast` to show it, and drop it by `id` in `onDismiss`.",
-          "Each toast is a `title`, an optional `body` line and a `tone` (`neutral`, the default, `info`, `positive`, `warn` or `danger`), on the same surfaces as a `Callout`.",
+          "Each toast is a `title`, an optional `description` line and a `tone` (`neutral`, the default, `info`, `positive`, `warn` or `danger`), on the same surfaces as a `Callout`.",
           'A `neutral`, `info` or `positive` toast with no `actions` leaves on its own after eight seconds, paused while the pointer is over it or focus is in it. One action goes in `actions` as a `Button size="sm"`; a toast with `actions`, or a `warn` or `danger` one, stays until it is dismissed.',
           "A toast raised while a `Dialog`, `Drawer` or `Lightbox` is open waits: it shows, is read and starts its hide only once the modal closes.",
           "Anything the reader must keep, such as a token shown once, is a `Callout` in the page. A failure that must be answered is a `Dialog`, and a field's error is its `Field`'s.",
         ],
       },
       accessibility: [
-        'The region is a landmark named by `label` ("Notifications") with a polite `role="status"` inside, in the page before the first toast. Each new toast is read once, as text (its title and body), and the focus does not move.',
+        'The region is a landmark named by `label` ("Notifications") with a polite `role="status"` inside, in the page before the first toast. Each new toast is read once, as text (its title and description), and the focus does not move. A `danger` toast is read through a `role="alert"` beside it instead, so it interrupts.',
         'A toast with `actions` is read with `actionsLabel` ("Actions available") after it, never with the buttons themselves, so a reader knows to go to the region.',
         "Each toast's close button is named by `dismissLabel` (\"Dismiss\"). Dismissing it moves the focus to the next toast's close button, or back to where it was before the region took it.",
         "The hide pauses on hover and on focus, and under `prefers-reduced-motion` it still leaves at the same moment, with no fade.",
@@ -101,6 +101,7 @@ export const feedback: ComponentSection = {
         "The actions are ordinary buttons and links, in reading order after the explanation.",
       ],
       api: ["EmptyState"],
+      types: ["EmptySize"],
     },
     loadingPage,
     ...overlayPages,

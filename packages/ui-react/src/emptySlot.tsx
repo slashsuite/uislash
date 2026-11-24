@@ -8,6 +8,7 @@ import { Children, createContext, type ReactElement, type ReactNode, useContext 
    a table, a timeline or a list; `md`, the titled block, on a page, a grid of cards or a chat.
 */
 
+/** An `EmptyState`'s size: `md` a block with its heading, `sm` one muted line inside a card or a cell. */
 export type EmptySize = "sm" | "md";
 
 const EmptySizeContext = createContext<EmptySize | undefined>(undefined);

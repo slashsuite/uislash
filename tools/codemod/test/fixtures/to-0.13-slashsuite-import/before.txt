@@ -1,0 +1,7 @@
+import { Cluster, DocsLayout } from "@slashsuite/ui-react";
+
+export const view = (
+  <DocsLayout title="Guide" nav={nav} navLabel="Pages">
+    <Cluster wrap={false}>x</Cluster>
+  </DocsLayout>
+);

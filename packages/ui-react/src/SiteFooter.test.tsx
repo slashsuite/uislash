@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from "vitest";
 import { AppShell } from "./AppShell.js";
+import { LinkProvider } from "./link.js";
 import { render, screen } from "./render.harness.js";
 import { SiteFooter } from "./SiteFooter.js";
 
@@ -8,6 +9,17 @@ describe("SiteFooter", () => {
   it("links the brand home by default, named by brandLabel", () => {
     render(<SiteFooter brand={<b>PS</b>} brandLabel="PixelSlash home" />);
     expect(screen.getByRole("link", { name: "PixelSlash home" }).getAttribute("href")).toBe("/");
+  });
+
+  it("links the brand to the LinkProvider's home when brandHref is left out", () => {
+    render(
+      <LinkProvider home="https://example.com/">
+        <SiteFooter brand="PixelSlash" />
+      </LinkProvider>,
+    );
+    expect(screen.getByRole("link", { name: "PixelSlash" }).getAttribute("href")).toBe(
+      "https://example.com/",
+    );
   });
 
   it("links the brand to brandHref", () => {

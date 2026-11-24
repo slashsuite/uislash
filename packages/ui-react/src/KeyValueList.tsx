@@ -12,7 +12,8 @@ import {
 } from "./skeleton.js";
 import { type TextTone, textToneClass } from "./typography.js";
 
-type KeyValueAlign = "end" | "start";
+/** Where a `KeyValueList`'s values sit: `end`, across from their labels, or `start`, under them. */
+export type KeyValueAlign = "end" | "start";
 
 const AlignContext = createContext<KeyValueAlign>("end");
 

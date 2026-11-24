@@ -65,17 +65,17 @@ export const DontLabels = () => (
   </Stack>
 );
 
-/** A Card with nothing to show yet holds one muted line, `Text tone="muted"`. */
+/** A Card with nothing to show yet holds an `EmptyState size="sm"`: one muted line that says the card is empty. */
 export const DoEmptyNote = () => (
   <Card title="Done" count={0}>
-    <Text tone="muted">Nothing finished yet.</Text>
+    <EmptyState size="sm" title="Nothing finished yet." />
   </Card>
 );
 
-/** A bare `<p>` in a Card has its own colour and size, so it drifts from every other empty Card: use `Text tone="muted"`. */
+/** A muted `Text` looks like the empty line but is only words: it is not an empty state. Use `EmptyState size="sm"`. */
 export const DontEmptyNote = () => (
   <Card title="Done" count={0}>
-    <p>Nothing finished yet.</p>
+    <Text tone="muted">Nothing finished yet.</Text>
   </Card>
 );
 

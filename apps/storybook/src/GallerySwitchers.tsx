@@ -21,7 +21,9 @@ export function GallerySwitchers() {
         value={tab}
         onChange={setTab}
       />
-      <Text role="tabpanel">Showing {tab}.</Text>
+      <div role="tabpanel">
+        <Text>Showing {tab}.</Text>
+      </div>
       <Tabs
         label="Assets"
         items={[

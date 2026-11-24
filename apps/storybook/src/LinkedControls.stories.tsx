@@ -27,20 +27,22 @@ export const ListRowWithControls: S = {
   render: () => (
     <div className="max-w-md">
       <Card flush>
-        <ListRow
-          href="#grace"
-          trailing={
-            <Cluster as="span">
-              <TextLink href="#grace-notes">Notes</TextLink>
-              <Button size="sm">Accept</Button>
-            </Cluster>
-          }
-        >
-          Grace Hopper
-        </ListRow>
-        <ListRow divided href="#ada" trailing={<Pill tone="warn">pending</Pill>}>
-          Ada Lovelace
-        </ListRow>
+        <Stack divided>
+          <ListRow
+            href="#grace"
+            trailing={
+              <Cluster as="span">
+                <TextLink href="#grace-notes">Notes</TextLink>
+                <Button size="sm">Accept</Button>
+              </Cluster>
+            }
+          >
+            Grace Hopper
+          </ListRow>
+          <ListRow href="#ada" trailing={<Pill tone="warn">pending</Pill>}>
+            Ada Lovelace
+          </ListRow>
+        </Stack>
       </Card>
     </div>
   ),
@@ -53,21 +55,22 @@ function SelectingRows() {
   return (
     <Stack>
       <Card flush>
-        {shops.map((shop, index) => (
-          <ListRow
-            key={shop}
-            divided={index > 0}
-            selected={selected === shop}
-            onClick={() => setSelected(shop)}
-            trailing={
-              <Button size="sm" variant="outline" href={`/shop-${shop.toLowerCase()}`}>
-                View
-              </Button>
-            }
-          >
-            {shop}
-          </ListRow>
-        ))}
+        <Stack divided>
+          {shops.map((shop) => (
+            <ListRow
+              key={shop}
+              selected={selected === shop}
+              onClick={() => setSelected(shop)}
+              trailing={
+                <Button size="sm" variant="outline" href={`/shop-${shop.toLowerCase()}`}>
+                  View
+                </Button>
+              }
+            >
+              {shop}
+            </ListRow>
+          ))}
+        </Stack>
       </Card>
       <Text tone="muted">Selected: {selected ?? "none"}</Text>
     </Stack>

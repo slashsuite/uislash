@@ -4,6 +4,7 @@ import { FoldedColumn } from "./foldedColumn.js";
 import { renderLink } from "./link.js";
 import { PageHeaderContent } from "./PageHeader.js";
 import type { Passthrough } from "./props.js";
+import type { LoadingProps } from "./skeleton.js";
 import { useScrollEdges } from "./scrollEdges.js";
 import { SidebarLayout } from "./SidebarLayout.js";
 import { Stack } from "./Stack.js";
@@ -22,18 +23,13 @@ export type DocsHeading = { id: string; label: string; level: 2 | 3 };
 export type DocsNeighbour = { label: string; href: string };
 
 /** The rail: each group's title over a vertical list of its pages, the groups `md` apart. */
-function DocsNav({ nav, navLabel }: { nav: DocsNavGroup[]; navLabel: string }): ReactElement {
+function DocsNav({ nav, label }: { nav: DocsNavGroup[]; label: string }): ReactElement {
   return (
     <Stack gap="md">
       {nav.map((group, index) => (
         <Stack key={group.title ?? `group-${index}`} gap="xs">
           {group.title !== undefined && <Overline>{group.title}</Overline>}
-          <Tabs
-            orientation="vertical"
-            size="sm"
-            label={group.title ?? navLabel}
-            items={group.items}
-          />
+          <Tabs orientation="vertical" size="sm" label={group.title ?? label} items={group.items} />
         </Stack>
       ))}
     </Stack>
@@ -135,8 +131,11 @@ function DocsPager({
 type DocsLayoutProps = {
   /** The docs nav, in reading order: each group's title over a vertical pill list of its pages. */
   nav: DocsNavGroup[];
-  /** Names the nav's landmark, and the disclosure it folds behind below `md` ("Docs", "All components"). */
-  navLabel: string;
+  /**
+   * Names the rail's landmark, and the disclosure it folds behind below `md` ("Docs", "All
+   * components"), as `SidebarLayout`'s `asideLabel` does.
+   */
+  asideLabel: string;
   /** The page's title, its `h1`. */
   title: ReactNode;
   /** The line under the title (a `Lead`). */
@@ -168,11 +167,12 @@ type DocsLayoutProps = {
   nextLabel?: string | undefined;
   /** The article. Wrap long text in a `Prose`. */
   children: ReactNode;
-} & Passthrough;
+} & LoadingProps &
+  Passthrough;
 
 /**
  * A docs page: a `SidebarLayout` whose rail is the docs `nav` (each group's title over its links,
- * folded behind a disclosure named `navLabel` below `md`), and a canvas of the page's title, an
+ * folded behind a disclosure named `asideLabel` below `md`), and a canvas of the page's title, an
  * "On this page" list of its `contents`, the article and the previous and next links.
  *
  * The contents list is rendered once: from `xl` a 12rem column right of the article that sticks
@@ -180,10 +180,14 @@ type DocsLayoutProps = {
  * being read; it is a value the page passes (a site that follows the reader computes it), with no
  * scroll spy inside. The previous and next links are links, not cards, so they add no heading to
  * the page's outline.
+ *
+ * While `loading` the canvas waits, as in `SidebarLayout`: an empty title is a bone and what the
+ * article holds draws its own bones; the nav, the contents list and the previous and next links are
+ * navigation, drawn as themselves. The layout owns the wait.
  */
 export function DocsLayout({
   nav,
-  navLabel,
+  asideLabel,
   title,
   description,
   breadcrumbs,
@@ -201,8 +205,8 @@ export function DocsLayout({
   return (
     <SidebarLayout
       {...rest}
-      asideLabel={navLabel}
-      aside={<DocsNav nav={nav} navLabel={navLabel} />}
+      asideLabel={asideLabel}
+      aside={<DocsNav nav={nav} label={asideLabel} />}
     >
       <div
         className={cx(

@@ -22,6 +22,11 @@ export type FieldDialogProps = {
   submit: string;
   /** What the submit button says while `onSubmit` runs. */
   busyLabel: string;
+  /**
+   * The button that closes the dialog without submitting, for an app in another language.
+   * @default Cancel
+   */
+  cancelLabel?: string | undefined;
   /** Gets the trimmed value. Resolving closes the dialog; a rejection shows its message in it. */
   onSubmit: (value: string) => Promise<unknown>;
   /** Called when the dialog closes: Cancel, Esc, the backdrop, or a resolved `onSubmit`. */
@@ -71,6 +76,7 @@ export function FieldDialog({
   emptyReason,
   submit,
   busyLabel,
+  cancelLabel = "Cancel",
   onSubmit,
   onClose,
   ...rest
@@ -90,7 +96,7 @@ export function FieldDialog({
             variant="ghost"
             onClick={(event) => event.currentTarget.closest("dialog")?.close()}
           >
-            Cancel
+            {cancelLabel}
           </Button>
           <Button type="submit" busy={busy && (busyLabel || true)}>
             {submit}

@@ -23,7 +23,7 @@ export const pages: ComponentSection = {
           'Every page but `Maintenance` links "Back to home", to `LinkProvider`\'s `home` (`/` by default). `Maintenance` has none: home is the site that is down.',
           'Say where home is once, on the provider (`<LinkProvider home="/app">`).',
           '`onRetry` adds a "Try again" button on `ErrorPage` and `Offline`; `actions` replaces it with the buttons that fit, and the home link turns outline beside them.',
-          'A button worded differently goes in `actions`: it comes first, and "Back to home" stays beside it. There is no label prop.',
+          'Another button goes in `actions`: it comes first, and "Back to home" stays beside it. `homeLabel` (default "Back to home"), `retryLabel` (default "Try again") and `ErrorPage`\'s `detailLabel` (default "Error") only reword the built-in ones, for an app in another language.',
           'A part of a page that failed to load is not an `ErrorPage`: it is a `Callout tone="danger"` with a title and a retry `Button` in its `actions`, and the rest of the page stays.',
           "Render one as the content of an `AppShell`, or on its own in a `Container`.",
         ],

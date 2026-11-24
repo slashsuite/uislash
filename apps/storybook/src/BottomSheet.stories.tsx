@@ -8,6 +8,7 @@ import {
   Pill,
   SectionHeading,
   Text,
+  Stack,
 } from "@slashsuite/ui-react";
 import * as examples from "../../../packages/ui-react/docs/examples/BottomSheet.examples.js";
 
@@ -26,12 +27,15 @@ const SHOPS = Array.from({ length: 20 }, (_, i) => ({
   km: (0.2 + i * 0.3).toFixed(1),
 }));
 
-const rows = (count: number) =>
-  SHOPS.slice(0, count).map((shop, i) => (
-    <ListRow key={shop.name} divided={i > 0} secondary={shop.street} trailing={`${shop.km} km`}>
-      {shop.name}
-    </ListRow>
-  ));
+const rows = (count: number) => (
+  <Stack divided>
+    {SHOPS.slice(0, count).map((shop) => (
+      <ListRow key={shop.name} secondary={shop.street} trailing={`${shop.km} km`}>
+        {shop.name}
+      </ListRow>
+    ))}
+  </Stack>
+);
 
 /** The heading and the count, in `header`: they stay put while the list scrolls. */
 const HEADER = (

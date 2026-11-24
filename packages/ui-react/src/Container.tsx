@@ -1,12 +1,6 @@
-import {
-  type HTMLAttributes,
-  type ReactElement,
-  type ReactNode,
-  type Ref,
-  useCallback,
-} from "react";
+import { type ReactElement, type ReactNode, type Ref, useCallback } from "react";
 import { cx } from "./cx.js";
-import type { Unstyled } from "./props.js";
+import type { Passthrough } from "./props.js";
 
 /**
  * The one content edge: every page's width and side padding. This file is the only place they are
@@ -29,7 +23,7 @@ type ContainerProps = {
   /** Reaches the rendered element, for a parent that measures or scrolls it. */
   ref?: Ref<HTMLElement> | undefined;
   children?: ReactNode;
-} & Unstyled<Omit<HTMLAttributes<HTMLElement>, "children">>;
+} & Passthrough;
 
 // The one content edge: px-4 (px-6 from `sm`), or the safe-area inset where a notch or a rounded
 // corner is wider (an app with `viewport-fit=cover`; the inset is 0 in an ordinary tab).

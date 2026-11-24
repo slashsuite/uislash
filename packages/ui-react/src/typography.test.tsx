@@ -27,10 +27,10 @@ describe("typography", () => {
     expect(screen.getByRole("heading", { level: 2, name: "Plan" }).getAttribute("id")).toBe("s1");
   });
 
-  it("SubsectionHeading `truncate` keeps the full text as its title, and no title without it", () => {
+  it("SubsectionHeading `lines={1}` keeps the full text as its title, and no title without it", () => {
     render(
       <>
-        <SubsectionHeading truncate>A very long section title</SubsectionHeading>
+        <SubsectionHeading lines={1}>A very long section title</SubsectionHeading>
         <SubsectionHeading>Short</SubsectionHeading>
       </>,
     );

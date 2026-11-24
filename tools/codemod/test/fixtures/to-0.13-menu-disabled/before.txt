@@ -1,0 +1,11 @@
+import { Menu, type MenuAction } from "@hackcove/ui-react";
+
+const actions: MenuAction[] = [
+  { label: "Edit", onSelect: edit },
+  { label: "Delete", onSelect: remove, disabled: true },
+];
+
+export const view = <Menu label="Actions" items={actions} />;
+export const inline = (
+  <Menu label="More" items={[{ label: "Archive", onSelect: archive, disabled: locked }]} />
+);

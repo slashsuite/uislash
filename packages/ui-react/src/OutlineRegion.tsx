@@ -1,7 +1,8 @@
-import type { HTMLAttributes, ImgHTMLAttributes, ReactElement, ReactNode } from "react";
+import type { ImgHTMLAttributes, ReactElement, ReactNode } from "react";
 import { cx } from "./cx.js";
 import { IMAGE_WIDTH, type ImageAspect, type ImageWidth } from "./Image.js";
-import type { Unstyled } from "./props.js";
+import type { Passthrough } from "./props.js";
+import { type LoadingProps, passthroughOf, useLoading, WaitingBone } from "./skeleton.js";
 
 /** A box in a picture's own units (an image's pixels): its top-left corner and its size. */
 export type RegionRect = { x: number; y: number; width: number; height: number };
@@ -33,7 +34,7 @@ export function OutlineRegion({
   label?: ReactNode;
   /** Stripes the inside, for an area left out (ignored, masked). */
   hatched?: boolean | undefined;
-} & Unstyled<Omit<HTMLAttributes<HTMLDivElement>, "children">>): ReactElement {
+} & Passthrough): ReactElement {
   return (
     <div
       {...rest}
@@ -68,8 +69,9 @@ const FRAME_ASPECT: Record<ImageAspect, string> = {
 
 /**
  * A picture with a hairline edge, and `children` laid over it: the `OutlineRegion`s that mark its
- * areas. Every other prop goes to the `<img>` (`onLoad`, `loading`, `data-*`), so the app can read
- * the picture's own size for `within`.
+ * areas. `onLoad`, `id`, `data-*` and `aria-*` go to the `<img>`, so the app can read the picture's
+ * own size for `within`. While `loading` with no `src` yet it is a bone of the frame's shape (4:3
+ * for a `natural` one), as an `Image` is.
  *
  * It sizes as `Image` does. `width` is `full` (the parent's width) or 96, 160 or 256px. `aspect`
  * `natural` keeps the picture's own proportions; any other shape letterboxes it (contain, never a
@@ -82,11 +84,13 @@ export function RegionFrame({
   alt,
   aspect = "natural",
   width = "full",
+  loading,
+  loadingLabel,
   children,
   ...rest
 }: {
-  /** The picture. */
-  src: string;
+  /** The picture; left out while it is not known yet, with `loading`. */
+  src?: string | undefined;
   /** What the picture shows; `""` for one that only decorates. */
   alt: string;
   /**
@@ -101,9 +105,35 @@ export function RegionFrame({
   width?: ImageWidth | undefined;
   /** The `OutlineRegion`s over the picture. */
   children?: ReactNode;
-} & Unstyled<
-  Omit<ImgHTMLAttributes<HTMLImageElement>, "src" | "alt" | "children" | "width" | "height">
->): ReactElement {
+} & LoadingProps &
+  Passthrough &
+  /** Fires once the picture is in, so the app can read its own size for `within`. */
+  Pick<ImgHTMLAttributes<HTMLImageElement>, "onLoad">): ReactElement {
+  const waiting = useLoading(loading).loading;
+  if (!src) {
+    // No picture yet: a bone while it is on its way, else the empty frame of its shape.
+    const shape = aspect === "natural" ? "aspect-[4/3]" : FRAME_ASPECT[aspect];
+    if (waiting) {
+      return (
+        <WaitingBone
+          own={loading}
+          label={loadingLabel}
+          shape={cx("block w-full", shape)}
+          root={cx("block", IMAGE_WIDTH[width])}
+          attrs={
+            alt ? { ...passthroughOf(rest), role: "img", "aria-label": alt } : passthroughOf(rest)
+          }
+        />
+      );
+    }
+    return (
+      <div
+        className={cx("relative border border-slate-200 bg-slate-100", shape, IMAGE_WIDTH[width])}
+      >
+        {children}
+      </div>
+    );
+  }
   if (aspect === "natural") {
     return (
       <div className={cx("relative border border-slate-200", IMAGE_WIDTH[width])}>

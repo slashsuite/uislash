@@ -1,5 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Button, Card, Field, Input, ListRow, Section, Stack, Text } from "@slashsuite/ui-react";
+import {
+  Button,
+  Card,
+  Divider,
+  Field,
+  Input,
+  ListRow,
+  Section,
+  Stack,
+  Text,
+} from "@slashsuite/ui-react";
 import * as examples from "../../../packages/ui-react/docs/examples/StackDocs.examples.js";
 
 /** The docs examples for `Stack` and `Section`. */
@@ -93,17 +103,15 @@ export const DoDivided: S = {
   ),
 };
 
-/** A line set by hand on every row but the first is arithmetic the Stack does for you, and the rows are no list. */
+/** A `Divider` after every row adds space around each line, and the rows are no list. */
 export const DontDivided: S = {
   render: () => (
     <Card flush>
       <ListRow secondary="3 changed">Build 412</ListRow>
-      <ListRow divided secondary="No changes">
-        Build 411
-      </ListRow>
-      <ListRow divided secondary="1 changed">
-        Build 410
-      </ListRow>
+      <Divider />
+      <ListRow secondary="No changes">Build 411</ListRow>
+      <Divider />
+      <ListRow secondary="1 changed">Build 410</ListRow>
     </Card>
   ),
 };

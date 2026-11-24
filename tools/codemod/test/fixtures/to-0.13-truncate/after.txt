@@ -1,0 +1,9 @@
+import { SubsectionHeading, TableCell, TableEditCell } from "@hackcove/ui-react";
+
+export const view = (
+  <>
+    <SubsectionHeading lines={1}>Notes</SubsectionHeading>
+    <TableCell lines={1}>Long</TableCell>
+    <TableEditCell>Edit</TableEditCell>
+  </>
+);

@@ -1,5 +1,5 @@
 import { type ReactNode, useState } from "react";
-import { BottomSheet, ListRow, Pill, SectionHeading } from "@slashsuite/ui-react";
+import { BottomSheet, ListRow, Pill, SectionHeading, Stack } from "@slashsuite/ui-react";
 
 /** The docs and Storybook show every example of this file in it. A stand-in for a full-screen view: the sheet's positioned parent. */
 export const Frame = ({ children }: { children: ReactNode }) => (
@@ -22,11 +22,13 @@ export const DoHeader = () => {
         </>
       }
     >
-      {Array.from({ length: 12 }, (_, i) => (
-        <ListRow key={i} divided={i > 0} trailing={`${i + 2}00 m`}>
-          Shop {i + 1}
-        </ListRow>
-      ))}
+      <Stack divided>
+        {Array.from({ length: 12 }, (_, i) => (
+          <ListRow key={i} trailing={`${i + 2}00 m`}>
+            Shop {i + 1}
+          </ListRow>
+        ))}
+      </Stack>
     </BottomSheet>
   );
 };
@@ -37,11 +39,13 @@ export const DontHeader = () => {
   return (
     <BottomSheet label="Shops" snaps={[0.3, 0.75]} snap={snap} onSnapChange={setSnap}>
       <SectionHeading>Shops nearby</SectionHeading>
-      {Array.from({ length: 12 }, (_, i) => (
-        <ListRow key={i} divided={i > 0} trailing={`${i + 2}00 m`}>
-          Shop {i + 1}
-        </ListRow>
-      ))}
+      <Stack divided>
+        {Array.from({ length: 12 }, (_, i) => (
+          <ListRow key={i} trailing={`${i + 2}00 m`}>
+            Shop {i + 1}
+          </ListRow>
+        ))}
+      </Stack>
     </BottomSheet>
   );
 };

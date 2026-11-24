@@ -290,6 +290,12 @@ type SortableSectionProps = {
    * @default Drop here
    */
   emptyLabel?: string | undefined;
+  /**
+   * The word before `title` in the name of the section's last drop place, which a screen reader
+   * announces while a move lands there: "End of Doing".
+   * @default End of
+   */
+  endLabel?: string | undefined;
 };
 
 /**
@@ -301,6 +307,7 @@ export function SortableSection({
   title,
   children,
   emptyLabel = "Drop here",
+  endLabel = "End of",
   ...rest
 }: SortableSectionProps & Through): ReactElement {
   const count = itemsOf(children).length;
@@ -319,7 +326,7 @@ export function SortableSection({
       {children}
       <GridListItem
         id={tailKey(id)}
-        textValue={count > 0 ? `End of ${title}` : emptyLabel}
+        textValue={count > 0 ? `${endLabel} ${title}` : emptyLabel}
         isDisabled
         {...{ [ROW_MARK]: "" }}
         className={count > 0 ? TAIL : cx(PLACEHOLDER, AFTER_ROW)}
@@ -339,6 +346,11 @@ type SortableItemProps = {
   title: string;
   /** A meta line under the title: `Pill`s, an `Avatar`. */
   children?: ReactNode;
+  /**
+   * The word before `title` in the handle's accessible name: "Reorder Write the brief".
+   * @default Reorder
+   */
+  reorderLabel?: string | undefined;
 };
 
 /** The six-dot grip on each row's handle. */
@@ -355,13 +367,14 @@ const GRIP = (
 
 /**
  * One row of a `SortableList`: a grip handle, the title, and an optional meta line under it. A
- * pointer drags the row itself; the handle ("Reorder <title>") is how a keyboard or screen reader
+ * pointer drags the row itself; the handle (`reorderLabel` and the title, "Reorder <title>") is how a keyboard or screen reader
  * starts a move.
  */
 export function SortableItem({
   id,
   title,
   children,
+  reorderLabel = "Reorder",
   ...rest
 }: SortableItemProps & Through): ReactElement {
   return (
@@ -376,7 +389,7 @@ export function SortableItem({
     >
       <Button
         slot="drag"
-        aria-label={`Reorder ${title}`}
+        aria-label={`${reorderLabel} ${title}`}
         className={cx("shrink-0 rounded p-0.5 text-slate-400", focusRing)}
       >
         {GRIP}

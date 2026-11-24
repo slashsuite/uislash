@@ -45,6 +45,6 @@ export function overlayCases(a: Record<string, string>): Record<string, () => Re
         p
       </ui.Popover>
     ),
-    ToastRegion: () => <ui.ToastRegion toasts={[]} onDismiss={noop} {...a} />,
+    ToastRegion: () => <ui.ToastRegion items={[]} onDismiss={noop} {...a} />,
   };
 }

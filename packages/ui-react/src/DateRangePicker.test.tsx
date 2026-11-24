@@ -95,3 +95,26 @@ describe("DateRangePicker", () => {
     expect(screen.getByText("A hint.")).not.toBeNull();
   });
 });
+
+describe("DateRangePicker words", () => {
+  it("renames the sides and the word between them", () => {
+    render(
+      <DateRangePicker
+        label="Période"
+        startLabel="Date de début"
+        endLabel="Date de fin"
+        toLabel="au"
+      />,
+    );
+    expect(screen.getByRole("group", { name: "Date de début" })).not.toBeNull();
+    expect(screen.getByRole("group", { name: "Date de fin" })).not.toBeNull();
+    expect(screen.getByText("au")).not.toBeNull();
+    expect(screen.queryByText("to")).toBeNull();
+  });
+
+  it("renames the calendar's Clear button", () => {
+    render(<DateRangePicker label="Période" defaultOpen clearLabel="Effacer" />);
+    expect(screen.getByRole("button", { name: "Effacer" })).not.toBeNull();
+    expect(screen.queryByRole("button", { name: "Clear" })).toBeNull();
+  });
+});

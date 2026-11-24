@@ -68,11 +68,11 @@ export const DoPage = () => {
         <StatTile label="Accepted" value={rows && "1"} />
       </CardGrid>
       <Card flush>
-        {rows?.map((ref, i) => (
-          <ListRow key={ref} divided={i > 0}>
-            {ref}
-          </ListRow>
-        ))}
+        <Stack divided>
+          {rows?.map((ref) => (
+            <ListRow key={ref}>{ref}</ListRow>
+          ))}
+        </Stack>
       </Card>
     </ListLayout>
   );

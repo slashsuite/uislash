@@ -1,0 +1,12 @@
+import { Cluster, Pill } from "@hackcove/ui-react";
+
+export const view = (
+  <Cluster as="ul">
+    <li key="a">
+      <Pill>Alpha</Pill>
+    </li>
+    <li>
+      <Pill key="b">Beta</Pill>
+    </li>
+  </Cluster>
+);

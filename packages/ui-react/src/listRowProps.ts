@@ -4,7 +4,7 @@ import type {
   PointerEventHandler,
   ReactNode,
 } from "react";
-import type { Unstyled } from "./props.js";
+import type { Passthrough, Unstyled } from "./props.js";
 import type { Size } from "./size.js";
 import type { LoadingProps } from "./skeleton.js";
 
@@ -17,8 +17,6 @@ type Shared = LoadingProps & {
    * @default md
    */
   size?: Size | undefined;
-  /** A hairline above the row: set it on every row after the first. */
-  divided?: boolean | undefined;
   /** Content before the label: an Avatar, a thumbnail, an icon. */
   leading?: ReactNode | undefined;
   /** A second, muted line under the label (a date, a note), like `TableCell`'s `secondary`. */
@@ -109,7 +107,7 @@ export type ListRowStaticProps = Shared & {
   /**
    * Content under the row, lined up with the label rather than the row's edge (past `leading`): the
    * panel of a row that opens in place, such as a conversation under its chat. It sits inside the
-   * row, so `divided` and the fill cover it too. Only a row that is neither a
+   * row, so the fill and a `Stack divided` line cover it too. Only a row that is neither a
    * button nor a link takes it.
    */
   panel?: ReactNode | undefined;
@@ -117,6 +115,8 @@ export type ListRowStaticProps = Shared & {
   onClick?: undefined;
   disabledReason?: undefined;
   href?: undefined;
-} & Unstyled<Omit<ComponentPropsWithoutRef<"div">, "children" | "onClick">>;
+} & Passthrough &
+  /** What sets and clears `highlighted`; focus events bubble up from the row's own controls. */
+  Pick<ComponentPropsWithoutRef<"div">, "onPointerEnter" | "onPointerLeave" | "onFocus" | "onBlur">;
 
 export type ListRowProps = ListRowButtonProps | ListRowLinkProps | ListRowStaticProps;

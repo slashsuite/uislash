@@ -9,6 +9,7 @@ import {
   Pill,
   Text,
   TextLink,
+  Stack,
 } from "@slashsuite/ui-react";
 import { SampleTable } from "./sampleTable";
 import * as examples from "../../../packages/ui-react/docs/examples/Card.examples.js";
@@ -285,13 +286,13 @@ export const Loading: StoryObj<{ loading: boolean }> = {
         {loading ? null : "Cove Hardware asked for a second quote before Friday."}
       </Card>
       <Card title="Recent quotes" bar flush loading={loading}>
-        {loading
-          ? null
-          : ["Q-1043", "Q-1042", "Q-1041"].map((ref, i) => (
-              <ListRow key={ref} divided={i > 0}>
-                {ref}
-              </ListRow>
+        {loading ? null : (
+          <Stack divided>
+            {["Q-1043", "Q-1042", "Q-1041"].map((ref) => (
+              <ListRow key={ref}>{ref}</ListRow>
             ))}
+          </Stack>
+        )}
       </Card>
     </div>
   ),

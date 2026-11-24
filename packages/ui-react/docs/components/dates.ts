@@ -19,7 +19,7 @@ export const datePages: ComponentPage[] = [
         "The value is a `CalendarDate` (`value`, `defaultValue`, `onChange`, `minValue`, `maxValue`). `fromISODate` reads a stored `YYYY-MM-DD` and `toISODate` writes one.",
         "`name` posts the date as `YYYY-MM-DD` in a form, or an empty string.",
         "`size` is `sm`, `md` (default) or `lg`, the same heights as `Input`. `disabled` and `required` work as on an `Input`; say why it is disabled in its `hint`.",
-        "With `calendar`, `monthLabel` and `yearLabel` name the month and year dropdowns, for an app in another language.",
+        "With `calendar`, `monthLabel` and `yearLabel` name the month and year dropdowns and `clearLabel` the Clear button, for an app in another language.",
       ],
     },
     accessibility: [
@@ -56,7 +56,7 @@ export const datePages: ComponentPage[] = [
       ],
     },
     accessibility: [
-      'Each side is a `role="group"` named "Start date" and "End date", of day, month and year segments in the order of the locale (`role="spinbutton"`) that take digits or the arrow keys.',
+      'Each side is a `role="group"` named "Start date" and "End date" (`startLabel` and `endLabel` rename them, and `toLabel` the "to" between them; `clearLabel` the calendar\'s Clear), of day, month and year segments in the order of the locale (`role="spinbutton"`) that take digits or the arrow keys.',
       'The calendar button is labelled "Calendar" and opens a popover dialog: the arrow keys move across days, Enter on a day starts the range and Enter on a second ends it, and Escape closes it without a change.',
       'An impossible day, such as 31/02/2026, keeps what was typed and says which side and why: "End date: February 2026 has 28 days."',
       "Inside a `Dialog` or `Drawer` the calendar opens inside it, so it still takes focus. The focus ring comes from the component.",

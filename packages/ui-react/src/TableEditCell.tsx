@@ -6,7 +6,7 @@ import { TableCell } from "./Table.js";
 type CellProps =
   ComponentProps<typeof TableCell> extends infer Props
     ? Props extends unknown
-      ? Omit<Props, "children" | "truncate">
+      ? Omit<Props, "children" | "lines">
       : never
     : never;
 

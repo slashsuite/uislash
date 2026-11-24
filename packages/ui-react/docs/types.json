@@ -54,6 +54,16 @@
     "description": "A Button's look: `primary` the one main action, `outline` and `ghost` the others, `link` text in running text, `dashed` the add-another row.",
     "definition": "\"primary\" | \"outline\" | \"ghost\" | \"link\" | \"dashed\""
   },
+  "CategoryTone": {
+    "name": "CategoryTone",
+    "description": "The categorical scale: eight colours that say only \"this category\", never good or bad.",
+    "definition": "\"cat1\" | \"cat2\" | \"cat3\" | \"cat4\" | \"cat5\" | \"cat6\" | \"cat7\" | \"cat8\""
+  },
+  "CellAlign": {
+    "name": "CellAlign",
+    "description": "Where a table cell's content sits across it: `start`, `center` or `end` (numbers).",
+    "definition": "\"center\" | \"start\" | \"end\""
+  },
   "CellTone": {
     "name": "CellTone",
     "description": "The text of a cell: its weight and colour. `neutral` (the default), `strong` and `muted` are the\nplain ones; the rest are the shared tones, for an amount that carries a meaning (a gain, an\noverspend). Colour alone does not say it, so a signed figure or a word says it too.",
@@ -134,6 +144,11 @@
     "description": "The page before or after this one in reading order.",
     "definition": "{ label: string; href: string }"
   },
+  "EmptySize": {
+    "name": "EmptySize",
+    "description": "An `EmptyState`'s size: `md` a block with its heading, `sm` one muted line inside a card or a cell.",
+    "definition": "\"sm\" | \"md\""
+  },
   "FlowBox": {
     "name": "FlowBox",
     "description": "Where a node or a group sits, its top left corner and its size, in CSS pixels.",
@@ -177,7 +192,12 @@
   "FormRowSpan": {
     "name": "FormRowSpan",
     "description": "Relative widths in a `FormRow`: a field of `span` 2 is twice as wide as one of `span` 1.",
-    "definition": "1 | 2 | 3 | 4"
+    "definition": "2 | 3 | 4 | 1"
+  },
+  "HeadingLevel": {
+    "name": "HeadingLevel",
+    "description": "A heading level below the page's own `h1`.",
+    "definition": "2 | 3 | 4 | 5 | 6"
   },
   "IconButtonTone": {
     "name": "IconButtonTone",
@@ -204,6 +224,11 @@
     "description": "How wide an image is: `full` fills its parent; the others are 96, 160 or 256px, capped at the parent's width.",
     "definition": "Size | \"full\""
   },
+  "KeyValueAlign": {
+    "name": "KeyValueAlign",
+    "description": "Where a `KeyValueList`'s values sit: `end`, across from their labels, or `start`, under them.",
+    "definition": "\"start\" | \"end\""
+  },
   "LegendItem": {
     "name": "LegendItem",
     "description": "One entry of a `Legend`: the `label` the colour stands for, its swatch, and an optional `detail` (a count, a share) after it.",
@@ -221,8 +246,8 @@
   },
   "MenuAction": {
     "name": "MenuAction",
-    "description": "One entry of a `Menu`: an action that runs `onSelect`, or a link to `href`. Never both.",
-    "definition": "{ label: string; icon?: IconName | undefined; tone?: IconButtonTone | undefined; disabled?: boolean | undefined; } & ({ onSelect: () => void; href?: undefined; external?: undefined; } | { onSelect?: undefined; href: string; external?: boolean | undefined; })"
+    "description": "One entry of a `Menu`: an action that runs `onClick`, or a link to `href`. Never both.",
+    "definition": "{ label: string; icon?: IconName | undefined; tone?: IconButtonTone | undefined; disabledReason?: string | undefined; } & ({ onClick: () => void; href?: undefined; external?: undefined; } | { onClick?: undefined; href: string; external?: boolean | undefined; })"
   },
   "MetaListSeparator": {
     "name": "MetaListSeparator",
@@ -257,7 +282,12 @@
   "Segment": {
     "name": "Segment",
     "description": "One option of a SegmentedControl: a button with a `value`, or a link with an `href`; never both kinds in one group.",
-    "definition": "{ label: ReactNode; count?: number; title?: string; value: string; disabled?: boolean; disabledReason?: string; controls?: string } | { label: ReactNode; count?: number; title?: string; value?: string; selected?: boolean; external?: boolean; href: string }"
+    "definition": "SwitchButton | SwitchLink"
+  },
+  "SelectItem": {
+    "name": "SelectItem",
+    "description": "One choice of a `Select`.",
+    "definition": "{ value: string; label: string; disabled?: boolean }"
   },
   "SideColumnWidth": {
     "name": "SideColumnWidth",
@@ -276,7 +306,7 @@
   },
   "Size": {
     "name": "Size",
-    "description": "The one size scale of the library: `sm`, `md` and `lg`, with `md` the default. This is the one\nlist of where it goes further and where the default is not `md`; the README and the docs point\nhere rather than count them again.\n\nPast `sm`, `md` and `lg`, only where there is a real use, and no scale skips `md`:\n- `Avatar` and `AvatarStack` `size`: also `xs`, `xl`, `2xl` and `3xl`.\n- The gap scale (`Stack`, `Section` and `ProseLayout` `gap`): also `xs` and `xl`.\n- `Cluster` and `ScrollStrip` `gap`: `xs`, `sm` and `md`, the first steps of the gap scale.\n- `Icon` `size`: also `feature`, the mark of a feature card.\n- `Dialog` `width`: also `full`, the whole screen. `ChatThread` `height`: also `fill`, its parent's.\n\nDefaults that are not `md`:\n- `Table` `size` is `sm`, its row padding, and the buttons and pills in a table take that size;\n  a field keeps `md`.\n- `Cluster` and `ScrollStrip` `gap` are `sm`: the items of a row sit closer than the blocks of a\n  column.\n- `Stack` and `Section` `gap` are `xs` inside a `Card`, `Dialog`, `Drawer`, `BottomSheet`,\n  `Callout` or `ListRow`.\n- A `Pill`, `Button` or `IconButton` with no `size` takes the size of the `Card`, `ListRow` or\n  `Table` it sits in; an `EmptyState` takes its slot's.\n\nA responsive size, `{ base, md }` (`ResponsiveSize`), changes at Tailwind's `md` breakpoint (48rem)\nin CSS, with no script: `Button`, `IconButton`, `SegmentedControl` and `Icon` take it, and so do\nthe text fields, `Input`, `Select`, `Textarea`, `DateField`, `DateTimeField` and\n`DateRangePicker`, so a field and the button beside it stay aligned at both widths.\n\nWith no `size` at all, because they take the size of the text or the control they sit on:\n`Callout`, `CopyButton`, `Kbd`, `Badge` and `Breadcrumbs`.",
+    "description": "The one size scale of the library: `sm`, `md` and `lg`, with `md` the default. This is the one\nlist of where it goes further and where the default is not `md`; the README and the docs point\nhere rather than count them again.\n\nPast `sm`, `md` and `lg`, only where there is a real use, and no scale skips `md`:\n- `Avatar` and `AvatarStack` `size`: also `xs`, `xl`, `2xl` and `3xl`.\n- The gap scale (`Stack`, `Section` and `ProseLayout` `gap`): also `xs` and `xl`.\n- `Cluster` and `ScrollStrip` `gap`: `xs`, `sm` and `md`, the first steps of the gap scale.\n- `Icon` `size`: also `feature`, the mark of a feature card.\n- `Dialog` `width`: also `full`, the whole screen. `ChatThread` `height`: also `fill`, its parent's.\n- `ImageWidth` (`Image`, `RegionFrame` and `MediaTile` `width`): also `full`, the parent's width;\n  `sm`, `md` and `lg` are 96, 160 and 256px.\n\nDefaults that are not `md`:\n- `Table` `size` is `sm`, its row padding, and the buttons and pills in a table take that size;\n  a field keeps `md`.\n- `Cluster` and `ScrollStrip` `gap` are `sm`: the items of a row sit closer than the blocks of a\n  column.\n- `Stack` and `Section` `gap` are `xs` inside a `Card`, `Dialog`, `Drawer`, `BottomSheet`,\n  `Callout` or `ListRow`.\n- `Image` and `RegionFrame` `width` are `full`: a picture fills its column unless it is a\n  thumbnail. `MediaTile` `width` is `md`, one tile of a grid of them.\n- A `Pill`, `Button` or `IconButton` with no `size` takes the size of the `Card`, `ListRow` or\n  `Table` it sits in; an `EmptyState` takes its slot's.\n\nA responsive size, `{ base, md }` (`ResponsiveSize`), changes at Tailwind's `md` breakpoint (48rem)\nin CSS, with no script: `Button`, `IconButton`, `SegmentedControl` and `Icon` take it, and so do\nthe text fields, `Input`, `Select`, `Textarea`, `DateField`, `DateTimeField` and\n`DateRangePicker`, so a field and the button beside it stay aligned at both widths.\n\nWith no `size` at all, because they take the size of the text or the control they sit on:\n`Callout`, `CopyButton`, `Kbd`, `Badge` and `Breadcrumbs`.",
     "definition": "\"sm\" | \"md\" | \"lg\""
   },
   "SortableMove": {
@@ -349,10 +379,20 @@
     "description": "A SubsectionHeading's type size: `sm` a form-group caption, `md` a card title, `lg` a drawer title.",
     "definition": "\"sm\" | \"md\" | \"lg\""
   },
+  "SwitchButton": {
+    "name": "SwitchButton",
+    "description": "An option that is a button: it calls `onChange(value)`.",
+    "definition": "{ label: ReactNode; count?: number; title?: string; value: string; disabled?: boolean; disabledReason?: string; controls?: string }"
+  },
+  "SwitchLink": {
+    "name": "SwitchLink",
+    "description": "An option that is a link: `href`, drawn by the app's router link through `LinkProvider`. The router\nchanges the page; `selected` on the item, or a `value` equal to the group's, marks the current one.\n`external` opens a new tab.",
+    "definition": "{ label: ReactNode; count?: number; title?: string; value?: string; selected?: boolean; external?: boolean; href: string }"
+  },
   "Tab": {
     "name": "Tab",
     "description": "One tab of a Tabs row: a button with a `value`, or a link with an `href`; never both kinds in one row.",
-    "definition": "{ label: ReactNode; count?: number; title?: string; value: string; disabled?: boolean; disabledReason?: string; controls?: string } | { label: ReactNode; count?: number; title?: string; value?: string; selected?: boolean; external?: boolean; href: string }"
+    "definition": "SwitchButton | SwitchLink"
   },
   "TableSort": {
     "name": "TableSort",
@@ -367,7 +407,7 @@
   "TextLines": {
     "name": "TextLines",
     "description": "How many lines a clamped run shows before it ends in an ellipsis.",
-    "definition": "1 | 2 | 3 | 4"
+    "definition": "2 | 3 | 4 | 1"
   },
   "TextLinkSize": {
     "name": "TextLinkSize",
@@ -387,7 +427,7 @@
   "Toast": {
     "name": "Toast",
     "description": "One notice in a `ToastRegion`. The caller holds the list; the region draws it.",
-    "definition": "{ id: string; title: string; body?: ReactNode; tone?: Tone; actions?: ReactNode }"
+    "definition": "{ id: string; title: string; description?: ReactNode; tone?: Tone; actions?: ReactNode }"
   },
   "Tone": {
     "name": "Tone",
@@ -402,7 +442,7 @@
   "VizTone": {
     "name": "VizTone",
     "description": "The colour of a `StackedBar` segment, a `Legend` swatch or a `TrendChart` series: the `TextTone`\nnames, painted as a fill, or a category colour, `cat1` to `cat8`. On a chart `neutral` is a grey\nof its own that sits apart from `muted` (for \"unmeasured\" next to \"same\"), and `accent` is the\ntheme's accent, apart from `info`. Categories with no meaning take `cat1` upwards in order; good\nand bad take the meaning tones; one chart never mixes the two.",
-    "definition": "TextTone | \"cat1\" | \"cat2\" | \"cat3\" | \"cat4\" | \"cat5\" | \"cat6\" | \"cat7\" | \"cat8\""
+    "definition": "TextTone | CategoryTone"
   },
   "XStateMachineLike": {
     "name": "XStateMachineLike",

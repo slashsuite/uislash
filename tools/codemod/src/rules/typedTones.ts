@@ -58,7 +58,8 @@ function retone(
   const seen = new Set<string>();
   for (const literal of literals) {
     const to = map[literal.text] ?? literal.text;
-    if (seen.has(to))
+    // A value the pass leaves as it is was already there: two of it are the app's own list.
+    if (seen.has(to) && to !== literal.text)
       report(context, literal, `"${literal.text}" is "${to}" now, which this list already holds`);
     seen.add(to);
     if (to !== literal.text) replace(context, literal, `"${to}"`);

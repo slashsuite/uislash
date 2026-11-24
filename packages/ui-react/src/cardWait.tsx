@@ -31,12 +31,10 @@ export function CardWait({
 function CardBones({ flush }: { flush: boolean }): ReactElement {
   if (!flush) return <BoneLines />;
   return (
-    <>
+    <div className="border-slate-200/70 *:not-first:border-t *:not-first:border-inherit">
       {[0, 1, 2].map((i) => (
-        <ListRow key={i} divided={i > 0}>
-          {null}
-        </ListRow>
+        <ListRow key={i}>{null}</ListRow>
       ))}
-    </>
+    </div>
   );
 }

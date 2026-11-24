@@ -57,7 +57,7 @@ export const framePages: ComponentPage[] = [
     usage: {
       do: [
         "Put it in `AppShell`'s `footer` slot: `<AppShell footer={<SiteFooter ... />}>`.",
-        "`brand` is the site's mark, linked to `brandHref` (`/` by default) and named by `brandLabel`. `children` is the contact line beside it, at body size.",
+        "`brand` is the site's mark, linked to `brandHref` (the `LinkProvider`'s `home` by default, else `/`) and named by `brandLabel`. `children` is the contact line beside it, at body size.",
         "`links` are the site's own pages (Privacy, Terms, GitHub, a mail address), one wrapping row; `external` opens one in a new tab. `notes` are lines of fine print under them (a licence, a legal name, a credit), one paragraph each.",
         "Links go through the app's `LinkProvider`, like every link.",
       ],

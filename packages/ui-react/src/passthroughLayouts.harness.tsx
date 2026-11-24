@@ -15,7 +15,7 @@ export function layoutCases(a: Record<string, string>): Record<string, () => Rea
       </ui.SidebarLayout>
     ),
     DocsLayout: () => (
-      <ui.DocsLayout nav={[]} navLabel="Docs" title="t" {...a}>
+      <ui.DocsLayout nav={[]} asideLabel="Docs" title="t" {...a}>
         x
       </ui.DocsLayout>
     ),

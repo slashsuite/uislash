@@ -1,4 +1,5 @@
 import {
+  type FormEvent,
   type PointerEvent,
   type ReactElement,
   type ReactNode,
@@ -8,7 +9,7 @@ import {
   useState,
 } from "react";
 import { cx } from "./cx.js";
-import { BodyContext, ModalScope } from "./Dialog.js";
+import { BodyContext, FormColumn, FormError, ModalScope } from "./Dialog.js";
 import { IconButton } from "./IconButton.js";
 import { useBackdropClose, useModal } from "./modal.js";
 import type { Passthrough } from "./props.js";
@@ -110,8 +111,21 @@ export type DrawerProps = {
   /** A muted line under the title, as on a `Dialog`. */
   description?: ReactNode;
   children?: ReactNode;
-  /** Actions pinned under the scrolling body, right-aligned. */
+  /** Actions pinned under the scrolling body, right-aligned: Cancel (`variant="ghost"`), then the one main action. */
   footer?: ReactNode;
+  /**
+   * Makes the drawer a form, as on a `Dialog`: one `<form noValidate>` holds the body, the `error`
+   * and the footer, so a `Button type="submit"` in the footer or Enter in a field submits it. The
+   * default is prevented before this runs, and a rejection is yours to catch and show as `error`.
+   * Once the submit settles, the focus moves to the first field marked invalid
+   * (`aria-invalid="true"`), if any.
+   */
+  onSubmit?: ((event: FormEvent<HTMLFormElement>) => void | Promise<unknown>) | undefined;
+  /**
+   * What went wrong with the whole submit, as on a `Dialog`: a danger `Callout`, announced as an
+   * alert, pinned between the body and the footer. An error about one field is that `Field`'s `error`.
+   */
+  error?: ReactNode;
   /**
    * The panel's width: `md` holds a form or a record; `sm` (320px) is narrower and `lg` (640px) wider.
    * @default md
@@ -130,13 +144,16 @@ export type DrawerProps = {
  * contents) closes it too, and on touch a swipe to the right drags it off (a short one springs
  * back). The header holds the title, an optional `description` under it and a close button; the
  * body scrolls between it and an optional pinned `footer`, and a scroll in it never carries on to
- * the page behind.
+ * the page behind. `onSubmit` makes it a form and `error` shows what went wrong with the submit, as
+ * on a `Dialog`.
  */
 export function Drawer({
   title,
   description,
   children,
   footer,
+  onSubmit,
+  error,
   width = "md",
   onClose,
   closeLabel = "Close",
@@ -177,14 +194,17 @@ export function Drawer({
           </div>
           <IconButton label={closeLabel} onClick={() => dialog.current?.close()} icon="close" />
         </header>
-        <div className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain px-5.5 py-4">
-          <BodyContext>{children}</BodyContext>
-        </div>
-        {footer && (
-          <footer className="flex shrink-0 justify-end gap-2 border-t border-slate-200 px-5.5 py-3.5">
-            {footer}
-          </footer>
-        )}
+        <FormColumn onSubmit={onSubmit}>
+          <div className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain px-5.5 py-4">
+            <BodyContext>{children}</BodyContext>
+          </div>
+          <FormError error={error} space="px-5.5 pb-4" />
+          {footer && (
+            <footer className="flex shrink-0 justify-end gap-2 border-t border-slate-200 px-5.5 py-3.5">
+              {footer}
+            </footer>
+          )}
+        </FormColumn>
       </dialog>
     </ModalScope>
   );

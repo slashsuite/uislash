@@ -73,6 +73,40 @@ export const LongBody: S = {
   ),
 };
 
+/** A form drawer: `onSubmit` makes the body and the footer one form, so Enter in a field or Save submits it, and `error` is the whole submit's failure, pinned above the footer. Save here always fails, as it would offline. */
+export const Form: S = {
+  render: () => {
+    const [error, setError] = useState<string | undefined>();
+    return (
+      <Opened>
+        {(close) => (
+          <Drawer
+            title="Edit flag"
+            onClose={close}
+            onSubmit={() => setError("Could not save: you are offline.")}
+            error={error}
+            footer={
+              <>
+                <Button variant="ghost" onClick={closeDialog}>
+                  Cancel
+                </Button>
+                <Button type="submit">Save</Button>
+              </>
+            }
+          >
+            <Field label="Key" htmlFor="drawer-form-key">
+              <Input id="drawer-form-key" defaultValue="beta-search" />
+            </Field>
+            <Field label="Name" htmlFor="drawer-form-name">
+              <Input id="drawer-form-name" defaultValue="Beta search" />
+            </Field>
+          </Drawer>
+        )}
+      </Opened>
+    );
+  },
+};
+
 export const Small: S = {
   render: () => (
     <Opened>

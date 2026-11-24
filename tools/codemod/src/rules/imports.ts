@@ -245,10 +245,15 @@ export function imports(context: Context): void {
  * The output with each package import the codemod left unused taken out: an `Icon` that only
  * drew `IconButton` children, say. A name the file never used is left as the app wrote it.
  */
-export function pruneImports(before: ts.SourceFile, output: string, fileName: string): Edit[] {
+export function pruneImports(
+  before: ts.SourceFile,
+  output: string,
+  fileName: string,
+  packages: readonly string[],
+): Edit[] {
   const file = parse(output, fileName);
   const edits: Edit[] = [];
-  for (const declaration of packageImports(file).declarations) {
+  for (const declaration of packageImports(file, packages).declarations) {
     const bindings = declaration.importClause?.namedBindings;
     if (bindings === undefined || !ts.isNamedImports(bindings)) continue;
     const dead = bindings.elements.filter(

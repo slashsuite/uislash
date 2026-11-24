@@ -2,7 +2,7 @@ import { Children, type ReactElement, type ReactNode, useContext } from "react";
 import { cx } from "./cx.js";
 import type { Size } from "./size.js";
 import { TableContext, useNumericColumn } from "./tableColumns.js";
-import { ALIGN, type Align, PAD, type Rest, SectionContext } from "./tableRow.js";
+import { ALIGN, type CellAlign, PAD, type Rest, SectionContext } from "./tableRow.js";
 import { SortButton, type SortProps } from "./tableSort.js";
 import { Bone, BusyLabel, busy, isEmptySlot, type LoadingProps, useLoading } from "./skeleton.js";
 import { CELL_BONE } from "./tableEmpty.js";
@@ -52,7 +52,7 @@ export function TableHeaderCell({
    * The title's horizontal alignment; `end` over a column of buttons, `center` over a centred column.
    * @default end for a numeric column, else start
    */
-  align?: Align | undefined;
+  align?: CellAlign | undefined;
 } & (
   | { children?: ReactNode; label?: undefined }
   | {
@@ -95,11 +95,11 @@ function figureClass(numeric: boolean, mono: boolean, prose: boolean): string {
   return cx("whitespace-nowrap", numeric && "tabular-nums", mono && "font-mono text-xs");
 }
 
-/** The widest a `truncate` cell grows. */
+/** The widest a `lines={1}` cell grows. */
 const TRUNCATE_WIDTH = "max-w-xs";
 
-/** Where a `truncate` cell's capped box sits, so it follows the cell's alignment. */
-const TRUNCATE_ALIGN: Record<Align, string | undefined> = {
+/** Where a `lines={1}` cell's capped box sits, so it follows the cell's alignment. */
+const TRUNCATE_ALIGN: Record<CellAlign, string | undefined> = {
   start: undefined,
   center: "mx-auto",
   end: "ml-auto",
@@ -121,7 +121,7 @@ const INDENT: Record<Size, Record<Indent, string>> = {
  * muted line under the content. One rule for wrapping: prose (a cell of plain text) wraps onto more
  * lines (never narrower than `min-w-48`, so it scrolls the table before it becomes a sliver), a cell
  * that holds a control or a link takes that content's width, and a `numeric` or `mono` cell (a
- * figure, a code, a type) never breaks. `truncate` caps a long value's width, cuts it with
+ * figure, a code, a type) never breaks. `lines={1}` caps a long value's width, cuts it with
  * an ellipsis on one line and puts the full text in a `title`; the content is then plain text (strings and
  * numbers), since that is what the title shows. `colSpan` passes through: a cell that
  * spans the row is a full-width panel (a note under a group), and `align="center"` centres it. A
@@ -136,7 +136,7 @@ export function TableCell({
   tone,
   numeric,
   mono = false,
-  truncate = false,
+  lines,
   indent,
   secondary,
   loading,
@@ -148,7 +148,7 @@ export function TableCell({
    * The cell's horizontal alignment; `center` for a full-width note.
    * @default end for a numeric cell, else start
    */
-  align?: Align | undefined;
+  align?: CellAlign | undefined;
   /** Sets the cell in by this many levels (1 to 3), for a line under a parent row. Start-aligned cells only. */
   indent?: Indent | undefined;
   /** The text weight and colour (see `CellTone`). In a `TableFoot` it defaults to `strong`. */
@@ -161,14 +161,14 @@ export function TableCell({
   /** A small monospace face for a code or a type, and the cell never wraps. */
   mono?: boolean | undefined;
   /**
-   * Caps the width and cuts a long value with an ellipsis on one line, the full text in a `title`.
-   * Plain text content only.
+   * `1` caps the width and cuts a long value with an ellipsis on one line, the full text in a
+   * `title`, as `lines={1}` does on `Text`. Plain text content only.
    *
    * Without it, a prose cell wraps down to a floor so it never becomes a sliver, a cell that holds
    * a control or a link (a `Pill`, a `Switch`, a `Button`, a `TextLink`) takes its content's width,
    * and a `numeric` or `mono` cell never breaks.
    */
-  truncate?: boolean | undefined;
+  lines?: 1 | undefined;
   /** A second, muted line under the content. */
   secondary?: ReactNode;
   children?: ReactNode;
@@ -209,7 +209,7 @@ export function TableCell({
         prose: isProse(children),
       })}
     >
-      <CellBody align={side} truncate={truncate} secondary={secondary}>
+      <CellBody align={side} truncate={lines === 1} secondary={secondary}>
         {bone ? <Bone shape={CELL_BONE} /> : children}
       </CellBody>
       <BusyLabel owner={owner} loading={waiting} label={loadingLabel} />
@@ -228,7 +228,7 @@ function cellClass({
   mono,
   prose,
 }: {
-  align: Align;
+  align: CellAlign;
   size: Size;
   indent: Indent | undefined;
   tone: CellTone | undefined;
@@ -264,7 +264,7 @@ function CellBody({
   secondary,
   children,
 }: {
-  align: Align;
+  align: CellAlign;
   truncate: boolean;
   secondary: ReactNode;
   children: ReactNode;

@@ -181,6 +181,19 @@ describe("every built-in word has a label prop", () => {
     expect(screen.getByRole("combobox", { name: "Jaar" })).not.toBeNull();
   });
 
+  it("clearLabel names a calendar field's Clear button", () => {
+    render(
+      <DateField
+        calendar
+        aria-label="Datum"
+        defaultOpen
+        clearLabel="Wissen"
+        defaultValue={new CalendarDate(1990, 5, 17)}
+      />,
+    );
+    expect(screen.getByRole("button", { name: "Wissen" })).not.toBeNull();
+  });
+
   it("a DateRangePicker takes them too", () => {
     render(
       <DateRangePicker aria-label="Periode" defaultOpen monthLabel="Maand" yearLabel="Jaar" />,

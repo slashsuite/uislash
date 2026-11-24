@@ -129,3 +129,18 @@ describe("SortableList", () => {
     });
   });
 });
+
+describe("SortableList words", () => {
+  it("renames the handle's word and the tail row's word", () => {
+    render(
+      <SortableList label="File" onReorder={noop}>
+        <SortableSection id="todo" title="À faire" endLabel="Fin de">
+          <SortableItem id="a" title="Alpha" reorderLabel="Déplacer" />
+        </SortableSection>
+      </SortableList>,
+    );
+    expect(screen.getByRole("button", { name: "Déplacer Alpha" })).not.toBeNull();
+    expect(screen.getByRole("row", { name: "Fin de À faire" })).not.toBeNull();
+    expect(screen.queryByRole("row", { name: "End of À faire" })).toBeNull();
+  });
+});

@@ -2,13 +2,15 @@ import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { type Options, transform } from "./transform.js";
 
-// bun tools/codemod/src/run.ts <src dir> [--unpin] [--write]
+// bun tools/codemod/src/run.ts <src dir> [--unpin | --to-0.13] [--write]
 // Rewrites an app's @hackcove/ui-react 0.10 code for 0.11. A dry run by default: it prints the files
 // it would change and a file:line for every swap a person has to make. --write saves the changes.
 // --unpin runs only the second step instead: it drops the pins the 0.11 pass wrote, where the new
 // default means the same (packages/ui-react/MIGRATING.md, "0.11 to 0.12: drop the pins").
+// --to-0.13 runs only the 0.12 to 0.13 renames. The two steps read @slashsuite/ui-react as well.
 
-const FLAGS = new Set(["--write", "--unpin"]);
+const FLAGS = new Set(["--write", "--unpin", "--to-0.13"]);
+const USAGE = "usage: bun tools/codemod/src/run.ts <src dir> [--unpin | --to-0.13] [--write]\n";
 const SKIP = new Set(["node_modules", "dist", ".git"]);
 
 function filesUnder(dir: string): string[] {
@@ -41,11 +43,18 @@ function parseArgs(
   const unknown = args.filter((arg) => arg.startsWith("--") && !FLAGS.has(arg));
   // A mistyped --unpin would otherwise run the 0.11 pass and write every pin back.
   if (unknown.length > 0) process.stderr.write(`unknown flag: ${unknown.join(" ")}\n`);
-  if (dir === undefined || unknown.length > 0) {
-    process.stderr.write("usage: bun tools/codemod/src/run.ts <src dir> [--unpin] [--write]\n");
+  const unpin = args.includes("--unpin");
+  const to13 = args.includes("--to-0.13");
+  // Each step reads code of its own version, so one run takes one step.
+  if (unpin && to13) process.stderr.write("--unpin and --to-0.13 are separate steps: run one\n");
+  if (dir === undefined || unknown.length > 0 || (unpin && to13)) {
+    process.stderr.write(USAGE);
     return undefined;
   }
-  const options: Options = { step: args.includes("--unpin") ? "unpin" : "0.11" };
+  let step: Options["step"] = "0.11";
+  if (unpin) step = "unpin";
+  if (to13) step = "0.13";
+  const options: Options = { step };
   return { dir, write: args.includes("--write"), options };
 }
 

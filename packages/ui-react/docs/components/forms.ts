@@ -110,6 +110,7 @@ export const forms: ComponentSection = {
         "The focus ring comes from the component.",
       ],
       api: ["Select"],
+      types: ["SelectItem"],
     },
     ...numberPages,
     {

@@ -16,9 +16,9 @@ export const DoSwitchView = () => {
           { value: "settings", label: "Settings", controls: "panel" },
         ]}
       />
-      <Text id="panel" role="tabpanel">
-        Showing {value}.
-      </Text>
+      <div id="panel" role="tabpanel">
+        <Text>Showing {value}.</Text>
+      </div>
     </Stack>
   );
 };

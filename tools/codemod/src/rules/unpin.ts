@@ -84,25 +84,62 @@ export function unpinGap(tag: Tag, component: string, context: Context): void {
   }
 }
 
-/** `Cluster wrap={false}` stays: letting a row wrap is the new look, but it changes a layout. */
-export function reportNoWrap(tag: Tag, component: string, context: Context): void {
+/**
+ * `Cluster wrap={false}` goes: a row that wraps is the new look. A bare `wrap` (or `{true}`), which
+ * the 0.11 pass keeps, says the default and goes too. One set in code is a person's call.
+ */
+export function unpinWrap(tag: Tag, component: string, context: Context): void {
   if (component !== "Cluster") return;
   const wrap = attributeOf(tag, "wrap");
-  if (wrap !== undefined && valueOf(wrap)?.kind === ts.SyntaxKind.FalseKeyword) {
-    report(context, wrap, "wrap={false}: remove it unless this row must stay on one line");
-  }
+  if (wrap === undefined) return;
+  if (isOn(wrap) || valueOf(wrap)?.kind === ts.SyntaxKind.FalseKeyword) remove(context, wrap);
+  else report(context, wrap, "wrap is set in code: a Cluster wraps by default now, check it");
 }
+
+const NUMERIC_CELLS = ["TableCell", "TableEditCell"];
 
 /** A `numeric` cell's `align="start"` goes: end aligned figures are the look. */
 export function unpinNumericStart(tag: Tag, component: string, context: Context): void {
-  if (component !== "TableCell" && component !== "TableEditCell") return;
+  if (!NUMERIC_CELLS.includes(component)) return;
   const align = attributeOf(tag, "align");
   const numeric = attributeOf(tag, "numeric");
-  if (literalOf(align) !== "start" || align === undefined || numeric === undefined) return;
+  if (align === undefined || numeric === undefined || literalOf(align) !== "start") return;
   if (isOn(numeric)) remove(context, align);
   else if (valueOf(numeric)?.kind !== ts.SyntaxKind.FalseKeyword) {
     report(context, align, 'align="start" kept: numeric is not a literal, check it');
   }
 }
 
-export const tagRules: readonly TagRule[] = [unpinSpan, unpinGap, reportNoWrap, unpinNumericStart];
+/** A `numeric` cell's `align="end"`, which the 0.11 pass keeps, is what `numeric` does by itself. */
+export function unpinNumericEnd(tag: Tag, component: string, context: Context): void {
+  if (!NUMERIC_CELLS.includes(component)) return;
+  const align = attributeOf(tag, "align");
+  if (align !== undefined && literalOf(align) === "end" && isOn(attributeOf(tag, "numeric"))) {
+    remove(context, align);
+  }
+}
+
+/**
+ * `Callout tone="info"` stays: with no tone a callout is `neutral`, a grey note, so the new default
+ * never draws the blue box. Each one is reported, since it may be a pin or a note that is news.
+ */
+export function reportCalloutInfo(tag: Tag, component: string, context: Context): void {
+  if (component !== "Callout") return;
+  const tone = attributeOf(tag, "tone");
+  if (literalOf(tone) === "info" && tone !== undefined) {
+    report(
+      context,
+      tone,
+      'tone="info" kept: a Callout is neutral by default now, remove it unless the note must stay blue',
+    );
+  }
+}
+
+export const tagRules: readonly TagRule[] = [
+  unpinSpan,
+  unpinGap,
+  unpinWrap,
+  unpinNumericStart,
+  unpinNumericEnd,
+  reportCalloutInfo,
+];

@@ -1,0 +1,1 @@
+4: items: rename each action's onSelect to onClick, and give a disabled one a disabledReason

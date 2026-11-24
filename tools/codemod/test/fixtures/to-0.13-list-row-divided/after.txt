@@ -1,0 +1,5 @@
+import { ListRow } from "@hackcove/ui-react";
+
+export const view = (
+  <ListRow title="Invoice" />
+);

@@ -16,7 +16,7 @@ export const text: ComponentSection = {
         do: [
           "A page has one title: `PageHeading` for an app page, `Display` for the headline of a public page. A `PageHeader` already draws the `PageHeading` and its `description`, so use it for the top of a page.",
           "Name the parts of a page with `SectionHeading`; `rule` puts the hairline under it, with the space either side built in.",
-          "Name what is inside a part with `SubsectionHeading`: `size` `sm` is a form-group caption, `md` (default) a card title in a header bar, `lg` a drawer title. `truncate` cuts one that is too long for its column to a single line.",
+          "Name what is inside a part with `SubsectionHeading`: `size` `sm` is a form-group caption, `md` (default) a card title in a header bar, `lg` a drawer title. `lines={1}` cuts one that is too long for its column to a single line.",
           "Put a `Lead` under a `Display`, and a `Text` under any other heading. `Dialog` and `Drawer` draw their own title from their `title`.",
           "Pick the heading for its place in the outline, never for its size. `Display` is not a big `SectionHeading`.",
           "Each heading has its own fixed ink and takes no colour. A heading's meaning is carried by its words, not a colour.",
@@ -31,7 +31,7 @@ export const text: ComponentSection = {
         "`Dialog` and `Drawer` draw their title as a `SectionHeading` and name themselves by it; an `EmptyState` does the same.",
       ],
       api: ["Display", "PageHeading", "SectionHeading", "SubsectionHeading"],
-      types: ["SubsectionHeadingSize"],
+      types: ["HeadingLevel", "SubsectionHeadingSize"],
     },
     {
       slug: "prose",
@@ -68,7 +68,7 @@ export const text: ComponentSection = {
       summary:
         "Running text, emphasis, fine print, labels and the empty note, each with its size and weight fixed.",
       whenToUse:
-        "Every run of text that is not a heading: a paragraph, a supporting line, a note, a label, the line in an empty Card.",
+        "Every run of text that is not a heading: a paragraph, a supporting line, a note, a label.",
       pairs: [
         "BodyText/Paragraph",
         "BodyText/Meaning",

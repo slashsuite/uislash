@@ -16,14 +16,34 @@ type StatusPageProps = {
   children?: ReactNode;
   /**
    * The page's own buttons, before "Back to home", which turns outline beside them. This is the one
-   * way to a button worded differently; there is no label prop.
+   * way to add a button; `homeLabel` and `retryLabel` only reword the built-in ones.
    */
   actions?: ReactNode;
 } & Passthrough;
 
+/** The pages that link home. */
+type HomewardProps = StatusPageProps & {
+  /**
+   * The button to the `LinkProvider`'s `home`, for an app in another language.
+   * @default Back to home
+   */
+  homeLabel?: string | undefined;
+};
+
+/** The pages that can try again. */
+type RetryProps = HomewardProps & {
+  /** Adds a "Try again" button that calls it, unless `actions` replaces the button. */
+  onRetry?: () => void;
+  /**
+   * The button `onRetry` adds, for an app in another language.
+   * @default Try again
+   */
+  retryLabel?: string | undefined;
+};
+
 type Copy = { title: string; body: string };
 
-type StatusPageInner = StatusPageProps & {
+type StatusPageInner = HomewardProps & {
   copy: Copy;
   extra?: ReactNode;
   mark?: ReactNode;
@@ -31,11 +51,11 @@ type StatusPageInner = StatusPageProps & {
   homeward?: boolean;
 };
 
-/** "Back to home", to the `LinkProvider`'s `home`: the primary button alone, outline after the page's actions. */
-function HomeLink({ outline }: { outline: boolean }): ReactElement {
+/** `label` ("Back to home"), to the `LinkProvider`'s `home`: the primary button alone, outline after the page's actions. */
+function HomeLink({ outline, label }: { outline: boolean; label: string }): ReactElement {
   return (
     <Button href={useHome()} variant={outline ? "outline" : "primary"}>
-      Back to home
+      {label}
     </Button>
   );
 }
@@ -48,9 +68,10 @@ function StatusPage({
   extra,
   mark,
   homeward = true,
+  homeLabel = "Back to home",
   ...rest
 }: StatusPageInner): ReactElement {
-  const home = homeward && <HomeLink outline={Boolean(actions)} />;
+  const home = homeward && <HomeLink outline={Boolean(actions)} label={homeLabel} />;
   return (
     <CenteredLayout
       {...rest}
@@ -69,8 +90,8 @@ function StatusPage({
   );
 }
 
-const retry = (onRetry: (() => void) | undefined): ReactNode =>
-  onRetry && <Button onClick={onRetry}>Try again</Button>;
+const retry = (onRetry: (() => void) | undefined, label = "Try again"): ReactNode =>
+  onRetry && <Button onClick={onRetry}>{label}</Button>;
 
 /**
  * 404: the page is not there. `numeral` draws a large "404" above the title, for a site whose 404
@@ -79,7 +100,7 @@ const retry = (onRetry: (() => void) | undefined): ReactNode =>
 export function NotFound({
   numeral = false,
   ...props
-}: StatusPageProps & {
+}: HomewardProps & {
   /** Draws a large "404" above the title. Off by default. The digits are fixed: there is no text prop. */
   numeral?: boolean | undefined;
 }): ReactElement {
@@ -106,14 +127,19 @@ export function NotFound({
  */
 export function ErrorPage({
   detail,
+  detailLabel = "Error",
   onRetry,
+  retryLabel,
   actions,
   ...props
-}: StatusPageProps & {
+}: RetryProps & {
   /** The error text, in a `CodeBlock` under the copy: a request id or a message a reader may see, never a stack trace. */
   detail?: string;
-  /** Adds a "Try again" button that calls it, unless `actions` replaces the button. */
-  onRetry?: () => void;
+  /**
+   * The name of the `detail` block, for an app in another language.
+   * @default Error
+   */
+  detailLabel?: string | undefined;
 }): ReactElement {
   return (
     <StatusPage
@@ -121,29 +147,22 @@ export function ErrorPage({
         title: "Something went wrong",
         body: "An error stopped this page from loading. You can try again.",
       }}
-      actions={actions ?? retry(onRetry)}
-      extra={detail && <CodeBlock label="Error">{detail}</CodeBlock>}
+      actions={actions ?? retry(onRetry, retryLabel)}
+      extra={detail && <CodeBlock label={detailLabel}>{detail}</CodeBlock>}
       {...props}
     />
   );
 }
 
 /** The device has no connection. `onRetry` adds a "Try again" button, unless `actions` replaces it. */
-export function Offline({
-  onRetry,
-  actions,
-  ...props
-}: StatusPageProps & {
-  /** Adds a "Try again" button that calls it, unless `actions` replaces the button. */
-  onRetry?: () => void;
-}): ReactElement {
+export function Offline({ onRetry, retryLabel, actions, ...props }: RetryProps): ReactElement {
   return (
     <StatusPage
       copy={{
         title: "You are offline",
         body: "Check your connection and try again.",
       }}
-      actions={actions ?? retry(onRetry)}
+      actions={actions ?? retry(onRetry, retryLabel)}
       {...props}
     />
   );
@@ -171,7 +190,7 @@ export function Maintenance(props: StatusPageProps): ReactElement {
  * 403: signed in, or not, but not allowed here. The page for a route that exists and the reader may
  * not see; a route that is not there is a `NotFound`.
  */
-export function Forbidden(props: StatusPageProps): ReactElement {
+export function Forbidden(props: HomewardProps): ReactElement {
   return (
     <StatusPage
       copy={{

@@ -8,6 +8,7 @@ import {
   FullBleedLayout,
   ListRow,
   Text,
+  Stack,
 } from "@slashsuite/ui-react";
 
 const meta: Meta = { title: "Data/ListRow" };
@@ -20,20 +21,20 @@ export const ActiveOnPanel: S = {
     <FullBleedLayout
       padded
       aside={
-        <div>
+        <Stack divided>
           <ListRow size="sm" trailing="2">
             Missing part
           </ListRow>
-          <ListRow size="sm" divided highlighted trailing="1">
+          <ListRow size="sm" highlighted trailing="1">
             Raw colour
           </ListRow>
-          <ListRow size="sm" divided selected trailing="4">
+          <ListRow size="sm" selected trailing="4">
             Local one-off
           </ListRow>
-          <ListRow size="sm" divided trailing="3">
+          <ListRow size="sm" trailing="3">
             Custom spacing
           </ListRow>
-        </div>
+        </Stack>
       }
     >
       <Text>The shot under review.</Text>
@@ -43,8 +44,8 @@ export const ActiveOnPanel: S = {
 
 /**
  * `panel` is content under a row with no `href` or `onClick` that starts where its label does, past `leading`: a row
- * that opens in place. The line above the row (`divided`) covers the panel too,
- * so a list of them is `divided={index > 0}` on each.
+ * that opens in place. In a `Stack divided` the line above the row
+ * covers the panel too.
  */
 export const StaticDetail: S = {
   render: function Render() {
@@ -57,30 +58,31 @@ export const StaticDetail: S = {
     return (
       <div className="max-w-xl">
         <Card flush>
-          {chats.map((chat, index) => (
-            <ListRow
-              key={chat.name}
-              divided={index > 0}
-              leading={<Avatar name={chat.name} />}
-              trailing="10:42"
-              actions={
-                <Button
-                  size="sm"
-                  variant="outline"
-                  aria-expanded={open === chat.name}
-                  onClick={() => setOpen(open === chat.name ? null : chat.name)}
-                >
-                  {open === chat.name ? "Close" : "Open"}
-                </Button>
-              }
-              panel={open === chat.name && <Text>Thread with {chat.name} opens here.</Text>}
-            >
-              <Text as="span" strong>
-                {chat.name}
-              </Text>
-              <Caption>{chat.last}</Caption>
-            </ListRow>
-          ))}
+          <Stack divided>
+            {chats.map((chat) => (
+              <ListRow
+                key={chat.name}
+                leading={<Avatar name={chat.name} />}
+                trailing="10:42"
+                actions={
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    aria-expanded={open === chat.name}
+                    onClick={() => setOpen(open === chat.name ? null : chat.name)}
+                  >
+                    {open === chat.name ? "Close" : "Open"}
+                  </Button>
+                }
+                panel={open === chat.name && <Text>Thread with {chat.name} opens here.</Text>}
+              >
+                <Text as="span" strong>
+                  {chat.name}
+                </Text>
+                <Caption>{chat.last}</Caption>
+              </ListRow>
+            ))}
+          </Stack>
         </Card>
       </div>
     );

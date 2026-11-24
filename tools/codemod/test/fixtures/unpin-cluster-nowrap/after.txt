@@ -1,0 +1,7 @@
+import { Cluster } from "@hackcove/ui-react";
+
+export const view = (
+  <Cluster gap="xs">
+    x
+  </Cluster>
+);

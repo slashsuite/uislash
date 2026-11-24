@@ -132,7 +132,7 @@ const GALLERY_TOASTS: Toast[] = [
     id: "failed",
     tone: "danger",
     title: "Not saved",
-    body: "The server did not answer.",
+    description: "The server did not answer.",
   },
 ];
 
@@ -149,7 +149,7 @@ export function GalleryToast() {
         Show toasts
       </Button>
       <ToastRegion
-        toasts={toasts}
+        items={toasts}
         onDismiss={(id) => setToasts((all) => all.filter((toast) => toast.id !== id))}
       />
     </div>

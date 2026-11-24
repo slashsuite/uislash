@@ -2,6 +2,7 @@
 import type { ReactNode } from "react";
 import { isInaccessible, queryAllByAttribute } from "@testing-library/dom";
 import { describe, expect, it } from "vitest";
+import { DocsLayout } from "./DocsLayout.js";
 import { EmptyState } from "./EmptyState.js";
 import {
   CardGrid,
@@ -57,6 +58,11 @@ const layouts: Record<string, (loading?: boolean) => ReactNode> = {
     <SidebarLayout aside={<p>Rail</p>} loading={loading}>
       {inside}
     </SidebarLayout>
+  ),
+  DocsLayout: (loading) => (
+    <DocsLayout nav={[]} asideLabel="Docs" title="Install" loading={loading}>
+      {inside}
+    </DocsLayout>
   ),
   FullBleedLayout: (loading) => <FullBleedLayout loading={loading}>{inside}</FullBleedLayout>,
   CenteredLayout: (loading) => (

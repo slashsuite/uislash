@@ -1,0 +1,10 @@
+import { Menu, type MenuAction } from "@hackcove/ui-react";
+
+const actions: readonly MenuAction[] = [
+  { label: "Edit", onClick: edit },
+  { label: "Delete", onClick() { remove(); } },
+];
+const archive: MenuAction = { label: "Archive", onClick: archiveIt };
+
+export const view = <Menu label="Actions" items={actions} />;
+export const more = <Menu label="More" items={[...actions, archive]} />;

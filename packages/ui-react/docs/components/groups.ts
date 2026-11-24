@@ -35,6 +35,6 @@ export const groupPages: ComponentPage[] = [
       "The focus ring comes from the component.",
     ],
     api: ["SegmentedControl"],
-    types: ["Segment"],
+    types: ["Segment", "SwitchButton", "SwitchLink"],
   },
 ];

@@ -94,9 +94,10 @@ export const PAD: Record<Size, { head: string; cell: string; group: string }> = 
   lg: { head: "px-6 py-3.5", cell: "px-6 py-5", group: "px-6 py-3" },
 };
 
-export type Align = "start" | "center" | "end";
+/** Where a table cell's content sits across it: `start`, `center` or `end` (numbers). */
+export type CellAlign = "start" | "center" | "end";
 
-export const ALIGN: Record<Align, string> = {
+export const ALIGN: Record<CellAlign, string> = {
   start: "text-left",
   center: "text-center",
   end: "text-right",
