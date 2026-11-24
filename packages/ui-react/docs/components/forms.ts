@@ -58,7 +58,7 @@ export const forms: ComponentSection = {
       },
       accessibility: [
         "An `Input` is a native `<input>`: it takes `type`, `inputMode`, `autoComplete`, `required`, `disabled` and the `aria-*` and `data-*` props.",
-        'A `type="search"` field shows a clear button while it has a value, named "Clear search" or by `clearLabel`; it is hidden when the field is disabled or read-only.',
+        'A `type="search"` field shows a clear button while it has a value, named "Clear search" or by `clearLabel`; it is hidden when the field is disabled or read-only. Escape clears it too, and in a `Dialog` only the second Escape, in the empty field, closes the dialog.',
         "The `icon` is decorative and hidden from assistive tech.",
         'A `numeric` field is a text field with a number keypad (`inputMode="decimal"` unless you pass your own), so it is read and kept exactly as typed.',
         "In a `Field`, the `Field` around it gives it its label and its hint or error as `aria-describedby`, and an error marks it `aria-invalid` with a red edge.",

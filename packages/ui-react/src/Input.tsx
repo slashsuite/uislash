@@ -17,7 +17,7 @@ import { useFieldControl } from "./fieldControl.js";
  * value in tabular figures and brings up the phone's number keypad (`inputMode="decimal"` unless
  * you pass your own), and stays a text field, so "1 250" is kept as typed; never use
  * `type="number"` for a figure a person types. `type="search"` drops the browser's own search look and shows a clear button at the
- * trailing edge while the field has a value, named by `clearLabel`. The `ref` reaches the `<input>`.
+ * trailing edge while the field has a value, named by `clearLabel`, and Escape clears it. The `ref` reaches the `<input>`.
  */
 export function Input({
   icon,
