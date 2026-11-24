@@ -1002,7 +1002,7 @@
   },
   "ChatComposer": {
     "name": "ChatComposer",
-    "description": "The box a message is typed into, with its button beside it. It keeps its own text. Enter sends\nthe trimmed text and clears the box; Shift+Enter is a newline; empty or whitespace-only text does\nnot send. While `busy` a reply is on its way: the button is Stop, Enter does not send, and typing\ncarries on with the text kept for the next send.",
+    "description": "The box a message is typed into, with its button beside it. It keeps its own text, and the box\ngrows with it from 2 rows to 8. Enter sends the trimmed text and clears the box; Shift+Enter is a\nnewline. Send stays enabled on an empty box: sending empty or whitespace-only text sends nothing\nand shows `emptyReason` under the box until the next keystroke. While `busy` a reply is on its way: the button is Stop, Enter does not send, and typing\ncarries on with the text kept for the next send.",
     "props": [
       {
         "name": "busy",
@@ -1018,6 +1018,14 @@
         "required": false,
         "default": "false",
         "description": "Disables the box and the button. For a chat that cannot take a message at all, not for a reply in flight: that is `busy`.",
+        "native": false
+      },
+      {
+        "name": "emptyReason",
+        "type": "string",
+        "required": false,
+        "default": "Write a message first.",
+        "description": "Shown under the box when Send is pressed on an empty box.",
         "native": false
       },
       {
@@ -1955,7 +1963,7 @@
         "name": "onSubmit",
         "type": "((event: FormEvent<HTMLFormElement>) => void | Promise<unknown>)",
         "required": false,
-        "description": "Makes the dialog a form: one `<form noValidate>` holds the body, the `error` and the footer,\nso a `Button type=\"submit\"` in the footer or Enter in a field submits it, with no `form`\nattribute or id. The default is prevented before this runs, and a rejection is yours to\ncatch and show as `error`. Put no `<form method=\"dialog\">` in the footer of a form dialog:\nit would nest a form.",
+        "description": "Makes the dialog a form: one `<form noValidate>` holds the body, the `error` and the footer,\nso a `Button type=\"submit\"` in the footer or Enter in a field submits it, with no `form`\nattribute or id. The default is prevented before this runs, and a rejection is yours to\ncatch and show as `error`. Once the submit settles, the focus moves to the first field marked\ninvalid (`aria-invalid=\"true\"`), if any. Put no `<form method=\"dialog\">` in the footer of a form dialog:\nit would nest a form.",
         "native": false
       },
       {
@@ -2453,14 +2461,14 @@
         "name": "emptyReason",
         "type": "string",
         "required": true,
-        "description": "Said when the field is empty and the submit button is blocked.",
+        "description": "The field's error when it is submitted empty: the submit button stays enabled, so this says what is missing.",
         "native": false
       },
       {
         "name": "hint",
         "type": "string",
         "required": true,
-        "description": "A muted line under the field; `emptyReason` takes its place while the field is empty.",
+        "description": "A muted line under the field.",
         "native": false
       },
       {
@@ -2626,7 +2634,7 @@
   },
   "FormGrid": {
     "name": "FormGrid",
-    "description": "Two columns of `Field`s from `md`, one below it. A `Field` takes one column; `span=\"full\"` runs\nit across both, and a `FormRow` is always full width.",
+    "description": "Two columns of `Field`s once the grid is 36rem wide, one below that. It folds by its own width,\nnot the viewport's, so it stays one column in a `Dialog` or a side column. A `Field` takes one\ncolumn; `span=\"full\"` runs it across both, and a `FormRow` is always full width.",
     "props": [
       {
         "name": "id",
@@ -2639,7 +2647,7 @@
   },
   "FormLayout": {
     "name": "FormLayout",
-    "description": "A form page: header (no header `actions`), then a `max-w-3xl` column that starts at the Container's start edge (it is not re-centred), with an `actions` row at the end. `error` is the submit's failure, a danger `Callout` (an alert) directly above that row. Other props go on the `<form>`. While `loading` it owns the wait and passes it to everything inside, the header too.",
+    "description": "A form page: header (no header `actions`), then a `max-w-3xl` column that starts at the Container's start edge (it is not re-centred), with an `actions` row at the end. `note` is a muted line under that row, set apart from the form: a closing remark about the whole submit (when you will hear back, what happens next), never a field's hint. `error` is the submit's failure, a danger `Callout` (an alert) directly above that row. Other props go on the `<form>`. While `loading` it owns the wait and passes it to everything inside, the header too.",
     "props": [
       {
         "name": "actions",
@@ -2685,6 +2693,13 @@
         "native": false
       },
       {
+        "name": "note",
+        "type": "ReactNode",
+        "required": false,
+        "description": "A muted line under the `actions`, set apart from them: a closing remark about the whole form\n(\"We reply within two working days.\"). A note about one field is that `Field`'s `hint`.",
+        "native": false
+      },
+      {
         "name": "tabs",
         "type": "ReactNode",
         "required": false,
@@ -2702,7 +2717,7 @@
   },
   "FormRow": {
     "name": "FormRow",
-    "description": "An inline-edit row: several controls side by side with proportional widths (`FormRowField`\n`span` 1 to 4), optional `actions` after them (a save button), and one `hint` or `error` line\nunder the whole row. Every control sits on the bottom edge, so the actions line up with them\nwhatever the labels do. Under `md` the fields and the actions stack.\n\nThe row owns the note, so the fields beside each other keep their height: a `FormRowField` has\nno `hint` or `error` of its own.",
+    "description": "An inline-edit row: several controls side by side with proportional widths (`FormRowField`\n`span` 1 to 4), optional `actions` after them (a save button), and one `hint` or `error` line\nunder the whole row. Every control sits on the bottom edge, so the actions line up with them\nwhatever the labels do. Narrower than 36rem (the row's own width, not the viewport's) the fields\nand the actions stack.\n\nThe row owns the note, so the fields beside each other keep their height: a `FormRowField` has\nno `hint` or `error` of its own.",
     "props": [
       {
         "name": "actions",

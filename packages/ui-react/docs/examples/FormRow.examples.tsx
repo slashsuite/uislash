@@ -32,7 +32,7 @@ export const DontInlineEdit = () => (
   </FormRow>
 );
 
-/** A `FormGrid` is two columns from `md`; a long control takes `span="full"` so it runs across both. */
+/** A `FormGrid` is two columns once it is 36rem wide; a long control takes `span="full"` so it runs across both. */
 export const DoTwoColumns = () => (
   <FormGrid>
     <Field label="First name" htmlFor="do-grid-first">

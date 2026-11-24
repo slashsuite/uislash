@@ -29,11 +29,7 @@ const field = (): HTMLInputElement =>
 const button = (name: string): HTMLButtonElement =>
   screen.getByRole<HTMLButtonElement>("button", { name });
 
-/**
- * Submit the field's form with no button press, as a script's `requestSubmit` does: a browser's own
- * implicit submission does nothing while the submit button is disabled, so only a script reaches the
- * guard in the handler, which is what is under test.
- */
+/** Submit the field's form with no button press, as a script's `requestSubmit` does. */
 const submitDirectly = () =>
   act(async () => {
     const form = field().form;
@@ -42,33 +38,42 @@ const submitDirectly = () =>
   });
 
 describe("FieldDialog", () => {
-  it("names the field and blocks submit with the empty reason while it is empty", async () => {
-    const onSubmit = vi.fn<(value: string) => Promise<unknown>>(() => Promise.resolve());
-    open(onSubmit);
+  it("names the field and keeps submit enabled while it is empty", () => {
+    open(() => Promise.resolve());
     expect(screen.getByRole("dialog", { name: "New project" })).not.toBeNull();
     expect(field().placeholder).toBe("my-project");
-    expect(screen.getByText("Type a name first.")).not.toBeNull();
-    const create = button("Create");
-    expect(create.getAttribute("aria-disabled")).toBe("true");
-    expect(create.title).toBe("Type a name first.");
-    await user().type(field(), "   {Enter}");
-    expect(button("Create").getAttribute("aria-disabled")).toBe("true");
-    expect(onSubmit).not.toHaveBeenCalled();
+    expect(field().required).toBe(true);
+    expect(screen.getByText("Letters and dashes.")).not.toBeNull();
+    expect(button("Create").getAttribute("aria-disabled")).toBeNull();
+    expect(screen.queryByText("Type a name first.")).toBeNull();
   });
 
-  it("does not submit an empty field even when the form is submitted directly", async () => {
+  it("reports the empty field on submit, focuses it and sends nothing", async () => {
+    const onSubmit = vi.fn<(value: string) => Promise<unknown>>(() => Promise.resolve());
+    open(onSubmit);
+    await user().type(field(), "   ");
+    await user().click(button("Create"));
+    expect(onSubmit).not.toHaveBeenCalled();
+    expect(field().getAttribute("aria-invalid")).toBe("true");
+    expect(announced()).toEqual(["Type a name first."]);
+    expect(screen.getByText("Letters and dashes.")).not.toBeNull();
+    expect(document.activeElement).toBe(field());
+  });
+
+  it("does not submit an empty field when the form is submitted directly", async () => {
     const onSubmit = vi.fn<(value: string) => Promise<unknown>>(() => Promise.resolve());
     open(onSubmit);
     await submitDirectly();
     expect(onSubmit).not.toHaveBeenCalled();
+    expect(announced()).toEqual(["Type a name first."]);
   });
 
-  it("enables submit once there is text and shows the hint", async () => {
+  it("clears the empty error once the user types", async () => {
     open(() => Promise.resolve());
-    await user().type(field(), "alpha");
-    expect(button("Create").getAttribute("aria-disabled")).toBeNull();
-    expect(screen.getByText("Letters and dashes.")).not.toBeNull();
-    expect(screen.queryByText("Type a name first.")).toBeNull();
+    await user().click(button("Create"));
+    await user().type(field(), "a");
+    expect(field().getAttribute("aria-invalid")).toBe("false");
+    expect(announced()).toEqual([]);
   });
 
   it("submits the trimmed value and closes when onSubmit resolves", async () => {

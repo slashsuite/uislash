@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
   Button,
+  Dialog,
   Field,
   FormGrid,
   FormRow,
@@ -16,7 +17,7 @@ const meta: Meta = { title: "Forms/FormRow" };
 export default meta;
 type S = StoryObj;
 
-/** Fields side by side, widths in proportion to `span` (1 to 4), the action after them. Under `md` they stack. */
+/** Fields side by side, widths in proportion to `span` (1 to 4), the action after them. Narrower than 36rem (the row's own width) they stack. */
 export const InlineEdit: S = {
   render: () => (
     <FormRow actions={<Button>Save</Button>}>
@@ -82,7 +83,7 @@ export const Spans: S = {
   ),
 };
 
-/** `FormGrid` is two columns from `md`; a `Field` with `span="full"` and a `FormRow` run across both. */
+/** `FormGrid` is two columns once it is 36rem wide (its own width, not the screen's); a `Field` with `span="full"` and a `FormRow` run across both. */
 export const TwoColumnForm: S = {
   render: () => (
     <FormGrid>
@@ -104,6 +105,27 @@ export const TwoColumnForm: S = {
         </FormRowField>
       </FormRow>
     </FormGrid>
+  ),
+};
+
+/** In a `md` Dialog (440px) the same grid is one column whatever the screen: it folds by its own width. */
+export const GridInADialog: S = {
+  render: () => (
+    <Dialog
+      title="New contact"
+      onClose={() => undefined}
+      onSubmit={(event) => event.preventDefault()}
+      footer={<Button type="submit">Save</Button>}
+    >
+      <FormGrid>
+        <Field label="First name" htmlFor="dialog-first">
+          <Input id="dialog-first" />
+        </Field>
+        <Field label="Last name" htmlFor="dialog-last">
+          <Input id="dialog-last" />
+        </Field>
+      </FormGrid>
+    </Dialog>
   ),
 };
 

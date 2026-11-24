@@ -234,7 +234,7 @@ export const forms: ComponentSection = {
       pairs: ["FormRow/InlineEdit", "FormRow/TwoColumns"],
       usage: {
         do: [
-          'A form of several fields is a `FormGrid` of `Field`s: two columns from `md`, one below. A long control, such as a `Textarea`, takes `span="full"`.',
+          'A form of several fields is a `FormGrid` of `Field`s: two columns once the grid is 36rem wide (its own width, so one in a `Dialog`), one below. A long control, such as a `Textarea`, takes `span="full"`.',
           "A line of controls to edit one record in place is a `FormRow` of `FormRowField`s, with the save `Button` as `actions`.",
           "`FormRowField` `span` 1 to 4 is its share of the row's width.",
           "The `hint` or `error` goes on the `FormRow`, once, under the whole line. A `FormRowField` has no hint or error, and a `Field` does not belong inside a `FormRow`.",
@@ -244,7 +244,7 @@ export const forms: ComponentSection = {
       accessibility: [
         "`FormRowField` renders a `<label>` tied to its control by `htmlFor`, as `Field` does.",
         "The row's `error` sits under its hint and is announced politely, as `Field`'s is.",
-        "Under `md` the fields and the action stack in reading order.",
+        "Narrower than 36rem (the row's own width) the fields and the action stack in reading order.",
       ],
       api: ["FormRow", "FormRowField", "FormGrid"],
       types: ["FormRowSpan"],
