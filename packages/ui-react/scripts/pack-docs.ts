@@ -1,13 +1,16 @@
 /**
  * Fails `pack-check` when the tarball's agent docs are incomplete (`packedDocs.ts` says what they
- * must hold), or its `uislash` skill is missing or names a docs file it lacks (`packedSkill.ts`).
- * Reads the file list from `npm pack --dry-run`, so it checks what would ship, not the working tree. The docs are written by `bunx moon run ui-react:agent-docs`.
+ * must hold), its `uislash` skill is missing or names a docs file it lacks (`packedSkill.ts`), or
+ * the README does not open with a pointer to the docs (`readmePointer.ts`). Reads the file list
+ * from `npm pack --dry-run`, so it checks what would ship, not the working tree. The docs are
+ * written by `bunx moon run ui-react:agent-docs`.
  */
 import { readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { componentPages } from "../docs/components/index";
 import { packedDocsProblems } from "./packedDocs";
 import { packedSkillProblems, skillFile } from "./packedSkill";
+import { readmePointerProblems } from "./readmePointer";
 
 const root = resolve(import.meta.dirname, "..");
 const pack = Bun.spawnSync(["npm", "pack", "--dry-run", "--json", "--ignore-scripts"], {
@@ -34,11 +37,17 @@ const files = packs.flatMap((p) => p.files.map((file) => file.path));
 const index = files.includes("agent-docs/llms.txt")
   ? readFileSync(join(root, "agent-docs/llms.txt"), "utf8")
   : undefined;
-const problems = packedDocsProblems(
-  files,
-  index,
-  componentPages.map((page) => page.slug),
-);
+const readme = files.includes("README.md")
+  ? readFileSync(join(root, "README.md"), "utf8")
+  : undefined;
+const problems = [
+  ...packedDocsProblems(
+    files,
+    index,
+    componentPages.map((page) => page.slug),
+  ),
+  ...readmePointerProblems(files, readme),
+];
 if (problems.length > 0) {
   throw new Error(
     `the tarball's agent docs are incomplete (run \`bunx moon run ui-react:agent-docs\`):\n${problems.join("\n")}`,
