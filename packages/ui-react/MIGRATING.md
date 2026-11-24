@@ -474,7 +474,7 @@ with no alias. TypeScript flags every old name, and `--to-0.13` (below) makes mo
 | Old | New |
 | --- | --- |
 | `ListRow divided` | gone: put the rows in a `Stack divided`, which draws the line between them |
-| `SubsectionHeading truncate`, `TableCell truncate`, `TableEditCell truncate` | `lines={1}`, as on `Text` |
+| `SubsectionHeading truncate`, `TableCell truncate` | `lines={1}`, as on `Text` |
 | a `Menu` item's `onSelect` | `onClick` |
 | a `Menu` item's `disabled` | `disabledReason`: the words under the label that say why it cannot be chosen yet |
 | `ToastRegion toasts` | `items` |
@@ -609,7 +609,7 @@ bun <checkout>/tools/codemod/src/run.ts src --to-0.13 --write   # rewrites the f
 | Old | New | |
 | --- | --- | --- |
 | `ListRow divided` | gone: put the rows in a `Stack divided` | codemod removes it and reports the row, so a person adds the `Stack` |
-| `SubsectionHeading truncate`, `TableCell truncate`, `TableEditCell truncate` | `lines={1}` | codemod for a bare `truncate` or `{true}`, and removes `{false}`; one set to an expression is reported |
+| `SubsectionHeading truncate`, `TableCell truncate` | `lines={1}` | codemod for a bare `truncate` or `{true}`, and removes `{false}`; one set to an expression is reported |
 | `Menu items`: an action's `onSelect` | `onClick` | codemod in an inline array of object literals, and in a literal the same file types `MenuAction` (or an array of it) from the package; a `Menu` whose `items` the file does not write out in full is reported |
 | `ToastRegion toasts` | `items` | codemod |
 | a toast's `body` | `description` | codemod in an inline `items` array and in a literal the same file types `Toast` (or an array of it) from the package; a `ToastRegion` whose toasts the file does not write out in full is reported once |

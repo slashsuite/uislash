@@ -167,7 +167,7 @@ describe("Menu", () => {
     await u.click(screen.getByRole("button", { name: "More actions" }));
     await u.keyboard("{ArrowDown}");
     expect(document.activeElement).toBe(screen.getByRole("menuitem", { name: "Hide chat" }));
-    const copy = screen.getByRole("menuitem", { name: /Copy link/ });
+    const copy = screen.getByRole("menuitem", { name: "Copy link" });
     expect(copy.getAttribute("aria-disabled")).toBe("true");
     await u.click(copy);
     expect(chat).not.toHaveBeenCalled();
@@ -178,8 +178,27 @@ describe("Menu", () => {
     items[1] = { ...items[1], disabledReason: "No link yet" } as (typeof items)[1];
     render(<Menu label="More actions" items={items} defaultOpen />);
     expect(
-      screen.getByRole("menuitem", { name: /Copy link/, description: /No link yet/ }),
+      screen.getByRole("menuitem", { name: "Copy link", description: "No link yet" }),
     ).toBeTruthy();
+  });
+
+  it("names a link item by its label and its reason as its description", () => {
+    const items: [MenuAction] = [{ label: "Docs", href: "/docs", disabledReason: "Not published" }];
+    render(<Menu label="More actions" items={items} defaultOpen />);
+    expect(
+      screen.getByRole("menuitem", { name: "Docs", description: "Not published" }),
+    ).toBeTruthy();
+  });
+
+  it("leaves an item with an empty reason enabled", async () => {
+    const copy = vi.fn<() => void>();
+    const items = actions({ chat: copy });
+    items[1] = { ...items[1], disabledReason: "" } as (typeof items)[1];
+    render(<Menu label="More actions" items={items} defaultOpen />);
+    const item = screen.getByRole("menuitem", { name: "Copy link" });
+    expect(item.getAttribute("aria-disabled")).toBeNull();
+    await user().click(item);
+    expect(copy).toHaveBeenCalledOnce();
   });
 
   it("holds the menu open from the app's state and reports each change", async () => {

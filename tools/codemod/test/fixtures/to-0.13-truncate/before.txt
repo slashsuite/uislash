@@ -1,9 +1,9 @@
-import { SubsectionHeading, TableCell, TableEditCell } from "@hackcove/ui-react";
+import { SubsectionHeading, TableCell } from "@hackcove/ui-react";
 
 export const view = (
   <>
     <SubsectionHeading truncate>Notes</SubsectionHeading>
     <TableCell truncate={true}>Long</TableCell>
-    <TableEditCell truncate={false}>Edit</TableEditCell>
+    <TableCell truncate={false}>Short</TableCell>
   </>
 );

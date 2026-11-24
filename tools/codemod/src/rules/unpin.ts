@@ -86,14 +86,18 @@ export function unpinGap(tag: Tag, component: string, context: Context): void {
 
 /**
  * `Cluster wrap={false}` goes: a row that wraps is the new look. A bare `wrap` (or `{true}`), which
- * the 0.11 pass keeps, says the default and goes too. One set in code is a person's call.
+ * the 0.11 pass keeps, says the default and goes too. Each `{false}` removed is reported, since a
+ * person may have written it for a row that must stay on one line; one set in code is a person's call.
  */
 export function unpinWrap(tag: Tag, component: string, context: Context): void {
   if (component !== "Cluster") return;
   const wrap = attributeOf(tag, "wrap");
   if (wrap === undefined) return;
-  if (isOn(wrap) || valueOf(wrap)?.kind === ts.SyntaxKind.FalseKeyword) remove(context, wrap);
-  else report(context, wrap, "wrap is set in code: a Cluster wraps by default now, check it");
+  if (isOn(wrap)) remove(context, wrap);
+  else if (valueOf(wrap)?.kind === ts.SyntaxKind.FalseKeyword) {
+    remove(context, wrap);
+    report(context, wrap, "removed wrap={false}: check this row may wrap now");
+  } else report(context, wrap, "wrap is set in code: a Cluster wraps by default now, check it");
 }
 
 const NUMERIC_CELLS = ["TableCell", "TableEditCell"];

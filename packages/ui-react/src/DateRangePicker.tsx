@@ -161,13 +161,14 @@ export function DateRangePicker({
   ...rest
 }: DateRangePickerProps): ReactElement {
   const frame = usePickerFrame(size);
+  // `rest` carries the bounds, as `Notes` reads them.
   const shown = useShownRange({
+    ...rest,
     value,
     defaultValue,
     onChange,
-    minValue: rest.minValue,
-    maxValue: rest.maxValue,
     isRequired: required,
+    labels: [startLabel, endLabel],
   });
   const { container, findDialog } = useDialogContainer();
   return (

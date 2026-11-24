@@ -168,6 +168,8 @@ type RangeProps = {
   minValue?: FieldProps["minValue"] | undefined;
   maxValue?: FieldProps["maxValue"] | undefined;
   isRequired?: boolean | undefined;
+  /** The start and end side's names, which start an impossible day's message. */
+  labels: [string, string];
 };
 
 const blank: Read = { typed: "", impossible: null, partial: false };
@@ -195,10 +197,15 @@ function givenKey(
 }
 
 /** An impossible day, naming its side, or else an end before the start; `null` for neither. */
-function problemOf(start: Read, end: Read, startShown: string, endShown: string): string | null {
+function problemOf(
+  [start, end]: [Read, Read],
+  [startLabel, endLabel]: [string, string],
+  startShown: string,
+  endShown: string,
+): string | null {
   const impossible = [
-    start.impossible && `Start date: ${start.impossible}`,
-    end.impossible && `End date: ${end.impossible}`,
+    start.impossible && `${startLabel}: ${start.impossible}`,
+    end.impossible && `${endLabel}: ${end.impossible}`,
   ].filter(Boolean);
   if (impossible.length > 0) return impossible.join(" ");
   if (startShown && endShown && startShown > endShown) {
@@ -227,7 +234,7 @@ export function useShownRange(props: RangeProps) {
   const startShown = withinRange(start.typed, props, DATE);
   const endShown = withinRange(end.typed, props, DATE);
   const shown = rangeKey(startShown, endShown);
-  const problem = problemOf(start, end, startShown, endShown);
+  const problem = problemOf([start, end], props.labels, startShown, endShown);
   const reported = useRef(shown);
   const report = useRef(onChange);
   useEffect(() => {

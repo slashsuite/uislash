@@ -10,6 +10,7 @@ import {
   replace,
   valueOf,
 } from "../attributes.js";
+import type { Edit } from "../edits.js";
 import { type Context, meaningfulChildren, report, type Tag, type TagRule } from "../source.js";
 import { usesOf } from "./imports.js";
 
@@ -24,7 +25,7 @@ export function listRowDivided(tag: Tag, component: string, context: Context): v
   report(context, tag, "divided is gone: put the rows in a Stack divided");
 }
 
-const TRUNCATED = ["SubsectionHeading", "TableCell", "TableEditCell"];
+const TRUNCATED = ["SubsectionHeading", "TableCell"];
 
 /** `truncate` on a heading or a cell is `lines={1}`, as on `Text` in 0.11. */
 export function truncateLines(tag: Tag, component: string, context: Context): void {
@@ -37,7 +38,6 @@ export function truncateLines(tag: Tag, component: string, context: Context): vo
 
 /** The property renamed in each kind of item, by the package type that names an item. */
 const ITEM_TYPES: Readonly<Record<string, readonly [string, string]>> = {
-  MenuItem: ["onSelect", "onClick"],
   MenuAction: ["onSelect", "onClick"],
   Toast: ["body", "description"],
 };
@@ -177,8 +177,8 @@ function writtenItems(
   if (!ts.isIdentifier(value)) return undefined;
   const declared = typedDeclarations(context).filter((d) => d.name === value.text);
   const [only] = declared;
-  const declarations = usesOf(context.file, value.text).filter((use) =>
-    ts.isVariableDeclaration(use.parent),
+  const declarations = usesOf(context.file, value.text).filter(
+    (use) => ts.isVariableDeclaration(use.parent) && use.parent.name === use,
   );
   if (declared.length !== 1 || declarations.length !== 1 || only === undefined) return undefined;
   if (ITEM_TYPES[only.type] !== ITEM_TYPES[type] || !allWritten(only.value)) return undefined;
@@ -236,8 +236,12 @@ function holdsLi(node: ts.Node): boolean {
   return ts.forEachChild(node, (child) => (holdsLi(child) ? true : undefined)) ?? false;
 }
 
-/** The one element an `<li>` holds, with the text that replaces the `<li>`; undefined when it cannot. */
-function unwrapped(li: ts.JsxElement, context: Context): string | undefined {
+/**
+ * The edits that unwrap an `<li>` around one element: its opening and closing tags go, and its `key`
+ * moves onto the element. Only the tags are touched, so the element's own renames still apply.
+ * Undefined when it cannot be unwrapped.
+ */
+function unwrapped(li: ts.JsxElement, context: Context): Edit[] | undefined {
   const attributes = li.openingElement.attributes.properties;
   if (!attributes.every((part) => ts.isJsxAttribute(part) && nameOf(part) === "key")) {
     return undefined;
@@ -249,12 +253,18 @@ function unwrapped(li: ts.JsxElement, context: Context): string | undefined {
   if (children.length !== 1 || only === undefined) return undefined;
   const inner = ts.isJsxElement(only) ? only.openingElement : only;
   if (!ts.isJsxOpeningElement(inner) && !ts.isJsxSelfClosingElement(inner)) return undefined;
-  const text = only.getText(context.file);
   const key = attributeOf(li.openingElement, "key");
-  if (key === undefined) return text;
-  if (attributesOf(inner).some((attribute) => nameOf(attribute) === "key")) return undefined;
-  const at = inner.tagName.end - only.getStart(context.file);
-  return `${text.slice(0, at)} ${key.getText(context.file)}${text.slice(at)}`;
+  if (key !== undefined && attributesOf(inner).some((attribute) => nameOf(attribute) === "key")) {
+    return undefined;
+  }
+  const after = inner.attributes.pos;
+  return [
+    { start: li.getStart(context.file), end: only.getStart(context.file), text: "" },
+    ...(key === undefined
+      ? []
+      : [{ start: after, end: after, text: ` ${key.getText(context.file)}` }]),
+    { start: only.end, end: li.end, text: "" },
+  ];
 }
 
 /** `Cluster as="ul"` wraps each child in an `<li>` now, so an `<li>` of the app's own goes. */
@@ -264,16 +274,12 @@ export function clusterList(tag: Tag, component: string, context: Context): void
   if (as !== "ul" && as !== "ol") return;
   const children = meaningfulChildren(tag);
   if (!children.some(holdsLi)) return;
-  const swaps = children.map((child) =>
-    isLi(child) ? { child, text: unwrapped(child, context) } : { child, text: undefined },
-  );
-  if (swaps.some((swap) => swap.text === undefined)) {
+  const swaps = children.map((child) => (isLi(child) ? unwrapped(child, context) : undefined));
+  if (swaps.some((swap) => swap === undefined)) {
     report(context, tag, "Cluster as=ul wraps each child in an li now: drop your own li");
     return;
   }
-  for (const { child, text } of swaps) {
-    context.edits.push({ start: child.getStart(context.file), end: child.end, text: text ?? "" });
-  }
+  for (const edits of swaps) context.edits.push(...(edits ?? []));
 }
 
 export const tagRules: readonly TagRule[] = [

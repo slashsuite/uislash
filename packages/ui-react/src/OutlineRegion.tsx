@@ -128,6 +128,8 @@ export function RegionFrame({
     }
     return (
       <div
+        {...passthroughOf(rest)}
+        {...(alt ? { role: "img", "aria-label": alt } : {})}
         className={cx("relative border border-slate-200 bg-slate-100", shape, IMAGE_WIDTH[width])}
       >
         {children}

@@ -73,7 +73,9 @@ export function checkboxChange(tag: Tag, component: string, context: Context): v
   }
   const { arrow, param, uses } = handler;
   const callee = passedOn(arrow, uses);
-  if (callee !== undefined && ts.isIdentifier(callee)) {
+  // Only a setter collapses to its name: a second run reads `setX` as taking the state, and would
+  // report any other bare name.
+  if (callee !== undefined && ts.isIdentifier(callee) && /^set[A-Z]/.test(callee.text)) {
     replace(context, arrow, callee.getText(context.file));
     return;
   }

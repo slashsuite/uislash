@@ -1,0 +1,12 @@
+import { Cluster, Menu, Select } from "@hackcove/ui-react";
+
+export const view = (edit: () => void, items: string[]) => (
+  <Cluster as="ul">
+    <li key="menu">
+      <Menu label="Actions" items={[{ label: "Edit", onSelect: edit }]} />
+    </li>
+    <li key="pick">
+      <Select<string> label="Pick" items={items} />
+    </li>
+  </Cluster>
+);

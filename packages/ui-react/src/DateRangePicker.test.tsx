@@ -18,10 +18,10 @@ const october: DateRange = {
 };
 
 const shown = () => screen.getAllByRole("spinbutton").map((s) => s.textContent);
-const side = (name: "Start date" | "End date") => screen.getByRole("group", { name });
+const side = (name: string) => screen.getByRole("group", { name });
 
 /** Click into one side's day segment and type, as a person does. */
-async function typeInto(name: "Start date" | "End date", digits: string) {
+async function typeInto(name: string, digits: string) {
   const u = user();
   await u.click(within(side(name)).getAllByRole("spinbutton")[0] ?? document.body);
   await u.keyboard(digits);
@@ -69,6 +69,12 @@ describe("DateRangePicker", () => {
     expect(shown()).toEqual(["30", "02", "2026", "10", "03", "2026"]);
     expect(drawn("Start date: February 2026 has 28 days.")).not.toBeNull();
     expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("starts an impossible day's message with the side's own label", async () => {
+    render(<DateRangePicker label="Période" startLabel="Début" endLabel="Fin" />);
+    await typeInto("Fin", "31022026");
+    expect(drawn("Fin: February 2026 has 28 days.")).not.toBeNull();
   });
 
   it("opens one Monday-first month", () => {

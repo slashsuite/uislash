@@ -67,6 +67,6 @@ export function replace(context: Context, node: ts.Node, text: string): void {
 
 /** Adds an attribute right after the tag name. */
 export function insert(context: Context, tag: Tag, text: string): void {
-  const after = tag.typeArguments?.end ?? tag.tagName.end;
+  const after = tag.attributes.pos;
   context.edits.push({ start: after, end: after, text: ` ${text}` });
 }

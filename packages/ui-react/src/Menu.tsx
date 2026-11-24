@@ -12,6 +12,7 @@ import { cx } from "./cx.js";
 import { Icon } from "./Icon.js";
 import { look, type IconButtonTone } from "./IconButton.js";
 import type { IconName } from "./icons.js";
+import { hasReason } from "./blocked.js";
 import { renderLink } from "./link.js";
 import { Tipped } from "./Tooltip.js";
 import { definedProps, type Passthrough } from "./props.js";
@@ -193,12 +194,14 @@ function Item({ item }: { item: MenuAction }): ReactElement {
     <>
       {item.icon ? <Icon name={item.icon} size="md" /> : null}
       <span className="flex min-w-0 flex-1 flex-col">
-        <span className="truncate">{item.label}</span>
-        {item.disabledReason === undefined ? null : (
+        <AriaText slot="label" className="truncate">
+          {item.label}
+        </AriaText>
+        {hasReason(item.disabledReason) ? (
           <AriaText slot="description" className="text-xs text-slate-500">
             {item.disabledReason}
           </AriaText>
-        )}
+        ) : null}
       </span>
     </>
   );
@@ -208,20 +211,20 @@ function Item({ item }: { item: MenuAction }): ReactElement {
       <MenuItem
         textValue={item.label}
         href={href}
-        isDisabled={item.disabledReason !== undefined}
+        isDisabled={hasReason(item.disabledReason)}
         className={className}
         render={(props) => {
           // An item with `href` is drawn as an anchor; the `div` form is React Aria's fallback.
           if (!("href" in props)) return <div {...props} />;
           // React Aria hands the anchor its role, tab index, handlers and ref; the app's router
           // link draws it when `href` is an in-app path.
-          const { href: _href, className: drawn, children: _children, ...aria } = props;
+          const { href: _href, className: drawn, children, ...aria } = props;
           return renderLink({
             ...aria,
+            children,
             href,
             external,
             className: drawn ?? cx(ITEM, tone.ink),
-            children: inside,
           });
         }}
       >
@@ -233,7 +236,7 @@ function Item({ item }: { item: MenuAction }): ReactElement {
     <MenuItem
       textValue={item.label}
       onAction={item.onClick}
-      isDisabled={item.disabledReason !== undefined}
+      isDisabled={hasReason(item.disabledReason)}
       className={className}
     >
       {inside}

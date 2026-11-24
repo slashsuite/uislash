@@ -64,6 +64,13 @@ describe("RegionFrame", () => {
     expect(screen.queryByText("config")).toBeNull();
   });
 
+  it("is the empty frame with no src and not loading, still named and taking its id", () => {
+    render(<RegionFrame src={undefined} alt="A shot" id="shot" data-testid="frame" />);
+    const frame = screen.getByRole("img", { name: "A shot" });
+    expect(frame.id).toBe("shot");
+    expect(frame.getAttribute("data-testid")).toBe("frame");
+  });
+
   it("draws the picture as usual while loading once it has a src", () => {
     render(<RegionFrame src="/shot.png" alt="A shot" loading />);
     expect(screen.getByRole("img", { name: "A shot" }).getAttribute("src")).toBe("/shot.png");
