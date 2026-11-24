@@ -95,21 +95,20 @@ export const DontLabel: S = {
 export const Loading: StoryObj<{ loading: boolean }> = {
   args: { loading: true },
   render: ({ loading }) => (
-    <div className="max-w-xl">
-      <RegionFrame
-        src={loading ? undefined : sampleShot}
-        alt="A screenshot of a dashboard"
-        aspect="16:9"
-        loading={loading}
-      >
-        {!loading && (
-          <OutlineRegion
-            rect={{ x: 168, y: 112, width: 136, height: 72 }}
-            within={sampleShotSize}
-            label="manifest"
-          />
-        )}
-      </RegionFrame>
-    </div>
+    <RegionFrame
+      src={loading ? undefined : sampleShot}
+      alt="A screenshot of a dashboard"
+      aspect="16:9"
+      width="lg"
+      loading={loading}
+    >
+      {!loading && (
+        <OutlineRegion
+          rect={{ x: 168, y: 112, width: 136, height: 72 }}
+          within={sampleShotSize}
+          label="manifest"
+        />
+      )}
+    </RegionFrame>
   ),
 };
