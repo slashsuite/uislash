@@ -47,7 +47,8 @@ test.describe("DateRangePicker", () => {
     await page.keyboard.press("Tab");
 
     await expect(caption(page)).toHaveText("No period yet.");
-    await expect(page.getByText("The end date is before the start date.")).toBeVisible();
+    // The first copy is drawn under the field; the second is the hidden polite live region's.
+    await expect(page.getByText("The end date is before the start date.").first()).toBeVisible();
     await expect(segment(page, "day", "End")).toHaveAttribute("aria-invalid", "true");
     await expect.poll(() => posted(page, "from")).toBe("");
   });

@@ -65,18 +65,31 @@ describe.each(controls)("$name inside a Field", ({ draw }) => {
         {draw({})}
       </Field>,
     );
-    expect(control().hasAttribute("aria-invalid")).toBe(false);
+    // Said outright, so a browser does not read an empty required control as invalid from load.
+    expect(control().getAttribute("aria-invalid")).toBe("false");
     expect(description(control())).toEqual([HINT]);
   });
 
-  it("is described by the error alone when there is a hint too, and the hint is not drawn", () => {
+  it("is described by the hint and then the error, and keeps the hint drawn", () => {
     render(
       <Field label={LABEL} hint={HINT} error={ERROR}>
         {draw({})}
       </Field>,
     );
-    expect(description(control())).toEqual([ERROR]);
-    expect(screen.queryByText(HINT)).toBeNull();
+    expect(description(control())).toEqual([HINT, ERROR]);
+    expect(screen.getByText(HINT)).toBeInstanceOf(HTMLElement);
+  });
+
+  it("is required when the Field is, and not otherwise", () => {
+    const { unmount } = render(<Field label={LABEL}>{draw({})}</Field>);
+    expect(control().hasAttribute("required")).toBe(false);
+    unmount();
+    render(
+      <Field label={LABEL} required>
+        {draw({})}
+      </Field>,
+    );
+    expect(control().hasAttribute("required")).toBe(true);
   });
 
   it("has no aria-describedby with neither a hint nor an error", () => {
@@ -141,14 +154,14 @@ describe.each(controls)("$name outside a Field", ({ draw }) => {
 });
 
 describe("a control that does not read the Field", () => {
-  it("leaves a Checkbox inside an errored Field without aria-invalid", () => {
+  it("leaves a Checkbox inside an errored Field valid", () => {
     render(
       <Field label={LABEL} error={ERROR}>
         <Checkbox label="Open now" />
       </Field>,
     );
-    expect(screen.getByRole("checkbox", { name: "Open now" }).hasAttribute("aria-invalid")).toBe(
-      false,
+    expect(screen.getByRole("checkbox", { name: "Open now" }).getAttribute("aria-invalid")).toBe(
+      "false",
     );
   });
 });

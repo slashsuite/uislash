@@ -7,6 +7,8 @@ import {
   Text,
 } from "react-aria-components";
 import { cx } from "./cx.js";
+import { ErrorLine, RequiredMark } from "./Field.js";
+import { TOUCH_TARGET } from "./target.js";
 import { definedProps, type Passthrough } from "./props.js";
 import type { Size } from "./size.js";
 import { WaitingChoice } from "./fieldWait.js";
@@ -24,8 +26,9 @@ const RadioSize = createContext<Size>("md");
 
 /**
  * A named group of radios, one chosen. The `label` names the group; `hint` is a muted line under
- * the options that says more (the group's description); an `error` replaces it with a red line
- * (`role="alert"`) and marks the group invalid. Give it `value` and `onChange`, or
+ * the options that says more (the group's description); an `error` adds a red line with an alert
+ * icon under it, announced politely, and marks the group invalid. `required` puts a red asterisk
+ * after the label. Give it `value` and `onChange`, or
  * `defaultValue` and let it keep the choice. `name` posts the choice in a form.
  * The arrow keys move between the radios and choose, and the group is one tab stop. `size` sizes
  * every radio in the group, the same scale as a `Checkbox`. While `loading` the labels are drawn and
@@ -45,9 +48,9 @@ export function RadioGroup({
 }: {
   /** The group's visible name, above the options. */
   label: ReactNode;
-  /** A muted line under the options that says more; it describes the group. Replaced by `error`. */
+  /** A muted line under the options that says more; it describes the group, and stays while `error` shows. */
   hint?: ReactNode;
-  /** Shown under the options in red with `role="alert"`; marks the group invalid. Like `Field`'s `error`. */
+  /** A red line under the hint, with an alert icon; marks the group invalid. Like `Field`'s `error`. */
   error?: ReactNode;
   /** The `value` of the chosen radio. */
   value?: string;
@@ -59,7 +62,7 @@ export function RadioGroup({
   name?: string;
   /** Disables every radio. */
   disabled?: boolean | undefined;
-  /** Marks the choice required: the group is `aria-required`, and a form will not submit with no option chosen. */
+  /** Marks the choice required: a red asterisk after the label, the group is `aria-required`, and a form will not submit with no option chosen. */
   required?: boolean | undefined;
   /**
    * The size of every radio in the group: `sm` is `text-xs` and a smaller circle, `lg` `text-base`
@@ -80,7 +83,10 @@ export function RadioGroup({
       {...(required ? { isRequired: true } : {})}
       className="flex flex-col gap-2"
     >
-      <Label className="text-sm font-medium text-slate-700">{label}</Label>
+      <Label className="text-sm font-medium text-slate-700">
+        {label}
+        <RequiredMark required={required} />
+      </Label>
       {/* react-aria's group drops `aria-busy` from its root's props, so the options carry the wait. */}
       <div {...busy(owner, waiting)} className="flex flex-col gap-2.5">
         <RadioSize.Provider value={size}>
@@ -88,20 +94,20 @@ export function RadioGroup({
         </RadioSize.Provider>
         <BusyLabel owner={owner} loading={waiting} label={loadingLabel} />
       </div>
-      {hint && !error ? (
+      {hint ? (
         <Text slot="description" className="text-xs text-slate-500">
           {hint}
         </Text>
       ) : null}
-      <FieldError className="text-xs text-red-700">
-        <span role="alert">{error}</span>
+      <FieldError>
+        <ErrorLine error={error} />
       </FieldError>
     </AriaRadioGroup>
   );
 }
 
 function ringTone(invalid: boolean, selected: boolean): string {
-  if (invalid) return "border-red-600";
+  if (invalid) return "border-red-200";
   return selected ? "border-violet-600" : "border-slate-300";
 }
 
@@ -165,8 +171,9 @@ function ShownRadio({
       className={({ isDisabled: off }) =>
         cx(
           "flex cursor-pointer items-start rounded-md has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-violet-600",
+          TOUCH_TARGET,
           size.gap,
-          off && "cursor-default opacity-50",
+          off && "cursor-not-allowed opacity-50",
         )
       }
     >

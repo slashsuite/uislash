@@ -159,7 +159,7 @@ export const overlayPages: ComponentPage[] = [
       "It is a `Dialog`: native `<dialog>`, page behind inert, focus kept inside, Esc closes, named by its `title`.",
       "The input has focus when it opens and is named by `label`.",
       "While the field is empty the submit button is disabled and its `emptyReason` is the button's title and the field's hint.",
-      'While `onSubmit` is pending the button is busy (`aria-busy`); a rejection shows in the field\'s error line, which is `role="alert"`.',
+      "While `onSubmit` is pending the button is busy (`aria-busy`); a rejection shows in the field's error line, announced politely from a live region inside the dialog.",
     ],
     api: ["FieldDialog"],
   },

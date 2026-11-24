@@ -3,7 +3,7 @@ import { CalendarDate } from "@internationalized/date";
 import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { DateField } from "./DateField.js";
-import { render, screen, user } from "./render.harness.js";
+import { drawn, render, screen, user } from "./render.harness.js";
 
 /** A parent that stores what the field reports and passes it back. */
 function Controlled({
@@ -115,7 +115,7 @@ describe.each([
     ]);
     expect(posted()).toBe("");
     expect(shown()).toEqual(["31", "02", "1990"]);
-    expect(screen.getByText("February 1990 has 28 days.")).not.toBeNull();
+    expect(drawn("February 1990 has 28 days.")).not.toBeNull();
   });
 
   it("reports the date again once it is fixed", async () => {
@@ -181,7 +181,7 @@ describe.each([
     expect(shown()).toEqual(["17", "05", "YYYY"]);
     expect(posted()).toBe("");
     expect(form().checkValidity()).toBe(false);
-    expect(screen.getByText("Enter the whole date.")).not.toBeNull();
+    expect(drawn("Enter the whole date.")).not.toBeNull();
   });
 
   it.each([

@@ -169,8 +169,8 @@ import { DateField, fromISODate, toISODate, type CalendarDate } from "@slashsuit
   error once the field loses focus.
 - An impossible date such as 31/02/1990 shows "February 1990 has 28 days." and stays exactly as
   typed, focus leaving included, until it is fixed.
-- `error` is an error from outside the field, a server's say: it shows in place of the hint, in
-  red with `role="alert"` (as `Field`'s `error` does), and marks the field invalid. It wins over
+- `error` is an error from outside the field, a server's say: it shows under the hint, in red
+  and announced politely (as `Field`'s `error` does), and marks the field invalid. It wins over
   the built-in messages; clear it when the date changes.
 - `DateRangePicker` is a from and to date in one field, DD/MM/YYYY "to" DD/MM/YYYY, with a
   calendar button that opens one month, where two presses pick the range.
@@ -336,7 +336,7 @@ import {
   share of the row, so 2, 1 and 1 give a half and two quarters) with optional `actions` after
   them (a save button, kept at its own width). Every control sits on the bottom edge, so the actions
   line up with them, and under `md` the fields and the actions stack. A `FormRow` is always the full
-  width of a `FormGrid`. Its `hint` or `error` (which replaces the hint, `role="alert"`) sits under
+  width of a `FormGrid`. Its `hint` and `error` (under the hint, announced politely) sit under
   the whole row; a `FormRowField` has no note of its own, so the controls beside each other stay
   level. Closed spans, no `col-span` or width to pass.
 

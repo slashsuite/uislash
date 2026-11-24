@@ -18,6 +18,7 @@ import {
 import { cx, focusRing } from "./cx.js";
 import { CalendarDateField } from "./DateFieldCalendar.js";
 import { toISODate } from "./isoDate.js";
+import { ErrorLine, RequiredMark } from "./Field.js";
 import { definedProps, type Passthrough } from "./props.js";
 import { WaitingField } from "./fieldWait.js";
 import { type LoadingProps, useLoading } from "./skeleton.js";
@@ -39,10 +40,10 @@ type Segment = NonNullable<ContextType<typeof DateFieldStateContext>>["segments"
 export type FieldProps = {
   /** The field's visible label, above it. Without one, name the field with `aria-label`. */
   label?: ReactNode;
-  /** A muted line under the field that says more; an error replaces it. */
+  /** A muted line under the field that says more; it stays while an error shows under it. */
   hint?: ReactNode;
   /**
-   * Marks the field invalid and shows this in red with `role="alert"`, in place of the hint and of
+   * Marks the field invalid and shows this in red under the hint, announced politely, in place of
    * the built-in message (an impossible date, or one outside min/max). Like `Field`'s `error`.
    */
   error?: ReactNode;
@@ -196,29 +197,27 @@ export function forcedInvalid({
   return impossible || error ? { isInvalid: true } : {};
 }
 
-/** The hint or the error line: the shared outside of every date field. */
+/** The hint and, under it, the error line: the shared outside of every date field. */
 export function Notes({
   hint,
   error,
   impossible,
-  isInvalid,
 }: {
   hint: ReactNode;
   error: ReactNode;
   impossible: string | null;
-  isInvalid: boolean;
 }): ReactElement {
   return (
     <>
-      {!isInvalid && hint ? (
+      {hint ? (
         <Text slot="description" className="text-xs text-slate-500">
           {hint}
         </Text>
       ) : null}
-      <FieldError className="text-xs text-red-700">
-        {({ validationErrors }) =>
-          error ? <span role="alert">{error}</span> : (impossible ?? validationErrors.join(" "))
-        }
+      <FieldError className="block">
+        {({ validationErrors }) => (
+          <ErrorLine error={error || (impossible ?? validationErrors.join(" "))} />
+        )}
       </FieldError>
     </>
   );
@@ -313,9 +312,14 @@ function PlainDateField({
         shouldForceLeadingZeros
         className="flex flex-col gap-1.5"
       >
-        {({ isInvalid }) => (
+        {() => (
           <>
-            {label ? <Label className={labelClass}>{label}</Label> : null}
+            {label ? (
+              <Label className={labelClass}>
+                {label}
+                <RequiredMark required={required} />
+              </Label>
+            ) : null}
             <div className="contents" onBlurCapture={onBlurCapture}>
               <DateInput
                 className={(state) =>
@@ -328,7 +332,7 @@ function PlainDateField({
               </DateInput>
             </div>
             <ShownInput name={name} shown={shown} isDisabled={disabled} />
-            <Notes hint={hint} error={error} impossible={impossible} isInvalid={isInvalid} />
+            <Notes hint={hint} error={error} impossible={impossible} />
           </>
         )}
       </AriaDateField>

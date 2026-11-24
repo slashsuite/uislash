@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from "vitest";
 import { FormRow, FormRowField } from "./FormRow.js";
-import { follows, render, screen } from "./render.harness.js";
+import { announced, follows, render, screen } from "./render.harness.js";
 
 describe("FormRowField", () => {
   it("names the control with its label", () => {
@@ -46,13 +46,14 @@ describe("FormRow", () => {
     expect(screen.queryByRole("alert")).toBeNull();
   });
 
-  it("replaces the hint with the error, as an alert", () => {
+  it("keeps the hint and adds the error under it, announced politely", () => {
     render(
       <FormRow hint="Saved on enter." error="Amount is required.">
         {fields}
       </FormRow>,
     );
-    expect(screen.getByRole("alert").textContent).toBe("Amount is required.");
-    expect(screen.queryByText("Saved on enter.")).toBeNull();
+    expect(announced()).toEqual(["Amount is required."]);
+    expect(screen.queryByRole("alert")).toBeNull();
+    expect(screen.getByText("Saved on enter.")).toBeInstanceOf(HTMLElement);
   });
 });

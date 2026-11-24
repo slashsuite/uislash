@@ -10,7 +10,7 @@ export const DoLabel = () => (
 /** A placeholder is not a label: it vanishes as soon as the person types, and it names nothing for a screen reader. */
 export const DontLabel = () => <Input placeholder="Display name" />;
 
-/** `error` replaces the hint, in red, and is announced as an alert; the control's edge turns red and it is marked `aria-invalid`. */
+/** `error` goes under the hint, in red with an alert icon, and is announced politely; the control's edge turns red and it is marked `aria-invalid`. */
 export const DoError = () => (
   <Field label="Display name" hint="Shown on your reviews." error="Pick a shorter name.">
     <Input defaultValue="A very long display name indeed" />

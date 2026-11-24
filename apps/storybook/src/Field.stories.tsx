@@ -20,6 +20,14 @@ export const WithError: S = {
     </Field>
   ),
 };
+/** `required` puts a red asterisk after the label and marks the control required. */
+export const Required: S = {
+  render: () => (
+    <Field label="Email" hint="Receipts go here." required>
+      <Input type="email" />
+    </Field>
+  ),
+};
 export const WithTextarea: S = {
   render: () => (
     <Field label="Review">

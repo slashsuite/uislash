@@ -513,7 +513,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": false,
         "description": "An icon from the `Icon` set before the label, decorative, at the button's size.",
         "native": false
@@ -621,7 +621,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": false,
         "description": "One of the library's icons, at the start of the box beside the text.",
         "native": false
@@ -810,7 +810,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": false,
         "description": "One of the library's icons, drawn at feature size in the accent colour above the title: the\nmark of a feature card. Ignored with `bar` and `flush`.\n\nPick it by the idea it stands for.",
         "native": false
@@ -1173,7 +1173,7 @@
   },
   "Checkbox": {
     "name": "Checkbox",
-    "description": "A checkbox with its label. It is a real `<input type=\"checkbox\">`, drawn by the library (an\nempty outlined box, then a filled accent one with a check mark) so it reads the same in every\ntheme and browser. Every prop but the label goes on the input, and `ref` reaches it.\n`size=\"sm\"` is `text-xs` and a smaller box, for a dense row; `size=\"lg\"` is `text-base` and a\nlarger box. Leave `label` out for a bare box in a table cell, and name it with `aria-label`. The\nbox sits on the label's first line, so a label that wraps reads from the box. `hint` is a muted\nline under the label that says more, like a `Field`'s; `error` replaces it with a red line\n(`role=\"alert\"`) and makes the box `aria-invalid`. The note is the box's `aria-describedby`.\n`onChange` gets the new checked state; take `checked` with it, or `defaultChecked` alone.\nWhile `loading` the label is drawn and the box is a bone of its size.",
+    "description": "A checkbox with its label. It is a real `<input type=\"checkbox\">`, drawn by the library (an\nempty outlined box, then a filled accent one with a check mark) so it reads the same in every\ntheme and browser. Every prop but the label goes on the input, and `ref` reaches it.\n`size=\"sm\"` is `text-xs` and a smaller box, for a dense row; `size=\"lg\"` is `text-base` and a\nlarger box. Leave `label` out for a bare box in a table cell, and name it with `aria-label`. The\nbox sits on the label's first line, so a label that wraps reads from the box. `hint` is a muted\nline under the label that says more, like a `Field`'s; `error` adds a red line under it, with an alert\nicon, and makes the box `aria-invalid` and red-edged. The note is the box's `aria-describedby`.\n`onChange` gets the new checked state; take `checked` with it, or `defaultChecked` alone.\n`indeterminate` draws a dash for a select-all box over a partly chosen list. Under a finger the\nhit area grows to 44px.\nWhile `loading` the label is drawn and the box is a bone of its size.",
     "props": [
       {
         "name": "disabledReason",
@@ -1186,7 +1186,7 @@
         "name": "error",
         "type": "ReactNode",
         "required": false,
-        "description": "Replaces the hint with a red line (`role=\"alert\"`) and makes the box `aria-invalid`.",
+        "description": "A red line under the hint, with an alert icon, announced politely; makes the box `aria-invalid`.",
         "native": false
       },
       {
@@ -1194,6 +1194,14 @@
         "type": "ReactNode",
         "required": false,
         "description": "A muted line under the label that says more. It is the box's `aria-describedby`.",
+        "native": false
+      },
+      {
+        "name": "indeterminate",
+        "type": "boolean",
+        "required": false,
+        "default": "false",
+        "description": "Mixed: some of what the box stands for is chosen and some is not, as a select-all box over a\npartly chosen list. It draws a dash and is read as \"mixed\"; a click checks it. The caller owns\nit: work it out from the list on every render.",
         "native": false
       },
       {
@@ -1577,14 +1585,14 @@
         "name": "error",
         "type": "ReactNode",
         "required": false,
-        "description": "Marks the field invalid and shows this in red with `role=\"alert\"`, in place of the hint and of\nthe built-in message (an impossible date, or one outside min/max). Like `Field`'s `error`.",
+        "description": "Marks the field invalid and shows this in red under the hint, announced politely, in place of\nthe built-in message (an impossible date, or one outside min/max). Like `Field`'s `error`.",
         "native": false
       },
       {
         "name": "hint",
         "type": "ReactNode",
         "required": false,
-        "description": "A muted line under the field that says more; an error replaces it.",
+        "description": "A muted line under the field that says more; it stays while an error shows under it.",
         "native": false
       },
       {
@@ -1720,14 +1728,14 @@
         "name": "error",
         "type": "ReactNode",
         "required": false,
-        "description": "Marks the field invalid and shows this in red with `role=\"alert\"`, in place of the hint and of\nthe built-in message (an impossible date, or one outside min/max). Like `Field`'s `error`.",
+        "description": "Marks the field invalid and shows this in red under the hint, announced politely, in place of\nthe built-in message (an impossible date, or one outside min/max). Like `Field`'s `error`.",
         "native": false
       },
       {
         "name": "hint",
         "type": "ReactNode",
         "required": false,
-        "description": "A muted line under the field that says more; an error replaces it.",
+        "description": "A muted line under the field that says more; it stays while an error shows under it.",
         "native": false
       },
       {
@@ -2243,7 +2251,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": false,
         "description": "One of the library's icons, at feature size in the muted ink above the title.",
         "native": false
@@ -2338,13 +2346,13 @@
   },
   "Field": {
     "name": "Field",
-    "description": "A label above a control, with a hint or an error line under it. An error replaces the hint.\nInside a `FormGrid`, `span=\"full\"` runs the field across both columns. The `Input`, `Select`,\n`Textarea` or `FileDrop` inside takes the label, the note (`aria-describedby`) and, with an error,\n`aria-invalid` and a red edge by itself: give it no `id` and the Field no `htmlFor`. While\n`loading` the label is drawn and the control is a bone of its height, read from the density\naround it (`sm` in a `sm` card or table).",
+    "description": "A label above a control, with a hint line under it and, when set, an error line under the hint\n(an alert icon and red text, announced politely). The hint stays while the error shows.\n`required` marks the label with a red asterisk and makes the control inside `required`.\nInside a `FormGrid`, `span=\"full\"` runs the field across both columns. The `Input`, `Select`,\n`Textarea` or `FileDrop` inside takes the label, the note (`aria-describedby`) and, with an error,\n`aria-invalid` and a red edge by itself: give it no `id` and the Field no `htmlFor`. While\n`loading` the label is drawn and the control is a bone of its height, read from the density\naround it (`sm` in a `sm` card or table).",
     "props": [
       {
         "name": "error",
         "type": "ReactNode",
         "required": false,
-        "description": "Replaces the hint when set.",
+        "description": "A red line under the hint, with an alert icon; the control is `aria-invalid` while it shows.",
         "native": false
       },
       {
@@ -2404,6 +2412,14 @@
         "required": false,
         "default": "Loading",
         "description": "What a screen reader hears while this part is loading, when its own `loading` is set.",
+        "native": false
+      },
+      {
+        "name": "required",
+        "type": "boolean",
+        "required": false,
+        "default": "false",
+        "description": "The control must be filled: a red asterisk after the label (hidden from assistive tech) and\n`required` on the `Input`, `Select`, `Textarea` or `FileDrop` inside.",
         "native": false
       },
       {
@@ -2500,7 +2516,7 @@
   },
   "Fieldset": {
     "name": "Fieldset",
-    "description": "A labelled group of controls: several `Checkbox`es answering one question, a set of `Field`s that\nbelong together, or the filter chips of one facet (a `ButtonGroup` of `outline` `sm` pressed\n`Button`s). It is a `<fieldset>` named by its `label`, drawn as its `<legend>` in the `Field`\nlabel's look, over the children in one column; a `ButtonGroup` or a `FormGrid` inside lays out a\nrow. `hint` is a muted line under the group and its `aria-describedby`; `error` replaces it in red\nwith `role=\"alert\"`. `disabled` disables every control inside. One choice of several is a\n`RadioGroup`, never inside a `Fieldset`. Other props go on the `<fieldset>`.",
+    "description": "A labelled group of controls: several `Checkbox`es answering one question, a set of `Field`s that\nbelong together, or the filter chips of one facet (a `ButtonGroup` of `outline` `sm` pressed\n`Button`s). It is a `<fieldset>` named by its `label`, drawn as its `<legend>` in the `Field`\nlabel's look, over the children in one column; a `ButtonGroup` or a `FormGrid` inside lays out a\nrow. `hint` is a muted line under the group and its `aria-describedby`; `error` adds a red line\nunder it with an alert icon, announced politely. `disabled` disables every control inside. One choice of several is a\n`RadioGroup`, never inside a `Fieldset`. Other props go on the `<fieldset>`.",
     "props": [
       {
         "name": "children",
@@ -2513,7 +2529,7 @@
         "name": "error",
         "type": "ReactNode",
         "required": false,
-        "description": "A red line under the group, in place of the hint, announced as an alert.",
+        "description": "A red line under the hint, with an alert icon, announced politely.",
         "native": false
       },
       {
@@ -2770,7 +2786,7 @@
         "name": "error",
         "type": "ReactNode",
         "required": false,
-        "description": "Replaces the hint when set, as `Field`'s does.",
+        "description": "A red line under the hint, announced politely, as `Field`'s is.",
         "native": false
       },
       {
@@ -2938,7 +2954,7 @@
   },
   "Icon": {
     "name": "Icon",
-    "description": "One inline icon, sized to a fixed box (sm 14px, md 16px, lg 20px, `feature` 32px) and drawn in\n`currentColor`, so it takes the text colour around it unless a `tone` says otherwise. `name`\npicks one of the library's own icons, all drawn on one grid with one stroke: feature ideas\n(`diff`, `baseline`, `review`, `ci`, `self-host`, `privacy`, `capture`, `branch`, `theme`,\n`speed`, `search`) and UI glyphs (`chevron-right`, `chevron-down`, `close`, `external-link`,\n`settings`, `bell`, `check`, `plus`, `more`) and the ideas the docs sections stand for (`grid`, `window`,\n`type`, `card`, `pointer`, `field`, `table`, `compass`, `page`, `briefcase`);\nwithout a name, a bare `<svg>` child fills the box. It is decorative (`aria-hidden`) by\ndefault; a `label` makes it an image with that name, for an icon that carries meaning no text\nbeside it says.",
+    "description": "One inline icon, sized to a fixed box (sm 14px, md 16px, lg 20px, `feature` 32px) and drawn in\n`currentColor`, so it takes the text colour around it unless a `tone` says otherwise. `name`\npicks one of the library's own icons, all drawn on one grid with one stroke: feature ideas\n(`diff`, `baseline`, `review`, `ci`, `self-host`, `privacy`, `capture`, `branch`, `theme`,\n`speed`, `search`) and UI glyphs (`chevron-right`, `chevron-down`, `close`, `external-link`,\n`settings`, `bell`, `check`, `alert`, `plus`, `more`) and the ideas the docs sections stand for (`grid`, `window`,\n`type`, `card`, `pointer`, `field`, `table`, `compass`, `page`, `briefcase`);\nwithout a name, a bare `<svg>` child fills the box. It is decorative (`aria-hidden`) by\ndefault; a `label` makes it an image with that name, for an icon that carries meaning no text\nbeside it says.",
     "props": [
       {
         "name": "children",
@@ -2963,7 +2979,7 @@
       },
       {
         "name": "name",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": false,
         "description": "One of the library's icons, named for the idea it stands for.",
         "native": false
@@ -3019,7 +3035,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": true,
         "description": "The one icon it holds, from the `Icon` set, at the button's size.",
         "native": false
@@ -3186,7 +3202,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": false,
         "description": "A leading icon inside the field, by name (`search`). Not with `prefix`.",
         "native": false
@@ -4783,7 +4799,7 @@
   },
   "RadioGroup": {
     "name": "RadioGroup",
-    "description": "A named group of radios, one chosen. The `label` names the group; `hint` is a muted line under\nthe options that says more (the group's description); an `error` replaces it with a red line\n(`role=\"alert\"`) and marks the group invalid. Give it `value` and `onChange`, or\n`defaultValue` and let it keep the choice. `name` posts the choice in a form.\nThe arrow keys move between the radios and choose, and the group is one tab stop. `size` sizes\nevery radio in the group, the same scale as a `Checkbox`. While `loading` the labels are drawn and\neach circle is a bone.",
+    "description": "A named group of radios, one chosen. The `label` names the group; `hint` is a muted line under\nthe options that says more (the group's description); an `error` adds a red line with an alert\nicon under it, announced politely, and marks the group invalid. `required` puts a red asterisk\nafter the label. Give it `value` and `onChange`, or\n`defaultValue` and let it keep the choice. `name` posts the choice in a form.\nThe arrow keys move between the radios and choose, and the group is one tab stop. `size` sizes\nevery radio in the group, the same scale as a `Checkbox`. While `loading` the labels are drawn and\neach circle is a bone.",
     "props": [
       {
         "name": "children",
@@ -4810,14 +4826,14 @@
         "name": "error",
         "type": "ReactNode",
         "required": false,
-        "description": "Shown under the options in red with `role=\"alert\"`; marks the group invalid. Like `Field`'s `error`.",
+        "description": "A red line under the hint, with an alert icon; marks the group invalid. Like `Field`'s `error`.",
         "native": false
       },
       {
         "name": "hint",
         "type": "ReactNode",
         "required": false,
-        "description": "A muted line under the options that says more; it describes the group. Replaced by `error`.",
+        "description": "A muted line under the options that says more; it describes the group, and stays while `error` shows.",
         "native": false
       },
       {
@@ -4867,7 +4883,7 @@
         "name": "required",
         "type": "boolean",
         "required": false,
-        "description": "Marks the choice required: the group is `aria-required`, and a form will not submit with no option chosen.",
+        "description": "Marks the choice required: a red asterisk after the label, the group is `aria-required`, and a form will not submit with no option chosen.",
         "native": false
       },
       {
@@ -5930,7 +5946,7 @@
   },
   "Switch": {
     "name": "Switch",
-    "description": "An on/off switch for a setting that takes effect at once, usually by saving it to a server: a\nnative `<button role=\"switch\" aria-checked>`. The caller owns `checked` and flips it in\n`onChange`, or gives `defaultChecked` and the switch keeps its own state. A value sent with a\nform is a `Checkbox`, not a Switch. Give it a `label`\n(the whole label is the click target), or in a table cell leave the label out and name it with\n`aria-label`. `hint` is a muted line under the label; `error` replaces it with a red line\n(`role=\"alert\"`) and makes the switch `aria-invalid`. The note is the switch's\n`aria-describedby`. `size` is `sm`, `md` (the default) or `lg`. `busy` is for the save in\nflight: clicks and keys do nothing, and the switch keeps its colour and its focus.\n`disabledReason` blocks it, focusable, with the reason as its tooltip. `disabled` is the native\none, washed out. While `loading` the label is drawn and the track is a bone of its size.",
+    "description": "An on/off switch for a setting that takes effect at once, usually by saving it to a server: a\nnative `<button role=\"switch\" aria-checked>`. The caller owns `checked` and flips it in\n`onChange`, or gives `defaultChecked` and the switch keeps its own state. A value sent with a\nform is a `Checkbox`, not a Switch. Give it a `label`\n(the whole label is the click target), or in a table cell leave the label out and name it with\n`aria-label`. `hint` is a muted line under the label; `error` adds a red line under it, with an alert\nicon, and makes the switch `aria-invalid` and red-edged. The note is the switch's\n`aria-describedby`. `size` is `sm`, `md` (the default) or `lg`. `busy` is for the save in\nflight: clicks and keys do nothing, and the switch keeps its colour and its focus.\n`disabledReason` blocks it, focusable, with the reason as its tooltip. `disabled` is the native\none, washed out. While `loading` the label is drawn and the track is a bone of its size.",
     "props": [
       {
         "name": "busy",
@@ -5964,7 +5980,7 @@
         "name": "error",
         "type": "ReactNode",
         "required": false,
-        "description": "Replaces the hint with a red line (`role=\"alert\"`) and makes the switch `aria-invalid`.",
+        "description": "A red line under the hint, with an alert icon, announced politely; makes the switch `aria-invalid`.",
         "native": false
       },
       {

@@ -22,6 +22,10 @@ export const Unchecked: S = {
 export const Checked: S = {
   render: () => <Checkbox label="Open now" defaultChecked />,
 };
+/** Some of a group ticked: a dash in the filled box, read out as "mixed". */
+export const Indeterminate: S = {
+  render: () => <Checkbox label="All stores" indeterminate />,
+};
 export const Small: S = {
   render: () => <Checkbox label="Paid" size="sm" defaultChecked />,
 };

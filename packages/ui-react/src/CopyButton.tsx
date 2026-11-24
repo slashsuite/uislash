@@ -8,7 +8,7 @@ import {
 import { focusRing } from "./cx.js";
 import type { Unstyled } from "./props.js";
 
-const BASE = `shrink-0 rounded px-1.5 py-0.5 font-sans text-xs text-slate-400 hover:bg-slate-100 disabled:pointer-events-none disabled:opacity-50 ${focusRing}`;
+const BASE = `shrink-0 cursor-pointer rounded px-1.5 py-0.5 font-sans text-xs text-slate-400 hover:bg-slate-100 disabled:pointer-events-none disabled:opacity-50 ${focusRing}`;
 
 /** Both labels share one grid cell, centred, so the button is as wide as the longer and never resizes. */
 const CELL = "col-start-1 row-start-1";

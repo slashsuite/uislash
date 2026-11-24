@@ -50,7 +50,7 @@ export function FormRow({
   actions?: ReactNode;
   /** One muted line under the whole row. */
   hint?: ReactNode;
-  /** Replaces the hint when set, as `Field`'s does. */
+  /** A red line under the hint, announced politely, as `Field`'s is. */
   error?: ReactNode;
   children: ReactNode;
 } & Passthrough): ReactElement {

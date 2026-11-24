@@ -9,7 +9,7 @@ import { Disclosure } from "./Disclosure.js";
 import { Field } from "./Field.js";
 import { Input } from "./Input.js";
 import { Radio, RadioGroup } from "./RadioGroup.js";
-import { render, screen, user } from "./render.harness.js";
+import { announced, render, screen, user } from "./render.harness.js";
 import { Select } from "./Select.js";
 import { Switch } from "./Switch.js";
 import { Textarea } from "./Textarea.js";
@@ -45,25 +45,28 @@ describe("Checkbox and Switch take one value shape", () => {
 });
 
 describe("error on a Checkbox and a Switch", () => {
-  it("marks the Checkbox invalid and describes it with the error, in place of the hint", () => {
+  it("marks the Checkbox invalid and describes it with the hint, then the error", () => {
     render(<Checkbox label="Terms" hint="Read them first." error="Accept the terms." />);
-    const box = screen.getByRole("checkbox", { name: /^Terms/, description: "Accept the terms." });
+    const box = screen.getByRole("checkbox", {
+      name: /^Terms/,
+      description: "Read them first. Accept the terms.",
+    });
     expect(box.getAttribute("aria-invalid")).toBe("true");
-    expect(screen.getByRole("alert").textContent).toBe("Accept the terms.");
-    expect(screen.queryByText("Read them first.")).toBeNull();
+    expect(screen.queryByRole("alert")).toBeNull();
+    expect(announced()).toEqual(["Accept the terms."]);
   });
 
   it("marks the Switch invalid and describes it with the error", () => {
     render(<Switch label="Live" error="Deploy first." />);
     const control = screen.getByRole("switch", { name: /^Live/, description: "Deploy first." });
     expect(control.getAttribute("aria-invalid")).toBe("true");
-    expect(screen.getByRole("alert").textContent).toBe("Deploy first.");
+    expect(announced()).toEqual(["Deploy first."]);
   });
 
-  it("leaves a control with no error valid", () => {
+  it("says a control with no error is valid", () => {
     render(<Checkbox label="Terms" />);
-    expect(screen.getByRole("checkbox", { name: "Terms" }).hasAttribute("aria-invalid")).toBe(
-      false,
+    expect(screen.getByRole("checkbox", { name: "Terms" }).getAttribute("aria-invalid")).toBe(
+      "false",
     );
   });
 });

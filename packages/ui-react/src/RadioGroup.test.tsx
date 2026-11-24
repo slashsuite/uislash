@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { describe, expect, it, vi } from "vitest";
 import { Radio, RadioGroup } from "./RadioGroup.js";
-import { render, screen, user } from "./render.harness.js";
+import { announced, render, screen, user } from "./render.harness.js";
 
 const scope = (
   props: Partial<Parameters<typeof RadioGroup>[0]> = {},
@@ -147,9 +147,10 @@ describe("RadioGroup hint and error", () => {
     );
   });
 
-  it("shows an error as role=alert, marks the group invalid and describes the group by it", () => {
+  it("shows an error, announced politely, marks the group invalid and describes the group by it", () => {
     scope({ error: "Pick a scope." });
-    expect(screen.getByRole("alert").textContent).toBe("Pick a scope.");
+    expect(screen.queryByRole("alert")).toBeNull();
+    expect(announced()).toEqual(["Pick a scope."]);
     const group = screen.getByRole("radiogroup", { name: "Scope", description: "Pick a scope." });
     expect(group.getAttribute("aria-invalid")).toBe("true");
   });

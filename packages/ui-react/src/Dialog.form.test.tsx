@@ -5,7 +5,7 @@ import { Dialog } from "./Dialog.js";
 import { stubDialog } from "./dom.harness.js";
 import { Field } from "./Field.js";
 import { Input } from "./Input.js";
-import { follows, render, screen, user } from "./render.harness.js";
+import { announced, follows, render, screen, user } from "./render.harness.js";
 
 // stubDialog supplies the modal <dialog> methods jsdom lacks; it does not act through the DOM.
 beforeEach(stubDialog);
@@ -98,7 +98,9 @@ describe("Dialog error", () => {
 
   it("keeps a field's error and the dialog's error apart", () => {
     open({ onSubmit: vi.fn<Submit>(), error: "Could not save.", fieldError: "Taken." });
+    // The dialog's error interrupts (an alert); the field's is announced politely with the rest.
     const texts = screen.getAllByRole("alert").map((alert) => alert.textContent);
-    expect(texts).toEqual(["Taken.", "Could not save."]);
+    expect(texts).toEqual(["Could not save."]);
+    expect(announced()).toEqual(["Taken."]);
   });
 });

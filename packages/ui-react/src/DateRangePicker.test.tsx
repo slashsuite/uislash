@@ -2,7 +2,7 @@
 import { CalendarDate } from "@internationalized/date";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { type DateRange, DateRangePicker } from "./DateRangePicker.js";
-import { render, screen, user, within } from "./render.harness.js";
+import { announced, drawn, render, screen, user, within } from "./render.harness.js";
 
 beforeEach(() => {
   // A US browser: the field must still read DD/MM/YYYY.
@@ -48,7 +48,7 @@ describe("DateRangePicker", () => {
     );
     await typeInto("Start date", "01022026");
     await typeInto("End date", "31022026");
-    expect(screen.getByText("End date: February 2026 has 28 days.")).not.toBeNull();
+    expect(drawn("End date: February 2026 has 28 days.")).not.toBeNull();
     await user().click(document.body);
     expect(shown()).toEqual(["01", "02", "2026", "31", "02", "2026"]);
     expect(
@@ -70,7 +70,7 @@ describe("DateRangePicker", () => {
     await typeInto("Start date", "30022026");
     await typeInto("End date", "10032026");
     expect(shown()).toEqual(["30", "02", "2026", "10", "03", "2026"]);
-    expect(screen.getByText("Start date: February 2026 has 28 days.")).not.toBeNull();
+    expect(drawn("Start date: February 2026 has 28 days.")).not.toBeNull();
     expect(onChange).not.toHaveBeenCalled();
   });
 
@@ -91,10 +91,10 @@ describe("DateRangePicker", () => {
     expect(onChange).toHaveBeenLastCalledWith(null);
   });
 
-  it("shows an error from outside as an alert and marks the field invalid", () => {
+  it("shows an error from outside under the hint, announced politely, and marks the field invalid", () => {
     render(<DateRangePicker label="Period" hint="A hint." error="Too long a period." />);
-    expect(screen.getByRole("alert").textContent).toBe("Too long a period.");
+    expect(announced()).toEqual(["Too long a period."]);
     expect(screen.getAllByRole("spinbutton")[0]?.getAttribute("aria-invalid")).toBe("true");
-    expect(screen.queryByText("A hint.")).toBeNull();
+    expect(screen.getByText("A hint.")).not.toBeNull();
   });
 });
