@@ -183,7 +183,7 @@ test.describe("inlineFrom", () => {
     await expect(phone.handle).toBeVisible();
     const wide = await open(page, "inline", { width: 1024, height: 700 });
     await expect(wide.handle).toBeHidden();
-    await expect(wide.sheet.getByText("Shop 1", { exact: true })).toBeVisible();
+    await expect(wide.sheet.getByRole("heading", { name: "Shops nearby" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Pin A" })).toBeVisible();
   });
 });

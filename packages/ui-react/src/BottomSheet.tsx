@@ -93,7 +93,8 @@ export type BottomSheetProps = {
    * From this width up the sheet is no sheet: its header, body and footer sit in the page's flow
    * with no handle, no snaps and no height of its own, so the parent's grid places it (a list
    * column beside a map). Below it, it is the sheet. One tree, switched by CSS: nothing renders
-   * twice. Without it the sheet is a panel at the start edge from `md` up.
+   * twice, so `onHeightChange` still reports the snap's height: there the view has nothing under
+   * the list to pad. Without it the sheet is a panel at the start edge from `md` up.
    */
   inlineFrom?: InlineFrom | undefined;
 } & Passthrough;

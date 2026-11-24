@@ -370,7 +370,7 @@
         "name": "inlineFrom",
         "type": "\"md\" | \"lg\"",
         "required": false,
-        "description": "From this width up the sheet is no sheet: its header, body and footer sit in the page's flow\nwith no handle, no snaps and no height of its own, so the parent's grid places it (a list\ncolumn beside a map). Below it, it is the sheet. One tree, switched by CSS: nothing renders\ntwice. Without it the sheet is a panel at the start edge from `md` up.",
+        "description": "From this width up the sheet is no sheet: its header, body and footer sit in the page's flow\nwith no handle, no snaps and no height of its own, so the parent's grid places it (a list\ncolumn beside a map). Below it, it is the sheet. One tree, switched by CSS: nothing renders\ntwice, so `onHeightChange` still reports the snap's height: there the view has nothing under\nthe list to pad. Without it the sheet is a panel at the start edge from `md` up.",
         "native": false
       },
       {
