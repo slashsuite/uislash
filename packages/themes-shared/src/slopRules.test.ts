@@ -52,6 +52,9 @@ describe("slopRules: nothing time dependent", () => {
     expect(slopRules("src/Switch.stories.tsx", `window.${interval}tick, 10);`, "x")).toHaveLength(
       1,
     );
+    expect(
+      slopRules("docs/examples/Switch.examples.tsx", `${timeout}() => land(), 1000);`, ui),
+    ).toHaveLength(1);
   });
 
   it("fails a component with a timer, but not a non-component file or another package's source", () => {
