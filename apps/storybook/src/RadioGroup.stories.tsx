@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Checkbox, Radio, RadioGroup, Stack, Text } from "@slashsuite/ui-react";
+import { Radio, RadioGroup, Stack, Text } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/RadioGroup.examples.js";
 
 const meta: Meta = { title: "Forms/RadioGroup" };
 export default meta;
@@ -81,24 +82,12 @@ export const DisabledOption: S = {
   ),
 };
 
-/** One of a few options, all visible, is a `RadioGroup`: the group has a name and each option its label. */
 export const DoChoice: S = {
-  render: () => (
-    <RadioGroup label="Shop type" defaultValue="vintage">
-      <Radio value="vintage" label="Vintage" />
-      <Radio value="books" label="Books" />
-    </RadioGroup>
-  ),
+  render: examples.DoChoice,
 };
 
-/** Checkboxes allow several ticks: they cannot say "one of these", and the screen reader hears no group. */
 export const DontChoice: S = {
-  render: () => (
-    <Stack gap="sm">
-      <Checkbox label="Vintage" defaultChecked />
-      <Checkbox label="Books" />
-    </Stack>
-  ),
+  render: examples.DontChoice,
 };
 
 /** `size` on the group sizes every `Radio` in it: `sm`, `md` (the default) or `lg`. */

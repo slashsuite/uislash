@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Legend, StackedBar, type StackedSegment, type VizTone } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/StackedBar.examples.js";
 
 const CATS: VizTone[] = ["cat1", "cat2", "cat3", "cat4", "cat5", "cat6", "cat7", "cat8"];
 
@@ -103,33 +104,12 @@ export const LegendSwatches: S = {
   ),
 };
 
-/** `legend` names every colour in words, with its value, under the bar. */
 export const DoLegend: S = {
-  render: () => (
-    <StackedBar
-      items={[
-        { label: "Changed", value: 24, tone: "warn" },
-        { label: "New", value: 9, tone: "info" },
-        { label: "Same", value: 163, tone: "muted" },
-      ]}
-      label="Screenshots by status"
-      legend
-    />
-  ),
+  render: examples.DoLegend,
 };
 
-/** Without `legend` the colours are never named, so the bar cannot be read by anyone who cannot tell them apart. */
 export const DontLegend: S = {
-  render: () => (
-    <StackedBar
-      items={[
-        { label: "Changed", value: 24, tone: "warn" },
-        { label: "New", value: 9, tone: "info" },
-        { label: "Same", value: 163, tone: "muted" },
-      ]}
-      label="Screenshots by status"
-    />
-  ),
+  render: examples.DontLegend,
 };
 
 const shops = [
@@ -154,34 +134,12 @@ export const Categories: S = {
   ),
 };
 
-/** Categories with no meaning take the categorical scale, `cat1` upwards in order, so no colour says good or bad. */
 export const DoCategories: S = {
-  render: () => (
-    <StackedBar
-      items={[
-        { label: "Vintage", value: 14, tone: "cat1" },
-        { label: "Books", value: 9, tone: "cat2" },
-        { label: "Furniture", value: 7, tone: "cat3" },
-      ]}
-      label="Shops by category"
-      legend
-    />
-  ),
+  render: examples.DoCategories,
 };
 
-/** The meaning tones on categories make one read as a warning and another as a failure, which they are not. */
 export const DontCategories: S = {
-  render: () => (
-    <StackedBar
-      items={[
-        { label: "Vintage", value: 14, tone: "warn" },
-        { label: "Books", value: 9, tone: "danger" },
-        { label: "Furniture", value: 7, tone: "positive" },
-      ]}
-      label="Shops by category"
-      legend
-    />
-  ),
+  render: examples.DontCategories,
 };
 
 /** While `loading` the bar is one bone and the key keeps its names; a key with no entries is bones. */

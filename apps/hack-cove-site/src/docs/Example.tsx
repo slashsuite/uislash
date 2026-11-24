@@ -3,8 +3,9 @@ import { InlineCode } from "./InlineCode.js";
 import { findStory } from "./stories.js";
 
 /**
- * A real story rendered, with its source attached under it in one frame. The story is the one
- * Storybook shows and PixelSlash screenshots, so the example cannot drift from the component. An
+ * A real example rendered (packages/ui-react/docs/examples), with its source attached under it in
+ * one frame. It is the one the Storybook story renders and PixelSlash screenshots, so the example
+ * cannot drift from the component. An
  * unknown `of` fails the build. The preview is server-rendered HTML and `inert`: it is a picture, so
  * it takes no focus and no click. The story's caption, if it has one, is the frame's last band.
  * `copy` adds the copy button to the source; the page body is never hydrated, so it works through

@@ -1,9 +1,11 @@
 {
   "extends": "../../tsconfig.shared.json",
-  "include": ["src", "scripts"],
+  "include": ["src", "scripts", "docs"],
   "compilerOptions": {
     // bun's global store links react-aria's .d.ts outside the repo, where no @types/react is in reach.
+    // The docs' examples import the package by name; typecheck reads its source, not dist.
     "paths": {
+      "@slashsuite/ui-react": ["./src/index.ts"],
       "react": ["./node_modules/@types/react/index.d.ts"],
       "react/*": ["./node_modules/@types/react/*"],
       "react-dom": ["./node_modules/@types/react-dom/index.d.ts"],

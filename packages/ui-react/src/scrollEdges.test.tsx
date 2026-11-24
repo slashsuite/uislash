@@ -5,7 +5,7 @@ import { render, screen } from "./render.harness.js";
 import { SidebarLayout } from "./SidebarLayout.js";
 
 // The scroll-edge fade (`data-more`, `data-more-start`, `data-more-end` and the mask they drive) is
-// look, proved in a browser by `apps/storybook/e2e/sticky-columns.spec.ts`. What stays here is that a
+// look, proved in a browser by the `sticky-columns.spec.ts` e2e. What stays here is that a
 // sticky column renders in a consumer's jsdom test, which has no ResizeObserver.
 
 describe("a sticky column's scroll-edge fade", () => {

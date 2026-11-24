@@ -1,17 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import {
-  AppShell,
-  Card,
-  CardGrid,
-  EmptyState,
-  Tabs,
-  PageHeader,
-  Stack,
-  StatTile,
-  Text,
-} from "@slashsuite/ui-react";
-import { DemoShell, layoutPage } from "./DemoShell";
+import { Card, CardGrid, EmptyState, PageHeader, StatTile } from "@slashsuite/ui-react";
+import { DemoShell, layoutPage } from "../../../../packages/ui-react/docs/examples/DemoShell.js";
 import { StatTiles } from "./pages";
+import * as examples from "../../../../packages/ui-react/docs/examples/CardGrid.examples.js";
 
 /** One column on a phone, two from `sm`, `columns` from `lg`; `columns="auto"` fills by a minimum card width. */
 const meta: Meta = {
@@ -22,31 +13,8 @@ const meta: Meta = {
 export default meta;
 type S = StoryObj;
 
-/** A whole dashboard page: the shell with its brand and nav, then a `PageHeader` and a `CardGrid` of tiles. */
 export const FullPage: S = {
-  render: () => (
-    <AppShell
-      brand={<a href="#">Hack Cove</a>}
-      nav={
-        <Tabs
-          label="Main"
-          items={[
-            { label: "Quotes", href: "#quotes", selected: true },
-            { label: "Clients", href: "#clients" },
-          ]}
-        />
-      }
-    >
-      <Stack gap="xl">
-        <PageHeader title="Business" description="This month at a glance." />
-        <CardGrid columns={3}>
-          <StatTile label="Open" value="12" />
-          <StatTile label="Won" value="8" tone="positive" />
-          <StatTile label="Lost" value="3" tone="danger" />
-        </CardGrid>
-      </Stack>
-    </AppShell>
-  ),
+  render: examples.FullPage,
 };
 
 /** With no children the grid draws its `empty`, an `EmptyState` at its full size. */
@@ -134,60 +102,20 @@ export const AsList: S = {
   ),
 };
 
-/** Tiles go in a `CardGrid`: one column on a phone, two from `sm`, `columns` from `lg`. */
 export const DoTiles: S = {
-  render: () => (
-    <CardGrid columns={3}>
-      <StatTile label="Open" value="12" />
-      <StatTile label="Won" value="8" tone="positive" />
-      <StatTile label="Lost" value="3" tone="danger" />
-    </CardGrid>
-  ),
+  render: examples.DoTiles,
 };
 
-/** A `Stack` is one column, so the tiles never sit side by side and the page runs long. Use a `CardGrid`. */
 export const DontTiles: S = {
-  render: () => (
-    <Stack>
-      <StatTile label="Open" value="12" />
-      <StatTile label="Won" value="8" tone="positive" />
-      <StatTile label="Lost" value="3" tone="danger" />
-    </Stack>
-  ),
+  render: examples.DontTiles,
 };
 
-/** For cards of any count, `columns="auto"` fits as many per row as the width allows. */
 export const DoAuto: S = {
-  render: () => (
-    <CardGrid columns="auto" minWidth="sm" align="start">
-      <Card title="Dashboard">
-        <Text>Quotes and renewals this week.</Text>
-      </Card>
-      <Card title="Billing">
-        <Text>Invoices and payments.</Text>
-      </Card>
-      <Card title="Members">
-        <Text>Who can sign in.</Text>
-      </Card>
-    </CardGrid>
-  ),
+  render: examples.DoAuto,
 };
 
-/** A fixed `columns={4}` for a count that varies leaves the row part empty when there are three. When the count varies, use `columns="auto"`. */
 export const DontAuto: S = {
-  render: () => (
-    <CardGrid columns={4} align="start">
-      <Card title="Dashboard">
-        <Text>Quotes and renewals this week.</Text>
-      </Card>
-      <Card title="Billing">
-        <Text>Invoices and payments.</Text>
-      </Card>
-      <Card title="Members">
-        <Text>Who can sign in.</Text>
-      </Card>
-    </CardGrid>
-  ),
+  render: examples.DontAuto,
 };
 
 /** While `loading` it owns the wait, and every part inside waits with it. */

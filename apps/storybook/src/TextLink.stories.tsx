@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Card, type LinkAdapter, LinkProvider, Text, TextLink } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/TextLink.examples.js";
 
 const meta: Meta = { title: "Text/TextLink" };
 export default meta;
@@ -134,42 +135,20 @@ export const Stretch: S = {
   ),
 };
 
-/** A link in running text is a `TextLink` inside a `Text`. */
 export const DoInSentence: S = {
-  render: () => (
-    <Text>
-      Questions? Email <TextLink href="mailto:hello@example.com">hello@example.com</TextLink>, or
-      read the <TextLink href="#terms">terms</TextLink> first.
-    </Text>
-  ),
+  render: examples.DoInSentence,
 };
 
-/** A bare `<a>` has none of the theme's link colour, weight or focus ring. */
 export const DontInSentence: S = {
-  render: () => (
-    <Text>
-      Questions? Email <a href="mailto:hello@example.com">hello@example.com</a>, or read the{" "}
-      <a href="#terms">terms</a> first.
-    </Text>
-  ),
+  render: examples.DontInSentence,
 };
 
-/** `external` opens another site in a new tab and adds `rel="noreferrer"` with it. */
 export const DoExternal: S = {
-  render: () => (
-    <TextLink href="https://example.com" external>
-      example.com
-    </TextLink>
-  ),
+  render: examples.DoExternal,
 };
 
-/** `target="_blank"` by hand leaves out the `rel`. Say `external` and the link gets both. */
 export const DontExternal: S = {
-  render: () => (
-    <TextLink href="https://example.com" target="_blank">
-      example.com
-    </TextLink>
-  ),
+  render: examples.DontExternal,
 };
 
 /** The app names its router's link once, on a `LinkProvider`: every part below takes a plain `href`, and only the in-app ones reach the adapter. */
@@ -189,37 +168,18 @@ export const RouterLinks: S = {
   ),
 };
 
-/** In an app with a router, set the router's `<Link>` once on a `LinkProvider` and give each link its `href`; here an anchor stands in. */
 export const DoRouter: S = {
-  render: () => <TextLink href="/terms">Read the terms</TextLink>,
+  render: examples.DoRouter,
 };
 
-/** A router `<Link>` drawn by hand at each link loses the TextLink look and its focus ring: give `TextLink` the `href`, and the app's `LinkProvider` draws the router link. */
 export const DontRouter: S = {
-  render: () => <a href="#terms">Read the terms</a>,
+  render: examples.DontRouter,
 };
 
-/** `stretch` makes the whole of the nearest `relative` ancestor the click target: a `Card` here, a `TableRow` in a table. */
 export const DoStretch: S = {
-  render: () => (
-    <Card title="Quote 12">
-      <TextLink href="#quote-12" stretch>
-        Open the quote
-      </TextLink>
-    </Card>
-  ),
+  render: examples.DoStretch,
 };
 
-/** Two stretched links in one card both claim the whole card, so a click lands on whichever is last. Stretch the one link; the other sits above it. */
 export const DontStretch: S = {
-  render: () => (
-    <Card title="Quote 12">
-      <TextLink href="#quote-12" stretch>
-        Open the quote
-      </TextLink>
-      <TextLink href="#client-4" stretch>
-        Open the client
-      </TextLink>
-    </Card>
-  ),
+  render: examples.DontStretch,
 };

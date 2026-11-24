@@ -9,8 +9,8 @@ import {
   TableHead,
   TableHeaderCell,
   TableRow,
-  Text,
 } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/Checkbox.examples.js";
 
 const meta: Meta = { title: "Forms/Checkbox" };
 export default meta;
@@ -63,29 +63,20 @@ export const WithDescription: S = {
   ),
 };
 
-/** A yes or no is a `Checkbox` with its `label`: the whole label is the click target. */
 export const DoLabel: S = {
-  render: () => <Checkbox label="Email me when a shop I follow posts" defaultChecked />,
+  render: examples.DoLabel,
 };
 
-/** A checkbox with the words beside it, not in it, names nothing: clicking the words does nothing. */
 export const DontLabel: S = {
-  render: () => (
-    <Cluster gap="sm">
-      <Checkbox />
-      <Text>Email me when a shop I follow posts</Text>
-    </Cluster>
-  ),
+  render: examples.DontLabel,
 };
 
-/** In a table cell there is no room for words: leave the `label` out, use `size="sm"` and name the box with `aria-label`. */
 export const DoRow: S = {
-  render: () => <Checkbox size="sm" aria-label="Select row" />,
+  render: examples.DoRow,
 };
 
-/** Words beside a box in a table cell crowd the row and repeat the row's own name. Leave the `label` out and name the box with `aria-label`. */
 export const DontRow: S = {
-  render: () => <Checkbox label="Select row" />,
+  render: examples.DontRow,
 };
 
 /** A ticked box inside a Card or a table row draws its tick above the lifted field, not under it. */
@@ -136,14 +127,12 @@ export const Sizes: S = {
   ),
 };
 
-/** `disabledReason` says why the box cannot change: it dims, keeps its focus and shows the reason as its tooltip. */
 export const DoDisabledReason: S = {
-  render: () => <Checkbox label="Email the team" disabledReason="Add an email address first" />,
+  render: examples.DoDisabledReason,
 };
 
-/** A bare `disabled` box drops out of the tab order and never says why. */
 export const DontDisabledReason: S = {
-  render: () => <Checkbox label="Email the team" disabled />,
+  render: examples.DontDisabledReason,
 };
 
 /** While `loading` the label is drawn and the box is a bone of its size. */

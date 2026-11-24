@@ -8,6 +8,7 @@ import {
   TableHeaderCell,
   TableRow,
 } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/TableActions.examples.js";
 
 const meta: Meta = { title: "Data/Table" };
 export default meta;
@@ -41,50 +42,10 @@ export const ActionsColumn: S = {
   ),
 };
 
-/** A row's actions get a column of their own whose head has a `label`: the head keeps its column and a screen reader hears "Actions". */
 export const DoActionsColumn: S = {
-  render: () => (
-    <Table label="Clients">
-      <TableHead>
-        <TableRow>
-          <TableHeaderCell>Client</TableHeaderCell>
-          <TableHeaderCell align="end" label="Actions" />
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        <TableRow>
-          <TableCell tone="strong">Naledi Dlamini</TableCell>
-          <TableCell align="end">
-            <Button variant="outline" size="sm">
-              Open
-            </Button>
-          </TableCell>
-        </TableRow>
-      </TableBody>
-    </Table>
-  ),
+  render: examples.DoActionsColumn,
 };
 
-/** An empty header cell leaves the column with no name, so a screen reader hears a column of unlabelled buttons. */
 export const DontActionsColumn: S = {
-  render: () => (
-    <Table label="Clients">
-      <TableHead>
-        <TableRow>
-          <TableHeaderCell>Client</TableHeaderCell>
-          <TableHeaderCell align="end" />
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        <TableRow>
-          <TableCell tone="strong">Naledi Dlamini</TableCell>
-          <TableCell align="end">
-            <Button variant="outline" size="sm">
-              Open
-            </Button>
-          </TableCell>
-        </TableRow>
-      </TableBody>
-    </Table>
-  ),
+  render: examples.DontActionsColumn,
 };

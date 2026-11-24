@@ -2,16 +2,16 @@ import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Button, ChatMessage, ChatThread, EmptyState, Stack, Text } from "@slashsuite/ui-react";
 import { SampleChat } from "./sampleChat";
+import * as examples from "../../../packages/ui-react/docs/examples/ChatThread.examples.js";
 
 const meta: Meta = {
   title: "Content/ChatThread",
   parameters: { layout: "padded" },
-  // A chat takes the width it is given, so a story gives it a realistic one.
   decorators: [
     (Story) => (
-      <Stack width="narrow">
+      <examples.Frame>
         <Story />
-      </Stack>
+      </examples.Frame>
     ),
   ],
 };
@@ -91,20 +91,10 @@ export const ToolCallAndApproval: S = {
   render: () => <SampleChat label="Cooking chat" />,
 };
 
-/** Nothing to show yet is the thread's `empty`, which goes away with the first message. */
 export const DoEmpty: S = {
-  render: () => (
-    <ChatThread label="New chat" empty={<EmptyState title="No messages yet" level={3} />} />
-  ),
+  render: examples.DoEmpty,
 };
 
-/** A made-up message is not an empty state: a screen reader reads it as something somebody said. */
 export const DontEmpty: S = {
-  render: () => (
-    <ChatThread label="New chat">
-      <ChatMessage role="assistant" author="Helper">
-        No messages yet
-      </ChatMessage>
-    </ChatThread>
-  ),
+  render: examples.DontEmpty,
 };

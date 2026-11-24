@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { BulletItem, BulletList, Stack, Text } from "@slashsuite/ui-react";
+import { BulletItem, BulletList } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/BulletList.examples.js";
 
 const meta: Meta = { title: "Text/BulletList" };
 export default meta;
@@ -41,24 +42,10 @@ export const Ordered: S = {
   ),
 };
 
-/** A list is a `BulletList` of `BulletItem`s: the list owns the discs, the indent and the gap. */
 export const DoItems: S = {
-  render: () => (
-    <BulletList>
-      <BulletItem>Moved the nightly build from cron to a queue.</BulletItem>
-      <BulletItem>Cut the cold start from nine seconds to two.</BulletItem>
-      <BulletItem>Wrote the runbook the team still uses.</BulletItem>
-    </BulletList>
-  ),
+  render: examples.DoItems,
 };
 
-/** Hyphens typed into paragraphs are not a list: no discs, no indent and no list for a screen reader. */
 export const DontItems: S = {
-  render: () => (
-    <Stack gap="xs">
-      <Text>- Moved the nightly build from cron to a queue.</Text>
-      <Text>- Cut the cold start from nine seconds to two.</Text>
-      <Text>- Wrote the runbook the team still uses.</Text>
-    </Stack>
-  ),
+  render: examples.DontItems,
 };

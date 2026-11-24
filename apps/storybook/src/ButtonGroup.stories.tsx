@@ -1,38 +1,17 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Button, ButtonGroup } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/ButtonGroup.examples.js";
 
 const meta: Meta = { title: "Actions/Button", parameters: { layout: "padded" } };
 export default meta;
 type S = StoryObj;
 
-/** A `ButtonGroup` spaces and wraps its buttons, and `end` pushes one item to the far side. */
 export const DoRow: S = {
-  render: () => (
-    <ButtonGroup
-      label="Quote actions"
-      end={
-        <Button href="#quotes" variant="ghost">
-          Back
-        </Button>
-      }
-    >
-      <Button>Save</Button>
-      <Button variant="outline">Preview</Button>
-    </ButtonGroup>
-  ),
+  render: examples.DoRow,
 };
 
-/** Buttons loose in a div have no gap, do not wrap as one row, and the group has no name. */
 export const DontRow: S = {
-  render: () => (
-    <div>
-      <Button>Save</Button>
-      <Button variant="outline">Preview</Button>
-      <Button href="#quotes" variant="ghost">
-        Back
-      </Button>
-    </div>
-  ),
+  render: examples.DontRow,
 };
 
 export const Group: S = {

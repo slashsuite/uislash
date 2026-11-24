@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { TrendChart } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/TrendChart.examples.js";
 
 const meta: Meta = { title: "Data/TrendChart", parameters: { layout: "padded" } };
 export default meta;
@@ -77,27 +78,12 @@ export const Sparse: S = {
   ),
 };
 
-/** Bars for a count in each week: each bucket stands on its own. */
 export const DoKind: S = {
-  render: () => (
-    <TrendChart
-      label="Tickets closed per week"
-      buckets={["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"]}
-      series={[{ label: "Closed", tone: "info", values: [4, 7, 3, 9, 12, 8, 6, 11] }]}
-    />
-  ),
+  render: examples.DoKind,
 };
 
-/** A line joins buckets that have an order. Through categories it draws a trend that does not exist. */
 export const DontKind: S = {
-  render: () => (
-    <TrendChart
-      label="Tickets by area"
-      kind="line"
-      buckets={["Web", "CLI", "Docs", "Infra", "Design", "Mobile"]}
-      series={[{ label: "Tickets", tone: "info", values: [14, 6, 11, 3, 9, 5] }]}
-    />
-  ),
+  render: examples.DontKind,
 };
 
 /** While `loading` the frame, the bucket names and the key are drawn and the plot is one bone. */

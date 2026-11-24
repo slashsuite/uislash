@@ -7,19 +7,18 @@ import {
   Markdown,
   Pill,
   Stack,
-  Text,
 } from "@slashsuite/ui-react";
-import { sampleScenes } from "./sampleScene";
+import { sampleScenes } from "../../../packages/ui-react/docs/examples/sampleScene.js";
+import * as examples from "../../../packages/ui-react/docs/examples/ChatMessage.examples.js";
 
 const meta: Meta = {
   title: "Content/ChatMessage",
   parameters: { layout: "padded" },
-  // A chat takes the width it is given, so a story gives it a realistic one.
   decorators: [
     (Story) => (
-      <Stack width="narrow">
+      <examples.Frame>
         <Story />
-      </Stack>
+      </examples.Frame>
     ),
   ],
 };
@@ -132,49 +131,18 @@ export const Streaming: S = {
   ),
 };
 
-/** A reply still arriving says so with `streaming`: the caret, and `aria-busy` for a screen reader. */
 export const DoStreaming: S = {
-  render: () => (
-    <ChatMessage role="assistant" author="Helper" streaming>
-      Start by sweating the leeks in
-    </ChatMessage>
-  ),
+  render: examples.DoStreaming,
 };
 
-/** Dots typed into the body say nothing to a screen reader, and are read out as text when it is done. */
 export const DontStreaming: S = {
-  render: () => (
-    <ChatMessage role="assistant" author="Helper">
-      Start by sweating the leeks in...
-    </ChatMessage>
-  ),
+  render: examples.DontStreaming,
 };
 
-/** What to do with a message goes in `actions`, under the bubble and always in view. */
 export const DoActions: S = {
-  render: () => (
-    <ChatMessage
-      role="assistant"
-      author="Helper"
-      actions={
-        <Button size="sm" variant="ghost">
-          Retry
-        </Button>
-      }
-    >
-      The pantry did not answer.
-    </ChatMessage>
-  ),
+  render: examples.DoActions,
 };
 
-/** A button in the body reads as part of what was said, and is copied with it. */
 export const DontActions: S = {
-  render: () => (
-    <ChatMessage role="assistant" author="Helper">
-      <Text>The pantry did not answer.</Text>
-      <Button size="sm" variant="ghost">
-        Retry
-      </Button>
-    </ChatMessage>
-  ),
+  render: examples.DontActions,
 };

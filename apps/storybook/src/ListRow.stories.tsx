@@ -12,6 +12,7 @@ import {
 } from "@slashsuite/ui-react";
 import { Collapsible } from "./ListRowCollapsible";
 import { samplePhoto } from "./samplePhoto";
+import * as examples from "../../../packages/ui-react/docs/examples/ListRow.examples.js";
 
 const meta: Meta = { title: "Data/ListRow" };
 export default meta;
@@ -200,51 +201,16 @@ export const RevealOnHover: S = {
   ),
 };
 
-/** Rows sit in a `Card flush`, and `divided` draws the line between them on every row after the first. */
 export const DoList: S = {
-  render: () => (
-    <Card flush>
-      <ListRow trailing="R 9 500">Rent</ListRow>
-      <ListRow divided trailing="R 1 850">
-        Transport
-      </ListRow>
-      <ListRow divided href="#bills" trailing="3">
-        Bills
-      </ListRow>
-    </Card>
-  ),
+  render: examples.DoList,
 };
 
-/** Rows in a Card that is not `flush` sit inside its padding, so the hover fill stops short of the edges and the lines do not run across. */
 export const DontList: S = {
-  render: () => (
-    <Card>
-      <ListRow trailing="R 9 500">Rent</ListRow>
-      <ListRow divided trailing="R 1 850">
-        Transport
-      </ListRow>
-    </Card>
-  ),
+  render: examples.DontList,
 };
 
-/** A row that holds its own buttons has no `href` and no `onClick`, and the buttons go in `actions`. */
 export const DoRowActions: S = {
-  render: () => (
-    <Card flush>
-      <ListRow
-        actions={
-          <>
-            <Button size="sm" variant="outline">
-              Reject
-            </Button>
-            <Button size="sm">Accept</Button>
-          </>
-        }
-      >
-        Grace Hopper
-      </ListRow>
-    </Card>
-  ),
+  render: examples.DoRowActions,
 };
 
 /** `sm`, `md` (the default) and `lg`: the row's padding; the text stays `text-sm`. */

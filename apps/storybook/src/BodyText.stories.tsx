@@ -1,86 +1,33 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import {
-  Button,
-  Caption,
-  Card,
-  EmptyState,
-  Lead,
-  Overline,
-  SectionHeading,
-  Stack,
-  Text,
-} from "@slashsuite/ui-react";
+import { Caption, Lead, Overline, Stack, Text } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/BodyText.examples.js";
 
 const meta: Meta = { title: "Text/Body text" };
 export default meta;
 type S = StoryObj;
 
-/** Body copy is `Text`, with `Text strong` for emphasis inside it and `Caption` for the fine print. */
 export const DoParagraph: S = {
-  render: () => (
-    <Stack gap="xs">
-      <Text>
-        Invoice{" "}
-        <Text as="span" strong>
-          INV-204
-        </Text>{" "}
-        is due on Friday.
-      </Text>
-      <Caption>Sent 2 minutes ago</Caption>
-    </Stack>
-  ),
+  render: examples.DoParagraph,
 };
 
-/** Plain HTML text elements carry no size, weight or colour of the theme. Every run of text is a typography part. */
 export const DontParagraph: S = {
-  render: () => (
-    <Stack gap="xs">
-      <p>
-        Invoice <strong>INV-204</strong> is due on Friday.
-      </p>
-      <small>Sent 2 minutes ago</small>
-    </Stack>
-  ),
+  render: examples.DontParagraph,
 };
 
-/** `tone` says what a run of text means: `positive` for "Saved.", `danger` for an error. */
 export const DoMeaning: S = {
-  render: () => (
-    <Stack gap="xs">
-      <Text tone="positive">Saved.</Text>
-      <Text tone="danger">Could not save: the name is taken.</Text>
-    </Stack>
-  ),
+  render: examples.DoMeaning,
 };
 
-/** `muted` and `accent` are the hierarchy of text, not its meaning: an error in the accent ink reads as a link, and in muted grey as nothing at all. */
 export const DontMeaning: S = {
-  render: () => (
-    <Stack gap="xs">
-      <Text tone="accent">Saved.</Text>
-      <Text tone="muted">Could not save: the name is taken.</Text>
-    </Stack>
-  ),
+  render: examples.DontMeaning,
 };
 
-/** An `Overline` is the small label above a heading, naming the group it belongs to. */
 export const DoLabels: S = {
-  render: () => (
-    <Stack gap="xs">
-      <Overline>Billing</Overline>
-      <SectionHeading>Invoices</SectionHeading>
-    </Stack>
-  ),
+  render: examples.DoLabels,
 };
 
-/** An `Overline` is a `span`, not a heading: a section titled by one has no place in the page outline. Use `SectionHeading`. */
 export const DontLabels: S = {
-  render: () => (
-    <Stack gap="xs">
-      <Overline>Invoices</Overline>
-      <Text>Two invoices are due this week.</Text>
-    </Stack>
-  ),
+  render: examples.DontLabels,
 };
 
 // The options a body run takes: italic, a long string, alignment and a fixed amount width.
@@ -174,41 +121,20 @@ export const EmptyLine: S = {
   render: () => <Text tone="muted">nothing here yet</Text>,
 };
 
-/** A Card with nothing to show yet holds one muted line, `Text tone="muted"`. */
 export const DoEmptyNote: S = {
-  render: () => (
-    <Card title="Done" count={0}>
-      <Text tone="muted">Nothing finished yet.</Text>
-    </Card>
-  ),
+  render: examples.DoEmptyNote,
 };
 
-/** A bare `<p>` in a Card has its own colour and size, so it drifts from every other empty Card: use `Text tone="muted"`. */
 export const DontEmptyNote: S = {
-  render: () => (
-    <Card title="Done" count={0}>
-      <p>Nothing finished yet.</p>
-    </Card>
-  ),
+  render: examples.DontEmptyNote,
 };
 
-/** A whole view with nothing in it, and a way forward, is an `EmptyState` with its `actions`. */
 export const DoEmptyView: S = {
-  render: () => (
-    <EmptyState title="No projects yet" actions={<Button>Create a project</Button>}>
-      <Text>Projects collect the shots you upload.</Text>
-    </EmptyState>
-  ),
+  render: examples.DoEmptyView,
 };
 
-/** One muted line is not a view: with a button under it nothing says what the page is for. Use `EmptyState`. */
 export const DontEmptyView: S = {
-  render: () => (
-    <Stack>
-      <Text tone="muted">No projects yet.</Text>
-      <Button>Create a project</Button>
-    </Stack>
-  ),
+  render: examples.DontEmptyView,
 };
 
 export const LeadStory: S = {

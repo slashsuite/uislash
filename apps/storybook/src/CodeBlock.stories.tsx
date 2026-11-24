@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { CodeBlock } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/CodeBlock.examples.js";
 
 const meta: Meta = { title: "Text/Code" };
 export default meta;
@@ -100,20 +101,12 @@ export const CopyScroll: S = {
   ),
 };
 
-/** A few lines to read or copy go in one `CodeBlock`, with `label` naming the language or file. */
 export const DoSnippet: S = {
-  render: () => (
-    <CodeBlock
-      label="bash"
-      language="bash"
-      lines={["bun add @slashsuite/ui-react", "bun add @slashsuite/themes"]}
-    />
-  ),
+  render: examples.DoSnippet,
 };
 
-/** One short line a reader copies is a `CopyLine`, the smaller box. A one-line `CodeBlock` is for a command that needs a `label` or colour. */
 export const DontSnippet: S = {
-  render: () => <CodeBlock language="bash">bun add @slashsuite/ui-react</CodeBlock>,
+  render: examples.DontSnippet,
 };
 
 /** `yaml` colours keys, strings, numbers and comments. The lines of a `run: |` script are left in one colour, since they are another language. */

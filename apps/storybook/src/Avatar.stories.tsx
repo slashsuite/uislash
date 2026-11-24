@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Avatar, Cluster, Text } from "@slashsuite/ui-react";
+import { Avatar, Cluster } from "@slashsuite/ui-react";
 import { samplePhoto } from "./samplePhoto";
+import * as examples from "../../../packages/ui-react/docs/examples/Avatar.examples.js";
 
 const meta: Meta = { title: "Content/Avatar" };
 export default meta;
@@ -87,40 +88,20 @@ export const Interactive: S = {
   ),
 };
 
-/** Give the person's full name every time: the same name gets the same colour and initials in every list and header. */
 export const DoIdentity: S = {
-  render: () => (
-    <Cluster>
-      <Avatar name="Ada Lovelace" />
-      <Avatar name="Ada Lovelace" size="lg" />
-      <Avatar name="Grace Hopper" />
-    </Cluster>
-  ),
+  render: examples.DoIdentity,
 };
 
-/** The colour comes from the name, so "Ada" in one place and "A. Lovelace" in another read as two different people. */
 export const DontIdentity: S = {
-  render: () => (
-    <Cluster>
-      <Avatar name="Ada" />
-      <Avatar name="A. Lovelace" />
-    </Cluster>
-  ),
+  render: examples.DontIdentity,
 };
 
-/** The initials are hidden from a screen reader, so the person's name sits beside the Avatar as text. */
 export const DoBeside: S = {
-  render: () => (
-    <Cluster>
-      <Avatar name="Ada Lovelace" />
-      <Text strong>Ada Lovelace</Text>
-    </Cluster>
-  ),
+  render: examples.DoBeside,
 };
 
-/** An initials Avatar on its own is `aria-hidden`: it names no one to a screen reader. Put the name beside it. */
 export const DontBeside: S = {
-  render: () => <Avatar name="Ada Lovelace" />,
+  render: examples.DontBeside,
 };
 
 /** While `loading`, an avatar with no name yet is a bone of its size and shape. */

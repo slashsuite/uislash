@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
-  AppShell,
   Button,
   Card,
   DetailLayout,
@@ -12,7 +11,8 @@ import {
   Stack,
   Text,
 } from "@slashsuite/ui-react";
-import { DemoShell, layoutPage } from "./DemoShell";
+import { DemoShell, layoutPage } from "../../../../packages/ui-react/docs/examples/DemoShell.js";
+import * as examples from "../../../../packages/ui-react/docs/examples/SidebarLayout.examples.js";
 
 /**
  * A vertical link list beside the canvas, both inside the shell's Container, so the rail starts at
@@ -30,45 +30,8 @@ const meta: Meta = {
 export default meta;
 type S = StoryObj;
 
-/** A whole page with a rail: the shell with its brand and nav, then the layout with a vertical `Tabs` in `aside` and the page in `children`. */
 export const FullPage: S = {
-  render: () => (
-    <AppShell
-      brand={<a href="#">Hack Cove</a>}
-      nav={
-        <Tabs
-          label="Main"
-          items={[
-            { label: "Quotes", href: "#quotes", selected: true },
-            { label: "Clients", href: "#clients" },
-          ]}
-        />
-      }
-    >
-      <SidebarLayout
-        aside={
-          <Tabs
-            orientation="vertical"
-            label="Organisations"
-            items={[
-              { label: "Hack Cove", href: "#hack-cove", selected: true },
-              { label: "Acme", href: "#acme" },
-              { label: "Northwind", href: "#northwind" },
-            ]}
-          />
-        }
-      >
-        <PageHeader
-          title="Hack Cove"
-          description="3 projects"
-          actions={<Button>New project</Button>}
-        />
-        <Card title="Projects">
-          <Text>Storybook, Dashboard, Site.</Text>
-        </Card>
-      </SidebarLayout>
-    </AppShell>
-  ),
+  render: examples.FullPage,
 };
 
 const orgs = ["Hack Cove", "Acme", "Northwind", "Initech"];
@@ -253,51 +216,12 @@ export const WithDetail: S = {
   ),
 };
 
-/** A vertical pill `Tabs` is the rail: a short list of sections beside the page. */
 export const DoSections: S = {
-  render: () => (
-    <SidebarLayout
-      aside={
-        <Tabs
-          orientation="vertical"
-          label="Settings"
-          items={[
-            { label: "Profile", href: "#profile", selected: true },
-            { label: "Billing", href: "#billing" },
-            { label: "Team", href: "#team" },
-          ]}
-        />
-      }
-    >
-      <PageHeader title="Profile" description="Your name and email." />
-      <Card title="Account">
-        <Text>Naledi Mokoena, naledi@example.com</Text>
-      </Card>
-    </SidebarLayout>
-  ),
+  render: examples.DoSections,
 };
 
-/** The default, horizontal pill `Tabs` wraps into a ragged block in the rail. Give the rail `orientation="vertical"`. */
 export const DontSections: S = {
-  render: () => (
-    <SidebarLayout
-      aside={
-        <Tabs
-          label="Settings"
-          items={[
-            { label: "Profile", href: "#profile", selected: true },
-            { label: "Billing", href: "#billing" },
-            { label: "Team", href: "#team" },
-          ]}
-        />
-      }
-    >
-      <PageHeader title="Profile" description="Your name and email." />
-      <Card title="Account">
-        <Text>Naledi Mokoena, naledi@example.com</Text>
-      </Card>
-    </SidebarLayout>
-  ),
+  render: examples.DontSections,
 };
 
 /** While `loading` the layout owns the wait: the header draws as itself and every part inside waits with it. */

@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Button, Card, Field, Input } from "@slashsuite/ui-react";
 import { CompactApp } from "./typeSteps";
+import * as examples from "../../../packages/ui-react/docs/examples/Input.examples.js";
 
 const meta: Meta = { title: "Forms/Input" };
 export default meta;
@@ -125,49 +126,28 @@ export const Numeric: S = {
   ),
 };
 
-/** An amount is a `prefix` for the currency and `numeric`, which lines the digits up and brings up the number keypad. */
 export const DoAmount: S = {
-  render: () => <Input prefix="R" numeric width="md" aria-label="Amount" defaultValue="49.90" />,
+  render: examples.DoAmount,
 };
 
-/** A currency typed into the placeholder is gone as soon as the person types, and nothing keeps the digits aligned. */
 export const DontAmount: S = {
-  render: () => <Input placeholder="R 0.00" width="md" aria-label="Amount" />,
+  render: examples.DontAmount,
 };
 
-/** A count a person types is `numeric` with the whole-number keypad: a text field that keeps what was typed. */
 export const DoNumber: S = {
-  render: () => (
-    <Field label="Quantity">
-      <Input numeric inputMode="numeric" width="xs" defaultValue="12" />
-    </Field>
-  ),
+  render: examples.DoNumber,
 };
 
-/** `type="number"` drops "1 250", puts spinner arrows where the figure should end, and lets the mouse wheel change the value as the page scrolls. */
 export const DontNumber: S = {
-  render: () => (
-    <Field label="Quantity">
-      <Input type="number" width="xs" defaultValue="12" />
-    </Field>
-  ),
+  render: examples.DontNumber,
 };
 
-/** A search box is `type="search"` with an `icon`: the browser's own look is dropped and a clear button appears once there is a value. */
 export const DoSearch: S = {
-  render: () => (
-    <Input
-      type="search"
-      aria-label="Search shops"
-      placeholder="Search by name or suburb…"
-      icon="search"
-    />
-  ),
+  render: examples.DoSearch,
 };
 
-/** A plain text input used for search has no icon and no way to clear it. */
 export const DontSearch: S = {
-  render: () => <Input aria-label="Search shops" placeholder="Search by name or suburb…" />,
+  render: examples.DontSearch,
 };
 
 /** `sm`, `md` (the default) and `lg`, plain and with an icon: the heights match a `Button` of the size. */

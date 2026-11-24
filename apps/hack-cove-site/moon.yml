@@ -8,14 +8,13 @@ dependsOn:
   - "themes-shared"
 
 # moon does not hash a dependency's files, so they are listed here (node_modules, dist and the
-# other build output are left out by .moon/tasks/all.yml). The docs pages are built from the
-# Storybook stories, so those are read too.
+# other build output are left out by .moon/tasks/all.yml). The ui-react glob also takes in the
+# examples the docs pages render (packages/ui-react/docs/examples).
 fileGroups:
   deps:
     - "/packages/ui-react/**/*"
     - "/themes/**/*"
     - "/packages/themes-shared/**/*"
-    - "/apps/storybook/src/**/*"
 
 tasks:
   dev:

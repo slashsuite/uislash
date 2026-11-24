@@ -11,7 +11,7 @@ import {
   SubsectionHeading,
   Text,
 } from "@slashsuite/ui-react";
-import { DemoShell, layoutPage } from "./DemoShell";
+import { DemoShell, layoutPage } from "../../../../packages/ui-react/docs/examples/DemoShell.js";
 
 const meta: Meta = {
   title: "Layout/Stack",

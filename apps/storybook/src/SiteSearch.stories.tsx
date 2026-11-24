@@ -1,13 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import {
-  Cluster,
-  ColourSchemeToggle,
-  Input,
-  ListRow,
-  SiteSearch,
-  Stack,
-  type SiteSearchItem,
-} from "@slashsuite/ui-react";
+import { SiteSearch, type SiteSearchItem } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/SiteSearch.examples.js";
 
 const meta: Meta = { title: "Navigation/SiteSearch" };
 export default meta;
@@ -95,35 +88,10 @@ export const Open: S = {
   },
 };
 
-/** `SiteSearch` in the header's `controls`, beside the colour toggle, given every page: one search, on every page, with a shortcut. */
 export const DoHeader: S = {
-  render: () => (
-    <Cluster gap="sm">
-      <SiteSearch
-        label="Search components"
-        items={[
-          { label: "Dialog", description: "A modal window.", href: "#dialog" },
-          { label: "Tabs", description: "Switch a view in place.", href: "#tabs" },
-        ]}
-      />
-      <ColourSchemeToggle size="sm" store={false} />
-    </Cluster>
-  ),
+  render: examples.DoHeader,
 };
 
-/** A field and a hand-filtered list in the page body is a second search with no shortcut, no keys and no count read out. Use `SiteSearch`. */
 export const DontHeader: S = {
-  render: () => (
-    <Stack gap="sm">
-      <Input type="search" aria-label="Filter" icon="search" defaultValue="dia" />
-      <div>
-        <ListRow href="#dialog" size="sm">
-          Dialog
-        </ListRow>
-        <ListRow href="#field-dialog" size="sm" divided>
-          FieldDialog
-        </ListRow>
-      </div>
-    </Stack>
-  ),
+  render: examples.DontHeader,
 };

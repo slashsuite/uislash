@@ -1,14 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import {
-  Button,
-  Card,
-  ClusterGrow,
-  Input,
-  Overline,
-  SideColumn,
-  Stack,
-  Text,
-} from "@slashsuite/ui-react";
+import { Button, Card, Input, SideColumn, Stack, Text } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/SideColumn.examples.js";
 
 /** A main area beside a fixed-width side column from `lg`; the aside stacks under the main area below it. */
 const meta: Meta = { title: "Layout/SideColumn", parameters: { layout: "padded" } };
@@ -103,38 +95,10 @@ export const Sticky: S = {
   ),
 };
 
-/** A main area and a side column of a known width are a `SideColumn`: the aside is exactly as wide as `asideWidth`, whatever it holds. */
 export const DoFixedColumn: S = {
-  render: () => (
-    <SideColumn
-      aside={
-        <Card title="Reply agent">
-          <Text>Ask for a draft, then edit it before it is sent.</Text>
-        </Card>
-      }
-    >
-      <Card title="Thread">
-        <Text>The main area takes everything the aside leaves.</Text>
-      </Card>
-    </SideColumn>
-  ),
+  render: examples.DoFixedColumn,
 };
 
-/** A `Stack` with `rowFrom` and a `ClusterGrow` sizes the side by its content: a long line makes it wide and takes the room from the main area. */
 export const DontFixedColumn: S = {
-  render: () => (
-    <Stack rowFrom="lg">
-      <ClusterGrow>
-        <Card title="Thread">
-          <Text>The main area takes what is left.</Text>
-        </Card>
-      </ClusterGrow>
-      <Card>
-        <Overline>Reply agent</Overline>
-        <Text>
-          Whatever width the aside's text wants is the width it takes, so it changes with its words.
-        </Text>
-      </Card>
-    </Stack>
-  ),
+  render: examples.DontFixedColumn,
 };

@@ -70,6 +70,7 @@ const outsideBackticks = (line: string): string => line.replace(/`[^`]*`/g, "``"
 const isTest = (path: string): boolean =>
   /\.test\.tsx?$/.test(path) ||
   path.endsWith(".stories.tsx") ||
+  path.endsWith(".examples.tsx") ||
   path.startsWith("e2e/") ||
   path.startsWith("test/");
 

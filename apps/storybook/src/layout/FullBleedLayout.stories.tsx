@@ -1,19 +1,17 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
-  AppShell,
   Button,
   Card,
   Cluster,
-  EmptyState,
   FullBleedLayout,
   KeyValue,
   KeyValueList,
-  Tabs,
   Overline,
   Text,
   StatTile,
 } from "@slashsuite/ui-react";
-import { DemoShell, layoutPage } from "./DemoShell";
+import { DemoShell, layoutPage } from "../../../../packages/ui-react/docs/examples/DemoShell.js";
+import * as examples from "../../../../packages/ui-react/docs/examples/FullBleedLayout.examples.js";
 
 /**
  * Edge-to-edge canvas with an optional right panel that stacks below under `lg`. The canvas has
@@ -27,39 +25,8 @@ const meta: Meta = {
 export default meta;
 type S = StoryObj;
 
-/** A whole viewer page: the shell with `bleed`, then the layout with the viewer in `children` and the facts in `aside`. The `EmptyState` stands in for the app's own viewer. */
 export const FullPage: S = {
-  render: () => (
-    <AppShell
-      brand={<a href="#">Hack Cove</a>}
-      nav={
-        <Tabs
-          label="Main"
-          items={[
-            { label: "Quotes", href: "#quotes", selected: true },
-            { label: "Clients", href: "#clients" },
-          ]}
-        />
-      }
-      bleed
-    >
-      <FullBleedLayout
-        aside={
-          <>
-            <Overline as="h2">Snapshot</Overline>
-            <KeyValueList>
-              <KeyValue label="Story">Button / Primary</KeyValue>
-              <KeyValue label="Changed">0.4%</KeyValue>
-            </KeyValueList>
-          </>
-        }
-      >
-        <EmptyState title="Snapshot viewer">
-          <Text>Your viewer goes here and fills the width.</Text>
-        </EmptyState>
-      </FullBleedLayout>
-    </AppShell>
-  ),
+  render: examples.FullPage,
 };
 
 const snapshotCanvas = (
@@ -143,34 +110,12 @@ export const BarPadded: S = {
   ),
 };
 
-/** A viewer that needs the whole width (a snapshot, a canvas, a player) fills it, with the facts in the `aside`. */
 export const DoViewer: S = {
-  render: () => (
-    <FullBleedLayout
-      aside={
-        <>
-          <Overline as="h2">Snapshot</Overline>
-          <KeyValueList>
-            <KeyValue label="Story">Button / Primary</KeyValue>
-            <KeyValue label="Changed">0.4%</KeyValue>
-          </KeyValueList>
-        </>
-      }
-    >
-      <Text>The snapshot fills the width.</Text>
-    </FullBleedLayout>
-  ),
+  render: examples.DoViewer,
 };
 
-/** `FullBleedLayout` adds no padding unless `padded`, so an ordinary page lands on the screen edge. A page with a title is a `ListLayout` or `DetailLayout`. */
 export const DontViewer: S = {
-  render: () => (
-    <FullBleedLayout>
-      <Card title="Quotes">
-        <Text>Every quote you have sent.</Text>
-      </Card>
-    </FullBleedLayout>
-  ),
+  render: examples.DontViewer,
 };
 
 /** While `loading` the layout owns the wait: the header draws as itself and every part inside waits with it. */

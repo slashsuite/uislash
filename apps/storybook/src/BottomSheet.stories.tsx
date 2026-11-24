@@ -9,6 +9,7 @@ import {
   SectionHeading,
   Text,
 } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/BottomSheet.examples.js";
 
 const meta: Meta = {
   title: "Feedback/BottomSheet",
@@ -98,57 +99,20 @@ export const ScrollingPage: S = {
   ),
 };
 
-/** The docs examples' stand-in for a full-screen view: the sheet's positioned parent. */
 const docsView: S["decorators"] = [
   (Story) => (
-    <div className="relative h-96 overflow-hidden bg-slate-100">
+    <examples.Frame>
       <Story />
-    </div>
+    </examples.Frame>
   ),
 ];
 
-/** The heading and the count go in `header`: they stay put while the list scrolls under them. */
 export const DoHeader: S = {
   decorators: docsView,
-  render: () => {
-    const [snap, setSnap] = useState(1);
-    return (
-      <BottomSheet
-        label="Shops"
-        snaps={[0.3, 0.75]}
-        snap={snap}
-        onSnapChange={setSnap}
-        header={
-          <>
-            <SectionHeading>Shops nearby</SectionHeading>
-            <Pill>12</Pill>
-          </>
-        }
-      >
-        {Array.from({ length: 12 }, (_, i) => (
-          <ListRow key={i} divided={i > 0} trailing={`${i + 2}00 m`}>
-            Shop {i + 1}
-          </ListRow>
-        ))}
-      </BottomSheet>
-    );
-  },
+  render: examples.DoHeader,
 };
 
-/** Do not put the heading first in the body: it scrolls away with the list. */
 export const DontHeader: S = {
   decorators: docsView,
-  render: () => {
-    const [snap, setSnap] = useState(1);
-    return (
-      <BottomSheet label="Shops" snaps={[0.3, 0.75]} snap={snap} onSnapChange={setSnap}>
-        <SectionHeading>Shops nearby</SectionHeading>
-        {Array.from({ length: 12 }, (_, i) => (
-          <ListRow key={i} divided={i > 0} trailing={`${i + 2}00 m`}>
-            Shop {i + 1}
-          </ListRow>
-        ))}
-      </BottomSheet>
-    );
-  },
+  render: examples.DontHeader,
 };

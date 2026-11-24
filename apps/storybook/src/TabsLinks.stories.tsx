@@ -1,40 +1,17 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Button, Stack, Tabs } from "@slashsuite/ui-react";
+import { Stack, Tabs } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/TabsLinks.examples.js";
 
 const meta: Meta = { title: "Navigation/Tabs" };
 export default meta;
 type S = StoryObj;
 
-/** A rail of links is pill `Tabs` of links with `orientation="vertical"`: one nav landmark, the current page marked. */
 export const DoRail: S = {
-  render: () => (
-    <Tabs
-      orientation="vertical"
-      label="Sections"
-      items={[
-        { label: "Overview", href: "#overview" },
-        { label: "Button", href: "#button", selected: true },
-        { label: "Card", href: "#card" },
-      ]}
-    />
-  ),
+  render: examples.DoRail,
 };
 
-/** A stack of ghost link `Button`s is not a nav landmark, and nothing marks the current page. */
 export const DontRail: S = {
-  render: () => (
-    <Stack gap="xs">
-      <Button href="#overview" variant="ghost">
-        Overview
-      </Button>
-      <Button href="#button" variant="ghost">
-        Button
-      </Button>
-      <Button href="#card" variant="ghost">
-        Card
-      </Button>
-    </Stack>
-  ),
+  render: examples.DontRail,
 };
 
 export const Links: S = {

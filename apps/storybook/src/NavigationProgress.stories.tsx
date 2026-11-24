@@ -1,16 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
-import {
-  AppShell,
-  AppShellBrand,
-  Button,
-  NavigationProgress,
-  PageFade,
-  ProgressBar,
-  Stack,
-  Tabs,
-  Text,
-} from "@slashsuite/ui-react";
+import { AppShell, AppShellBrand, NavigationProgress, Tabs, Text } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/NavigationProgress.examples.js";
 
 const meta: Meta = { title: "Feedback/NavigationProgress", parameters: { layout: "fullscreen" } };
 export default meta;
@@ -46,30 +36,10 @@ export const Default: S = {
   ),
 };
 
-/** Pass `loading` from the router's pending state: the bar shows while it is true and is gone when the page has arrived. */
 export const DoPending: S = {
-  render: () => {
-    const [pending, setPending] = useState(true);
-    return (
-      <Stack gap="sm">
-        <NavigationProgress loading={pending} />
-        <Button variant="outline" onClick={() => setPending(!pending)}>
-          {pending ? "The page has arrived" : "Open the store page"}
-        </Button>
-        <PageFade>
-          <Text>{pending ? "Waiting for the next page." : "The current page."}</Text>
-        </PageFade>
-      </Stack>
-    );
-  },
+  render: examples.DoPending,
 };
 
-/** A `ProgressBar` needs a value, and a page load has none to give: a guessed one sits still or lies about how far along it is. */
 export const DontPending: S = {
-  render: () => (
-    <Stack gap="sm">
-      <ProgressBar value={60} label="Loading page" />
-      <Text>Waiting for the next page.</Text>
-    </Stack>
-  ),
+  render: examples.DontPending,
 };

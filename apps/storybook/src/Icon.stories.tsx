@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Button, Caption, Icon, Stack, Text } from "@slashsuite/ui-react";
+import { Caption, Icon, Stack, Text } from "@slashsuite/ui-react";
 import { iconIdeas, iconNames } from "./iconIdeas.js";
+import * as examples from "../../../packages/ui-react/docs/examples/Icon.examples.js";
 
 const meta: Meta = { title: "Actions/Icon" };
 export default meta;
@@ -95,37 +96,10 @@ export const Label: S = {
   ),
 };
 
-/** A bare `<svg>` goes in an `Icon`, which sizes and tones it, and a Button beside text needs nothing more. */
 export const DoIcon: S = {
-  render: () => (
-    <Button variant="outline">
-      <Icon>
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
-          <path d="M3 6.5h3l1.5-2h5L14 6.5h3v9H3Z" strokeLinejoin="round" />
-          <circle cx="10" cy="11" r="2.75" />
-        </svg>
-      </Icon>
-      Capture
-    </Button>
-  ),
+  render: examples.DoIcon,
 };
 
-/** A bare `<svg>` with its own size and colour is a one-off: each one picks its own size and colour, and none follows the theme's muted text. */
 export const DontIcon: S = {
-  render: () => (
-    <Button variant="outline">
-      <svg
-        viewBox="0 0 20 20"
-        fill="none"
-        stroke="#5ec8ff"
-        strokeWidth="1.6"
-        width="18"
-        height="18"
-      >
-        <path d="M3 6.5h3l1.5-2h5L14 6.5h3v9H3Z" strokeLinejoin="round" />
-        <circle cx="10" cy="11" r="2.75" />
-      </svg>
-      Capture
-    </Button>
-  ),
+  render: examples.DontIcon,
 };

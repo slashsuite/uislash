@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Button, Card, Cluster, Input, Stack, StickyBar, Text } from "@slashsuite/ui-react";
-import { DemoShell, layoutPage } from "./layout/DemoShell";
+import { Button, Cluster, Input, Stack, StickyBar, Text } from "@slashsuite/ui-react";
+import { DemoShell, layoutPage } from "../../../packages/ui-react/docs/examples/DemoShell.js";
+import * as examples from "../../../packages/ui-react/docs/examples/StickyBar.examples.js";
 
 const meta: Meta = {
   title: "Layout/StickyBar",
@@ -33,30 +34,10 @@ export const Default: S = {
   ),
 };
 
-/** The page's filters and its bulk action go in one `StickyBar`, so they stay in reach under the header as the list scrolls. */
 export const DoBar: S = {
-  render: () => (
-    <StickyBar>
-      <Cluster justify="between">
-        <Input aria-label="Filter builds" placeholder="Filter builds" width="auto" />
-        <Button size="sm" variant="outline">
-          Accept all
-        </Button>
-      </Cluster>
-    </StickyBar>
-  ),
+  render: examples.DoBar,
 };
 
-/** Filters in a `Card` at the top of the page scroll away with it, so the action is out of reach halfway down a long list. Use `StickyBar`. */
 export const DontBar: S = {
-  render: () => (
-    <Card>
-      <Cluster justify="between">
-        <Input aria-label="Filter builds" placeholder="Filter builds" width="auto" />
-        <Button size="sm" variant="outline">
-          Accept all
-        </Button>
-      </Cluster>
-    </Card>
-  ),
+  render: examples.DontBar,
 };

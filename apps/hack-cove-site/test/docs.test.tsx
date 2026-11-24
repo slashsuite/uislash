@@ -200,13 +200,13 @@ const ONE_HALF: Record<string, string> = {
   "Switch/Row": "The wrong way does not compile: a `Switch` takes a `label` or an `aria-label`.",
 };
 
-const story = (render: string) =>
-  `import { Text } from "@slashsuite/ui-react";\nconst words = "hi";\nexport const A = { render: () => ${render} };`;
+const examples = (example: string) =>
+  `import { Text } from "@slashsuite/ui-react";\nconst words = "hi";\nexport const A = () => ${example};`;
 
-describe("a story's snippet", () => {
-  test("stands alone: a word inside a string is fine, a name from the story's file fails the build", () => {
-    expect(storyParts(story('<Text label="words">x</Text>'), "A")?.code).toContain("<Text");
-    expect(() => storyParts(story("<Text>{words}</Text>"), "A")).toThrow(/"words"/);
+describe("an example's snippet", () => {
+  test("stands alone: a word inside a string is fine, a name from the example's file fails the build", () => {
+    expect(storyParts(examples('<Text label="words">x</Text>'), "A")?.code).toContain("<Text");
+    expect(() => storyParts(examples("<Text>{words}</Text>"), "A")).toThrow(/"words"/);
   });
 });
 

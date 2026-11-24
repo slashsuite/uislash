@@ -1,17 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import {
-  AppShell,
-  Button,
-  Card,
-  CardGrid,
-  ListLayout,
-  Tabs,
-  ProseLayout,
-  SectionHeading,
-  Text,
-} from "@slashsuite/ui-react";
-import { DemoShell, layoutPage } from "./DemoShell";
+import { Button, Card, CardGrid, ProseLayout, Text } from "@slashsuite/ui-react";
+import { DemoShell, layoutPage } from "../../../../packages/ui-react/docs/examples/DemoShell.js";
 import { ProsePage } from "./pages";
+import * as examples from "../../../../packages/ui-react/docs/examples/ProseLayout.examples.js";
 
 /** The `max-w-3xl` reading column starts at the title's x, with the header inside it: the e2e's every-Layout-story check holds the title's x to the logo's. */
 const meta: Meta = {
@@ -22,29 +13,8 @@ const meta: Meta = {
 export default meta;
 type S = StoryObj;
 
-/** A whole text page: the shell with its brand and nav, then one reading column with the header inside it. */
 export const FullPage: S = {
-  render: () => (
-    <AppShell
-      brand={<a href="#">Hack Cove</a>}
-      nav={
-        <Tabs
-          label="Main"
-          items={[
-            { label: "Quotes", href: "#quotes", selected: true },
-            { label: "Clients", href: "#clients" },
-          ]}
-        />
-      }
-    >
-      <ProseLayout title="Privacy" description="How we handle your data.">
-        <SectionHeading>What we keep</SectionHeading>
-        <Text>We keep your account details and the quotes you send, and nothing else.</Text>
-        <SectionHeading>Who sees it</SectionHeading>
-        <Text>Only you and the people you invite to your organisation.</Text>
-      </ProseLayout>
-    </AppShell>
-  ),
+  render: examples.FullPage,
 };
 
 export const Privacy: S = {
@@ -55,16 +25,8 @@ export const Privacy: S = {
   ),
 };
 
-/** Text pages (privacy, terms, help) are one reading column; the header sits inside it. */
 export const DoArticle: S = {
-  render: () => (
-    <ProseLayout title="Privacy" description="How we handle your data.">
-      <SectionHeading>What we keep</SectionHeading>
-      <Text>We keep your account details and the quotes you send, and nothing else.</Text>
-      <SectionHeading>Who sees it</SectionHeading>
-      <Text>Only you and the people you invite to your organisation.</Text>
-    </ProseLayout>
-  ),
+  render: examples.DoArticle,
 };
 
 /** `width="wide"` is for a page that is not long prose, such as pricing: the column is `max-w-5xl`, so cards fill the width instead of leaving the right third empty. Paragraphs and the lede keep their reading measure. */
@@ -110,18 +72,8 @@ export const FullWidth: S = {
   ),
 };
 
-/** `ListLayout` is for lists: its content runs the full width, so lines of text get too long to read. Use `ProseLayout`. */
 export const DontArticle: S = {
-  render: () => (
-    <ListLayout title="Privacy" description="How we handle your data.">
-      <Card>
-        <Text>
-          We keep your account details and the quotes you send, and nothing else. Only you and the
-          people you invite to your organisation can see them.
-        </Text>
-      </Card>
-    </ListLayout>
-  ),
+  render: examples.DontArticle,
 };
 
 /** While `loading` the layout owns the wait: the header draws as itself and every part inside waits with it. */

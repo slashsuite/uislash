@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Field, Input, Textarea } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/Field.examples.js";
 
 const meta: Meta = { title: "Forms/Field" };
 export default meta;
@@ -27,36 +28,20 @@ export const WithTextarea: S = {
   ),
 };
 
-/** Every control sits in a `Field`, with no `htmlFor` and no `id`: the Field ties its label and hint to the control itself. */
 export const DoLabel: S = {
-  render: () => (
-    <Field label="Display name" hint="Shown on your reviews.">
-      <Input />
-    </Field>
-  ),
+  render: examples.DoLabel,
 };
 
-/** A placeholder is not a label: it vanishes as soon as the person types, and it names nothing for a screen reader. */
 export const DontLabel: S = {
-  render: () => <Input placeholder="Display name" />,
+  render: examples.DontLabel,
 };
 
-/** `error` replaces the hint, in red, and is announced as an alert; the control's edge turns red and it is marked `aria-invalid`. */
 export const DoError: S = {
-  render: () => (
-    <Field label="Display name" hint="Shown on your reviews." error="Pick a shorter name.">
-      <Input defaultValue="A very long display name indeed" />
-    </Field>
-  ),
+  render: examples.DoError,
 };
 
-/** An error passed as the `hint` looks like help text: it is grey and is not announced. */
 export const DontError: S = {
-  render: () => (
-    <Field label="Display name" hint="Pick a shorter name.">
-      <Input defaultValue="A very long display name indeed" />
-    </Field>
-  ),
+  render: examples.DontError,
 };
 
 /** `layout="row"` puts the label beside the control, for a compact setting or a drawer row. The hint or error sits under the control. */

@@ -1,43 +1,17 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Cluster, Pill, TextLink } from "@slashsuite/ui-react";
+import { Cluster, Pill } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/Pill.examples.js";
 
 const meta: Meta = { title: "Content/Pill" };
 export default meta;
 type S = StoryObj;
 
-/** The tone carries the meaning: `positive` for done, `warn` for waiting, `danger` for failed, and no tone for a draft. */
 export const DoStatus: S = {
-  render: () => (
-    <Cluster>
-      <Pill tone="positive" dot>
-        Paid
-      </Pill>
-      <Pill tone="warn" dot>
-        Due
-      </Pill>
-      <Pill tone="danger" dot>
-        Overdue
-      </Pill>
-      <Pill dot>Draft</Pill>
-    </Cluster>
-  ),
+  render: examples.DoStatus,
 };
 
-/** One tone for every status says nothing: a reader cannot tell Paid from Overdue at a glance. Pick the tone by what the status means. */
 export const DontStatus: S = {
-  render: () => (
-    <Cluster>
-      <Pill tone="accent" dot>
-        Paid
-      </Pill>
-      <Pill tone="accent" dot>
-        Due
-      </Pill>
-      <Pill tone="accent" dot>
-        Overdue
-      </Pill>
-    </Cluster>
-  ),
+  render: examples.DontStatus,
 };
 
 /** `title` is the tooltip, for the detail a short label leaves out, shown on hover, keyboard focus and a tap. It is not a place for anything a reader must see. */
@@ -54,24 +28,12 @@ export const WithTitle: S = {
   ),
 };
 
-/** A Pill that goes somewhere takes `href`: it dims on hover and carries the focus ring. */
 export const DoLink: S = {
-  render: () => (
-    <Pill href="#flakes" tone="warn" round>
-      3 flaky
-    </Pill>
-  ),
+  render: examples.DoLink,
 };
 
-/** A Pill inside a `TextLink` is two parts doing one job, and the Pill's own hover dim and focus ring go unused. Give the Pill the `href`. */
 export const DontLink: S = {
-  render: () => (
-    <TextLink href="#flakes">
-      <Pill tone="warn" round>
-        3 flaky
-      </Pill>
-    </TextLink>
-  ),
+  render: examples.DontLink,
 };
 
 /** `name` makes a two-tone `name: value` pill: the name keeps the tone's tint and the children, the value, sit on the surface beside it. Keep the name to a word or two. */

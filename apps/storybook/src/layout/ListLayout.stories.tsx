@@ -1,20 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import {
-  AppShell,
-  Button,
-  ButtonGroup,
-  Card,
-  EmptyState,
-  Fieldset,
-  ListLayout,
-  Tabs,
-  PageHeader,
-  Pill,
-  Stack,
-  Text,
-} from "@slashsuite/ui-react";
-import { DemoShell, layoutPage } from "./DemoShell";
+import { Card, EmptyState, ListLayout } from "@slashsuite/ui-react";
+import { DemoShell, layoutPage } from "../../../../packages/ui-react/docs/examples/DemoShell.js";
 import { ListPage } from "./pages";
+import * as examples from "../../../../packages/ui-react/docs/examples/ListLayout.examples.js";
 
 /** The page stories keep the page title at the logo's x (bar the three asserted in e2e/layout.spec.ts); the visual check shoots each at 1280. */
 const meta: Meta = {
@@ -25,52 +13,8 @@ const meta: Meta = {
 export default meta;
 type S = StoryObj;
 
-/** A whole list page: the shell with its brand and nav, then the layout with its filters and rows. */
 export const FullPage: S = {
-  render: () => (
-    <AppShell
-      brand={<a href="#">Hack Cove</a>}
-      nav={
-        <Tabs
-          label="Main"
-          items={[
-            { label: "Quotes", href: "#quotes", selected: true },
-            { label: "Clients", href: "#clients" },
-          ]}
-        />
-      }
-    >
-      <ListLayout
-        title="Quotes"
-        description="Every quote you have sent."
-        actions={<Button>New quote</Button>}
-        filters={
-          <Fieldset label="Status">
-            <ButtonGroup>
-              <Button variant="outline" size="sm" pressed>
-                All
-              </Button>
-              <Button variant="outline" size="sm" pressed={false}>
-                Sent
-              </Button>
-              <Button variant="outline" size="sm" pressed={false}>
-                Accepted
-              </Button>
-            </ButtonGroup>
-          </Fieldset>
-        }
-      >
-        <Card as="article">
-          <Text strong>Naledi Mokoena</Text>
-          <Text>Q-1042 · R 1 240 / mo</Text>
-        </Card>
-        <Card as="article">
-          <Text strong>Pieter van Wyk</Text>
-          <Text>Q-1041 · R 860 / mo</Text>
-        </Card>
-      </ListLayout>
-    </AppShell>
-  ),
+  render: examples.FullPage,
 };
 
 export const WithRows: S = {
@@ -90,72 +34,20 @@ export const Empty: S = {
   ),
 };
 
-/** `filters` sit under the header, then the rows: one `Card` per item. */
 export const DoRows: S = {
-  render: () => (
-    <ListLayout
-      title="Quotes"
-      description="Every quote you have sent."
-      actions={<Button>New quote</Button>}
-      filters={
-        <Fieldset label="Status">
-          <ButtonGroup>
-            <Button variant="outline" size="sm" pressed>
-              All
-            </Button>
-            <Button variant="outline" size="sm" pressed={false}>
-              Sent
-            </Button>
-          </ButtonGroup>
-        </Fieldset>
-      }
-    >
-      <Card as="article" title="Naledi Mokoena" status={<Pill tone="positive">Accepted</Pill>}>
-        <Text>Q-1042 · R 1 240 / mo</Text>
-      </Card>
-      <Card as="article" title="Pieter van Wyk" status={<Pill tone="neutral">Sent</Pill>}>
-        <Text>Q-1041 · R 860 / mo</Text>
-      </Card>
-    </ListLayout>
-  ),
+  render: examples.DoRows,
 };
 
-/** A one-off header and stack drifts from every other list page; `ListLayout` is the one header, filters and list. */
 export const DontRows: S = {
-  render: () => (
-    <Stack>
-      <PageHeader title="Quotes" description="Every quote you have sent." />
-      <Card as="article" title="Naledi Mokoena">
-        <Text>Q-1042 · R 1 240 / mo</Text>
-      </Card>
-    </Stack>
-  ),
+  render: examples.DontRows,
 };
 
-/** `empty` takes the list's place when there are no children: say what is missing and what to do. */
 export const DoNothingYet: S = {
-  render: () => (
-    <ListLayout
-      title="Quotes"
-      description="Every quote you have sent."
-      empty={
-        <EmptyState title="No quotes yet" actions={<Button>New quote</Button>}>
-          <Text>Quotes you send show up here.</Text>
-        </EmptyState>
-      }
-    />
-  ),
+  render: examples.DoNothingYet,
 };
 
-/** A muted line as `empty` says nothing is here and offers no way forward: a dead end. */
 export const DontNothingYet: S = {
-  render: () => (
-    <ListLayout
-      title="Quotes"
-      description="Every quote you have sent."
-      empty={<Text tone="muted">No quotes yet.</Text>}
-    />
-  ),
+  render: examples.DontNothingYet,
 };
 
 /** While `loading` the layout owns the wait: the header draws as itself and every part inside waits with it. */

@@ -1,7 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Image } from "@slashsuite/ui-react";
-import { sampleCode } from "./sampleCode";
-import { samplePortrait, sampleScenes } from "./sampleScene";
+import { sampleCode } from "../../../packages/ui-react/docs/examples/sampleCode.js";
+import {
+  samplePortrait,
+  sampleScenes,
+} from "../../../packages/ui-react/docs/examples/sampleScene.js";
+import * as examples from "../../../packages/ui-react/docs/examples/Image.examples.js";
 
 const meta: Meta = { title: "Content/Image" };
 export default meta;
@@ -85,14 +89,12 @@ export const Missing: S = {
   ),
 };
 
-/** A picture that must be seen whole, such as a QR code or a logo, is `fit="contain"`. */
 export const DoFit: S = {
-  render: () => <Image src={sampleCode} alt="Pairing code" aspect="3:4" width="md" fit="contain" />,
+  render: examples.DoFit,
 };
 
-/** `cover` crops to the shape: it cuts the corners off a code, which then cannot be scanned. */
 export const DontFit: S = {
-  render: () => <Image src={sampleCode} alt="Pairing code" aspect="16:9" width="md" fit="cover" />,
+  render: examples.DontFit,
 };
 
 /** While `loading`, a picture with no `src` yet is a bone of its shape, not the placeholder. */

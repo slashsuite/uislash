@@ -9,9 +9,9 @@
    utilities they use. Otherwise their classes are absent from the bundle. */
 @source "../../node_modules/@slashsuite/ui-react/dist";
 
-/* The docs pages render the Storybook stories (apps/storybook/src), whose layout classes (a
-   story's own `flex max-w-xl …`) are not in the components' build. */
-@source "../../../storybook/src";
+/* The docs pages render the examples (packages/ui-react/docs/examples), whose layout classes (an
+   example's own `flex max-w-xl …`) are not in the components' build. */
+@source "../../../../packages/ui-react/docs/examples";
 
 /* The Logo's halo (HC-144): the LG TV theme's pulse, opacity and scale only, on a 4s ease-in-out
    alternate loop. Static at rest under prefers-reduced-motion. Flagged in README, "Custom, by design". */

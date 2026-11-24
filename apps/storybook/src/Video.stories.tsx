@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Video } from "@slashsuite/ui-react";
 import { samplePhoto } from "./samplePhoto";
 import { sampleVideo } from "./sampleVideo";
+import * as examples from "../../../packages/ui-react/docs/examples/Video.examples.js";
 
 const meta: Meta = { title: "Content/Video" };
 export default meta;
@@ -17,16 +18,10 @@ export const WithPoster: S = {
   ),
 };
 
-/** `captions` is a WebVTT file offered as the default track; `children` is the text for a browser that cannot play it. */
 export const DoCaptions: S = {
-  render: () => (
-    <Video src="/media/walkthrough.webm" captions="/media/walkthrough.vtt">
-      Your browser cannot play this video.
-    </Video>
-  ),
+  render: examples.DoCaptions,
 };
 
-/** A video with speech and no `captions` leaves out anyone who cannot hear it. */
 export const DontCaptions: S = {
-  render: () => <Video src="/media/walkthrough.webm" />,
+  render: examples.DontCaptions,
 };

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Pill, Timeline, TimelineItem, EmptyState } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/Timeline.examples.js";
 
 const meta: Meta = { title: "Content/Timeline" };
 export default meta;
@@ -46,42 +47,20 @@ export const Empty: S = {
   ),
 };
 
-/** A `title` (a Pill or a short label), the `time` already formatted for the reader, and a note under them. */
 export const DoEvents: S = {
-  render: () => (
-    <Timeline label="Status history">
-      <TimelineItem
-        tone="positive"
-        title={<Pill tone="positive">accepted</Pill>}
-        time="12 Oct 2026, 09:14"
-      >
-        Client confirmed by phone.
-      </TimelineItem>
-      <TimelineItem title={<Pill tone="warn">sent</Pill>} time="10 Oct 2026, 16:02" />
-    </Timeline>
-  ),
+  render: examples.DoEvents,
 };
 
-/** `time` is drawn as given: a raw ISO string reads as machine output. Format it before it gets here. */
 export const DontEvents: S = {
-  render: () => (
-    <Timeline label="Status history">
-      <TimelineItem title="accepted" time="2026-10-12T09:14:00.000Z">
-        Client confirmed by phone.
-      </TimelineItem>
-      <TimelineItem title="sent" time="2026-10-10T16:02:00.000Z" />
-    </Timeline>
-  ),
+  render: examples.DontEvents,
 };
 
-/** With no items, `empty` is drawn in place of the list. */
 export const DoNoEvents: S = {
-  render: () => <Timeline label="Status history" empty={<EmptyState title="No history yet." />} />,
+  render: examples.DoNoEvents,
 };
 
-/** A Timeline with no items and no `empty` draws nothing, so the reader cannot tell an empty history from a missing one. Give it an `empty`. */
 export const DontNoEvents: S = {
-  render: () => <Timeline label="Status history" />,
+  render: examples.DontNoEvents,
 };
 
 /** While `loading`, a timeline with no items is three items of bones, never its empty state. */
