@@ -5,7 +5,7 @@ import type { FlowDirection, FlowLayout, FlowNodeBox } from "./flowLayout.js";
 import type { Passthrough } from "./props.js";
 import { Bone, BusyLabel, busy, type LoadingProps, useLoading } from "./skeleton.js";
 import type { Tone } from "./tone.js";
-import { edgeKey, nodeKey, useFlowLayout } from "./useFlowLayout.js";
+import { edgeKey, nodeKey, useFit, useFlowLayout } from "./useFlowLayout.js";
 
 /**
  * One box of a `FlowDiagram`: its `id` (what an arrow's `from` and `to` name), its `label`, a
@@ -132,7 +132,8 @@ export type ViewNode = Omit<FlowNode, "tone"> & { tone?: ViewTone | undefined };
  * `StateMachine` draws its dots in. The caller lays it out (`useFlowLayout`) and hands over the
  * `canvas` ref and the layout `drawn`. Unlike `overlay`, the layer is read by a screen reader and its
  * children may take the pointer (`pointer-events-auto`), so they can be links. With a layer, the
- * image is the drawing alone and the scrolling box round it is a group named by `label`. Internal.
+ * image is the drawing alone and the scrolling box round it is a group named by `label`. With `fit`,
+ * a drawing wider than its room is shrunk to the room's width instead of scrolling. Internal.
  */
 export function FlowView({
   label,
@@ -143,6 +144,7 @@ export function FlowView({
   layer,
   canvas,
   drawn,
+  fit = false,
   ...rest
 }: {
   label: string;
@@ -153,7 +155,9 @@ export function FlowView({
   layer?: ((layout: FlowLayout) => ReactNode) | undefined;
   canvas: ReturnType<typeof useFlowLayout>["canvas"];
   drawn: FlowLayout;
+  fit?: boolean | undefined;
 } & Passthrough): ReactElement {
+  const { frame, scale } = useFit(fit ? drawn.width : 0);
   const known = new Set(nodes.map((n) => n.id));
   const shown = edges.flatMap((edge, index) =>
     known.has(edge.from) && known.has(edge.to) ? [{ edge, index }] : [],
@@ -169,26 +173,36 @@ export function FlowView({
         {...(layer ? { role: "group", "aria-label": label } : image)}
         // A diagram wider than its room scrolls, so it takes the focus for the arrow keys.
         tabIndex={0}
+        ref={frame}
         className="max-w-full overflow-auto rounded-lg outline-offset-2 focus-visible:outline-2 focus-visible:outline-violet-600"
       >
         <div
-          ref={canvas}
-          className="relative mx-auto"
-          style={{ width: drawn.width, height: drawn.height }}
+          className="mx-auto"
+          style={{ width: drawn.width * scale, height: drawn.height * scale }}
         >
-          {layer ? (
-            <div {...image} className="absolute inset-0">
-              {drawing}
-            </div>
-          ) : (
-            drawing
-          )}
-          {overlay && (
-            <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-              {overlay(drawn)}
-            </div>
-          )}
-          {layer && <div className="pointer-events-none absolute inset-0">{layer(drawn)}</div>}
+          <div
+            ref={canvas}
+            className="relative origin-top-left"
+            style={{
+              width: drawn.width,
+              height: drawn.height,
+              ...(scale < 1 ? { transform: `scale(${scale})` } : {}),
+            }}
+          >
+            {layer ? (
+              <div {...image} className="absolute inset-0">
+                {drawing}
+              </div>
+            ) : (
+              drawing
+            )}
+            {overlay && (
+              <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+                {overlay(drawn)}
+              </div>
+            )}
+            {layer && <div className="pointer-events-none absolute inset-0">{layer(drawn)}</div>}
+          </div>
         </div>
       </div>
       <FlowList label={label} nodes={nodes} edges={shown} active={active} />

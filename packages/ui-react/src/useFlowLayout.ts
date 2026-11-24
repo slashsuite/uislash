@@ -46,17 +46,49 @@ const guessLabel = (label: string): Size => ({
 export const nodeKey = (id: string): string => `n:${id}`;
 export const edgeKey = (index: number): string => `e:${index}`;
 
-/** Reads the drawn size of every box and arrow label under `root`, keyed by `data-measure`. */
+/**
+ * Reads the drawn size of every box and arrow label under `root`, keyed by `data-measure`, in the
+ * diagram's own space: a canvas scaled to fit (`useFit`) is drawn smaller, so its sizes are read
+ * back at full scale. The small allowance keeps a rounding error from adding a pixel.
+ */
 function measure(root: HTMLElement): Record<string, Size> {
   const out: Record<string, Size> = {};
+  const drawnWidth = root.getBoundingClientRect().width;
+  const scale = root.offsetWidth > 0 && drawnWidth > 0 ? drawnWidth / root.offsetWidth : 1;
+  const full = (n: number): number => Math.ceil(scale === 1 ? n : n / scale - 0.01);
   for (const el of root.querySelectorAll<HTMLElement>("[data-measure]")) {
     const rect = el.getBoundingClientRect();
     const key = el.dataset["measure"];
     if (key && rect.width > 0 && rect.height > 0) {
-      out[key] = { width: Math.ceil(rect.width), height: Math.ceil(rect.height) };
+      out[key] = { width: full(rect.width), height: full(rect.height) };
     }
   }
   return out;
+}
+
+/**
+ * How far to shrink a diagram `width` wide so it fits the box `frame` refers to: 1 when it fits
+ * or the room is not known yet (the server render, a test's DOM), else the room over the width.
+ * The observer follows the room as it changes.
+ */
+export function useFit(width: number): {
+  frame: RefObject<HTMLDivElement | null>;
+  scale: number;
+} {
+  const frame = useRef<HTMLDivElement>(null);
+  const [room, setRoom] = useState(0);
+  useLayoutEffect(() => {
+    const box = frame.current;
+    if (!box) return undefined;
+    const update = () => setRoom(box.clientWidth);
+    update();
+    if (typeof ResizeObserver === "undefined") return undefined;
+    const observer = new ResizeObserver(update);
+    observer.observe(box);
+    return () => observer.disconnect();
+  }, []);
+  const scale = room > 0 && width > room ? room / width : 1;
+  return { frame, scale };
 }
 
 const sameSizes = (a: Record<string, Size>, b: Record<string, Size>): boolean => {

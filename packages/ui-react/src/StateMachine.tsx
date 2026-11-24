@@ -231,6 +231,7 @@ export function StateMachine({
       layer={(layout) => dotLayer(layout, { inBox, names, open, toggle, moves, done })}
       canvas={canvas}
       drawn={drawn}
+      fit
     />
   );
 }
