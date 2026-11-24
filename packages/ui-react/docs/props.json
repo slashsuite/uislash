@@ -3267,7 +3267,7 @@
   },
   "Input": {
     "name": "Input",
-    "description": "A text input. `icon` names a leading icon inside the field (`icon=\"search\"`). `prefix` puts\nshort text inside the border before the value, such as a currency symbol; it is for a plain\nfield, not with an `icon` or `type=\"search\"`. `numeric` is a field for a figure: an amount\n(`<Input prefix=\"R\" numeric />`) or a count (`numeric inputMode=\"numeric\"`). It right-aligns the\nvalue in tabular figures and brings up the phone's number keypad (`inputMode=\"decimal\"` unless\nyou pass your own), and stays a text field, so \"1 250\" is kept as typed; never use\n`type=\"number\"` for a figure a person types. `type=\"search\"` drops the browser's own search look and shows a clear button at the\ntrailing edge while the field has a value, named by `clearLabel`. The `ref` reaches the `<input>`.",
+    "description": "A text input. `icon` names a leading icon inside the field (`icon=\"search\"`). `prefix` puts\nshort text inside the border before the value, such as a currency symbol; it is for a plain\nfield, not with an `icon` or `type=\"search\"`. `numeric` is a field for a figure: an amount\n(`<Input prefix=\"R\" numeric />`) or a count (`numeric inputMode=\"numeric\"`). It right-aligns the\nvalue in tabular figures and brings up the phone's number keypad (`inputMode=\"decimal\"` unless\nyou pass your own), and stays a text field, so \"1 250\" is kept as typed; never use\n`type=\"number\"` for a figure a person types. `type=\"search\"` drops the browser's own search look and shows a clear button at the\ntrailing edge while the field has a value, named by `clearLabel`, and Escape clears it. The `ref` reaches the `<input>`.",
     "props": [
       {
         "name": "clearLabel",

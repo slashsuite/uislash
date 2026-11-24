@@ -4,6 +4,7 @@ import {
   useState,
   type ChangeEvent,
   type ComponentPropsWithoutRef,
+  type KeyboardEvent,
   type ReactElement,
   type ReactNode,
   type Ref,
@@ -89,6 +90,11 @@ function clearValue(input: HTMLInputElement): void {
   input.focus();
 }
 
+/** Whether Escape has something to clear: a value, in a field the person can edit. */
+function clearable(input: HTMLInputElement): boolean {
+  return input.value !== "" && !input.readOnly && !input.disabled;
+}
+
 function ClearButton({
   size,
   label,
@@ -134,13 +140,18 @@ function bothRefs(
   };
 }
 
-/** `Input` for `type="search"`: native search look reset, and a clear button named `clearLabel` at the trailing edge while the field has a value. */
+/**
+ * `Input` for `type="search"`: native search look reset, and a clear button named `clearLabel` at the
+ * trailing edge while the field has a value. Escape in a field with a value clears it and goes no
+ * further, so a dialog around it stays open; Escape in an empty field passes on and closes it.
+ */
 export function SearchInput({
   icon,
   size = "md",
   width = "full",
   clearLabel,
   onChange,
+  onKeyDown,
   ref,
   ...rest
 }: {
@@ -163,6 +174,14 @@ export function SearchInput({
         onChange={(event: ChangeEvent<HTMLInputElement>) => {
           setTyped(event.currentTarget.value !== "");
           onChange?.(event);
+        }}
+        onKeyDown={(event: KeyboardEvent<HTMLInputElement>) => {
+          onKeyDown?.(event);
+          if (event.key !== "Escape" || event.defaultPrevented) return;
+          if (!clearable(event.currentTarget)) return;
+          event.preventDefault();
+          event.stopPropagation();
+          clearValue(event.currentTarget);
         }}
         className={cx(
           controlClass(size, width === "auto" ? "auto" : "full", step),

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Button, Card, Field, Input } from "@slashsuite/ui-react";
+import { Button, Card, Dialog, Field, Input } from "@slashsuite/ui-react";
 import { CompactApp } from "./typeSteps";
 import * as examples from "../../../packages/ui-react/docs/examples/Input.examples.js";
 
@@ -198,5 +198,19 @@ export const Invalid: S = {
         <Input type="search" icon="search" defaultValue="a" />
       </Field>
     </div>
+  ),
+};
+
+/**
+ * A search in a dialog: Escape clears the field first and the dialog stays; Escape in the empty field
+ * closes it.
+ */
+export const SearchInDialog: S = {
+  render: () => (
+    <Dialog title="Add a shop" onClose={() => undefined}>
+      <Field label="Search shops">
+        <Input type="search" icon="search" defaultValue="Corner" />
+      </Field>
+    </Dialog>
   ),
 };
