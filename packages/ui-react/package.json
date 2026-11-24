@@ -46,8 +46,9 @@
     "typecheck": "tsc --noEmit",
     "lint": "oxlint -c .oxlintrc.json --type-aware --deny-warnings --report-unused-disable-directives && bun ../../scripts/check-slop.ts",
     "test": "vitest run",
+    "agent-docs": "bun ../../apps/hack-cove-site/scripts/agent-docs.ts",
     "pack-check": "npm pack --dry-run --ignore-scripts && bun scripts/pack-docs.ts && bun scripts/consumer-types.ts",
-    "prepack": "bun run build"
+    "prepack": "bun run build && bun run agent-docs"
   },
   "dependencies": {
     "@internationalized/date": "^3.12.4",

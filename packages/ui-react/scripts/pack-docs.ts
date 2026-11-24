@@ -1,7 +1,7 @@
 /**
  * Fails `pack-check` when the tarball's agent docs are incomplete (`packedDocs.ts` says what they
  * must hold). Reads the file list from `npm pack --dry-run`, so it checks what would ship, not the
- * working tree. The docs are written by `bunx moon run hack-cove-site:agent-docs`.
+ * working tree. The docs are written by `bunx moon run ui-react:agent-docs`.
  */
 import { readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -40,6 +40,6 @@ const problems = packedDocsProblems(
 );
 if (problems.length > 0) {
   throw new Error(
-    `the tarball's agent docs are incomplete (run \`bunx moon run hack-cove-site:agent-docs\`):\n${problems.join("\n")}`,
+    `the tarball's agent docs are incomplete (run \`bunx moon run ui-react:agent-docs\`):\n${problems.join("\n")}`,
   );
 }

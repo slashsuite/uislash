@@ -1,7 +1,7 @@
 /**
  * Writes `packages/ui-react/agent-docs/` (the docs shipped in `@slashsuite/ui-react`) from
- * `renderAgentDocs` in `src/docs/llms.ts`. Run by the `agent-docs` moon task; the output is
- * committed, and `test/agentDocs.test.ts` fails when it differs from a fresh render.
+ * `renderAgentDocs` in `src/docs/llms.ts`. Run by ui-react's `agent-docs` task and its `prepack`;
+ * the output is a build artifact, never committed.
  *
  * The docs read the stories through `import.meta.glob`, so the renderer is loaded through Vite's
  * SSR loader rather than imported by Bun.

@@ -11,7 +11,6 @@
     "test": "vitest run",
     "deploy": "./deploy.sh",
     "props": "bun scripts/props.ts",
-    "agent-docs": "bun scripts/agent-docs.ts",
     "test:e2e": "playwright test",
     "smoke": "playwright test -c playwright.smoke.config.ts"
   },

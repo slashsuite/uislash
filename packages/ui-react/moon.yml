@@ -3,8 +3,9 @@ $schema: "../../.moon/cache/schemas/project.json"
 # @slashsuite/ui-react. Each task runs the package.json script of its name (`prepack` is npm's, not a task).
 # docs/ is the component docs' data. Lint (check-slop) reads all of it; typecheck and pack-check read
 # docs/components (scripts/pack-docs.ts checks the tarball holds one agent-docs page per docs page);
-# build and test leave it out of their hash. agent-docs/ ships in the package, written by
-# hack-cove-site:agent-docs; build and test do not read it either.
+# build and test leave it out of their hash. agent-docs/ ships in the package and is never
+# committed: the agent-docs task writes it (the renderer is the site's, from the same sources as
+# /ui/llms.txt), and `prepack` runs it, so npm publish packs a fresh copy.
 tasks:
   build:
     command: "bun run build"
@@ -21,7 +22,14 @@ tasks:
   test:
     command: "bun run test"
     inputs: ["**/*", "!docs/**/*", "!agent-docs/**/*"]
+  # Reads the built dist through the stories, so it runs after build. Never cached: it reads the
+  # site's docs, the stories and the themes, too many sources to list as inputs, and takes seconds.
+  agent-docs:
+    command: "bun run agent-docs"
+    deps: ["~:build"]
+    options:
+      cache: false
   pack-check:
     command: "bun run pack-check"
     inputs: ["**/*", "!docs/*.json"]
-    deps: ["~:build"]
+    deps: ["~:build", "~:agent-docs"]
