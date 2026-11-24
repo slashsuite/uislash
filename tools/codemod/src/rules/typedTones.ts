@@ -55,13 +55,20 @@ function retone(
   map: Readonly<Record<string, string>>,
   context: Context,
 ): void {
-  const seen = new Set<string>();
+  // Each value the list holds after the pass, and whether the pass wrote it.
+  const seen = new Map<string, boolean>();
   for (const literal of literals) {
     const to = map[literal.text] ?? literal.text;
-    // A value the pass leaves as it is was already there: two of it are the app's own list.
-    if (seen.has(to) && to !== literal.text)
-      report(context, literal, `"${literal.text}" is "${to}" now, which this list already holds`);
-    seen.add(to);
-    if (to !== literal.text) replace(context, literal, `"${to}"`);
+    const rewritten = to !== literal.text;
+    // Two of a value the pass wrote neither of were already there: the app's own list.
+    const before = seen.get(to);
+    if (before !== undefined && (before || rewritten)) {
+      const why = rewritten
+        ? `"${literal.text}" is "${to}" now, which this list already holds`
+        : `"${to}" is in this list twice now: an earlier value became it`;
+      report(context, literal, why);
+    }
+    seen.set(to, (before ?? false) || rewritten);
+    if (rewritten) replace(context, literal, `"${to}"`);
   }
 }

@@ -92,7 +92,7 @@ export const text: ComponentSection = {
         ],
       },
       accessibility: [
-        "`Text`, `Caption` and `Lead` render a `p`, and `Overline` a `span`. `as` changes the element: a `span` for `Text` or `Caption` inside a row or a sentence, an `li`, or a `label` for an `Overline` with `htmlFor`.",
+        "`Text`, `Caption` and `Lead` render a `p`, and `Overline` a `span`. `as` changes the element: a `span` for `Text` or `Caption` inside a row or a sentence, or an `li`. A field's label is the `Field`'s, never an `Overline`.",
         '`Overline` is a label, not a heading: it adds nothing to the page outline. A small section title is `Section size="sm"`, not `Overline as="h2"`.',
         "`lines` sets the full text as the `title` when the content is plain text, so a pointer user can read what was cut. Give a `title` of your own when the content is not.",
         "A `tone` changes only the colour. The wording has to carry the meaning.",
