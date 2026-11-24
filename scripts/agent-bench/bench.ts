@@ -79,8 +79,12 @@ async function agent(dir: string, log: string) {
       env: { ...process.env, CLAUDE_CODE_DISABLE_AUTO_MEMORY: "1" },
     },
   );
-  const text = await new Response(proc.stdout).text();
-  await proc.exited;
+  const [text, stderr] = await Promise.all([
+    new Response(proc.stdout).text(),
+    new Response(proc.stderr).text(),
+  ]);
+  // A CLI that is signed out, out of credit or refuses a flag would otherwise read as a run of zeros.
+  if ((await proc.exited) !== 0) throw new Error(`claude exited ${proc.exitCode}: ${stderr}`);
   writeFileSync(log, text);
   return { text, ms: Date.now() - started };
 }
