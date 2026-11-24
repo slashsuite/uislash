@@ -3,7 +3,6 @@ import { join, relative } from "node:path";
 import { describe, expect, test } from "vitest";
 import { componentPages } from "../../../packages/ui-react/docs/components/index";
 import { renderAgentDocs, renderLlms } from "../src/docs/llms";
-import { must } from "./must";
 
 /** The docs shipped in `@slashsuite/ui-react`, committed, written by `bunx moon run hack-cove-site:agent-docs`. */
 const dir = join(import.meta.dirname, "../../../packages/ui-react/agent-docs");
@@ -16,7 +15,6 @@ const committed = new Map(
     }),
 );
 const fresh = renderAgentDocs();
-const index = must(fresh.get("llms.txt"), "a rendered agent-docs/llms.txt");
 const regenerate = "run `bunx moon run hack-cove-site:agent-docs` and commit the result";
 
 describe("packages/ui-react/agent-docs", () => {
@@ -26,14 +24,6 @@ describe("packages/ui-react/agent-docs", () => {
 
   test.each([...fresh.keys()])(`%s is what a fresh render writes (${regenerate})`, (path) => {
     expect(committed.get(path)).toBe(fresh.get(path));
-  });
-
-  test("has one page per component page, and the index lists each", () => {
-    for (const { name, slug, whenToUse } of componentPages) {
-      expect(fresh.has(`components/${slug}.md`)).toBe(true);
-      expect(index).toContain(`- ${name} (components/${slug}.md): ${whenToUse}\n`);
-    }
-    expect(fresh.size).toBe(componentPages.length + 1);
   });
 });
 

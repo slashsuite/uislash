@@ -15,7 +15,7 @@ const isLlms = (mod: Record<string, unknown>): mod is Llms =>
   typeof mod["renderAgentDocs"] === "function";
 
 const root = resolve(import.meta.dirname, "..");
-export const AGENT_DOCS = resolve(root, "../../packages/ui-react/agent-docs");
+const AGENT_DOCS = resolve(root, "../../packages/ui-react/agent-docs");
 
 const server = await createServer({
   root,
@@ -27,10 +27,10 @@ const server = await createServer({
 try {
   const llms = await server.ssrLoadModule(join(root, "src/docs/llms.ts"));
   if (!isLlms(llms)) throw new Error("src/docs/llms.ts exports no renderAgentDocs");
-  const { renderAgentDocs } = llms;
+  const docs = llms.renderAgentDocs();
   // Written whole, so a page removed from the docs leaves no file behind.
   rmSync(AGENT_DOCS, { recursive: true, force: true });
-  for (const [path, text] of renderAgentDocs()) {
+  for (const [path, text] of docs) {
     const file = join(AGENT_DOCS, path);
     mkdirSync(dirname(file), { recursive: true });
     writeFileSync(file, text);
