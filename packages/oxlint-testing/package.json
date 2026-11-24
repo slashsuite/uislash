@@ -1,6 +1,6 @@
 {
   "name": "@slashsuite/oxlint-testing",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A shared oxlint config and plugin for UI tests (Playwright, Testing Library, Vitest): find elements the way a user does, wait on a state, assert behaviour not look, and keep one Playwright config shape.",
   "keywords": [
     "e2e",
