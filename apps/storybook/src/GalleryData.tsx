@@ -125,7 +125,7 @@ export function GalleryData() {
   );
 }
 
-/** A plain ListRow (no `href`, no `onClick`) with `leading`, `selected` and `revealOnHover` actions, a `focused` row, and a thumbnail row with a block label. */
+/** A plain ListRow (no `href`, no `onClick`) with `leading`, `selected` and `actions`, a `focused` row, and a thumbnail row with a block label. */
 function GalleryStaticRows() {
   return (
     <Card flush>
@@ -134,11 +134,10 @@ function GalleryStaticRows() {
       </ListRow>
       <ListRow
         divided
-        revealOnHover
         leading={<Avatar name="Grace Hopper" size="sm" />}
         actions={<Button size="sm">Remove</Button>}
       >
-        Static row, actions on hover
+        Static row with actions
       </ListRow>
       <ListRow divided focused trailing="R 1 850">
         Focused row

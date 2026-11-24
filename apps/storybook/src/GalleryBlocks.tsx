@@ -5,6 +5,7 @@ import {
   Button,
   ButtonGroup,
   CopyButton,
+  ConfirmDialog,
   CopyLine,
   Dialog,
   Display,
@@ -21,6 +22,7 @@ import {
   NavigationProgress,
   PageFade,
   PageHeader,
+  Popover,
   ScrollStrip,
   SegmentedControl,
   startPageTransition,
@@ -154,29 +156,28 @@ export function GalleryToast() {
   );
 }
 
-/** The two dialogs, the Drawer and the Lightbox, shut: each button opens one over the page (open, they make the page inert). */
+/** Each modal the Gallery opens, and its button. */
+const OPENERS = [
+  ["dialog", "Open Dialog"],
+  ["full", "Open full-screen Dialog"],
+  ["confirm", "Open ConfirmDialog"],
+  ["field", "Open FieldDialog"],
+  ["drawer", "Open Drawer"],
+  ["lightbox", "Open Lightbox"],
+] as const;
+
+/** The dialogs, the Drawer, the Lightbox and a Popover, shut: each button opens one over the page (open, the modals make the page inert). */
 export function GalleryDialogs() {
-  const [open, setOpen] = useState<"dialog" | "full" | "field" | "drawer" | "lightbox" | null>(
-    null,
-  );
+  const [open, setOpen] = useState<(typeof OPENERS)[number][0] | null>(null);
   const close = () => setOpen(null);
   return (
     <div className="flex flex-wrap gap-2">
-      <Button variant="outline" onClick={() => setOpen("dialog")}>
-        Open Dialog
-      </Button>
-      <Button variant="outline" onClick={() => setOpen("full")}>
-        Open full-screen Dialog
-      </Button>
-      <Button variant="outline" onClick={() => setOpen("field")}>
-        Open FieldDialog
-      </Button>
-      <Button variant="outline" onClick={() => setOpen("drawer")}>
-        Open Drawer
-      </Button>
-      <Button variant="outline" onClick={() => setOpen("lightbox")}>
-        Open Lightbox
-      </Button>
+      {OPENERS.map(([which, label]) => (
+        <Button key={which} variant="outline" onClick={() => setOpen(which)}>
+          {label}
+        </Button>
+      ))}
+      <Popover label="Open Popover">Only paid orders are shown.</Popover>
       {open === "dialog" && (
         <Dialog
           title="Delete build"
@@ -215,6 +216,15 @@ export function GalleryDialogs() {
           <img src={sampleScenes[0].src} alt={sampleScenes[0].alt} />
         </Lightbox>
       )}
+      {open === "confirm" && (
+        <ConfirmDialog
+          title="Delete build?"
+          description="This removes the build and every snapshot in it."
+          confirm="Delete"
+          onConfirm={() => undefined}
+          onClose={close}
+        />
+      )}
       {open === "field" && (
         <FieldDialog
           title="New project"
@@ -236,8 +246,8 @@ export function GalleryDialogs() {
 export function GalleryCopy() {
   return (
     <div className="flex max-w-sm flex-col gap-3">
-      <CopyLine text="bun add @slashsuite/ui-react" />
-      <CopyLine text="bun add @slashsuite/ui-react" disabled />
+      <CopyLine text="bun add @slashsuite/ui-react" label="install command" />
+      <CopyLine text="bun add @slashsuite/ui-react" label="install command" disabled />
       <div className="self-start">
         <CopyButton text="bun add @slashsuite/ui-react" />
       </div>

@@ -6,7 +6,7 @@ export const Frame = ({ children }: { children: ReactNode }) => (
   <div className="min-h-80">{children}</div>
 );
 
-/** A confirmation is a toast the app adds to the list it holds: it leaves on its own after five seconds. */
+/** A confirmation is a toast the app adds to the list it holds: it leaves on its own after eight seconds. */
 export const DoSaved = () => {
   const [toasts, setToasts] = useState<Toast[]>([]);
   return (
@@ -57,7 +57,7 @@ export const DoAction = () => {
 };
 
 /**
- * An action put in `body` is not an action to the region: the toast still leaves after five
+ * An action put in `body` is not an action to the region: the toast still leaves after eight
  * seconds, taking the button with it before the reader reaches it.
  */
 export const DontAction = () => (

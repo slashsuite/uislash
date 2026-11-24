@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { BottomSheet, type BottomSheetProps } from "./BottomSheet.js";
-import { render, screen, user } from "./render.harness.js";
+import { fireEvent, render, screen, user } from "./render.harness.js";
 
 // jsdom has no pointer capture; the handle takes it on every press.
 beforeAll(() => {
@@ -107,6 +107,32 @@ describe("BottomSheet", () => {
     rerender(sheet({ snaps: ["120px", "320px"], onHeightChange, snap: 1 }));
     expect(onHeightChange).toHaveBeenLastCalledWith(320);
     expect(onHeightChange).toHaveBeenCalledTimes(2);
+  });
+
+  it("steps one snap up on ArrowUp and one down on ArrowDown, and stops at the ends", async () => {
+    const onSnapChange = vi.fn<(snap: number) => void>();
+    const { rerender } = render(sheet({ onSnapChange }));
+    const u = user();
+    await u.tab();
+    await u.keyboard("{ArrowDown}");
+    expect(onSnapChange).not.toHaveBeenCalled();
+    await u.keyboard("{ArrowUp}");
+    expect(onSnapChange.mock.calls).toEqual([[1]]);
+    rerender(sheet({ onSnapChange, snap: 2 }));
+    await u.keyboard("{ArrowUp}");
+    await u.keyboard("{ArrowDown}");
+    expect(onSnapChange.mock.calls).toEqual([[1], [1]]);
+  });
+
+  it("reports the height through a drag, then the height it comes to rest at", () => {
+    const onHeightChange = vi.fn<(px: number) => void>();
+    render(sheet({ snaps: ["120px", "320px"], onHeightChange }));
+    const grip = handle();
+    fireEvent.pointerDown(grip, { pointerId: 1, clientY: 500, button: 0, pointerType: "touch" });
+    fireEvent.pointerMove(grip, { pointerId: 1, clientY: 300, pointerType: "touch" });
+    fireEvent.pointerMove(grip, { pointerId: 1, clientY: 250, pointerType: "touch" });
+    fireEvent.pointerCancel(grip, { pointerId: 1, pointerType: "touch" });
+    expect(onHeightChange.mock.calls).toEqual([[120], [200], [250], [120]]);
   });
 
   it("is not modal: it is not a dialog, not aria-modal, and the page behind stays usable", async () => {

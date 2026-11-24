@@ -1,15 +1,106 @@
-import { type ReactElement, type ReactNode, useId, useRef } from "react";
+import {
+  type PointerEvent,
+  type ReactElement,
+  type ReactNode,
+  type RefObject,
+  useId,
+  useRef,
+  useState,
+} from "react";
 import { cx } from "./cx.js";
 import { BodyContext, ModalScope } from "./Dialog.js";
 import { IconButton } from "./IconButton.js";
 import { useBackdropClose, useModal } from "./modal.js";
 import type { Passthrough } from "./props.js";
+import { FLING, releaseVelocity, type SheetSample } from "./sheetSnap.js";
 import type { Size } from "./size.js";
 import { HeaderText, SectionHeading } from "./typography.js";
 
 const PANEL =
-  "fixed inset-y-0 right-0 left-auto m-0 h-dvh max-h-none max-w-full flex-col overflow-hidden border-l border-slate-200 bg-white p-0 text-slate-900 shadow-2xl translate-x-full transition-[translate,overlay,display] transition-discrete duration-200 open:flex open:translate-x-0 starting:open:translate-x-full backdrop:bg-slate-900/35 backdrop:opacity-0 backdrop:transition-[opacity,overlay,display] backdrop:transition-discrete backdrop:duration-200 open:backdrop:opacity-100 starting:open:backdrop:opacity-0 motion-reduce:transition-none motion-reduce:backdrop:transition-none";
+  "fixed inset-y-0 right-0 left-auto m-0 h-dvh max-h-none max-w-full flex-col overflow-hidden overscroll-contain border-l border-slate-200 bg-white p-0 text-slate-900 shadow-2xl translate-x-full transition-[translate,overlay,display] transition-discrete duration-200 touch-pan-y data-swiping:transition-none open:flex open:translate-x-0 starting:open:translate-x-full backdrop:bg-slate-900/35 backdrop:opacity-0 backdrop:transition-[opacity,overlay,display] backdrop:transition-discrete backdrop:duration-200 open:backdrop:opacity-100 starting:open:backdrop:opacity-0 motion-reduce:transition-none motion-reduce:backdrop:transition-none";
 const WIDTH: Record<Size, string> = { sm: "w-80", md: "w-110", lg: "w-160" };
+
+/** Where a horizontal drag is the control's own, not the drawer's. */
+const OWN_DRAG = "input, textarea, select, [contenteditable], [role=slider], .overflow-x-auto";
+
+/** Finger travel (px) before a touch is read as a swipe or a scroll. */
+const SLOP = 8;
+
+type Swipe = {
+  pointer: number;
+  x: number;
+  y: number;
+  width: number;
+  /** `null` until the travel passes `SLOP`: then whether it is a swipe to the right. */
+  across: boolean | null;
+  samples: SheetSample[];
+};
+
+/** Whether a released swipe closes: a flick to the right, or a travel past a third of the width. */
+const swipedOff = (s: Swipe, at: number) =>
+  releaseVelocity(s.samples, at) >= FLING || (s.samples.at(-1)?.height ?? 0) > s.width / 3;
+
+/**
+ * Swipe to dismiss on touch: a finger that moves right more than it moves down drags the panel
+ * with it, and a release past a third of its width, or a quick flick to the right, closes it. A
+ * shorter, slower swipe springs back. A vertical move is the body's scroll and is left alone
+ * (`touch-action: pan-y`). A mouse or a pen does nothing here. The offset while dragging is
+ * `null` at rest.
+ */
+function useSwipeClose(dialog: RefObject<HTMLDialogElement | null>) {
+  const swipe = useRef<Swipe | null>(null);
+  const [offset, setOffset] = useState<number | null>(null);
+
+  const onPointerDown = (event: PointerEvent<HTMLDialogElement>) => {
+    if (event.pointerType !== "touch" || swipe.current || event.target === dialog.current) return;
+    // A field, a slider or a horizontally scrolling area keeps its own horizontal drag.
+    if (event.target instanceof Element && event.target.closest(OWN_DRAG)) return;
+    swipe.current = {
+      pointer: event.pointerId,
+      x: event.clientX,
+      y: event.clientY,
+      width: event.currentTarget.getBoundingClientRect().width,
+      across: null,
+      samples: [{ height: 0, t: event.timeStamp }],
+    };
+  };
+
+  const onPointerMove = (event: PointerEvent<HTMLDialogElement>) => {
+    const s = swipe.current;
+    if (!s || s.pointer !== event.pointerId) return;
+    const dx = event.clientX - s.x;
+    const dy = event.clientY - s.y;
+    if (s.across === null) {
+      if (Math.abs(dx) < SLOP && Math.abs(dy) < SLOP) return;
+      s.across = dx > Math.abs(dy);
+    }
+    if (!s.across) return;
+    const travel = Math.max(0, dx);
+    s.samples = [...s.samples.slice(-1), { height: travel, t: event.timeStamp }];
+    setOffset(travel);
+  };
+
+  const release = (event: PointerEvent<HTMLDialogElement>, cancelled: boolean) => {
+    const s = swipe.current;
+    if (!s || s.pointer !== event.pointerId) return;
+    swipe.current = null;
+    if (!s.across) return;
+    // Dropping the offset and closing in the same event, so the exit slides on from where the
+    // finger let go.
+    setOffset(null);
+    if (!cancelled && swipedOff(s, event.timeStamp)) dialog.current?.close();
+  };
+
+  return {
+    offset,
+    handlers: {
+      onPointerDown,
+      onPointerMove,
+      onPointerUp: (event: PointerEvent<HTMLDialogElement>) => release(event, false),
+      onPointerCancel: (event: PointerEvent<HTMLDialogElement>) => release(event, true),
+    },
+  };
+}
 
 export type DrawerProps = {
   /** The drawer's accessible name, shown as its heading. */
@@ -24,7 +115,7 @@ export type DrawerProps = {
    * @default md
    */
   width?: Size | undefined;
-  /** Called when the drawer closes: Esc, a click on the scrim or the close button. */
+  /** Called when the drawer closes: Esc, a click on the scrim, the close button or a swipe to the right on touch. */
   onClose: () => void;
   /** The accessible name of the close button. */
   closeLabel?: string;
@@ -34,9 +125,10 @@ export type DrawerProps = {
  * A modal slide-over anchored to the right edge, on the browser's own `<dialog>`: it is opened
  * with `showModal()` on mount, so render it only while it is open. The page behind goes inert, Esc
  * closes it and focus stays inside; a click on the scrim (the `<dialog>` element itself, not its
- * contents) closes it too. The header holds the title, an optional `description` under it and a
- * close button; the body scrolls between
- * it and an optional pinned `footer`.
+ * contents) closes it too, and on touch a swipe to the right drags it off (a short one springs
+ * back). The header holds the title, an optional `description` under it and a close button; the
+ * body scrolls between it and an optional pinned `footer`, and a scroll in it never carries on to
+ * the page behind.
  */
 export function Drawer({
   title,
@@ -53,6 +145,7 @@ export function Drawer({
 
   const closed = useModal(dialog, onClose);
   const backdrop = useBackdropClose(dialog);
+  const { offset, handlers } = useSwipeClose(dialog);
 
   return (
     <ModalScope>
@@ -61,7 +154,14 @@ export function Drawer({
         ref={dialog}
         aria-labelledby={titleId}
         onClose={closed}
-        {...backdrop}
+        {...handlers}
+        onPointerDown={(event) => {
+          backdrop.onPointerDown(event);
+          handlers.onPointerDown(event);
+        }}
+        onClick={backdrop.onClick}
+        data-swiping={offset === null ? undefined : ""}
+        style={offset === null ? undefined : { translate: `${offset}px 0` }}
         className={cx(PANEL, WIDTH[width])}
       >
         <header className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-200 px-5.5 py-3.5">
@@ -75,7 +175,7 @@ export function Drawer({
           </div>
           <IconButton label={closeLabel} onClick={() => dialog.current?.close()} icon="close" />
         </header>
-        <div className="min-h-0 flex-1 overflow-y-auto px-5.5 py-4">
+        <div className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain px-5.5 py-4">
           <BodyContext>{children}</BodyContext>
         </div>
         {footer && (

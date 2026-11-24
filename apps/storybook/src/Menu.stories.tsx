@@ -150,7 +150,7 @@ export const DisabledItem: S = {
   ),
 };
 
-/** In a `revealOnHover` row the actions stay shown while the menu is open. */
+/** A row's own `Menu` in its `actions`, shown on every row, not only on hover. */
 export const InRow: S = {
   render: () => (
     <div className="max-w-md">
@@ -159,7 +159,6 @@ export const InRow: S = {
           <ListRow
             key={name}
             size="sm"
-            revealOnHover
             divided={index > 0}
             trailing="R 1 850"
             actions={<Menu size="sm" label={`${name} actions`} items={ROW_ACTIONS} />}

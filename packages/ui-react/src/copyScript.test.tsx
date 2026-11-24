@@ -8,6 +8,7 @@ import { CodeBlock } from "./CodeBlock.js";
 import { CopyButton } from "./CopyButton.js";
 import { CopyLine } from "./CopyLine.js";
 import { copyScript } from "./copyScript.js";
+import { stubAnimate, unstubAnimate, type StubRun } from "./dom.harness.js";
 import { act, screen, user } from "./render.harness.js";
 
 const writeText = vi.fn<(text: string) => Promise<void>>();
@@ -42,8 +43,10 @@ const press = async (name?: string): Promise<void> => {
 };
 
 let abort = new AbortController();
+let runs: StubRun[] = [];
 
 beforeEach(() => {
+  runs = stubAnimate();
   abort = new AbortController();
   // user-event puts its own clipboard on `navigator` when it is set up, so set it up first.
   person = user();
@@ -58,6 +61,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  unstubAnimate();
   abort.abort();
   vi.restoreAllMocks();
   document.body.replaceChildren();
@@ -120,23 +124,45 @@ describe("copyScript", () => {
   });
 
   it("works on a CopyLine", async () => {
-    staticPage(<CopyLine text="npm i x" />);
+    staticPage(<CopyLine text="npm i x" label="install command" />);
     await press();
     expect(writeText).toHaveBeenCalledExactlyOnceWith("npm i x");
   });
 
-  it("leaves the label alone when the clipboard refuses", async () => {
-    writeText.mockRejectedValue(new Error("denied"));
+  it("holds the copied label in view for two seconds, then empties the status", async () => {
     staticPage(<CopyButton text="t" />);
     await press();
+    expect(runs.map((run) => [run.element.textContent, run.keyframes, run.duration])).toEqual([
+      ["Copy", { visibility: ["hidden", "hidden"] }, 2000],
+      ["Copied", { visibility: ["visible", "visible"] }, 2000],
+    ]);
+    await press();
+    // The second copy cancelled the first run, so only its own two are left.
+    expect(runs.filter((run) => run.running)).toHaveLength(2);
+    runs.forEach((run) => run.finish());
     expect(screen.getByRole("status").textContent).toBe("");
   });
 
-  it("leaves the label alone when there is no clipboard", async () => {
+  it("shows and announces the failed label when the clipboard refuses", async () => {
+    writeText.mockRejectedValue(new Error("denied"));
+    staticPage(<CopyButton text="t" failedLabel="Not copied" />);
+    await press();
+    expect(screen.getByRole("status").textContent).toBe("Not copied");
+    expect(runs.map((run) => run.element.textContent)).toEqual(["Copy", "Not copied"]);
+  });
+
+  it("shows and announces the failed label when there is no clipboard", async () => {
     Object.defineProperty(navigator, "clipboard", { configurable: true, value: undefined });
     staticPage(<CopyButton text="t" />);
     await press();
-    expect(screen.getByRole("status").textContent).toBe("");
+    expect(screen.getByRole("status").textContent).toBe("Failed");
+  });
+
+  it("still announces where the browser has no Web Animations", async () => {
+    unstubAnimate();
+    staticPage(<CopyButton text="t" />);
+    await press();
+    expect(screen.getByRole("status").textContent).toBe("Copied");
   });
 
   it("ignores a click that is not on a copy button", async () => {

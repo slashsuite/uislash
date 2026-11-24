@@ -39,8 +39,7 @@ type Shared = LoadingProps & {
   /**
    * Marks the row a list follows with the pointer and the keyboard alike (set it from
    * `onPointerEnter` and `onFocus`): a fill one step deeper than hover, so it shows on a white card
-   * and on a tinted panel alike. On a static row it shows the fill without `revealOnHover`, and
-   * shows `actions` that `revealOnHover` hides. `selected` wins.
+   * and on a tinted panel alike. It is the only fill a static row takes. `selected` wins.
    *
    * Clear it from `onPointerLeave`.
    */
@@ -55,7 +54,7 @@ type Shared = LoadingProps & {
   children: ReactNode;
 };
 
-type NotStatic = { actions?: undefined; revealOnHover?: undefined; panel?: undefined };
+type NotStatic = { actions?: undefined; panel?: undefined };
 
 export type ListRowButtonProps = Shared &
   NotStatic & {
@@ -98,21 +97,19 @@ export type ListRowLinkProps = Shared &
   };
 
 /**
- * A row with no `href` and no `onClick`: a `<div>` with no click target and no hover fill (unless
- * `revealOnHover`), for one that holds its own controls, taking `actions` as well.
+ * A row with no `href` and no `onClick`: a `<div>` with no click target and no hover fill, for one
+ * that holds its own controls, taking `actions` as well.
  */
 export type ListRowStaticProps = Shared & {
-  /** Buttons for this row, after `trailing`: `Button size="sm"`, `IconButton`. */
-  actions?: ReactNode | undefined;
   /**
-   * Hides `actions` until the row is hovered or something in it has focus, so a long list is not a
-   * wall of buttons. A touch screen has no hover, so they are always shown there.
+   * Buttons for this row, after `trailing`: `Button size="sm"`, `IconButton`, a `Menu`. Always
+   * shown: an action that shows only on hover is one a touch or keyboard user cannot find.
    */
-  revealOnHover?: boolean | undefined;
+  actions?: ReactNode | undefined;
   /**
    * Content under the row, lined up with the label rather than the row's edge (past `leading`): the
    * panel of a row that opens in place, such as a conversation under its chat. It sits inside the
-   * row, so `divided`, the fill and `revealOnHover` cover it too. Only a row that is neither a
+   * row, so `divided` and the fill cover it too. Only a row that is neither a
    * button nor a link takes it.
    */
   panel?: ReactNode | undefined;

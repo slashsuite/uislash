@@ -62,7 +62,7 @@ export function PixelSlashHero() {
       </Cluster>
       <Actions />
       <Stack gap="xs">
-        <CopyLine text={hero.install} />
+        <CopyLine text={hero.install} label="install command" />
         <Caption>{hero.installNote.text}</Caption>
       </Stack>
     </Hero>

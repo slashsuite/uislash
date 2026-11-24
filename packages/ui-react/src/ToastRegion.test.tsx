@@ -1,8 +1,11 @@
 // @vitest-environment jsdom
 import { queryAllByAttribute } from "@testing-library/dom";
+import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { Button } from "./Button.js";
-import { fireEvent, render, screen, user, within } from "./render.harness.js";
+import { Dialog } from "./Dialog.js";
+import { stubDialog } from "./dom.harness.js";
+import { act, fireEvent, render, screen, user, within } from "./render.harness.js";
 import { type Toast, ToastRegion } from "./ToastRegion.js";
 
 // The region draws the list it is given. The hide is a CSS animation that a real browser runs
@@ -10,6 +13,34 @@ import { type Toast, ToastRegion } from "./ToastRegion.js";
 // makes, as the harness allows.
 
 const SAVED: Toast = { id: "saved", tone: "positive", title: "Saved", body: "Your draft is safe." };
+
+/** A button, then two toasts that stay, held in state so Dismiss removes them. */
+function TwoToasts() {
+  const [toasts, setToasts] = useState<Toast[]>([
+    { id: "a", tone: "warn", title: "Offline" },
+    { id: "b", tone: "danger", title: "Not saved" },
+  ]);
+  return (
+    <>
+      <button type="button">Save</button>
+      <ToastRegion
+        toasts={toasts}
+        onDismiss={(id) => setToasts((all) => all.filter((t) => t.id !== id))}
+      />
+    </>
+  );
+}
+
+/** A toast raised under an open Dialog, which closes itself through `onClose`. */
+function ToastUnderDialog() {
+  const [open, setOpen] = useState(true);
+  return (
+    <>
+      {open && <Dialog title="Rename" onClose={() => setOpen(false)} />}
+      <ToastRegion toasts={[SAVED]} onDismiss={() => undefined} />
+    </>
+  );
+}
 
 /** The toast whose title is `title`: the one box, by the marker each toast renders, that holds it. */
 function toastOf(title: string): HTMLElement {
@@ -40,11 +71,51 @@ describe("ToastRegion", () => {
     expect(status.getAttribute("aria-live")).toBe("polite");
   });
 
-  it("puts a toast's title and body inside the status", () => {
-    render(<ToastRegion toasts={[SAVED]} onDismiss={() => undefined} />);
+  it("reads a toast's title and body in the status, once, and takes them out when it goes", () => {
+    const { rerender } = render(<ToastRegion toasts={[SAVED]} onDismiss={() => undefined} />);
     const status = screen.getByRole("status");
-    expect(within(status).getByText("Saved")).toBeTruthy();
-    expect(within(status).getByText("Your draft is safe.")).toBeTruthy();
+    expect(status.textContent).toBe("Saved. Your draft is safe.");
+    rerender(<ToastRegion toasts={[]} onDismiss={() => undefined} />);
+    expect(status.textContent).toBe("");
+  });
+
+  it("reads only the words of a toast with actions, then Actions available, never its buttons", () => {
+    render(
+      <ToastRegion
+        toasts={[
+          { id: "u", title: "Update available", actions: <Button size="sm">Reload</Button> },
+        ]}
+        onDismiss={() => undefined}
+        actionsLabel="Choose an action"
+      />,
+    );
+    const status = screen.getByRole("status");
+    expect(status.textContent).toBe("Update available. Choose an action");
+    expect(within(status).queryByRole("button")).toBeNull();
+  });
+
+  it("moves focus to the next toast when the focused one is dismissed, then back where it was", async () => {
+    const u = user();
+    render(<TwoToasts />);
+    await u.click(screen.getByRole("button", { name: "Save" }));
+    await u.tab();
+    const [first] = screen.getAllByRole("button", { name: "Dismiss" });
+    expect(document.activeElement).toBe(first);
+    await u.keyboard("{Enter}");
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Dismiss" }));
+    await u.keyboard("{Enter}");
+    expect(screen.queryByRole("button", { name: "Dismiss" })).toBeNull();
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Save" }));
+  });
+
+  it("holds toasts back while a Dialog is open, and shows and reads them once it closes", async () => {
+    stubDialog();
+    render(<ToastUnderDialog />);
+    expect(screen.queryByText("Saved")).toBeNull();
+    expect(screen.getByRole("status").textContent).toBe("");
+    await act(async () => screen.getByRole<HTMLDialogElement>("dialog").close());
+    expect(screen.getByText("Saved")).toBeTruthy();
+    expect(screen.getByRole("status").textContent).toBe("Saved. Your draft is safe.");
   });
 
   it("calls onDismiss once with the id when Dismiss is clicked", async () => {

@@ -131,6 +131,7 @@ export { Icon } from "./Icon.js";
 export type { IconName } from "./icons.js";
 export { IconButton, type IconButtonTone, type IconButtonVariant } from "./IconButton.js";
 export { Menu, type MenuAction } from "./Menu.js";
+export { Popover } from "./Popover.js";
 export { ColourSchemeToggle } from "./ColourSchemeToggle.js";
 export {
   applyColourScheme,
@@ -154,6 +155,7 @@ export { CopyLine } from "./CopyLine.js";
 export { Field } from "./Field.js";
 export { FormGrid, FormRow, FormRowField, type FormRowSpan } from "./FormRow.js";
 export { FieldDialog } from "./FieldDialog.js";
+export { ConfirmDialog } from "./ConfirmDialog.js";
 export { Input } from "./Input.js";
 export type { ControlSize, ControlWidth } from "./control.js";
 export type { ResponsiveSize, Size } from "./size.js";

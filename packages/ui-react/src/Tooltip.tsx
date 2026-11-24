@@ -82,8 +82,17 @@ function focusVisible(element: Element): boolean {
 function useLayer(layer: HTMLSpanElement | null, open: boolean): void {
   useEffect(() => {
     if (!layer) return;
-    if (open) layer.showPopover();
-    else layer.hidePopover();
+    if (!open) {
+      layer.hidePopover();
+      return;
+    }
+    // A popover that closes puts the focus back on its trigger while it is still hiding, and the
+    // browser refuses to show another one then: the tip stays shut, and the next focus shows it.
+    try {
+      layer.showPopover();
+    } catch (error) {
+      if (!(error instanceof DOMException && error.name === "InvalidStateError")) throw error;
+    }
   }, [layer, open]);
 }
 

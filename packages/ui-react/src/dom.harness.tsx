@@ -99,3 +99,64 @@ export function unstubPopover(): void {
   Reflect.deleteProperty(HTMLElement.prototype, "showPopover");
   Reflect.deleteProperty(HTMLElement.prototype, "hidePopover");
 }
+
+/** One Web Animation the stub started: what it animates and how, and whether it is still running. */
+export type StubRun = {
+  element: Element;
+  keyframes: Keyframe[] | PropertyIndexedKeyframes | null;
+  duration: unknown;
+  running: boolean;
+  onfinish: (() => void) | null;
+  cancel: () => void;
+  /** Ends the run as the browser does when its duration is up: `onfinish` fires. */
+  finish: () => void;
+};
+
+/**
+ * jsdom has no Web Animations. This supplies `Element.animate` and `getAnimations`, records every run
+ * it starts, and lets the test end one with `finish()`, so a test says when the time is up rather than
+ * waiting for it. Returns the runs, newest last; `unstubAnimate` takes the methods away again.
+ */
+export function stubAnimate(): StubRun[] {
+  const runs: StubRun[] = [];
+  const animate = function (
+    this: Element,
+    keyframes: Keyframe[] | PropertyIndexedKeyframes | null,
+    options?: number | KeyframeAnimationOptions,
+  ) {
+    const run: StubRun = {
+      element: this,
+      keyframes,
+      duration: typeof options === "number" ? options : options?.duration,
+      running: true,
+      onfinish: null,
+      cancel: () => {
+        run.running = false;
+      },
+      finish: () => {
+        run.running = false;
+        run.onfinish?.();
+      },
+    };
+    runs.push(run);
+    return run;
+  };
+  const getAnimations = function (this: Element, options?: { subtree?: boolean }) {
+    return runs.filter(
+      (run) =>
+        run.running &&
+        (run.element === this || (options?.subtree === true && this.contains(run.element))),
+    );
+  };
+  Object.defineProperty(Element.prototype, "animate", { configurable: true, value: animate });
+  Object.defineProperty(Element.prototype, "getAnimations", {
+    configurable: true,
+    value: getAnimations,
+  });
+  return runs;
+}
+
+export function unstubAnimate(): void {
+  Reflect.deleteProperty(Element.prototype, "animate");
+  Reflect.deleteProperty(Element.prototype, "getAnimations");
+}

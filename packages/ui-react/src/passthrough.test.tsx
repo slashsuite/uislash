@@ -42,6 +42,9 @@ const SPLIT: Record<string, string> = {
   Radio: "radio",
 };
 
+/** Parts that add a description of their own after the caller's: a `ConfirmDialog`'s consequence. */
+const MERGED = new Set(["ConfirmDialog"]);
+
 /** Parts that render no element of their own, so there is no root to pass anything to. */
 const NO_ROOT = new Set(["LinkProvider"]);
 
@@ -57,6 +60,7 @@ const split = Object.entries(SPLIT).flatMap(([name, role]) => {
   const build = CASES[name];
   return build ? [[name, role, build] as const] : [];
 });
+const merged = whole.filter(([name]) => MERGED.has(name));
 const withId = whole.filter(([name]) => !OWN_ID.has(name));
 
 describe("every exported component passes id, data-* and aria-* through", () => {
@@ -68,9 +72,17 @@ describe("every exported component passes id, data-* and aria-* through", () => 
     expect(split.map(([name]) => name)).toEqual(Object.keys(SPLIT));
   });
 
-  it.each(whole)("%s puts both on one element", (_name, build) => {
+  it.each(whole.filter(([name]) => !MERGED.has(name)))(
+    "%s puts both on one element",
+    (_name, build) => {
+      mount(build());
+      expect(probe().getAttribute("aria-describedby")).toBe("described");
+    },
+  );
+
+  it.each(merged)("%s puts both on one element, the caller's description first", (_name, build) => {
     mount(build());
-    expect(probe().getAttribute("aria-describedby")).toBe("described");
+    expect(probe().getAttribute("aria-describedby")?.split(" ")[0]).toBe("described");
   });
 
   it.each(withId)("%s puts the id on that element", (_name, build) => {

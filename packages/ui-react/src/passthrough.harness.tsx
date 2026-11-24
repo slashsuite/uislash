@@ -2,6 +2,7 @@ import type { ReactElement } from "react";
 import * as ui from "./index.js";
 import { fieldCases } from "./passthroughFields.harness.js";
 import { layoutCases } from "./passthroughLayouts.harness.js";
+import { overlayCases } from "./passthroughOverlays.harness.js";
 
 /** The two attributes every case passes, and every test looks for. */
 export const A = {
@@ -16,14 +17,12 @@ const ITEMS = [<li key="x">x</li>];
 export const CASES: Record<string, () => ReactElement> = {
   ...layoutCases(A),
   ...fieldCases(A),
+  ...overlayCases(A),
   AppShell: () => <ui.AppShell {...A}>x</ui.AppShell>,
   AppShellBrand: () => <ui.AppShellBrand label="Brand" href="/" {...A} />,
   Avatar: () => <ui.Avatar name="Ada Lovelace" {...A} />,
   AvatarStack: () => <ui.AvatarStack items={[{ name: "Ada Lovelace" }]} {...A} />,
   Badge: () => <ui.Badge count={3} {...A} />,
-  BottomSheet: () => (
-    <ui.BottomSheet label="Sheet" snaps={[0.25, 0.5]} snap={0} onSnapChange={noop} {...A} />
-  ),
   Breadcrumbs: () => <ui.Breadcrumbs items={["Home", "Page"]} {...A} />,
   BulletItem: () => <ui.BulletItem {...A}>x</ui.BulletItem>,
   BulletList: () => <ui.BulletList {...A}>x</ui.BulletList>,
@@ -58,14 +57,13 @@ export const CASES: Record<string, () => ReactElement> = {
   ColourSchemeToggle: () => <ui.ColourSchemeToggle {...A} />,
   Container: () => <ui.Container {...A}>x</ui.Container>,
   CopyButton: () => <ui.CopyButton text="x" {...A} />,
-  CopyLine: () => <ui.CopyLine text="x" {...A} />,
+  CopyLine: () => <ui.CopyLine text="x" label="x" {...A} />,
   DateRangePicker: () => <ui.DateRangePicker label="Period" {...A} />,
   DetailLayout: () => (
     <ui.DetailLayout title="T" aside="a" {...A}>
       x
     </ui.DetailLayout>
   ),
-  Dialog: () => <ui.Dialog title="T" onClose={noop} {...A} />,
   Display: () => <ui.Display {...A}>x</ui.Display>,
   Disclosure: () => (
     <ui.Disclosure summary="S" {...A}>
@@ -73,31 +71,11 @@ export const CASES: Record<string, () => ReactElement> = {
     </ui.Disclosure>
   ),
   Divider: () => <ui.Divider {...A} />,
-  Drawer: () => <ui.Drawer title="T" onClose={noop} {...A} />,
-  Lightbox: () => (
-    <ui.Lightbox label="L" onClose={noop} {...A}>
-      x
-    </ui.Lightbox>
-  ),
   ErrorPage: () => <ui.ErrorPage {...A} />,
   Field: () => (
     <ui.Field label="L" htmlFor="f" {...A}>
       <ui.Input id="f" />
     </ui.Field>
-  ),
-  FieldDialog: () => (
-    <ui.FieldDialog
-      title="T"
-      label="L"
-      placeholder="p"
-      hint="h"
-      emptyReason="e"
-      submit="s"
-      busyLabel="b"
-      onSubmit={async () => undefined}
-      onClose={noop}
-      {...A}
-    />
   ),
   FileDrop: () => <ui.FileDrop {...A}>x</ui.FileDrop>,
   Fieldset: () => (
@@ -299,6 +277,5 @@ export const CASES: Record<string, () => ReactElement> = {
     </ui.Timeline>
   ),
   TimelineItem: () => <ui.TimelineItem title="T" {...A} />,
-  ToastRegion: () => <ui.ToastRegion toasts={[]} onDismiss={noop} {...A} />,
   Video: () => <ui.Video src="/x.mp4" {...A} />,
 };

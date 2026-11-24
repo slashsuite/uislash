@@ -19,7 +19,7 @@ describe("ListRow detail", () => {
 
   it("reads the row's actions before the detail", () => {
     render(
-      <ListRow divided revealOnHover actions={<button type="button">Hide</button>} panel="Thread">
+      <ListRow divided actions={<button type="button">Hide</button>} panel="Thread">
         Chat
       </ListRow>,
     );

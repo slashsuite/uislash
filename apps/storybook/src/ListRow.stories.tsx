@@ -180,15 +180,14 @@ export const StaticWithActions: S = {
   ),
 };
 
-/** `revealOnHover`: the actions show on hover or when focus is inside the row, and always on a touch screen. */
-export const RevealOnHover: S = {
+/** A static row's `actions`, after `trailing`: always shown, so a touch, a keyboard and a pointer find them alike. */
+export const RowActions: S = {
   render: () => (
     <div className="max-w-md">
       <Card flush>
         {["Rent", "Insurance", "Transport"].map((name, index) => (
           <ListRow
             key={name}
-            revealOnHover
             divided={index > 0}
             trailing="R 1 850"
             actions={<IconButton label={`Remove ${name}`} icon="close" />}

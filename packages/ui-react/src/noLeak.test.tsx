@@ -120,14 +120,6 @@ const CASES: Record<string, Case[]> = {
         </ui.ListRow>
       ),
     },
-    {
-      prop: "revealOnHover",
-      node: () => (
-        <ui.ListRow revealOnHover actions="X">
-          a
-        </ui.ListRow>
-      ),
-    },
     { prop: "focused", node: () => <ui.ListRow focused>a</ui.ListRow> },
     {
       prop: "focused",

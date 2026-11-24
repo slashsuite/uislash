@@ -45,12 +45,18 @@ const HEADER = (
  * A dummy full-screen view (a map) with pins that stay pressable behind the sheet, and the sheet in
  * the story's own state. The line at the top prints the snap and the height the sheet reported.
  */
-function Shops({ start }: { start: number }) {
+function Shops({ start, inlineFrom }: { start: number; inlineFrom?: "md" | "lg" }) {
   const [snap, setSnap] = useState(start);
   const [height, setHeight] = useState<number | null>(null);
   const [pins, setPins] = useState(0);
   return (
-    <div className="relative h-dvh overflow-hidden bg-slate-100">
+    <div
+      className={
+        inlineFrom
+          ? "relative h-dvh overflow-hidden bg-slate-100 md:grid md:grid-cols-[1fr_24rem]"
+          : "relative h-dvh overflow-hidden bg-slate-100"
+      }
+    >
       <div className="p-4">
         <Cluster>
           {["Pin A", "Pin B", "Pin C"].map((pin) => (
@@ -70,6 +76,7 @@ function Shops({ start }: { start: number }) {
         snap={snap}
         onSnapChange={setSnap}
         onHeightChange={setHeight}
+        inlineFrom={inlineFrom}
         header={HEADER}
         footer={<Button>Show all on the map</Button>}
       >
@@ -84,6 +91,12 @@ export const Default: S = { render: () => <Shops start={0} /> };
 
 /** At its second snap: the list scrolls under the header, and the view behind is still pressable. */
 export const Expanded: S = { render: () => <Shops start={1} /> };
+
+/**
+ * `inlineFrom="md"`: a sheet over the view on a phone, and from `md` up the same list in its own
+ * column beside the view, in flow, with no handle.
+ */
+export const Inline: S = { render: () => <Shops start={0} inlineFrom="md" /> };
 
 /** The view followed by more page, so the document itself can scroll: a fling in the body must not move it. */
 export const ScrollingPage: S = {

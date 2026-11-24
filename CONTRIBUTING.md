@@ -122,6 +122,14 @@ classic compiler API for it to parse them with.
    look the component lacks, propose the prop or variant (say what recurring need it serves) or
    drop the look. `noStyling.test.tsx` enforces it.
 
+7. **The platform first.** An overlay is built on what the browser already does: a modal is a
+   `<dialog>` opened with `showModal()`, a floating layer (a tooltip, a popover, a menu) is a native
+   popover rendered in place, and a disclosure is `<details>`. A floating layer sits beside its
+   trigger by CSS anchor positioning, feature-detected (`supports-[anchor-name:--a]:`), with a
+   placement that works without it. React Aria is only for the large keyboard patterns the
+   platform has no element for (the date picker, the combobox, the number field), and its popup
+   is portalled into the open dialog, so it is never under the dialog's top layer.
+
 ## Adding a theme
 
 A theme is one CSS file in `themes/`; copy one and change it. The steps are in the README

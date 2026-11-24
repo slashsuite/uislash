@@ -165,3 +165,25 @@ for (const width of [390, 768]) {
     await expect(snapLine(page, 2)).toBeVisible();
   });
 }
+
+test("ArrowUp and ArrowDown on the handle step the snaps", async ({ page }) => {
+  const { handle } = await open(page, "default");
+  await handle.focus();
+  await page.keyboard.press("ArrowUp");
+  await expect(snapLine(page, 2)).toBeVisible();
+  await page.keyboard.press("ArrowDown");
+  await expect(snapLine(page, 1)).toBeVisible();
+});
+
+test.describe("inlineFrom", () => {
+  test("a sheet with a handle on a phone, and an inline list with none from md up", async ({
+    page,
+  }) => {
+    const phone = await open(page, "inline");
+    await expect(phone.handle).toBeVisible();
+    const wide = await open(page, "inline", { width: 1024, height: 700 });
+    await expect(wide.handle).toBeHidden();
+    await expect(wide.sheet.getByText("Shop 1", { exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Pin A" })).toBeVisible();
+  });
+});

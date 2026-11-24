@@ -1,7 +1,9 @@
 import { CodeBlock, Cluster, Code, CopyButton, CopyLine } from "@slashsuite/ui-react";
 
 /** One command or token to paste: `CopyLine` is the box and the copy button together. */
-export const DoCommand = () => <CopyLine text="bun add @slashsuite/ui-react" />;
+export const DoCommand = () => (
+  <CopyLine text="bun add @slashsuite/ui-react" label="install command" />
+);
 
 /** Inline code beside a loose `CopyButton` is two parts that drift apart; the text can differ from what is copied. */
 export const DontCommand = () => (
@@ -17,4 +19,4 @@ export const DoBlock = () => (
 );
 
 /** `CopyLine` is one line of text: a newline in it collapses into a space and the box runs on. */
-export const DontBlock = () => <CopyLine text={"bun install\nbun run build"} />;
+export const DontBlock = () => <CopyLine text={"bun install\nbun run build"} label="commands" />;

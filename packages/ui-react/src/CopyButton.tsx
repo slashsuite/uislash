@@ -1,30 +1,45 @@
-import {
-  useRef,
-  useState,
-  type ComponentPropsWithoutRef,
-  type MouseEvent,
-  type ReactElement,
-} from "react";
+import { useRef, type ComponentPropsWithoutRef, type MouseEvent, type ReactElement } from "react";
 import { focusRing } from "./cx.js";
 import type { Unstyled } from "./props.js";
 
-const BASE = `shrink-0 cursor-pointer rounded px-1.5 py-0.5 font-sans text-xs text-slate-400 hover:bg-slate-100 disabled:pointer-events-none disabled:opacity-50 ${focusRing}`;
+const BASE = `min-h-6 min-w-6 shrink-0 cursor-pointer rounded px-1.5 py-0.5 font-sans text-xs text-slate-400 hover:bg-slate-100 disabled:pointer-events-none disabled:opacity-50 ${focusRing}`;
 
-/** Both labels share one grid cell, centred, so the button is as wide as the longer and never resizes. */
+/** The labels share one grid cell, centred, so the button is as wide as the longest and never resizes. */
 const CELL = "col-start-1 row-start-1";
 
-// The copied state is CSS, not a timer: a copy sets `data-copied` on the button, and for two seconds
-// an animation hides `label` and shows `copiedLabel`; when it ends, the resting styles are back.
-// `visibility` is discrete, so each keyframe holds one value for the whole run. A second copy starts
-// the run again: React remounts both labels, `copyScript` re-sets the attribute after a reflow. The
-// run's own end clears `data-copied`, so a button hidden and shown again later does not replay it.
-const css = `[data-copied] [data-copy-idle]{animation:hc-copy-idle 2s}[data-copied] [data-copy-done]{animation:hc-copy-done 2s}@keyframes hc-copy-idle{from,to{visibility:hidden}}@keyframes hc-copy-done{from,to{visibility:visible}}`;
+/** How long the copied or failed label shows, in milliseconds. */
+const SHOWN = 2000;
 
-/** Writes `text` to the clipboard and shows `copiedLabel` for two seconds, then `label` again. Defaults to `type="button"`. Its accessible name stays `label`; a polite status region beside it announces `copiedLabel` on each copy. A refused or missing clipboard leaves it on `label`. Every other button prop, `disabled` included, goes on the `<button>`. On a page rendered to static HTML without hydration, inline `copyScript` and the button works there too. */
+/** The clipboard, which an insecure page or an old browser does not have, whatever the DOM types say. */
+const clipboardOf = (from: { clipboard?: Clipboard }) => from.clipboard;
+
+/**
+ * Shows the `done` or `failed` label for two seconds and puts it in the status region beside the
+ * button, then empties the region. No timer and no stylesheet: two Web Animations hold `visibility`
+ * for the run (a stylesheet's `<style>` element is blocked by a nonce-based CSP; an animation is
+ * not), and the run's own end clears the region. A second copy cancels the run in progress and starts
+ * again. `copyScript` does the same on a page that is never hydrated.
+ */
+function flash(button: HTMLButtonElement, outcome: "done" | "failed"): void {
+  const shown = button.querySelector(`[data-copy-${outcome}]`);
+  const idle = button.querySelector("[data-copy-idle]");
+  const status = button.nextElementSibling;
+  const region = status?.matches("[data-copy-status]") ? status : null;
+  // A new text node each time, so a second copy is announced too.
+  region?.replaceChildren(shown?.textContent ?? "");
+  if (!shown?.animate || !idle) return;
+  for (const run of button.getAnimations({ subtree: true })) run.cancel();
+  idle.animate({ visibility: ["hidden", "hidden"] }, SHOWN);
+  const run = shown.animate({ visibility: ["visible", "visible"] }, SHOWN);
+  run.onfinish = () => region?.replaceChildren();
+}
+
+/** Writes `text` to the clipboard and shows `copiedLabel` for two seconds, then `label` again; a refused or missing clipboard shows `failedLabel` instead. Defaults to `type="button"` and is at least 24px square. Its accessible name stays `label`; a polite status region beside it announces `copiedLabel` or `failedLabel` on each press and empties again when the label goes back. Every other button prop, `disabled` included, goes on the `<button>`. Nothing is styled by a `<style>` element, so it works under a strict CSP. On a page rendered to static HTML without hydration, inline `copyScript` and the button works there too. */
 export function CopyButton({
   text,
   label = "Copy",
   copiedLabel = "Copied",
+  failedLabel = "Failed",
   onClick,
   ...rest
 }: {
@@ -40,25 +55,23 @@ export function CopyButton({
    * @default Copied
    */
   copiedLabel?: string;
+  /**
+   * The text shown for two seconds when the browser refuses the copy or has no clipboard, and
+   * announced. Keep it about as long as `copiedLabel`, since the button is as wide as the longest.
+   * @default Failed
+   */
+  failedLabel?: string;
 } & Unstyled<Omit<ComponentPropsWithoutRef<"button">, "children">>): ReactElement {
-  /** How many copies went through: the key that restarts the labels. */
-  const [copies, setCopies] = useState(0);
-  /** Set by a copy, cleared when the copied label's animation ends. */
-  const [copied, setCopied] = useState(false);
-  const status = useRef<HTMLSpanElement>(null);
+  const button = useRef<HTMLButtonElement>(null);
   return (
     <>
-      <style>{css}</style>
       <button
+        ref={button}
         type="button"
         aria-label={label}
         {...rest}
         // What `copyScript` reads on a page that is never hydrated.
         data-copy-text={text}
-        data-copy-copied={copiedLabel}
-        data-copied={copied ? "" : undefined}
-        // `copyScript` may have set `data-copied` before this button hydrated; React leaves it be.
-        suppressHydrationWarning
         className={BASE}
         onClick={(event: MouseEvent<HTMLButtonElement>) => {
           onClick?.(event);
@@ -67,41 +80,30 @@ export function CopyButton({
           const native: Event & { copyHandled?: true } = event.nativeEvent;
           if (native.copyHandled) return;
           native.copyHandled = true;
-          // The rejection is swallowed on purpose: a denied write is not an error the page can act on.
-          navigator.clipboard?.writeText(text).then(
-            () => {
-              setCopies((n) => n + 1);
-              setCopied(true);
-              // A new text node each time, so a second copy is announced too. Set here, not
-              // rendered, as `copyScript` does, so a region it filled before hydration still matches.
-              status.current?.replaceChildren(copiedLabel);
-            },
-            () => {},
+          const target = event.currentTarget;
+          const clipboard = clipboardOf(navigator);
+          if (!clipboard) return flash(target, "failed");
+          clipboard.writeText(text).then(
+            () => flash(target, "done"),
+            () => flash(target, "failed"),
           );
         }}
       >
-        <span
-          key={copies}
-          className="grid justify-items-center"
-          onAnimationEnd={() => setCopied(false)}
-        >
+        <span className="grid justify-items-center">
           <span data-copy-idle="" className={CELL}>
             {label}
           </span>
           <span data-copy-done="" aria-hidden="true" className={`invisible ${CELL}`}>
             {copiedLabel}
           </span>
+          <span data-copy-failed="" aria-hidden="true" className={`invisible ${CELL}`}>
+            {failedLabel}
+          </span>
         </span>
       </button>
       {/* `sr-only` is absolute, so the region takes no room in the row the button sits in. Its text
           is never rendered (the empty string keeps React from hydrating children it does not own). */}
-      <span
-        ref={status}
-        role="status"
-        data-copy-status=""
-        className="sr-only"
-        suppressHydrationWarning
-      >
+      <span role="status" data-copy-status="" className="sr-only" suppressHydrationWarning>
         {""}
       </span>
     </>
