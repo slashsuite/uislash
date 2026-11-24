@@ -1,6 +1,6 @@
 $schema: "../.moon/cache/schemas/project.json"
 
-# The repo's own scripts (check-slop, slopRules, releasePick, testing-lint-report). Each task runs
+# The repo's own scripts (check-slop, slopRules, releasePick, testing-lint-report, agent-bench). Each task runs
 # the package.json script of its name. Their tests live in themes-shared, so there is no `test`.
 # The slop step runs from the repo root, so it scans scripts/, the root docs/ and the root *.md.
 tasks:
@@ -10,3 +10,13 @@ tasks:
   lint:
     command: "bun run lint"
     inputs: ["**/*", "/docs/**/*", "/*.{css,md,mjs,sh}"]
+  # The agent bench (agent-bench/README.md): run by hand before a release that changes the shape of
+  # the docs the package ships. It calls the signed-in `claude` CLI, billed to the person running it,
+  # so CI never runs it (CI names its tasks, and runInCI is off as well). Never cached: a second run
+  # must run the agents again. It packs ui-react, so it needs dist and agent-docs built first.
+  agent-bench:
+    command: "bun run agent-bench"
+    deps: ["ui-react:agent-docs"]
+    options:
+      runInCI: false
+      cache: false
