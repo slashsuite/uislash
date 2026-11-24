@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { describe, expect, it, vi } from "vitest";
 import { Radio, RadioGroup } from "./RadioGroup.js";
-import { render, screen, user } from "./render.harness.js";
+import { announced, render, screen, user } from "./render.harness.js";
 
 const scope = (
   props: Partial<Parameters<typeof RadioGroup>[0]> = {},
@@ -147,10 +147,31 @@ describe("RadioGroup hint and error", () => {
     );
   });
 
-  it("shows an error as role=alert, marks the group invalid and describes the group by it", () => {
+  it("shows an error, announced politely, marks the group invalid and describes the group by it", () => {
     scope({ error: "Pick a scope." });
-    expect(screen.getByRole("alert").textContent).toBe("Pick a scope.");
+    expect(screen.queryByRole("alert")).toBeNull();
+    expect(announced()).toEqual(["Pick a scope."]);
     const group = screen.getByRole("radiogroup", { name: "Scope", description: "Pick a scope." });
     expect(group.getAttribute("aria-invalid")).toBe("true");
+  });
+});
+
+describe("RadioGroup cards", () => {
+  it("chooses an option from a click on its description", async () => {
+    const onChange = vi.fn<(value: string) => void>();
+    scope({ variant: "card", onChange });
+    await user().click(screen.getByText("Only the file you opened."));
+    expect(chosen()).toEqual([true, false, false]);
+    expect(onChange).toHaveBeenCalledExactlyOnceWith("file");
+  });
+
+  it("keeps the hint as the option's description and the arrow keys moving the choice", async () => {
+    scope({ variant: "card", defaultValue: "file" });
+    expect(
+      screen.getByRole("radio", { name: /^This file/, description: "Only the file you opened." }),
+    ).not.toBeNull();
+    await user().tab();
+    await user().keyboard("{ArrowDown}");
+    expect(chosen()).toEqual([false, true, false]);
   });
 });

@@ -401,6 +401,8 @@
 }
 .latte .border-red-200,
 .latte .aria-invalid\:border-red-200[aria-invalid="true"],
+.latte .user-invalid\:border-red-200:user-invalid,
+.latte .has-user-invalid\:border-red-200:has(:user-invalid),
 .latte .has-aria-invalid\:border-red-200:has([aria-invalid="true"]) {
   border-color: rgba(
     210,

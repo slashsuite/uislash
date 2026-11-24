@@ -37,6 +37,8 @@ function probe(): HTMLElement {
 const SPLIT: Record<string, string> = {
   DateField: "group",
   DateRangePicker: "group",
+  DateTimeField: "group",
+  NumberField: "textbox",
   Radio: "radio",
 };
 

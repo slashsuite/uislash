@@ -67,3 +67,29 @@ describe("Checkbox", () => {
     );
   });
 });
+
+describe("Checkbox card", () => {
+  it("is still a checkbox named by its label and described by its hint", () => {
+    render(<Checkbox variant="card" label="Price drops" hint="Only for items you watch." />);
+    const box = screen.getByRole("checkbox", {
+      name: /^Price drops/,
+      description: "Only for items you watch.",
+    });
+    expect(box).not.toBeNull();
+  });
+
+  it("toggles from a click anywhere on the card, the description included", async () => {
+    render(<Checkbox variant="card" label="Price drops" hint="Only for items you watch." />);
+    const box = screen.getByRole("checkbox", { name: /^Price drops/ });
+    await user().click(screen.getByText("Only for items you watch."));
+    expect(checked(box)).toBe(true);
+    await user().click(screen.getByText("Price drops"));
+    expect(checked(box)).toBe(false);
+  });
+
+  it("does not toggle when disabled", async () => {
+    render(<Checkbox variant="card" label="Shop news" hint="Paused." disabled />);
+    await user().click(screen.getByText("Paused."));
+    expect(checked(screen.getByRole("checkbox", { name: /^Shop news/ }))).toBe(false);
+  });
+});

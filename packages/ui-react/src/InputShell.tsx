@@ -1,7 +1,14 @@
 import type { ReactElement, ReactNode } from "react";
-import { CONTROL_WIDTH, type ControlProps, type ControlSize, controlClass } from "./control.js";
+import {
+  CONTROL_WIDTH,
+  type ControlProps,
+  type ControlSize,
+  controlClass,
+  INVALID_EDGE_WITHIN,
+} from "./control.js";
 import { cx } from "./cx.js";
 import { useTypeStep } from "./density.js";
+import { sizeClass } from "./size.js";
 
 /**
  * Where a leading icon sits, and its size, by the control's size. The wrapper is a flex box centred
@@ -14,12 +21,29 @@ const ICON: Record<ControlSize, string> = {
   lg: "left-4 [&>*]:size-5",
 };
 
+/** `ICON` from the `md` breakpoint up, for a responsive size. */
+const ICON_MD: Record<ControlSize, string> = {
+  sm: "md:left-2 md:[&>*]:size-3.5",
+  md: "md:left-3 md:[&>*]:size-4",
+  lg: "md:left-4 md:[&>*]:size-5",
+};
+
 /** The prefix text's inset and size, by the control's size. */
 const PREFIX: Record<ControlSize, string> = {
   sm: "pl-2 text-xs",
   md: "pl-3 text-sm",
   lg: "pl-4 text-base",
 };
+
+/** `PREFIX` from the `md` breakpoint up. */
+const PREFIX_MD: Record<ControlSize, string> = {
+  sm: "md:pl-2 md:text-xs",
+  md: "md:pl-3 md:text-sm",
+  lg: "md:pl-4 md:text-base",
+};
+
+/** The shells' size tables and their `md:` twins, for the data test. */
+export const shellSizeTables = { icon: ICON, iconMd: ICON_MD, prefix: PREFIX, prefixMd: PREFIX_MD };
 
 /**
  * The relative wrapper of an `Input` that holds more than the field: a leading `icon` and, for search, the clear button. Not exported from the package.
@@ -49,7 +73,7 @@ export function InputShell({
           aria-hidden="true"
           className={cx(
             "pointer-events-none absolute top-1/2 flex -translate-y-1/2 items-center leading-none text-slate-400 in-[.isolate]:z-20",
-            ICON[size],
+            sizeClass(ICON, ICON_MD, size),
           )}
         >
           {icon}
@@ -80,12 +104,17 @@ export function PrefixShell({
     <div
       className={cx(
         controlClass(size, width, step),
-        "flex items-center has-aria-invalid:border-red-200 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-violet-600",
+        "flex items-center has-autofill:shadow-[inset_3px_0_0_0_currentColor] has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-violet-600",
+        INVALID_EDGE_WITHIN,
         width === "auto" && "inline-flex",
         disabled && "opacity-50",
       )}
     >
-      <span className={cx("shrink-0 select-none text-slate-500", PREFIX[size])}>{prefix}</span>
+      <span
+        className={cx("shrink-0 select-none text-slate-500", sizeClass(PREFIX, PREFIX_MD, size))}
+      >
+        {prefix}
+      </span>
       {children}
     </div>
   );

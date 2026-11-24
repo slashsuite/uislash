@@ -21,7 +21,9 @@
  *   `Table` it sits in; an `EmptyState` takes its slot's.
  *
  * A responsive size, `{ base, md }` (`ResponsiveSize`), changes at Tailwind's `md` breakpoint (48rem)
- * in CSS, with no script: `Button`, `IconButton`, `SegmentedControl` and `Icon` take it.
+ * in CSS, with no script: `Button`, `IconButton`, `SegmentedControl` and `Icon` take it, and so do
+ * the text fields, `Input`, `Select`, `Textarea`, `DateField`, `DateTimeField` and
+ * `DateRangePicker`, so a field and the button beside it stay aligned at both widths.
  *
  * With no `size` at all, because they take the size of the text or the control they sit on:
  * `Callout`, `CopyButton`, `Kbd`, `Badge` and `Breadcrumbs`.

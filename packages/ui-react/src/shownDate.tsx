@@ -1,4 +1,10 @@
-import type { CalendarDate } from "@internationalized/date";
+import {
+  type CalendarDate,
+  type CalendarDateTime,
+  type DateValue,
+  toCalendarDate,
+  toCalendarDateTime,
+} from "@internationalized/date";
 import {
   type FocusEvent,
   type ReactElement,
@@ -9,21 +15,61 @@ import {
 } from "react";
 import { flushSync } from "react-dom";
 import type { FieldProps, Read } from "./DateField.js";
-import { fromISODate, toISODate } from "./isoDate.js";
+import { fromISODate, fromISODateTime, toISODate, toISODateTime } from "./isoDate.js";
 
-type ValueKeys = "value" | "defaultValue" | "onChange" | "minValue" | "maxValue" | "isRequired";
+/** What a typed field holds: its value type, how it is written as ISO text, and how fine it is. */
+export type Kind<T extends CalendarDate | CalendarDateTime> = {
+  granularity: "day" | "minute";
+  toISO: (value: T | null | undefined) => string;
+  fromISO: (iso: string) => T | null;
+  /** The field's value as this kind's own type. */
+  narrow: (value: DateValue | null) => T | null;
+  /** The message for a required field left partly typed. */
+  whole: string;
+};
+
+/** A day: `YYYY-MM-DD`. */
+export const DATE: Kind<CalendarDate> = {
+  granularity: "day",
+  toISO: toISODate,
+  fromISO: fromISODate,
+  narrow: (value) => value && toCalendarDate(value),
+  whole: "Enter the whole date.",
+};
+
+/** A day and a time to the minute: `YYYY-MM-DDTHH:mm`. */
+export const DATE_TIME: Kind<CalendarDateTime> = {
+  granularity: "minute",
+  toISO: toISODateTime,
+  fromISO: fromISODateTime,
+  narrow: (value) => value && toCalendarDateTime(value),
+  whole: "Enter the whole date and time.",
+};
+
 /** The value props, each of which may be passed as `undefined`. */
-type ValueProps = { [K in ValueKeys]?: (FieldProps & { isRequired?: boolean })[K] | undefined };
+type ValueProps<T> = {
+  value?: T | null | undefined;
+  defaultValue?: T | null | undefined;
+  onChange?: ((value: T | null) => void) | null | undefined;
+  minValue?: DateValue | null | undefined;
+  maxValue?: DateValue | null | undefined;
+  isRequired?: boolean | undefined;
+};
+
+/** `a` is before (negative), at (0) or after (positive) `b`, to the minute. */
+const compare = (a: DateValue, b: DateValue) =>
+  toCalendarDateTime(a).compare(toCalendarDateTime(b));
 
 /** `iso` when it is a date within min/max, else `""`. */
-function withinRange(
+function withinRange<T extends CalendarDate | CalendarDateTime>(
   iso: string,
-  { minValue, maxValue }: Pick<ValueProps, "minValue" | "maxValue">,
+  { minValue, maxValue }: Pick<ValueProps<T>, "minValue" | "maxValue">,
+  kind: Kind<T>,
 ): string {
-  const date = fromISODate(iso);
+  const date = kind.fromISO(iso);
   if (!date) return "";
-  if (minValue && date.compare(minValue) < 0) return "";
-  if (maxValue && date.compare(maxValue) > 0) return "";
+  if (minValue && compare(date, minValue) < 0) return "";
+  if (maxValue && compare(date, maxValue) > 0) return "";
   return iso;
 }
 
@@ -46,40 +92,43 @@ function withinRange(
  *
  * `shown` (`YYYY-MM-DD` or `""`) is what the hidden `name` input posts.
  */
-export function useShownDate(props: ValueProps) {
+export function useShownDate<T extends CalendarDate | CalendarDateTime>(
+  props: ValueProps<T>,
+  kind: Kind<T>,
+) {
   const { value, defaultValue, onChange, isRequired } = props;
-  const [inner, setInner] = useState<CalendarDate | null>(value ?? defaultValue ?? null);
+  const [inner, setInner] = useState<T | null>(value ?? defaultValue ?? null);
   const [read, setRead] = useState<Read>({
-    typed: toISODate(inner),
+    typed: kind.toISO(inner),
     impossible: null,
     partial: false,
   });
   const side = useLeaving(read.impossible);
-  const shown = withinRange(read.typed, props);
+  const shown = withinRange(read.typed, props, kind);
   const reported = useRef(shown);
   const report = useRef(onChange);
   useEffect(() => {
     report.current = onChange;
   });
 
-  const given = value === undefined ? undefined : toISODate(value);
-  const givenShown = withinRange(given ?? "", props);
+  const given = value === undefined ? undefined : kind.toISO(value);
+  const givenShown = withinRange(given ?? "", props, kind);
   const lastGiven = useRef(given);
   useEffect(() => {
     if (given === lastGiven.current) return;
     lastGiven.current = given;
     if (given === undefined || given === reported.current) return;
     reported.current = givenShown;
-    setInner(fromISODate(given));
-  }, [given, givenShown]);
+    setInner(kind.fromISO(given));
+  }, [given, givenShown, kind]);
 
   const onRead = useCallback((next: Read) => setRead(next), []);
 
   useEffect(() => {
     if (shown === reported.current) return;
     reported.current = shown;
-    report.current?.(fromISODate(shown));
-  }, [shown]);
+    report.current?.(kind.fromISO(shown));
+  }, [shown, kind]);
 
   return {
     inner,
@@ -87,7 +136,7 @@ export function useShownDate(props: ValueProps) {
     shown,
     impossible: read.impossible,
     onRead,
-    validate: () => (isRequired && read.partial ? "Enter the whole date." : null),
+    validate: () => (isRequired && read.partial ? kind.whole : null),
     ...side,
   };
 }
@@ -136,12 +185,12 @@ function fromKey(key: string): ShownRange | null {
 /** The given range as `"start/end"`, each side kept only within `bounds` when they are passed. */
 function givenKey(
   value: ShownRange | null,
-  bounds: Pick<ValueProps, "minValue" | "maxValue"> | null,
+  bounds: Pick<ValueProps<CalendarDate>, "minValue" | "maxValue"> | null,
 ): string {
   if (!value) return "";
   const [start, end] = [toISODate(value.start), toISODate(value.end)];
   return bounds
-    ? rangeKey(withinRange(start, bounds), withinRange(end, bounds))
+    ? rangeKey(withinRange(start, bounds, DATE), withinRange(end, bounds, DATE))
     : `${start}/${end}`;
 }
 
@@ -175,8 +224,8 @@ export function useShownRange(props: RangeProps) {
   const onReadEnd = useCallback((next: Read) => setEnd(next), []);
   const startSide = useLeaving(start.impossible);
   const endSide = useLeaving(end.impossible);
-  const startShown = withinRange(start.typed, props);
-  const endShown = withinRange(end.typed, props);
+  const startShown = withinRange(start.typed, props, DATE);
+  const endShown = withinRange(end.typed, props, DATE);
   const shown = rangeKey(startShown, endShown);
   const problem = problemOf(start, end, startShown, endShown);
   const reported = useRef(shown);

@@ -129,8 +129,12 @@ Stories: `Layout/AppShell › HeaderSlots`, `LinkedBrand`, `RouterBrand` and `Hi
 
 ## Dates
 
-`DateField` is a segmented DD/MM/YYYY field; `calendar` adds a calendar popover. Values are `CalendarDate`s; `toISODate` and `fromISODate` convert to and from `"1990-05-17"`.
+`DateField` is a segmented date field in the browser's locale (`locale` overrides it); `calendar` adds a calendar popover. `DateTimeField` adds the time. Values are `CalendarDate`s; `toISODate` and `fromISODate` convert to and from `"1990-05-17"`.
 See [`packages/ui-react/README.md`](packages/ui-react/README.md#dates).
+
+## Numbers
+
+`NumberField` is a number with minus and plus buttons, for a quantity or an amount: `minValue`, `maxValue` and `step` bound it, and `formatOptions` writes it as a currency or a percent in the app's locale. `Slider` is a native range in a `Field` for a level set by eye, its value written beside the track. `Combobox` is a text field that filters a long list of `Select` items as the person types.
 
 ## Light and dark
 

@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { describe, expect, it, vi } from "vitest";
 import { ChatComposer } from "./ChatComposer.js";
-import { fireEvent, render, screen, user } from "./render.harness.js";
+import { announced, fireEvent, render, screen, user } from "./render.harness.js";
 
 function setup(busy = false) {
   const onSend = vi.fn<(text: string) => void>();
@@ -55,18 +55,28 @@ describe("ChatComposer", () => {
     expect(valueOf(box)).toBe("こんにちは");
   });
 
-  it("does not send whitespace, and disables Send until there is text", async () => {
+  it("keeps Send enabled, and reports an empty box instead of sending whitespace", async () => {
     const { onSend, box } = setup();
     const send = screen.getByRole("button", { name: "Send" });
-    expect(disabled(send)).toBe(true);
+    expect(disabled(send)).toBe(false);
     await user().type(box, "  {Shift>}{Enter}{/Shift} ");
-    expect(disabled(send)).toBe(true);
+    await user().click(send);
+    expect(onSend).not.toHaveBeenCalled();
+    expect(announced()).toEqual(["Write a message first."]);
+    expect(box.getAttribute("aria-invalid")).toBe("true");
+    expect(document.activeElement).toBe(box);
     await user().type(box, "{Enter}");
     expect(onSend).not.toHaveBeenCalled();
     // Enter was still kept from the box: no second newline.
     expect(valueOf(box)).toBe("  \n ");
     await user().type(box, "x");
-    expect(disabled(send)).toBe(false);
+    expect(announced()).toEqual([]);
+  });
+
+  it("says emptyReason for an empty send", async () => {
+    render(<ChatComposer label="Message" emptyReason="Type something." onSend={() => {}} />);
+    await user().click(screen.getByRole("button", { name: "Send" }));
+    expect(announced()).toEqual(["Type something."]);
   });
 
   it("while busy the button is Stop, Enter does not send, and the text stays", async () => {

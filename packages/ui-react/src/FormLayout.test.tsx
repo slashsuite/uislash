@@ -46,3 +46,21 @@ describe("FormLayout error", () => {
     expect(screen.queryByRole("alert")).toBeNull();
   });
 });
+
+describe("FormLayout note", () => {
+  it("puts the note after the actions", () => {
+    render(
+      <FormLayout
+        title="Contact"
+        note="We reply within two working days."
+        actions={<Button type="submit">Send</Button>}
+      >
+        <Field label="Name">
+          <Input />
+        </Field>
+      </FormLayout>,
+    );
+    const note = screen.getByText("We reply within two working days.");
+    expect(follows(screen.getByRole("button", { name: "Send" }), note)).toBe(true);
+  });
+});

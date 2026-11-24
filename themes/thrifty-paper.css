@@ -363,6 +363,8 @@
 }
 .thrifty-paper .border-red-200,
 .thrifty-paper .aria-invalid\:border-red-200[aria-invalid="true"],
+.thrifty-paper .user-invalid\:border-red-200:user-invalid,
+.thrifty-paper .has-user-invalid\:border-red-200:has(:user-invalid),
 .thrifty-paper .has-aria-invalid\:border-red-200:has([aria-invalid="true"]) {
   border-color: rgba(
     122,

@@ -16,10 +16,12 @@ import {
   Popover,
   RangeCalendar,
   RangeCalendarStateContext,
+  useLocale,
 } from "react-aria-components";
 import { cx, focusRing } from "./cx.js";
 import { Button as PresetButton } from "./Button.js";
-import { MONTH_OPTIONS, iconButtonClass } from "./DateField.js";
+import { iconButtonClass } from "./DateField.js";
+import { monthNames } from "./dateLocale.js";
 import type { DateRangePreset } from "./DateRangePicker.js";
 import { Icon } from "./Icon.js";
 
@@ -66,6 +68,7 @@ function CalendarHeader({ monthLabel, yearLabel }: CalendarLabels): ReactElement
   const single = useContext(CalendarStateContext);
   const range = useContext(RangeCalendarStateContext);
   const state = single ?? range;
+  const months = monthNames(useLocale().locale);
   if (!state) return null;
   const focused = state.focusedDate;
   const now = today(getLocalTimeZone()).year;
@@ -86,8 +89,8 @@ function CalendarHeader({ monthLabel, yearLabel }: CalendarLabels): ReactElement
           state.setFocusedDate(focused.set({ month: Number(event.target.value) }))
         }
       >
-        {MONTH_OPTIONS.map(({ month, name }) => (
-          <option key={month} value={month}>
+        {months.map((name, i) => (
+          <option key={name} value={i + 1}>
             {name}
           </option>
         ))}

@@ -1,11 +1,12 @@
 // @vitest-environment jsdom
+import { useState } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Button } from "./Button.js";
 import { Dialog } from "./Dialog.js";
 import { stubDialog } from "./dom.harness.js";
 import { Field } from "./Field.js";
 import { Input } from "./Input.js";
-import { follows, render, screen, user } from "./render.harness.js";
+import { announced, follows, render, screen, user } from "./render.harness.js";
 
 // stubDialog supplies the modal <dialog> methods jsdom lacks; it does not act through the DOM.
 beforeEach(stubDialog);
@@ -98,7 +99,52 @@ describe("Dialog error", () => {
 
   it("keeps a field's error and the dialog's error apart", () => {
     open({ onSubmit: vi.fn<Submit>(), error: "Could not save.", fieldError: "Taken." });
+    // The dialog's error interrupts (an alert); the field's is announced politely with the rest.
     const texts = screen.getAllByRole("alert").map((alert) => alert.textContent);
-    expect(texts).toEqual(["Taken.", "Could not save."]);
+    expect(texts).toEqual(["Could not save."]);
+    expect(announced()).toEqual(["Taken."]);
+  });
+});
+
+/** A form dialog that marks Name invalid on a submit while it is empty, now or after a wait. */
+function Checked({ later = false }: { later?: boolean }) {
+  const [name, setName] = useState("");
+  const [error, setError] = useState<string | undefined>();
+  const check = () => setError(name === "" ? "Enter a name." : undefined);
+  return (
+    <Dialog
+      title="New flag"
+      onClose={() => {}}
+      onSubmit={later ? () => Promise.resolve().then(check) : check}
+      footer={<Button type="submit">Create</Button>}
+    >
+      <Field label="Key">
+        <Input />
+      </Field>
+      <Field label="Name" error={error}>
+        <Input value={name} onChange={(event) => setName(event.target.value)} />
+      </Field>
+    </Dialog>
+  );
+}
+
+describe("Dialog failed submit", () => {
+  it("moves the focus to the first invalid field", async () => {
+    render(<Checked />);
+    await user().type(field("Key"), "beta{Enter}");
+    expect(document.activeElement).toBe(field("Name"));
+  });
+
+  it("moves it once an async submit settles", async () => {
+    render(<Checked later />);
+    await user().click(button("Create"));
+    expect(document.activeElement).toBe(field("Name"));
+  });
+
+  it("leaves the focus where it is when nothing is invalid", async () => {
+    render(<Checked />);
+    await user().type(field("Name"), "Beta");
+    await user().type(field("Key"), "beta{Enter}");
+    expect(document.activeElement).toBe(field("Key"));
   });
 });

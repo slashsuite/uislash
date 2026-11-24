@@ -513,7 +513,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": false,
         "description": "An icon from the `Icon` set before the label, decorative, at the button's size.",
         "native": false
@@ -621,7 +621,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": false,
         "description": "One of the library's icons, at the start of the box beside the text.",
         "native": false
@@ -810,7 +810,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": false,
         "description": "One of the library's icons, drawn at feature size in the accent colour above the title: the\nmark of a feature card. Ignored with `bar` and `flush`.\n\nPick it by the idea it stands for.",
         "native": false
@@ -1002,7 +1002,7 @@
   },
   "ChatComposer": {
     "name": "ChatComposer",
-    "description": "The box a message is typed into, with its button beside it. It keeps its own text. Enter sends\nthe trimmed text and clears the box; Shift+Enter is a newline; empty or whitespace-only text does\nnot send. While `busy` a reply is on its way: the button is Stop, Enter does not send, and typing\ncarries on with the text kept for the next send.",
+    "description": "The box a message is typed into, with its button beside it. It keeps its own text, and the box\ngrows with it from 2 rows to 8. Enter sends the trimmed text and clears the box; Shift+Enter is a\nnewline. Send stays enabled on an empty box: sending empty or whitespace-only text sends nothing\nand shows `emptyReason` under the box until the next keystroke. While `busy` a reply is on its way: the button is Stop, Enter does not send, and typing\ncarries on with the text kept for the next send.",
     "props": [
       {
         "name": "busy",
@@ -1018,6 +1018,14 @@
         "required": false,
         "default": "false",
         "description": "Disables the box and the button. For a chat that cannot take a message at all, not for a reply in flight: that is `busy`.",
+        "native": false
+      },
+      {
+        "name": "emptyReason",
+        "type": "string",
+        "required": false,
+        "default": "Write a message first.",
+        "description": "Shown under the box when Send is pressed on an empty box.",
         "native": false
       },
       {
@@ -1173,7 +1181,7 @@
   },
   "Checkbox": {
     "name": "Checkbox",
-    "description": "A checkbox with its label. It is a real `<input type=\"checkbox\">`, drawn by the library (an\nempty outlined box, then a filled accent one with a check mark) so it reads the same in every\ntheme and browser. Every prop but the label goes on the input, and `ref` reaches it.\n`size=\"sm\"` is `text-xs` and a smaller box, for a dense row; `size=\"lg\"` is `text-base` and a\nlarger box. Leave `label` out for a bare box in a table cell, and name it with `aria-label`. The\nbox sits on the label's first line, so a label that wraps reads from the box. `hint` is a muted\nline under the label that says more, like a `Field`'s; `error` replaces it with a red line\n(`role=\"alert\"`) and makes the box `aria-invalid`. The note is the box's `aria-describedby`.\n`onChange` gets the new checked state; take `checked` with it, or `defaultChecked` alone.\nWhile `loading` the label is drawn and the box is a bone of its size.",
+    "description": "A checkbox with its label. It is a real `<input type=\"checkbox\">`, drawn by the library (an\nempty outlined box, then a filled accent one with a check mark) so it reads the same in every\ntheme and browser. Every prop but the label goes on the input, and `ref` reaches it.\n`size=\"sm\"` is `text-xs` and a smaller box, for a dense row; `size=\"lg\"` is `text-base` and a\nlarger box. Leave `label` out for a bare box in a table cell, and name it with `aria-label`. The\nbox sits on the label's first line, so a label that wraps reads from the box. `hint` is a muted\nline under the label that says more, like a `Field`'s; `error` adds a red line under it, with an alert\nicon, and makes the box `aria-invalid` and red-edged. The note is the box's `aria-describedby`.\n`onChange` gets the new checked state; take `checked` with it, or `defaultChecked` alone.\n`indeterminate` draws a dash for a select-all box over a partly chosen list. `variant=\"card\"`\ndraws it as an option card: a bordered box with the label as its title and the hint under it. Under a finger the\nhit area grows to 44px.\nWhile `loading` the label is drawn and the box is a bone of its size.",
     "props": [
       {
         "name": "disabledReason",
@@ -1186,7 +1194,7 @@
         "name": "error",
         "type": "ReactNode",
         "required": false,
-        "description": "Replaces the hint with a red line (`role=\"alert\"`) and makes the box `aria-invalid`.",
+        "description": "A red line under the hint, with an alert icon, announced politely; makes the box `aria-invalid`.",
         "native": false
       },
       {
@@ -1194,6 +1202,14 @@
         "type": "ReactNode",
         "required": false,
         "description": "A muted line under the label that says more. It is the box's `aria-describedby`.",
+        "native": false
+      },
+      {
+        "name": "indeterminate",
+        "type": "boolean",
+        "required": false,
+        "default": "false",
+        "description": "Mixed: some of what the box stands for is chosen and some is not, as a select-all box over a\npartly chosen list. It draws a dash and is read as \"mixed\"; a click checks it. The caller owns\nit: work it out from the list on every render.",
         "native": false
       },
       {
@@ -1238,6 +1254,14 @@
         "required": false,
         "default": "md",
         "description": "The label's text size and the box with it.",
+        "native": false
+      },
+      {
+        "name": "variant",
+        "type": "\"card\" | \"plain\"",
+        "required": false,
+        "default": "plain",
+        "description": "`plain` is the box and its words. `card` puts them in a bordered box the width of its parent,\nthe label a title and the `hint` its description: for a few options that each need a line of\nexplaining. The whole card is the click target, and a ticked one takes an accent edge.",
         "native": false
       }
     ]
@@ -1458,6 +1482,127 @@
       }
     ]
   },
+  "Combobox": {
+    "name": "Combobox",
+    "description": "A text field that filters a list of choices as the person types, for a choice from more items\nthan a `Select` reads well (a country, a time zone, a teammate): React Aria's `ComboBox`. Typing\nnarrows the list by label; arrow keys move through it, Enter picks, Escape closes it. The chevron\nopens the whole list. Its value is the chosen item's `value`, posted under `name`. `label`, `hint`,\n`error`, `required` and `disabled` are a `DateField`'s; `size` and `width` an `Input`'s. Inside a\nmodal `Dialog` the list draws in the dialog. While `loading` the label is drawn and the field is a\nbone of its height.",
+    "props": [
+      {
+        "name": "defaultValue",
+        "type": "string | null",
+        "required": false,
+        "description": "The item's `value` it starts with, uncontrolled.",
+        "native": false
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "required": false,
+        "description": "Disables the field and its button.",
+        "native": false
+      },
+      {
+        "name": "emptyLabel",
+        "type": "string",
+        "required": false,
+        "default": "No matches",
+        "description": "The line the list shows when nothing matches what was typed, for an app in another language.",
+        "native": false
+      },
+      {
+        "name": "error",
+        "type": "ReactNode",
+        "required": false,
+        "description": "Marks the field invalid and shows this in red under the hint, announced politely.",
+        "native": false
+      },
+      {
+        "name": "hint",
+        "type": "ReactNode",
+        "required": false,
+        "description": "A muted line under the field that says more; it stays while an error shows under it.",
+        "native": false
+      },
+      {
+        "name": "id",
+        "type": "string",
+        "required": false,
+        "description": "The root element's `id`: an anchor, or the target of a `for` or an `aria-describedby`.",
+        "native": false
+      },
+      {
+        "name": "items",
+        "type": "readonly { value: string; label: string; disabled?: boolean }[]",
+        "required": true,
+        "description": "The choices, in order; typing filters them by label.",
+        "native": false
+      },
+      {
+        "name": "label",
+        "type": "ReactNode",
+        "required": false,
+        "description": "The field's visible label, above it. Without one, name the field with `aria-label`.",
+        "native": false
+      },
+      {
+        "name": "loading",
+        "type": "boolean",
+        "required": false,
+        "description": "The data is not here yet: an empty slot draws a bone of its shape, a filled one draws as usual.\nLeft out, the part takes the nearest loading layout's or part's; `false` opts it out inside one.",
+        "native": false
+      },
+      {
+        "name": "loadingLabel",
+        "type": "string",
+        "required": false,
+        "default": "Loading",
+        "description": "What a screen reader hears while this part is loading, when its own `loading` is set.",
+        "native": false
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "required": false,
+        "description": "Posts the chosen item's `value` in a form under this key.",
+        "native": false
+      },
+      {
+        "name": "onChange",
+        "type": "((value: string | null) => void)",
+        "required": false,
+        "description": "Called with the chosen item's `value`, or `null` when the choice is cleared.",
+        "native": false
+      },
+      {
+        "name": "required",
+        "type": "boolean",
+        "required": false,
+        "description": "Marks a choice required: the field is `aria-required`, and an empty one is invalid.",
+        "native": false
+      },
+      {
+        "name": "size",
+        "type": "Size | ResponsiveSize",
+        "required": false,
+        "default": "md",
+        "description": "`sm` is compact, `text-sm` with less padding, for dense forms and table rows; `md` is `text-base`;\n`lg` is `text-lg` with more padding, for a hero form. Under an `AppShell density=\"compact\"` each\nis one type step down, and on a touch screen a field is never under 16px.\n`{ base: \"md\", md: \"lg\" }` changes size at the `md` breakpoint (48rem), in CSS, as a `Button`'s\ndoes: give the field and the buttons in its row the same value, so the row stays aligned.",
+        "native": false
+      },
+      {
+        "name": "value",
+        "type": "string | null",
+        "required": false,
+        "description": "The chosen item's `value`, controlled, with `onChange`. `null` is nothing chosen.",
+        "native": false
+      },
+      {
+        "name": "width",
+        "type": "\"sm\" | \"md\" | \"lg\" | \"xs\" | \"auto\" | \"fill\" | \"full\"",
+        "required": false,
+        "description": "`full` (default) fills the parent; `fill` grows to fill the room left in a row beside other items (it can shrink to nothing, so buttons stay on the line); `xs`, `sm`, `md`, `lg` are fixed; `auto` adds no width class, so the control is as wide as the browser makes it.",
+        "native": false
+      }
+    ]
+  },
   "Container": {
     "name": "Container",
     "description": "The one content edge: every page's width and side padding. This file is the only place they are\ndefined, so a header, a page and a footer inside a Container start at the same x.",
@@ -1543,7 +1688,7 @@
   },
   "DateField": {
     "name": "DateField",
-    "description": "A segmented DD / MM / YYYY date input. Values are `CalendarDate`s; `name` posts it as\n`YYYY-MM-DD`. `calendar` adds a calendar button that opens a month view in a popover, at the\nsame height as the plain field; `defaultOpen` opens it on mount. While `loading` the label is\ndrawn and the field is a bone of its height.",
+    "description": "A segmented date input, in the order of its `locale` (by default the browser's): DD / MM / YYYY\nin en-GB. Values are `CalendarDate`s; `name` posts it as `YYYY-MM-DD`. `calendar` adds a calendar button that opens a month view in a popover, at the\nsame height as the plain field; `defaultOpen` opens it on mount. While `loading` the label is\ndrawn and the field is a bone of its height.",
     "props": [
       {
         "name": "calendar",
@@ -1577,14 +1722,14 @@
         "name": "error",
         "type": "ReactNode",
         "required": false,
-        "description": "Marks the field invalid and shows this in red with `role=\"alert\"`, in place of the hint and of\nthe built-in message (an impossible date, or one outside min/max). Like `Field`'s `error`.",
+        "description": "Marks the field invalid and shows this in red under the hint, announced politely, in place of\nthe built-in message (an impossible date, or one outside min/max). Like `Field`'s `error`.",
         "native": false
       },
       {
         "name": "hint",
         "type": "ReactNode",
         "required": false,
-        "description": "A muted line under the field that says more; an error replaces it.",
+        "description": "A muted line under the field that says more; it stays while an error shows under it.",
         "native": false
       },
       {
@@ -1617,6 +1762,13 @@
         "native": false
       },
       {
+        "name": "locale",
+        "type": "string",
+        "required": false,
+        "description": "The locale the field writes its date in, a BCP 47 tag: `en-GB` is DD/MM/YYYY, `en-US`\nMM/DD/YYYY, `en-ZA` YYYY/MM/DD. It sets the order of the segments, the month names, the\ncalendar's first weekday and the dates in its messages. Without it the field follows the app's\nown `I18nProvider`, or else the browser's language.",
+        "native": false
+      },
+      {
         "name": "maxValue",
         "type": "DateValue | null",
         "required": false,
@@ -1642,7 +1794,7 @@
         "name": "name",
         "type": "string",
         "required": false,
-        "description": "Posts the date in a form as `YYYY-MM-DD` under this key, or an empty string.",
+        "description": "Posts the date in a form as `YYYY-MM-DD` under this key, or an empty string, whatever the `locale`.",
         "native": false
       },
       {
@@ -1661,10 +1813,10 @@
       },
       {
         "name": "size",
-        "type": "\"sm\" | \"md\" | \"lg\"",
+        "type": "Size | ResponsiveSize",
         "required": false,
         "default": "md",
-        "description": "The field's height and text, on the same scale as an `Input`: `sm` is `text-sm`, `md` `text-base`,\n`lg` `text-lg`, one step down under an `AppShell density=\"compact\"`, and never under 16px on touch.",
+        "description": "The field's height and text, on the same scale as an `Input`: `sm` is `text-sm`, `md` `text-base`,\n`lg` `text-lg`, one step down under an `AppShell density=\"compact\"`, and never under 16px on touch.\n`{ base: \"md\", md: \"lg\" }` changes size at the `md` breakpoint (48rem), in CSS, as an `Input`'s does.",
         "native": false
       },
       {
@@ -1686,7 +1838,7 @@
   },
   "DateRangePicker": {
     "name": "DateRangePicker",
-    "description": "A from and to date in one field: DD/MM/YYYY \"to\" DD/MM/YYYY and a calendar button that opens one\nMonday-first month, where two presses pick the range. `presets` adds the app's ready-made ranges\nabove the month. The range is reported only when both sides are complete, real dates within\nmin/max and the start is on or before the end; otherwise `null`.",
+    "description": "A from and to date in one field, each side in the locale's order, and a calendar button that opens one\nMonday-first month, where two presses pick the range. `presets` adds the app's ready-made ranges\nabove the month. The range is reported only when both sides are complete, real dates within\nmin/max and the start is on or before the end; otherwise `null`.",
     "props": [
       {
         "name": "defaultOpen",
@@ -1720,14 +1872,14 @@
         "name": "error",
         "type": "ReactNode",
         "required": false,
-        "description": "Marks the field invalid and shows this in red with `role=\"alert\"`, in place of the hint and of\nthe built-in message (an impossible date, or one outside min/max). Like `Field`'s `error`.",
+        "description": "Marks the field invalid and shows this in red under the hint, announced politely, in place of\nthe built-in message (an impossible date, or one outside min/max). Like `Field`'s `error`.",
         "native": false
       },
       {
         "name": "hint",
         "type": "ReactNode",
         "required": false,
-        "description": "A muted line under the field that says more; an error replaces it.",
+        "description": "A muted line under the field that says more; it stays while an error shows under it.",
         "native": false
       },
       {
@@ -1742,6 +1894,13 @@
         "type": "ReactNode",
         "required": false,
         "description": "The field's visible label, above it. Without one, name the field with `aria-label`.",
+        "native": false
+      },
+      {
+        "name": "locale",
+        "type": "string",
+        "required": false,
+        "description": "The locale the field writes its date in, a BCP 47 tag: `en-GB` is DD/MM/YYYY, `en-US`\nMM/DD/YYYY, `en-ZA` YYYY/MM/DD. It sets the order of the segments, the month names, the\ncalendar's first weekday and the dates in its messages. Without it the field follows the app's\nown `I18nProvider`, or else the browser's language.",
         "native": false
       },
       {
@@ -1789,10 +1948,10 @@
       },
       {
         "name": "size",
-        "type": "\"sm\" | \"md\" | \"lg\"",
+        "type": "Size | ResponsiveSize",
         "required": false,
         "default": "md",
-        "description": "The field's height and text, on the same scale as an `Input`: `sm` is `text-sm`, `md` `text-base`,\n`lg` `text-lg`, one step down under an `AppShell density=\"compact\"`, and never under 16px on touch.",
+        "description": "The field's height and text, on the same scale as an `Input`: `sm` is `text-sm`, `md` `text-base`,\n`lg` `text-lg`, one step down under an `AppShell density=\"compact\"`, and never under 16px on touch.\n`{ base: \"md\", md: \"lg\" }` changes size at the `md` breakpoint (48rem), in CSS, as an `Input`'s does.",
         "native": false
       },
       {
@@ -1815,6 +1974,126 @@
         "required": false,
         "default": "Year",
         "description": "The year dropdown's name, for an app in another language.",
+        "native": false
+      }
+    ]
+  },
+  "DateTimeField": {
+    "name": "DateTimeField",
+    "description": "A segmented date and time input, to the minute: the date in the order of its `locale` (by default\nthe browser's), then hours and minutes on the clock the locale uses, 24-hour in en-GB and with\nAM/PM in en-US. Values are `CalendarDateTime`s; `name` posts it as `YYYY-MM-DDTHH:mm`. It has no\ncalendar. While `loading` the label is drawn and the field is a bone of its height.",
+    "props": [
+      {
+        "name": "defaultValue",
+        "type": "CalendarDateTime | null",
+        "required": false,
+        "description": "The date and time shown first when the field holds its own value.",
+        "native": false
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "required": false,
+        "description": "Disables the field: no typing, no calendar.",
+        "native": false
+      },
+      {
+        "name": "error",
+        "type": "ReactNode",
+        "required": false,
+        "description": "Marks the field invalid and shows this in red under the hint, announced politely, in place of\nthe built-in message (an impossible date, or one outside min/max). Like `Field`'s `error`.",
+        "native": false
+      },
+      {
+        "name": "hint",
+        "type": "ReactNode",
+        "required": false,
+        "description": "A muted line under the field that says more; it stays while an error shows under it.",
+        "native": false
+      },
+      {
+        "name": "id",
+        "type": "string",
+        "required": false,
+        "description": "The root element's `id`: an anchor, or the target of a `for` or an `aria-describedby`.",
+        "native": false
+      },
+      {
+        "name": "label",
+        "type": "ReactNode",
+        "required": false,
+        "description": "The field's visible label, above it. Without one, name the field with `aria-label`.",
+        "native": false
+      },
+      {
+        "name": "loading",
+        "type": "boolean",
+        "required": false,
+        "description": "The data is not here yet: an empty slot draws a bone of its shape, a filled one draws as usual.\nLeft out, the part takes the nearest loading layout's or part's; `false` opts it out inside one.",
+        "native": false
+      },
+      {
+        "name": "loadingLabel",
+        "type": "string",
+        "required": false,
+        "default": "Loading",
+        "description": "What a screen reader hears while this part is loading, when its own `loading` is set.",
+        "native": false
+      },
+      {
+        "name": "locale",
+        "type": "string",
+        "required": false,
+        "description": "The locale the field writes its date in, a BCP 47 tag: `en-GB` is DD/MM/YYYY, `en-US`\nMM/DD/YYYY, `en-ZA` YYYY/MM/DD. It sets the order of the segments, the month names, the\ncalendar's first weekday and the dates in its messages. Without it the field follows the app's\nown `I18nProvider`, or else the browser's language.",
+        "native": false
+      },
+      {
+        "name": "maxValue",
+        "type": "DateValue | null",
+        "required": false,
+        "description": "The latest date and time the field takes; later ones are invalid.",
+        "native": false
+      },
+      {
+        "name": "minValue",
+        "type": "DateValue | null",
+        "required": false,
+        "description": "The earliest date and time the field takes; earlier ones are invalid.",
+        "native": false
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "required": false,
+        "description": "Posts the date and time in a form as `YYYY-MM-DDTHH:mm` (24-hour) under this key, or an empty\nstring, whatever the `locale`.",
+        "native": false
+      },
+      {
+        "name": "onChange",
+        "type": "((value: CalendarDateTime | null) => void)",
+        "required": false,
+        "description": "Called with the date and time once every segment is filled, the day exists and it is within\n`minValue`/`maxValue`, and with `null` when it stops being one.",
+        "native": false
+      },
+      {
+        "name": "required",
+        "type": "boolean",
+        "required": false,
+        "description": "Marks a date required: the field is `aria-required`, and an empty one is invalid.",
+        "native": false
+      },
+      {
+        "name": "size",
+        "type": "Size | ResponsiveSize",
+        "required": false,
+        "default": "md",
+        "description": "The field's height and text, on the same scale as an `Input`: `sm` is `text-sm`, `md` `text-base`,\n`lg` `text-lg`, one step down under an `AppShell density=\"compact\"`, and never under 16px on touch.\n`{ base: \"md\", md: \"lg\" }` changes size at the `md` breakpoint (48rem), in CSS, as an `Input`'s does.",
+        "native": false
+      },
+      {
+        "name": "value",
+        "type": "CalendarDateTime | null",
+        "required": false,
+        "description": "The date and time shown, controlled, with `onChange`; `null` is an empty field.",
         "native": false
       }
     ]
@@ -1947,7 +2226,7 @@
         "name": "onSubmit",
         "type": "((event: FormEvent<HTMLFormElement>) => void | Promise<unknown>)",
         "required": false,
-        "description": "Makes the dialog a form: one `<form noValidate>` holds the body, the `error` and the footer,\nso a `Button type=\"submit\"` in the footer or Enter in a field submits it, with no `form`\nattribute or id. The default is prevented before this runs, and a rejection is yours to\ncatch and show as `error`. Put no `<form method=\"dialog\">` in the footer of a form dialog:\nit would nest a form.",
+        "description": "Makes the dialog a form: one `<form noValidate>` holds the body, the `error` and the footer,\nso a `Button type=\"submit\"` in the footer or Enter in a field submits it, with no `form`\nattribute or id. The default is prevented before this runs, and a rejection is yours to\ncatch and show as `error`. Once the submit settles, the focus moves to the first field marked\ninvalid (`aria-invalid=\"true\"`), if any. Put no `<form method=\"dialog\">` in the footer of a form dialog:\nit would nest a form.",
         "native": false
       },
       {
@@ -2243,7 +2522,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": false,
         "description": "One of the library's icons, at feature size in the muted ink above the title.",
         "native": false
@@ -2338,13 +2617,13 @@
   },
   "Field": {
     "name": "Field",
-    "description": "A label above a control, with a hint or an error line under it. An error replaces the hint.\nInside a `FormGrid`, `span=\"full\"` runs the field across both columns. The `Input`, `Select`,\n`Textarea` or `FileDrop` inside takes the label, the note (`aria-describedby`) and, with an error,\n`aria-invalid` and a red edge by itself: give it no `id` and the Field no `htmlFor`. While\n`loading` the label is drawn and the control is a bone of its height, read from the density\naround it (`sm` in a `sm` card or table).",
+    "description": "A label above a control, with a hint line under it and, when set, an error line under the hint\n(an alert icon and red text, announced politely). The hint stays while the error shows.\n`required` marks the label with a red asterisk and makes the control inside `required`.\nInside a `FormGrid`, `span=\"full\"` runs the field across both columns. The `Input`, `Select`,\n`Textarea` or `FileDrop` inside takes the label, the note (`aria-describedby`) and, with an error,\n`aria-invalid` and a red edge by itself: give it no `id` and the Field no `htmlFor`. While\n`loading` the label is drawn and the control is a bone of its height, read from the density\naround it (`sm` in a `sm` card or table).",
     "props": [
       {
         "name": "error",
         "type": "ReactNode",
         "required": false,
-        "description": "Replaces the hint when set.",
+        "description": "A red line under the hint, with an alert icon; the control is `aria-invalid` while it shows.",
         "native": false
       },
       {
@@ -2407,6 +2686,14 @@
         "native": false
       },
       {
+        "name": "required",
+        "type": "boolean",
+        "required": false,
+        "default": "false",
+        "description": "The control must be filled: a red asterisk after the label (hidden from assistive tech) and\n`required` on the `Input`, `Select`, `Textarea` or `FileDrop` inside.",
+        "native": false
+      },
+      {
         "name": "span",
         "type": "\"full\"",
         "required": false,
@@ -2437,14 +2724,14 @@
         "name": "emptyReason",
         "type": "string",
         "required": true,
-        "description": "Said when the field is empty and the submit button is blocked.",
+        "description": "The field's error when it is submitted empty: the submit button stays enabled, so this says what is missing.",
         "native": false
       },
       {
         "name": "hint",
         "type": "string",
         "required": true,
-        "description": "A muted line under the field; `emptyReason` takes its place while the field is empty.",
+        "description": "A muted line under the field.",
         "native": false
       },
       {
@@ -2500,7 +2787,7 @@
   },
   "Fieldset": {
     "name": "Fieldset",
-    "description": "A labelled group of controls: several `Checkbox`es answering one question, a set of `Field`s that\nbelong together, or the filter chips of one facet (a `ButtonGroup` of `outline` `sm` pressed\n`Button`s). It is a `<fieldset>` named by its `label`, drawn as its `<legend>` in the `Field`\nlabel's look, over the children in one column; a `ButtonGroup` or a `FormGrid` inside lays out a\nrow. `hint` is a muted line under the group and its `aria-describedby`; `error` replaces it in red\nwith `role=\"alert\"`. `disabled` disables every control inside. One choice of several is a\n`RadioGroup`, never inside a `Fieldset`. Other props go on the `<fieldset>`.",
+    "description": "A labelled group of controls: several `Checkbox`es answering one question, a set of `Field`s that\nbelong together, or the filter chips of one facet (a `ButtonGroup` of `outline` `sm` pressed\n`Button`s). It is a `<fieldset>` named by its `label`, drawn as its `<legend>` in the `Field`\nlabel's look, over the children in one column; a `ButtonGroup` or a `FormGrid` inside lays out a\nrow. `hint` is a muted line under the group and its `aria-describedby`; `error` adds a red line\nunder it with an alert icon, announced politely. `disabled` disables every control inside. One choice of several is a\n`RadioGroup`, never inside a `Fieldset`. Other props go on the `<fieldset>`.",
     "props": [
       {
         "name": "children",
@@ -2513,7 +2800,7 @@
         "name": "error",
         "type": "ReactNode",
         "required": false,
-        "description": "A red line under the group, in place of the hint, announced as an alert.",
+        "description": "A red line under the hint, with an alert icon, announced politely.",
         "native": false
       },
       {
@@ -2681,7 +2968,7 @@
   },
   "FormGrid": {
     "name": "FormGrid",
-    "description": "Two columns of `Field`s from `md`, one below it. A `Field` takes one column; `span=\"full\"` runs\nit across both, and a `FormRow` is always full width.",
+    "description": "Two columns of `Field`s once the grid is 36rem wide, one below that. It folds by its own width,\nnot the viewport's, so it stays one column in a `Dialog` or a side column. A `Field` takes one\ncolumn; `span=\"full\"` runs it across both, and a `FormRow` is always full width.",
     "props": [
       {
         "name": "id",
@@ -2694,7 +2981,7 @@
   },
   "FormLayout": {
     "name": "FormLayout",
-    "description": "A form page: header (no header `actions`), then a `max-w-3xl` column that starts at the Container's start edge (it is not re-centred), with an `actions` row at the end. `error` is the submit's failure, a danger `Callout` (an alert) directly above that row. Other props go on the `<form>`. While `loading` it owns the wait and passes it to everything inside, the header too.",
+    "description": "A form page: header (no header `actions`), then a `max-w-3xl` column that starts at the Container's start edge (it is not re-centred), with an `actions` row at the end. `note` is a muted line under that row, set apart from the form: a closing remark about the whole submit (when you will hear back, what happens next), never a field's hint. `error` is the submit's failure, a danger `Callout` (an alert) directly above that row. Other props go on the `<form>`. While `loading` it owns the wait and passes it to everything inside, the header too.",
     "props": [
       {
         "name": "actions",
@@ -2740,6 +3027,13 @@
         "native": false
       },
       {
+        "name": "note",
+        "type": "ReactNode",
+        "required": false,
+        "description": "A muted line under the `actions`, set apart from them: a closing remark about the whole form\n(\"We reply within two working days.\"). A note about one field is that `Field`'s `hint`.",
+        "native": false
+      },
+      {
         "name": "tabs",
         "type": "ReactNode",
         "required": false,
@@ -2757,7 +3051,7 @@
   },
   "FormRow": {
     "name": "FormRow",
-    "description": "An inline-edit row: several controls side by side with proportional widths (`FormRowField`\n`span` 1 to 4), optional `actions` after them (a save button), and one `hint` or `error` line\nunder the whole row. Every control sits on the bottom edge, so the actions line up with them\nwhatever the labels do. Under `md` the fields and the actions stack.\n\nThe row owns the note, so the fields beside each other keep their height: a `FormRowField` has\nno `hint` or `error` of its own.",
+    "description": "An inline-edit row: several controls side by side with proportional widths (`FormRowField`\n`span` 1 to 4), optional `actions` after them (a save button), and one `hint` or `error` line\nunder the whole row. Every control sits on the bottom edge, so the actions line up with them\nwhatever the labels do. Narrower than 36rem (the row's own width, not the viewport's) the fields\nand the actions stack.\n\nThe row owns the note, so the fields beside each other keep their height: a `FormRowField` has\nno `hint` or `error` of its own.",
     "props": [
       {
         "name": "actions",
@@ -2770,7 +3064,7 @@
         "name": "error",
         "type": "ReactNode",
         "required": false,
-        "description": "Replaces the hint when set, as `Field`'s does.",
+        "description": "A red line under the hint, announced politely, as `Field`'s is.",
         "native": false
       },
       {
@@ -2843,6 +3137,12 @@
     "name": "fromISODate",
     "description": "The `CalendarDate` of a `\"YYYY-MM-DD\"` string; `null` for an empty, malformed or impossible one.",
     "signature": "fromISODate(iso: string | null | undefined): CalendarDate | null",
+    "props": []
+  },
+  "fromISODateTime": {
+    "name": "fromISODateTime",
+    "description": "The `CalendarDateTime` of a `\"YYYY-MM-DDTHH:mm\"` string; `null` for an empty, malformed or\nimpossible one (a day the month does not have, an hour past 23).",
+    "signature": "fromISODateTime(iso: string | null | undefined): CalendarDateTime | null",
     "props": []
   },
   "FullBleedLayout": {
@@ -2938,7 +3238,7 @@
   },
   "Icon": {
     "name": "Icon",
-    "description": "One inline icon, sized to a fixed box (sm 14px, md 16px, lg 20px, `feature` 32px) and drawn in\n`currentColor`, so it takes the text colour around it unless a `tone` says otherwise. `name`\npicks one of the library's own icons, all drawn on one grid with one stroke: feature ideas\n(`diff`, `baseline`, `review`, `ci`, `self-host`, `privacy`, `capture`, `branch`, `theme`,\n`speed`, `search`) and UI glyphs (`chevron-right`, `chevron-down`, `close`, `external-link`,\n`settings`, `bell`, `check`, `plus`, `more`) and the ideas the docs sections stand for (`grid`, `window`,\n`type`, `card`, `pointer`, `field`, `table`, `compass`, `page`, `briefcase`);\nwithout a name, a bare `<svg>` child fills the box. It is decorative (`aria-hidden`) by\ndefault; a `label` makes it an image with that name, for an icon that carries meaning no text\nbeside it says.",
+    "description": "One inline icon, sized to a fixed box (sm 14px, md 16px, lg 20px, `feature` 32px) and drawn in\n`currentColor`, so it takes the text colour around it unless a `tone` says otherwise. `name`\npicks one of the library's own icons, all drawn on one grid with one stroke: feature ideas\n(`diff`, `baseline`, `review`, `ci`, `self-host`, `privacy`, `capture`, `branch`, `theme`,\n`speed`, `search`) and UI glyphs (`chevron-right`, `chevron-down`, `close`, `external-link`,\n`settings`, `bell`, `check`, `alert`, `plus`, `more`) and the ideas the docs sections stand for (`grid`, `window`,\n`type`, `card`, `pointer`, `field`, `table`, `compass`, `page`, `briefcase`);\nwithout a name, a bare `<svg>` child fills the box. It is decorative (`aria-hidden`) by\ndefault; a `label` makes it an image with that name, for an icon that carries meaning no text\nbeside it says.",
     "props": [
       {
         "name": "children",
@@ -2963,7 +3263,7 @@
       },
       {
         "name": "name",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": false,
         "description": "One of the library's icons, named for the idea it stands for.",
         "native": false
@@ -3019,7 +3319,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": true,
         "description": "The one icon it holds, from the `Icon` set, at the button's size.",
         "native": false
@@ -3167,7 +3467,7 @@
   },
   "Input": {
     "name": "Input",
-    "description": "A text input. `icon` names a leading icon inside the field (`icon=\"search\"`). `prefix` puts\nshort text inside the border before the value, such as a currency symbol; it is for a plain\nfield, not with an `icon` or `type=\"search\"`. `numeric` is a field for a figure: an amount\n(`<Input prefix=\"R\" numeric />`) or a count (`numeric inputMode=\"numeric\"`). It right-aligns the\nvalue in tabular figures and brings up the phone's number keypad (`inputMode=\"decimal\"` unless\nyou pass your own), and stays a text field, so \"1 250\" is kept as typed; never use\n`type=\"number\"` for a figure a person types. `type=\"search\"` drops the browser's own search look and shows a clear button at the\ntrailing edge while the field has a value, named by `clearLabel`. The `ref` reaches the `<input>`.",
+    "description": "A text input. `icon` names a leading icon inside the field (`icon=\"search\"`). `prefix` puts\nshort text inside the border before the value, such as a currency symbol; it is for a plain\nfield, not with an `icon` or `type=\"search\"`. `numeric` is a field for a figure: an amount\n(`<Input prefix=\"R\" numeric />`) or a count (`numeric inputMode=\"numeric\"`). It right-aligns the\nvalue in tabular figures and brings up the phone's number keypad (`inputMode=\"decimal\"` unless\nyou pass your own), and stays a text field, so \"1 250\" is kept as typed; never use\n`type=\"number\"` for a figure a person types. `type=\"search\"` drops the browser's own search look and shows a clear button at the\ntrailing edge while the field has a value, named by `clearLabel`, and Escape clears it. The `ref` reaches the `<input>`.",
     "props": [
       {
         "name": "clearLabel",
@@ -3186,7 +3486,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": false,
         "description": "A leading icon inside the field, by name (`search`). Not with `prefix`.",
         "native": false
@@ -3236,10 +3536,10 @@
       },
       {
         "name": "size",
-        "type": "\"sm\" | \"md\" | \"lg\"",
+        "type": "Size | ResponsiveSize",
         "required": false,
         "default": "md",
-        "description": "`sm` is compact, `text-sm` with less padding, for dense forms and table rows; `md` is `text-base`;\n`lg` is `text-lg` with more padding, for a hero form. Under an `AppShell density=\"compact\"` each\nis one type step down, and on a touch screen a field is never under 16px.",
+        "description": "`sm` is compact, `text-sm` with less padding, for dense forms and table rows; `md` is `text-base`;\n`lg` is `text-lg` with more padding, for a hero form. Under an `AppShell density=\"compact\"` each\nis one type step down, and on a touch screen a field is never under 16px.\n`{ base: \"md\", md: \"lg\" }` changes size at the `md` breakpoint (48rem), in CSS, as a `Button`'s\ndoes: give the field and the buttons in its row the same value, so the row stays aligned.",
         "native": false
       },
       {
@@ -4145,6 +4445,157 @@
       }
     ]
   },
+  "NumberField": {
+    "name": "NumberField",
+    "description": "A number with a minus and a plus button either side of it, for a quantity, a count or an amount:\nReact Aria's `NumberField`. The person types the number or steps it by `step` with the buttons,\nthe arrow keys, Page Up and Page Down; `minValue` and `maxValue` stop the buttons and clamp a\ntyped number when the field is left. `formatOptions` writes it as a currency, a percent or with\nfixed decimals in the app's locale, and the person types in that format. `label`, `hint`, `error`,\n`required` and `disabled` are a `DateField`'s; `size` and `width` an `Input`'s. While `loading`\nthe label is drawn and the field is a bone of its height.",
+    "props": [
+      {
+        "name": "decrementLabel",
+        "type": "string",
+        "required": false,
+        "default": "Decrease",
+        "description": "The name of the minus button, for an app in another language.",
+        "native": false
+      },
+      {
+        "name": "defaultValue",
+        "type": "number",
+        "required": false,
+        "description": "The number it starts with, uncontrolled.",
+        "native": false
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "required": false,
+        "description": "Disables the field and its buttons.",
+        "native": false
+      },
+      {
+        "name": "error",
+        "type": "ReactNode",
+        "required": false,
+        "description": "Marks the field invalid and shows this in red under the hint, announced politely.",
+        "native": false
+      },
+      {
+        "name": "formatOptions",
+        "type": "NumberFormatOptions",
+        "required": false,
+        "description": "How the number is written, in the locale of the app's `I18nProvider` or else the browser's:\n`{ style: \"currency\", currency: \"EUR\" }`, `{ style: \"percent\" }`, `{ maximumFractionDigits: 2 }`.\nThe person types in the same format.",
+        "native": false
+      },
+      {
+        "name": "hint",
+        "type": "ReactNode",
+        "required": false,
+        "description": "A muted line under the field that says more; it stays while an error shows under it.",
+        "native": false
+      },
+      {
+        "name": "id",
+        "type": "string",
+        "required": false,
+        "description": "The root element's `id`: an anchor, or the target of a `for` or an `aria-describedby`.",
+        "native": false
+      },
+      {
+        "name": "incrementLabel",
+        "type": "string",
+        "required": false,
+        "default": "Increase",
+        "description": "The name of the plus button, for an app in another language.",
+        "native": false
+      },
+      {
+        "name": "label",
+        "type": "ReactNode",
+        "required": false,
+        "description": "The field's visible label, above it. Without one, name the field with `aria-label`.",
+        "native": false
+      },
+      {
+        "name": "loading",
+        "type": "boolean",
+        "required": false,
+        "description": "The data is not here yet: an empty slot draws a bone of its shape, a filled one draws as usual.\nLeft out, the part takes the nearest loading layout's or part's; `false` opts it out inside one.",
+        "native": false
+      },
+      {
+        "name": "loadingLabel",
+        "type": "string",
+        "required": false,
+        "default": "Loading",
+        "description": "What a screen reader hears while this part is loading, when its own `loading` is set.",
+        "native": false
+      },
+      {
+        "name": "maxValue",
+        "type": "number",
+        "required": false,
+        "description": "The largest number allowed: the plus button stops there, and a larger typed one is lowered to it.",
+        "native": false
+      },
+      {
+        "name": "minValue",
+        "type": "number",
+        "required": false,
+        "description": "The smallest number allowed: the minus button stops there, and a smaller typed one is raised to it.",
+        "native": false
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "required": false,
+        "description": "Posts the number in a form under this key, as plain digits whatever the format.",
+        "native": false
+      },
+      {
+        "name": "onChange",
+        "type": "((value: number) => void)",
+        "required": false,
+        "description": "Called with the new number when it is committed (a step, or leaving the field); `NaN` when it is cleared.",
+        "native": false
+      },
+      {
+        "name": "required",
+        "type": "boolean",
+        "required": false,
+        "description": "Marks the number required: the field is `aria-required`, and an empty one is invalid.",
+        "native": false
+      },
+      {
+        "name": "size",
+        "type": "Size | ResponsiveSize",
+        "required": false,
+        "default": "md",
+        "description": "`sm` is compact, `text-sm` with less padding, for dense forms and table rows; `md` is `text-base`;\n`lg` is `text-lg` with more padding, for a hero form. Under an `AppShell density=\"compact\"` each\nis one type step down, and on a touch screen a field is never under 16px.\n`{ base: \"md\", md: \"lg\" }` changes size at the `md` breakpoint (48rem), in CSS, as a `Button`'s\ndoes: give the field and the buttons in its row the same value, so the row stays aligned.",
+        "native": false
+      },
+      {
+        "name": "step",
+        "type": "number",
+        "required": false,
+        "default": "1",
+        "description": "How far one press of a button or an arrow key moves the number; a typed number snaps to it.",
+        "native": false
+      },
+      {
+        "name": "value",
+        "type": "number",
+        "required": false,
+        "description": "The number shown, controlled, with `onChange`. `NaN` is an empty field.",
+        "native": false
+      },
+      {
+        "name": "width",
+        "type": "\"sm\" | \"md\" | \"lg\" | \"xs\" | \"auto\" | \"fill\" | \"full\"",
+        "required": false,
+        "description": "`full` (default) fills the parent; `fill` grows to fill the room left in a row beside other items (it can shrink to nothing, so buttons stay on the line); `xs`, `sm`, `md`, `lg` are fixed; `auto` adds no width class, so the control is as wide as the browser makes it.",
+        "native": false
+      }
+    ]
+  },
   "Offline": {
     "name": "Offline",
     "description": "The device has no connection. `onRetry` adds a \"Try again\" button, unless `actions` replaces it.",
@@ -4717,7 +5168,7 @@
       },
       {
         "name": "width",
-        "type": "\"narrow\" | \"full\" | \"wide\"",
+        "type": "\"full\" | \"narrow\" | \"wide\"",
         "required": false,
         "default": "narrow",
         "description": "The column's width: `narrow` max-w-3xl, `wide` max-w-5xl, `full` the Container's width.",
@@ -4783,7 +5234,7 @@
   },
   "RadioGroup": {
     "name": "RadioGroup",
-    "description": "A named group of radios, one chosen. The `label` names the group; `hint` is a muted line under\nthe options that says more (the group's description); an `error` replaces it with a red line\n(`role=\"alert\"`) and marks the group invalid. Give it `value` and `onChange`, or\n`defaultValue` and let it keep the choice. `name` posts the choice in a form.\nThe arrow keys move between the radios and choose, and the group is one tab stop. `size` sizes\nevery radio in the group, the same scale as a `Checkbox`. While `loading` the labels are drawn and\neach circle is a bone.",
+    "description": "A named group of radios, one chosen. The `label` names the group; `hint` is a muted line under\nthe options that says more (the group's description); an `error` adds a red line with an alert\nicon under it, announced politely, and marks the group invalid. `required` puts a red asterisk\nafter the label. Give it `value` and `onChange`, or\n`defaultValue` and let it keep the choice. `name` posts the choice in a form.\nThe arrow keys move between the radios and choose, and the group is one tab stop. `size` sizes\nevery radio in the group, the same scale as a `Checkbox`. `variant=\"card\"` draws each radio as an\noption card: a bordered box, its label the title and its hint the description, the chosen one\nwith an accent edge. While `loading` the labels are drawn and each circle is a bone.",
     "props": [
       {
         "name": "children",
@@ -4810,14 +5261,14 @@
         "name": "error",
         "type": "ReactNode",
         "required": false,
-        "description": "Shown under the options in red with `role=\"alert\"`; marks the group invalid. Like `Field`'s `error`.",
+        "description": "A red line under the hint, with an alert icon; marks the group invalid. Like `Field`'s `error`.",
         "native": false
       },
       {
         "name": "hint",
         "type": "ReactNode",
         "required": false,
-        "description": "A muted line under the options that says more; it describes the group. Replaced by `error`.",
+        "description": "A muted line under the options that says more; it describes the group, and stays while `error` shows.",
         "native": false
       },
       {
@@ -4867,7 +5318,7 @@
         "name": "required",
         "type": "boolean",
         "required": false,
-        "description": "Marks the choice required: the group is `aria-required`, and a form will not submit with no option chosen.",
+        "description": "Marks the choice required: a red asterisk after the label, the group is `aria-required`, and a form will not submit with no option chosen.",
         "native": false
       },
       {
@@ -4883,6 +5334,14 @@
         "type": "string",
         "required": false,
         "description": "The `value` of the chosen radio.",
+        "native": false
+      },
+      {
+        "name": "variant",
+        "type": "\"card\" | \"plain\"",
+        "required": false,
+        "default": "plain",
+        "description": "`plain` is a column of circles and their words. `card` makes each radio a bordered box the\nwidth of the group, its label a title and its `hint` the description: for a few options that\neach need a line of explaining (a plan, a delivery speed). The whole card is the click target.",
         "native": false
       }
     ]
@@ -5056,7 +5515,7 @@
       },
       {
         "name": "width",
-        "type": "\"compact\" | \"narrow\" | \"full\" | \"default\" | \"wide\"",
+        "type": "\"compact\" | \"full\" | \"default\" | \"narrow\" | \"wide\"",
         "required": false,
         "default": "default",
         "description": "Caps the column: `compact` max-w-md (one card or one picture's column), `narrow` max-w-3xl (a\nreading measure), `wide` max-w-5xl, `full` the parent's whole width, `default` sets nothing.",
@@ -5212,10 +5671,10 @@
       },
       {
         "name": "size",
-        "type": "\"sm\" | \"md\" | \"lg\"",
+        "type": "Size | ResponsiveSize",
         "required": false,
         "default": "md",
-        "description": "`sm` is compact, `text-sm` with less padding, for dense forms and table rows; `md` is `text-base`;\n`lg` is `text-lg` with more padding, for a hero form. Under an `AppShell density=\"compact\"` each\nis one type step down, and on a touch screen a field is never under 16px.",
+        "description": "`sm` is compact, `text-sm` with less padding, for dense forms and table rows; `md` is `text-base`;\n`lg` is `text-lg` with more padding, for a hero form. Under an `AppShell density=\"compact\"` each\nis one type step down, and on a touch screen a field is never under 16px.\n`{ base: \"md\", md: \"lg\" }` changes size at the `md` breakpoint (48rem), in CSS, as a `Button`'s\ndoes: give the field and the buttons in its row the same value, so the row stays aligned.",
         "native": false
       },
       {
@@ -5437,6 +5896,56 @@
         "required": false,
         "default": "Results",
         "description": "The name of the list of matches, for an app in another language.",
+        "native": false
+      }
+    ]
+  },
+  "Slider": {
+    "name": "Slider",
+    "description": "A range slider for one number between `min` and `max` (0 and 100 unless given), in steps of\n`step`: the browser's own `<input type=\"range\">` in the accent colour, with its value written\nbeside the track (`formatOptions` sets how) and read out the same way. Put it in a `Field`, which\nnames it and draws the hint and the error, as an `Input`. Arrow keys, Page Up, Page Down, Home and\nEnd move it. `size` sets its height and the value's type, to line up with an `Input` of that size;\n`width` is an `Input`'s. `onChange` is the input's own, on every move. The `ref` reaches the `<input>`.",
+    "props": [
+      {
+        "name": "defaultValue",
+        "type": "number",
+        "required": false,
+        "description": "The number it starts with, uncontrolled. Without one it starts halfway, as the browser's does.",
+        "native": false
+      },
+      {
+        "name": "formatOptions",
+        "type": "NumberFormatOptions",
+        "required": false,
+        "description": "How the value beside the track is written, in the locale of the app's `I18nProvider` or else\nthe browser's: `{ style: \"percent\" }` (for a value from 0 to 1), `{ style: \"currency\",\ncurrency: \"EUR\" }`, `{ style: \"unit\", unit: \"kilogram\" }`. Assistive tech reads it the same way.",
+        "native": false
+      },
+      {
+        "name": "ref",
+        "type": "Ref<HTMLInputElement>",
+        "required": false,
+        "description": "The `<input>` itself, for focus control.",
+        "native": false
+      },
+      {
+        "name": "size",
+        "type": "Size | ResponsiveSize",
+        "required": false,
+        "default": "md",
+        "description": "`sm` is compact, `text-sm` with less padding, for dense forms and table rows; `md` is `text-base`;\n`lg` is `text-lg` with more padding, for a hero form. Under an `AppShell density=\"compact\"` each\nis one type step down, and on a touch screen a field is never under 16px.\n`{ base: \"md\", md: \"lg\" }` changes size at the `md` breakpoint (48rem), in CSS, as a `Button`'s\ndoes: give the field and the buttons in its row the same value, so the row stays aligned.",
+        "native": false
+      },
+      {
+        "name": "value",
+        "type": "number",
+        "required": false,
+        "description": "The number it holds, controlled, with `onChange`.",
+        "native": false
+      },
+      {
+        "name": "width",
+        "type": "\"sm\" | \"md\" | \"lg\" | \"xs\" | \"auto\" | \"fill\" | \"full\"",
+        "required": false,
+        "default": "full",
+        "description": "`full` (default) fills the parent; `fill` grows to fill the room left in a row beside other items (it can shrink to nothing, so buttons stay on the line); `xs`, `sm`, `md`, `lg` are fixed; `auto` adds no width class, so the control is as wide as the browser makes it.",
         "native": false
       }
     ]
@@ -5674,7 +6183,7 @@
       },
       {
         "name": "width",
-        "type": "\"compact\" | \"narrow\" | \"full\" | \"default\" | \"wide\"",
+        "type": "\"compact\" | \"full\" | \"default\" | \"narrow\" | \"wide\"",
         "required": false,
         "default": "default",
         "description": "Caps the column: `compact` max-w-md (one card or one picture's column), `narrow` max-w-3xl (a\nreading measure), `wide` max-w-5xl, `full` the parent's whole width, `default` sets nothing.",
@@ -5930,7 +6439,7 @@
   },
   "Switch": {
     "name": "Switch",
-    "description": "An on/off switch for a setting that takes effect at once, usually by saving it to a server: a\nnative `<button role=\"switch\" aria-checked>`. The caller owns `checked` and flips it in\n`onChange`, or gives `defaultChecked` and the switch keeps its own state. A value sent with a\nform is a `Checkbox`, not a Switch. Give it a `label`\n(the whole label is the click target), or in a table cell leave the label out and name it with\n`aria-label`. `hint` is a muted line under the label; `error` replaces it with a red line\n(`role=\"alert\"`) and makes the switch `aria-invalid`. The note is the switch's\n`aria-describedby`. `size` is `sm`, `md` (the default) or `lg`. `busy` is for the save in\nflight: clicks and keys do nothing, and the switch keeps its colour and its focus.\n`disabledReason` blocks it, focusable, with the reason as its tooltip. `disabled` is the native\none, washed out. While `loading` the label is drawn and the track is a bone of its size.",
+    "description": "An on/off switch for a setting that takes effect at once, usually by saving it to a server: a\nnative `<button role=\"switch\" aria-checked>`. The caller owns `checked` and flips it in\n`onChange`, or gives `defaultChecked` and the switch keeps its own state. A value sent with a\nform is a `Checkbox`, not a Switch. Give it a `label`\n(the whole label is the click target), or in a table cell leave the label out and name it with\n`aria-label`. `hint` is a muted line under the label; `error` adds a red line under it, with an alert\nicon, and makes the switch `aria-invalid` and red-edged. The note is the switch's\n`aria-describedby`. `size` is `sm`, `md` (the default) or `lg`. `busy` is for the save in\nflight: clicks and keys do nothing, and the switch keeps its colour and its focus.\n`disabledReason` blocks it, focusable, with the reason as its tooltip. `disabled` is the native\none, washed out. While `loading` the label is drawn and the track is a bone of its size.",
     "props": [
       {
         "name": "busy",
@@ -5964,7 +6473,7 @@
         "name": "error",
         "type": "ReactNode",
         "required": false,
-        "description": "Replaces the hint with a red line (`role=\"alert\"`) and makes the switch `aria-invalid`.",
+        "description": "A red line under the hint, with an alert icon, announced politely; makes the switch `aria-invalid`.",
         "native": false
       },
       {
@@ -6619,10 +7128,10 @@
       },
       {
         "name": "size",
-        "type": "\"sm\" | \"md\" | \"lg\"",
+        "type": "Size | ResponsiveSize",
         "required": false,
         "default": "md",
-        "description": "`sm` is compact, `text-sm` with less padding, for dense forms and table rows; `md` is `text-base`;\n`lg` is `text-lg` with more padding, for a hero form. Under an `AppShell density=\"compact\"` each\nis one type step down, and on a touch screen a field is never under 16px.",
+        "description": "`sm` is compact, `text-sm` with less padding, for dense forms and table rows; `md` is `text-base`;\n`lg` is `text-lg` with more padding, for a hero form. Under an `AppShell density=\"compact\"` each\nis one type step down, and on a touch screen a field is never under 16px.\n`{ base: \"md\", md: \"lg\" }` changes size at the `md` breakpoint (48rem), in CSS, as a `Button`'s\ndoes: give the field and the buttons in its row the same value, so the row stays aligned.",
         "native": false
       },
       {
@@ -6833,6 +7342,12 @@
     "name": "toISODate",
     "description": "`\"1990-05-17\"` for `CalendarDate(1990, 5, 17)`; `\"\"` for no date, so it drops into a form field.",
     "signature": "toISODate(date: CalendarDate | null | undefined): string",
+    "props": []
+  },
+  "toISODateTime": {
+    "name": "toISODateTime",
+    "description": "`\"2026-11-29T14:30\"` for `CalendarDateTime(2026, 11, 29, 14, 30)`, seconds dropped; `\"\"` for none.",
+    "signature": "toISODateTime(value: CalendarDateTime | null | undefined): string",
     "props": []
   },
   "TrendChart": {

@@ -403,6 +403,25 @@ the same thing, and prints a `file:line` for each one a person decides.
 | `align="start"` on a `numeric` `TableCell` or `TableEditCell` | the figures line up at the end of the cell | codemod removes it when `numeric` is bare or `{true}`; when `numeric` is an expression it stays and is reported |
 | `Field htmlFor` with the control's matching `id` | nothing on screen: a `Field` makes its own id and gives it to the `Input`, `Select`, `Textarea` or `FileDrop` inside it, so the label still names the control. The control's DOM id becomes a generated one, so search the app for the old id (a stylesheet, a test selector, a link from another page) before you merge | codemod removes both when they name only each other in the file (no `aria-describedby`, `href="#…"`, `getElementById` or second use); `htmlFor={id}` with `id={id}` goes too when `id` is a `const id = useId()`, whose line is then reported as unused. An id from a prop or a `useId` that is not React's, a template string, a raw `<input>` or anything else stays and is reported. The 0.11 pass runs this rule as well, so an app still going 0.10 to 0.11 gets it in one run |
 
+## 0.12 to 0.13: date fields follow the locale
+
+`DateField`, `DateRangePicker` and the calendar were always en-GB (DD/MM/YYYY, English month names).
+They now follow the browser's locale: an en-US reader sees 11/29/2026, an en-ZA reader 2026/11/29.
+What a form posts does not change: `name`, `startName` and `endName` still post `YYYY-MM-DD`, and the
+values are still `CalendarDate`s. TypeScript flags nothing.
+
+- To keep the old look everywhere, wrap the app in `I18nProvider locale="en-GB"` from
+  `react-aria-components`, or give one field `locale="en-GB"`.
+- A `hint` that spells the order ("DD/MM/YYYY") is now wrong for some readers: drop it, or set
+  `locale` to the order it names.
+- A test that types digits into a field types them in the order the browser's locale puts them.
+  jsdom and Playwright default to en-US; set the locale the test means.
+- The out-of-range message now writes its bound in the field's own order ("The date must be on or
+  after 15/10/2026."), where it used the browser's.
+
+New, nothing to change: `DateTimeField` (a `CalendarDateTime`, posted as `YYYY-MM-DDTHH:mm`),
+`toISODateTime`, `fromISODateTime` and the `CalendarDateTime` type.
+
 ## 0.9 → 0.10: Avatar `2xl` is 64px, the old 96px is `3xl`
 
 `Avatar` gained a 64px size. The sizes keep their order (`xs`, `sm`, `md`, `lg`, `xl`, `2xl`, `3xl`),

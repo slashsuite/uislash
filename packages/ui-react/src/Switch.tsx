@@ -1,21 +1,24 @@
 import { type ComponentPropsWithoutRef, type ReactElement, type ReactNode, useState } from "react";
+import { INVALID_EDGE } from "./control.js";
 import { cx, focusRing } from "./cx.js";
-import { useNote, Words } from "./labelWords.js";
+import { controlText, useTypeStep } from "./density.js";
+import { type NoteIds, useNote, Words } from "./labelWords.js";
 import type { Unstyled } from "./props.js";
 import type { Size } from "./size.js";
 import { useBlocked } from "./blocked.js";
+import { MIN_TARGET } from "./target.js";
 import { WaitingChoice } from "./fieldWait.js";
 import { type LoadingProps, useLoading } from "./skeleton.js";
 
 /**
- * The label's gap and text, the track, its thumb and the thumb's slide, by `size`. The track is a
+ * The label's gap, the track, its thumb and the thumb's slide, by `size`. The track is a
  * 2px border plus 2px of padding, so the thumb is the track's height less 8px and slides the
  * track's width less 8px less its own width.
  */
-const SIZE: Record<Size, { label: string; track: string; thumb: string; slide: string }> = {
-  sm: { label: "gap-2 text-xs", track: "h-5 w-9", thumb: "h-3 w-3", slide: "translate-x-4" },
-  md: { label: "gap-2.5 text-sm", track: "h-6 w-11", thumb: "h-4 w-4", slide: "translate-x-5" },
-  lg: { label: "gap-3 text-base", track: "h-7 w-13", thumb: "h-5 w-5", slide: "translate-x-6" },
+const SIZE: Record<Size, { gap: string; track: string; thumb: string; slide: string }> = {
+  sm: { gap: "gap-2", track: "h-5 w-9", thumb: "h-3 w-3", slide: "translate-x-4" },
+  md: { gap: "gap-2.5", track: "h-6 w-11", thumb: "h-4 w-4", slide: "translate-x-5" },
+  lg: { gap: "gap-3", track: "h-7 w-13", thumb: "h-5 w-5", slide: "translate-x-6" },
 };
 
 // Off is an outline of the text colour with a thumb of the same colour; on is the accent filled,
@@ -44,7 +47,7 @@ type SwitchProps = Naming & {
   onChange?: ((checked: boolean) => void) | undefined;
   /** A muted line under the label that says more. It is the switch's `aria-describedby`. */
   hint?: ReactNode;
-  /** Replaces the hint with a red line (`role="alert"`) and makes the switch `aria-invalid`. */
+  /** A red line under the hint, with an alert icon, announced politely; makes the switch `aria-invalid`. */
   error?: ReactNode;
   /**
    * The label's text size and the switch with it.
@@ -115,7 +118,9 @@ function Track({
       disabled={disabled}
       className={cx(
         "inline-flex shrink-0 items-center rounded-full border-2 p-0.5",
+        INVALID_EDGE,
         track,
+        size === "sm" && MIN_TARGET,
         checked ? ON : OFF,
         className,
         focusRing,
@@ -160,7 +165,7 @@ function Labelled({
   label,
   hint,
   error,
-  noteId,
+  noteIds,
   size,
   wash,
   children,
@@ -168,24 +173,25 @@ function Labelled({
   label: ReactNode;
   hint: ReactNode;
   error: ReactNode;
-  noteId: string | undefined;
+  noteIds: NoteIds | undefined;
   size: Size;
   wash: string;
   children: ReactNode;
 }): ReactElement {
-  const start = noteId !== undefined;
+  const start = noteIds !== undefined;
   return (
     <label
       className={cx(
         "inline-flex text-slate-700",
         start ? "items-start" : "items-center",
-        SIZE[size].label,
+        SIZE[size].gap,
+        controlText(size, useTypeStep(), false),
         wash,
       )}
     >
       {children}
       <span className={cx(start && "mt-0.5")}>
-        <Words label={label} hint={hint} error={error} id={noteId} />
+        <Words label={label} hint={hint} error={error} ids={noteIds} />
       </span>
     </label>
   );
@@ -197,8 +203,8 @@ function Labelled({
  * `onChange`, or gives `defaultChecked` and the switch keeps its own state. A value sent with a
  * form is a `Checkbox`, not a Switch. Give it a `label`
  * (the whole label is the click target), or in a table cell leave the label out and name it with
- * `aria-label`. `hint` is a muted line under the label; `error` replaces it with a red line
- * (`role="alert"`) and makes the switch `aria-invalid`. The note is the switch's
+ * `aria-label`. `hint` is a muted line under the label; `error` adds a red line under it, with an alert
+ * icon, and makes the switch `aria-invalid` and red-edged. The note is the switch's
  * `aria-describedby`. `size` is `sm`, `md` (the default) or `lg`. `busy` is for the save in
  * flight: clicks and keys do nothing, and the switch keeps its colour and its focus.
  * `disabledReason` blocks it, focusable, with the reason as its tooltip. `disabled` is the native
@@ -209,6 +215,7 @@ export function Switch({
   loadingLabel,
   ...props
 }: SwitchProps & LoadingProps): ReactElement {
+  const step = useTypeStep();
   if (useLoading(loading).loading) {
     const size = props.size ?? "md";
     return (
@@ -216,7 +223,7 @@ export function Switch({
         own={loading}
         loadingLabel={loadingLabel}
         label={props.label}
-        look={cx("items-center", SIZE[size].label)}
+        look={cx("items-center", SIZE[size].gap, controlText(size, step, false))}
         shape={cx(SIZE[size].track, "rounded-full")}
         attrs={props}
       />
@@ -239,7 +246,7 @@ function ShownSwitch({
   "aria-describedby": describedBy,
   ...rest
 }: SwitchProps): ReactElement {
-  const { noteId, describedIds, invalid } = useNote(hint, error, describedBy);
+  const { ids: noteIds, describedIds, invalid } = useNote(hint, error, describedBy);
   const [on, flip] = useChecked(checked, defaultChecked, onChange);
   const {
     props: guard,
@@ -259,7 +266,7 @@ function ShownSwitch({
       size={size}
       busy={busy}
       className={label === undefined ? wash : cursorOf(off, busy)}
-      {...(invalid ? { "aria-invalid": true } : {})}
+      aria-invalid={invalid}
       {...guard}
     />
   );
@@ -268,7 +275,7 @@ function ShownSwitch({
       {label === undefined ? (
         track
       ) : (
-        <Labelled label={label} hint={hint} error={error} noteId={noteId} size={size} wash={wash}>
+        <Labelled label={label} hint={hint} error={error} noteIds={noteIds} size={size} wash={wash}>
           {track}
         </Labelled>
       )}

@@ -193,7 +193,7 @@ function idleClass(
   { step, pressed }: { step: TypeStep | undefined; pressed?: boolean | undefined },
 ): string {
   const look = lookOf(variant, tone, pressed);
-  return cx(shape(variant, size, step), DISABLED_PLAIN, look.color, look.hover);
+  return cx(shape(variant, size, step), "cursor-pointer", DISABLED_PLAIN, look.color, look.hover);
 }
 
 type ButtonAsButton = ButtonLook & {

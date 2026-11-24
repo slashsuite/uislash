@@ -73,13 +73,13 @@ export const Filled: S = {
 
 /** The day is typed and the month segment is active. */
 export const FocusedWhileTyping: S = {
-  render: () => <DateField calendar label="Date of birth" />,
+  render: () => <DateField calendar locale="en-GB" label="Date of birth" />,
   play: ({ canvasElement }) => typeDigits(canvasElement, "17"),
 };
 
 /** 31/02/1990 does not exist: after focus leaves it stays as typed, with the error. */
 export const Invalid: S = {
-  render: () => <DateField calendar label="Date of birth" />,
+  render: () => <DateField calendar locale="en-GB" label="Date of birth" />,
   play: async ({ canvasElement }) => {
     await typeDigits(canvasElement, "31021990");
     await new Promise<void>((resolve) => queueMicrotask(resolve));
@@ -103,7 +103,7 @@ export const ExternalError: S = {
 export const RequiredPartial: S = {
   render: () => (
     <form>
-      <DateField calendar required label="Date of birth" />
+      <DateField calendar required locale="en-GB" label="Date of birth" />
     </form>
   ),
   play: async ({ canvasElement }) => {
@@ -119,6 +119,7 @@ export const OutOfRange: S = {
   render: () => (
     <DateField
       calendar
+      locale="en-GB"
       label="Start date"
       minValue={fromISODate("2026-01-01") ?? undefined}
       maxValue={fromISODate("2026-12-31") ?? undefined}
@@ -144,9 +145,20 @@ export const Open: S = {
   ),
 };
 
+/** `locale` sets the order and the month names: en-ZA writes 2026/11/29. With no `locale` the field follows the browser's. */
+export const Locale: S = {
+  render: () => (
+    <>
+      <DateField label="Browser's locale" defaultValue={fromISODate("2026-11-29")} />
+      <DateField label="en-GB" locale="en-GB" defaultValue={fromISODate("2026-11-29")} />
+      <DateField label="en-ZA" locale="en-ZA" defaultValue={fromISODate("2026-11-29")} />
+    </>
+  ),
+};
+
 /** The field alone, with no calendar. */
 export const FieldOnly: S = {
-  render: () => <DateField label="Date of birth" hint="DD/MM/YYYY" />,
+  render: () => <DateField label="Date of birth" hint="As on your ID document." />,
 };
 
 /** Open when the story loads; the button opens it again. */
@@ -188,7 +200,6 @@ export const InDrawer: S = {
   ),
 };
 
-/** A date is a `DateField` with `calendar`: DD/MM/YYYY segments the person can type, and a calendar button for the rest. */
 /** A date field in a Card, its calendar open: the popover paints over the card below it, not under it. */
 export const CalendarInCard: S = {
   render: () => (

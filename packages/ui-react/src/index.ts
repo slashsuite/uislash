@@ -147,6 +147,9 @@ export { MetaList, type MetaListSeparator } from "./MetaList.js";
 export { Kbd } from "./Kbd.js";
 export { KeyValue, KeyValueList } from "./KeyValueList.js";
 export { Select } from "./Select.js";
+export { Combobox } from "./Combobox.js";
+export { NumberField } from "./NumberField.js";
+export { Slider } from "./Slider.js";
 export { Textarea } from "./Textarea.js";
 export { Video } from "./Video.js";
 export { Image, type ImageAspect, type ImageWidth } from "./Image.js";
@@ -171,5 +174,6 @@ export {
 } from "./typography.js";
 export { DateField } from "./DateField.js";
 export { DateRangePicker, type DateRange, type DateRangePreset } from "./DateRangePicker.js";
-export { fromISODate, toISODate } from "./isoDate.js";
-export type { CalendarDate } from "@internationalized/date";
+export { DateTimeField } from "./DateTimeField.js";
+export { fromISODate, fromISODateTime, toISODate, toISODateTime } from "./isoDate.js";
+export type { CalendarDate, CalendarDateTime } from "@internationalized/date";

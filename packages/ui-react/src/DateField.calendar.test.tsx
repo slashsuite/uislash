@@ -1,19 +1,16 @@
 // @vitest-environment jsdom
 import { CalendarDate } from "@internationalized/date";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { ReactElement, ReactNode } from "react";
+import { describe, expect, it, vi } from "vitest";
+import { I18nProvider } from "react-aria-components";
 import { DateField } from "./DateField.js";
-import { render, screen, user, within } from "./render.harness.js";
+import { announced, drawn, render as renderPage, screen, user, within } from "./render.harness.js";
 
-beforeEach(() => {
-  // A US browser: the field must still read DD/MM/YYYY.
-  vi.spyOn(navigator, "language", "get").mockReturnValue("en-US");
-  vi.spyOn(navigator, "languages", "get").mockReturnValue(["en-US"]);
-  document.documentElement.lang = "en-US";
-});
-afterEach(() => {
-  vi.restoreAllMocks();
-  document.documentElement.lang = "";
-});
+/** A British app: its own `I18nProvider` puts every date field in DD/MM/YYYY. */
+function British({ children }: { children: ReactNode }) {
+  return <I18nProvider locale="en-GB">{children}</I18nProvider>;
+}
+const render = (ui: ReactElement) => renderPage(ui, { wrapper: British });
 
 const segments = () => screen.getAllByRole("spinbutton");
 const shown = () => segments().map((s) => s.textContent);
@@ -69,7 +66,7 @@ describe("DateField", () => {
     await typeDate("31021990");
     await leave();
     expect(shown()).toEqual(["31", "02", "1990"]);
-    expect(screen.getByText("February 1990 has 28 days.")).not.toBeNull();
+    expect(drawn("February 1990 has 28 days.")).not.toBeNull();
     expect(segments()[0]?.getAttribute("aria-invalid")).toBe("true");
     expect(onChange).not.toHaveBeenCalled();
     expect(posted()).toBe("");
@@ -93,26 +90,33 @@ describe("DateField", () => {
     expect(screen.getByRole("group", { name: "Date", description: /\S/ })).not.toBeNull();
   });
 
-  it("shows an error from outside in place of the hint, as an alert, and marks the field invalid", () => {
+  it("shows an error from outside under the hint, announced politely, and marks the field invalid", () => {
     render(<DateField aria-label="Date" hint="A hint." error="Date is in the past." />);
-    expect(screen.getByRole("alert").textContent).toBe("Date is in the past.");
+    expect(screen.queryByRole("alert")).toBeNull();
+    expect(announced()).toEqual(["Date is in the past."]);
     expect(
-      screen.getByRole("group", { name: "Date", description: "Date is in the past." }),
+      screen.getByRole("group", { name: "Date", description: "A hint. Date is in the past." }),
     ).not.toBeNull();
     expect(segments()[0]?.getAttribute("aria-invalid")).toBe("true");
-    expect(screen.queryByText("A hint.")).toBeNull();
+  });
+
+  it("marks a required field's label with an asterisk hidden from assistive tech", () => {
+    render(<DateField label="Start" required />);
+    const mark = screen.getByText("*", { exact: false, selector: "[aria-hidden]" });
+    expect(mark.getAttribute("aria-hidden")).toBe("true");
+    expect(screen.getByRole("group", { name: "Start" })).not.toBeNull();
   });
 
   it("marks a calendar DateField invalid from outside with error", () => {
     render(<DateField calendar aria-label="Date" error="Pick another day." />);
-    expect(screen.getByText("Pick another day.")).not.toBeNull();
+    expect(drawn("Pick another day.")).not.toBeNull();
     expect(segments()[0]?.getAttribute("aria-invalid")).toBe("true");
   });
 
   it("shows a calendar DateField's error from outside too", () => {
     render(<DateField calendar aria-label="Date" hint="Hint" error="Taken." />);
-    expect(screen.getByRole("alert").textContent).toBe("Taken.");
-    expect(screen.queryByText("Hint")).toBeNull();
+    expect(announced()).toEqual(["Taken."]);
+    expect(screen.getByText("Hint")).not.toBeNull();
   });
 
   it("posts the value as YYYY-MM-DD under name", () => {
@@ -126,7 +130,7 @@ describe("DateField", () => {
 });
 
 describe("DateField calendar", () => {
-  it("reads typed digits as day, month, year under a US locale", async () => {
+  it("reads typed digits as day, month, year", async () => {
     const onChange = vi.fn<(date: CalendarDate | null) => void>();
     render(<DateField calendar aria-label="Date" onChange={onChange} />);
     await typeDate("17051990");
@@ -167,7 +171,7 @@ describe("DateField calendar", () => {
   it("flags an impossible date", async () => {
     render(<DateField calendar aria-label="Date" />);
     await typeDate("31021990");
-    expect(screen.getByText("February 1990 has 28 days.")).not.toBeNull();
+    expect(drawn("February 1990 has 28 days.")).not.toBeNull();
   });
 
   it("keeps an impossible date as typed when focus leaves", async () => {
@@ -180,7 +184,7 @@ describe("DateField calendar", () => {
     await typeDate("31021990");
     await leave();
     expect(shown()).toEqual(["31", "02", "1990"]);
-    expect(screen.getByText("February 1990 has 28 days.")).not.toBeNull();
+    expect(drawn("February 1990 has 28 days.")).not.toBeNull();
     expect(onChange).not.toHaveBeenCalled();
     expect(posted()).toBe("");
   });

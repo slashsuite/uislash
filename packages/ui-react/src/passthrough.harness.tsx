@@ -1,6 +1,6 @@
-import { CalendarDate } from "@internationalized/date";
 import type { ReactElement } from "react";
 import * as ui from "./index.js";
+import { fieldCases } from "./passthroughFields.harness.js";
 import { layoutCases } from "./passthroughLayouts.harness.js";
 
 /** The two attributes every case passes, and every test looks for. */
@@ -15,6 +15,7 @@ const ITEMS = [<li key="x">x</li>];
 /** One render of each exported component, with both attributes. */
 export const CASES: Record<string, () => ReactElement> = {
   ...layoutCases(A),
+  ...fieldCases(A),
   AppShell: () => <ui.AppShell {...A}>x</ui.AppShell>,
   AppShellBrand: () => <ui.AppShellBrand label="Brand" href="/" {...A} />,
   Avatar: () => <ui.Avatar name="Ada Lovelace" {...A} />,
@@ -58,7 +59,6 @@ export const CASES: Record<string, () => ReactElement> = {
   Container: () => <ui.Container {...A}>x</ui.Container>,
   CopyButton: () => <ui.CopyButton text="x" {...A} />,
   CopyLine: () => <ui.CopyLine text="x" {...A} />,
-  DateField: () => <ui.DateField label="Day" defaultValue={new CalendarDate(2026, 1, 2)} {...A} />,
   DateRangePicker: () => <ui.DateRangePicker label="Period" {...A} />,
   DetailLayout: () => (
     <ui.DetailLayout title="T" aside="a" {...A}>

@@ -3,6 +3,7 @@ import {
   Card,
   Checkbox,
   Cluster,
+  Fieldset,
   Table,
   TableBody,
   TableCell,
@@ -21,6 +22,10 @@ export const Unchecked: S = {
 };
 export const Checked: S = {
   render: () => <Checkbox label="Open now" defaultChecked />,
+};
+/** Some of a group ticked: a dash in the filled box, read out as "mixed". */
+export const Indeterminate: S = {
+  render: () => <Checkbox label="All stores" indeterminate />,
 };
 export const Small: S = {
   render: () => <Checkbox label="Paid" size="sm" defaultChecked />,
@@ -59,6 +64,31 @@ export const WithDescription: S = {
       />
       <Checkbox size="sm" label="Price drops" hint="Only for items on your watchlist." />
       <Checkbox label="Weekly summary" hint="Paused while you are away." disabled />
+    </div>
+  ),
+};
+
+/** `variant="card"` draws each box as an option card: the label a title, the hint its description, a ticked one with an accent edge. */
+export const Cards: S = {
+  render: () => (
+    <div className="w-96">
+      <Fieldset label="Notifications">
+        <Checkbox
+          variant="card"
+          label="Weekly summary"
+          hint="One email on Mondays with the best finds."
+          defaultChecked
+        />
+        <Checkbox variant="card" label="Price drops" hint="Only for items on your watchlist." />
+        <Checkbox variant="card" label="Shop news" hint="Paused while you are away." disabled />
+        <Checkbox
+          variant="card"
+          size="sm"
+          label="Terms"
+          hint="Read them before you list."
+          error="Accept the terms to continue."
+        />
+      </Fieldset>
     </div>
   ),
 };

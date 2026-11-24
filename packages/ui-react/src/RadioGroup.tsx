@@ -7,35 +7,54 @@ import {
   Text,
 } from "react-aria-components";
 import { cx } from "./cx.js";
+import { controlText, useFieldType, useTypeStep } from "./density.js";
+import { ErrorLine, Hint, RequiredMark } from "./Field.js";
+import { TOUCH_TARGET } from "./target.js";
 import { definedProps, type Passthrough } from "./props.js";
 import type { Size } from "./size.js";
 import { WaitingChoice } from "./fieldWait.js";
+import {
+  type ChoiceVariant,
+  OPTION_CARD,
+  OPTION_CARD_CHOSEN,
+  OPTION_CARD_HOVER,
+  OPTION_CARD_TITLE,
+} from "./optionCard.js";
 import { BusyLabel, busy, type LoadingProps, LoadingScope, useLoading } from "./skeleton.js";
 
-/** A radio's circle, its dot, its drop onto the label's first line and the label's text, by the group's `size`. */
-const SIZE: Record<Size, { circle: string; dot: string; label: string; gap: string }> = {
-  sm: { circle: "mt-px h-3.5 w-3.5", dot: "h-1.5 w-1.5", label: "text-xs", gap: "gap-2" },
-  md: { circle: "mt-0.5 h-4 w-4", dot: "h-2 w-2", label: "text-sm", gap: "gap-2.5" },
-  lg: { circle: "mt-0.5 h-5 w-5", dot: "h-2.5 w-2.5", label: "text-base", gap: "gap-3" },
+/**
+ * A radio's circle, its dot and its drop onto the label's first line, by the group's `size`. The
+ * label's type is a control's of that size (`controlText`), whose line height the drop is set for.
+ */
+const SIZE: Record<Size, { circle: string; dot: string; gap: string }> = {
+  sm: { circle: "mt-px h-3.5 w-3.5", dot: "h-1.5 w-1.5", gap: "gap-2" },
+  md: { circle: "mt-0.5 h-4 w-4", dot: "h-2 w-2", gap: "gap-2.5" },
+  lg: { circle: "mt-0.5 h-5 w-5", dot: "h-2.5 w-2.5", gap: "gap-3" },
 };
 
-/** The group's `size`, read by each `Radio` in it. */
-const RadioSize = createContext<Size>("md");
+/** The group's `size` and `variant`, read by each `Radio` in it. */
+const RadioLook = createContext<{ size: Size; variant: ChoiceVariant }>({
+  size: "md",
+  variant: "plain",
+});
 
 /**
  * A named group of radios, one chosen. The `label` names the group; `hint` is a muted line under
- * the options that says more (the group's description); an `error` replaces it with a red line
- * (`role="alert"`) and marks the group invalid. Give it `value` and `onChange`, or
+ * the options that says more (the group's description); an `error` adds a red line with an alert
+ * icon under it, announced politely, and marks the group invalid. `required` puts a red asterisk
+ * after the label. Give it `value` and `onChange`, or
  * `defaultValue` and let it keep the choice. `name` posts the choice in a form.
  * The arrow keys move between the radios and choose, and the group is one tab stop. `size` sizes
- * every radio in the group, the same scale as a `Checkbox`. While `loading` the labels are drawn and
- * each circle is a bone.
+ * every radio in the group, the same scale as a `Checkbox`. `variant="card"` draws each radio as an
+ * option card: a bordered box, its label the title and its hint the description, the chosen one
+ * with an accent edge. While `loading` the labels are drawn and each circle is a bone.
  */
 export function RadioGroup({
   label,
   hint,
   error,
   size = "md",
+  variant = "plain",
   disabled,
   required,
   loading,
@@ -45,9 +64,9 @@ export function RadioGroup({
 }: {
   /** The group's visible name, above the options. */
   label: ReactNode;
-  /** A muted line under the options that says more; it describes the group. Replaced by `error`. */
+  /** A muted line under the options that says more; it describes the group, and stays while `error` shows. */
   hint?: ReactNode;
-  /** Shown under the options in red with `role="alert"`; marks the group invalid. Like `Field`'s `error`. */
+  /** A red line under the hint, with an alert icon; marks the group invalid. Like `Field`'s `error`. */
   error?: ReactNode;
   /** The `value` of the chosen radio. */
   value?: string;
@@ -59,7 +78,7 @@ export function RadioGroup({
   name?: string;
   /** Disables every radio. */
   disabled?: boolean | undefined;
-  /** Marks the choice required: the group is `aria-required`, and a form will not submit with no option chosen. */
+  /** Marks the choice required: a red asterisk after the label, the group is `aria-required`, and a form will not submit with no option chosen. */
   required?: boolean | undefined;
   /**
    * The size of every radio in the group: `sm` is `text-xs` and a smaller circle, `lg` `text-base`
@@ -67,11 +86,19 @@ export function RadioGroup({
    * @default md
    */
   size?: Size;
+  /**
+   * `plain` is a column of circles and their words. `card` makes each radio a bordered box the
+   * width of the group, its label a title and its `hint` the description: for a few options that
+   * each need a line of explaining (a plan, a delivery speed). The whole card is the click target.
+   * @default plain
+   */
+  variant?: ChoiceVariant;
   /** The `Radio`s. */
   children: ReactNode;
 } & LoadingProps &
   Passthrough): ReactElement {
   const { loading: waiting, owner } = useLoading(loading);
+  const type = useFieldType();
   return (
     <AriaRadioGroup
       {...definedProps(rest)}
@@ -80,29 +107,38 @@ export function RadioGroup({
       {...(required ? { isRequired: true } : {})}
       className="flex flex-col gap-2"
     >
-      <Label className="text-sm font-medium text-slate-700">{label}</Label>
+      <Label className={cx(type.label, "font-medium text-slate-700")}>
+        {label}
+        <RequiredMark required={required} />
+      </Label>
       {/* react-aria's group drops `aria-busy` from its root's props, so the options carry the wait. */}
       <div {...busy(owner, waiting)} className="flex flex-col gap-2.5">
-        <RadioSize.Provider value={size}>
+        <RadioLook.Provider value={{ size, variant }}>
           <LoadingScope loading={waiting}>{children}</LoadingScope>
-        </RadioSize.Provider>
+        </RadioLook.Provider>
         <BusyLabel owner={owner} loading={waiting} label={loadingLabel} />
       </div>
-      {hint && !error ? (
-        <Text slot="description" className="text-xs text-slate-500">
+      {hint ? (
+        <Text slot="description" className={cx("text-slate-500", type.note)}>
           {hint}
         </Text>
       ) : null}
-      <FieldError className="text-xs text-red-700">
-        <span role="alert">{error}</span>
+      <FieldError>
+        <ErrorLine error={error} />
       </FieldError>
     </AriaRadioGroup>
   );
 }
 
 function ringTone(invalid: boolean, selected: boolean): string {
-  if (invalid) return "border-red-600";
-  return selected ? "border-violet-600" : "border-slate-300";
+  if (invalid) return "border-red-200";
+  return cx(selected ? "border-violet-600" : "border-slate-300", "hover:border-violet-400");
+}
+
+/** A card radio's box: red-edged when the group is invalid, with the hover edge while enabled. */
+function cardTone(invalid: boolean, off: boolean): string {
+  if (invalid) return cx(OPTION_CARD, "border-red-200");
+  return cx(OPTION_CARD, !off && OPTION_CARD_HOVER);
 }
 
 /** The props of a `Radio`. */
@@ -123,14 +159,16 @@ export function Radio({
   loadingLabel,
   ...props
 }: RadioProps & LoadingProps): ReactElement {
-  const size = SIZE[useContext(RadioSize)];
+  const { size: step, variant } = useContext(RadioLook);
+  const size = SIZE[step];
+  const text = controlText(step, useTypeStep(), false);
   if (useLoading(loading).loading) {
     return (
       <WaitingChoice
         own={loading}
         loadingLabel={loadingLabel}
         label={props.label}
-        look={cx(size.gap, size.label)}
+        look={cx(size.gap, text, variant === "card" && OPTION_CARD)}
         shape={cx(size.circle, "rounded-full")}
         attrs={props}
       />
@@ -149,7 +187,10 @@ function ShownRadio({
   ...rest
 }: RadioProps): ReactElement {
   const descriptionId = useId();
-  const size = SIZE[useContext(RadioSize)];
+  const { size: step, variant } = useContext(RadioLook);
+  const card = variant === "card";
+  const size = SIZE[step];
+  const text = controlText(step, useTypeStep(), false);
   return (
     <AriaRadio
       {...definedProps(rest)}
@@ -162,20 +203,24 @@ function ShownRadio({
           }
         : {})}
       {...(disabled ? { isDisabled: true } : {})}
-      className={({ isDisabled: off }) =>
+      className={({ isDisabled: off, isInvalid }) =>
         cx(
-          "flex cursor-pointer items-start rounded-md has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-violet-600",
+          "flex cursor-pointer items-start has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-violet-600",
+          TOUCH_TARGET,
+          !card && "rounded-md",
           size.gap,
-          off && "cursor-default opacity-50",
+          off && "cursor-not-allowed opacity-50",
+          card && cardTone(isInvalid, off),
         )
       }
     >
       {({ isSelected, isInvalid }) => (
         <>
+          {card && isSelected ? <span aria-hidden="true" className={OPTION_CARD_CHOSEN} /> : null}
           <span
             aria-hidden="true"
             className={cx(
-              "flex shrink-0 items-center justify-center rounded-full border bg-white transition hover:border-violet-400",
+              "flex shrink-0 items-center justify-center rounded-full border bg-white transition",
               size.circle,
               ringTone(isInvalid, isSelected),
             )}
@@ -183,12 +228,8 @@ function ShownRadio({
             {isSelected ? <span className={cx("rounded-full bg-violet-600", size.dot)} /> : null}
           </span>
           <span className="flex flex-col gap-0.5">
-            <span className={cx("text-slate-700", size.label)}>{label}</span>
-            {hint ? (
-              <span id={descriptionId} className="text-xs text-slate-500">
-                {hint}
-              </span>
-            ) : null}
+            <span className={cx("text-slate-700", text, card && OPTION_CARD_TITLE)}>{label}</span>
+            {hint ? <Hint id={descriptionId}>{hint}</Hint> : null}
           </span>
         </>
       )}

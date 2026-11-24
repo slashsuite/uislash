@@ -1,5 +1,6 @@
 import { groupPages } from "./groups";
 import { datePages } from "./dates";
+import { numberPages } from "./numbers";
 import type { ComponentSection } from "./types";
 
 export const forms: ComponentSection = {
@@ -19,17 +20,18 @@ export const forms: ComponentSection = {
           "Wrap every `Input`, `Textarea` and `Select` in a `Field`, with no `htmlFor` and no `id` on the control: the `Field` links its label, hint and error to the control itself, and the `label` is always in the accessibility tree. Pass `htmlFor` only when something else must name the control by a fixed id.",
           '`labelHidden` draws no label text but keeps it for assistive tech: use it only when the control\'s purpose is plain from what surrounds it (a search box in a toolbar). Otherwise leave the label visible; a placeholder is not a label. With `layout="row"` it draws as a column.',
           "A `hint` is the one line of help under the control.",
-          "A validation message is `error`, not `hint`: it replaces the hint, in red.",
+          "`required` puts a red asterisk after the label (hidden from a screen reader, which hears the control's own required state) and marks the control required.",
+          "A validation message is `error`, not `hint`: a red line with an alert icon under the hint, which stays in view while the value is fixed.",
           'Inside a `FormGrid` a `Field` takes one column; `span="full"` runs it across both.',
-          "A `Checkbox`, a `Switch`, a `RadioGroup` and a `DateField` draw their own `label` and note (a `hint`, or an `error` in its place); do not wrap them in a `Field`. A group of them is a `Fieldset`.",
+          "A `Checkbox`, a `Switch`, a `RadioGroup`, a `DateField` and a `NumberField` draw their own `label` and note (a `hint`, and an `error` under it); do not wrap them in a `Field`. A group of them is a `Fieldset`.",
           '`layout="row"` puts the label beside the control, for a compact setting or a drawer row: the hint or error sits under the control, and stacked rows line their controls up.',
         ],
       },
       accessibility: [
         "The label is a real `<label>` tied to the control, so clicking the text focuses the control and a screen reader reads it as the control's name.",
-        'An `error` is a `<p role="alert">`, so it is announced when it appears. The hint is plain text.',
-        "The control is described by the hint, or by the error when there is one, through `aria-describedby`, so a screen reader on the control hears it after the alert has gone by.",
-        "An `error` marks the control `aria-invalid` and turns its edge red.",
+        "An `error` is not an alert: its text is announced once, politely, through the page's one live region for field errors (the open dialog's, inside a dialog), so several errors at once queue rather than interrupt each other.",
+        "The control is described by the hint and then the error through `aria-describedby`, so a screen reader on the control hears both.",
+        'The control is `aria-invalid="false"` until an error shows; an `error` marks it `aria-invalid` and turns its edge red. A value the browser finds invalid (`required`, `type="email"`) turns the edge red too, once the user has changed it or tried to submit.',
       ],
       api: ["Field"],
     },
@@ -47,6 +49,7 @@ export const forms: ComponentSection = {
           '`prefix` is short text inside the border before the value, such as a currency symbol. It is for a plain field, not one with an `icon` or `type="search"`.',
           'A figure is `numeric`: an amount is `<Input prefix="R" numeric />` in a `Field`, and a count or a whole number is `<Input numeric inputMode="numeric" />`. It right-aligns the digits in tabular figures and brings up the number keypad. A unit other than a currency goes in the `label` ("UIF rate (%)").',
           '`size="sm"` is for a dense form or a table row, `size="lg"` for a sign-in or search form that stands alone; `md` is the default.',
+          'A field beside a `Button` that changes size with the screen takes the same responsive size, `size={{ base: "lg", md: "md" }}`, so the two stay one height at both widths.',
           "`width` is `full` by default; `xs`, `sm`, `md` and `lg` are fixed widths for a short value; `fill` grows to the room beside other items in a row; `auto` is as wide as the browser makes it.",
           "A paragraph is a `Textarea`; a choice from a list is a `Select`; a date is a `DateField`.",
         ],
@@ -56,7 +59,7 @@ export const forms: ComponentSection = {
       },
       accessibility: [
         "An `Input` is a native `<input>`: it takes `type`, `inputMode`, `autoComplete`, `required`, `disabled` and the `aria-*` and `data-*` props.",
-        'A `type="search"` field shows a clear button while it has a value, named "Clear search" or by `clearLabel`; it is hidden when the field is disabled or read-only.',
+        'A `type="search"` field shows a clear button while it has a value, named "Clear search" or by `clearLabel`; it is hidden when the field is disabled or read-only. Escape clears it too, and in a `Dialog` only the second Escape, in the empty field, closes the dialog.',
         "The `icon` is decorative and hidden from assistive tech.",
         'A `numeric` field is a text field with a number keypad (`inputMode="decimal"` unless you pass your own), so it is read and kept exactly as typed.',
         "In a `Field`, the `Field` around it gives it its label and its hint or error as `aria-describedby`, and an error marks it `aria-invalid` with a red edge.",
@@ -108,6 +111,7 @@ export const forms: ComponentSection = {
       ],
       api: ["Select"],
     },
+    ...numberPages,
     {
       slug: "checkbox",
       name: "Checkbox",
@@ -118,10 +122,11 @@ export const forms: ComponentSection = {
         do: [
           "Give a `Checkbox` a `label`; the whole label is the click target.",
           'In a table cell leave the `label` out, use `size="sm"` and name the box with `aria-label`. `size="lg"` matches a large `Input`.',
-          "A `hint` is a muted line under the label for an option that needs a sentence, and an `error` replaces it in red. The box always sits on the label's first line.",
+          "A `hint` is a muted line under the label for an option that needs a sentence, and an `error` goes under it in red. The box always sits on the label's first line.",
           "A setting that takes effect the moment it is flipped, usually by saving it, is a `Switch`. A `Checkbox` is ticked and then submitted with the form.",
           "Choosing one of several is a `RadioGroup`, a `Select` or a `SegmentedControl`, not a row of checkboxes.",
           "Several checkboxes for one question go in a `Fieldset`.",
+          '`variant="card"` is an option card, the label its title and the `hint` its description, for a few options that each need a sentence; give every box in the `Fieldset` the same variant.',
           "Say why the box cannot change with `disabledReason`.",
         ],
         dont: ["Do not wrap a `Checkbox` in a `Field`; it is its own label."],
@@ -129,7 +134,7 @@ export const forms: ComponentSection = {
       accessibility: [
         'A native `<input type="checkbox">` inside a `<label>`, so clicking the text toggles it and the label is its name.',
         "A bare box has no name of its own: `aria-label` is required.",
-        'A `hint` or an `error` is the box\'s `aria-describedby`, added to any you pass; an `error` is `role="alert"` and marks the box `aria-invalid`.',
+        'A `hint` and an `error` are the box\'s `aria-describedby`, added to any you pass; an `error` is announced politely, not as an alert, and marks the box `aria-invalid`. `indeterminate` draws a dash for a group partly ticked and is read out as "mixed".',
         "`disabledReason` sets `aria-disabled` and keeps the box in the tab order; a click and Space do nothing, and the reason shows as a tooltip on hover, keyboard focus and a tap, read out as its description (the native `title` without CSS anchor positioning).",
         "The focus ring comes from the component.",
       ],
@@ -147,7 +152,7 @@ export const forms: ComponentSection = {
           "Control it: you own `checked`, and `onChange` gets the next value. There is no uncontrolled mode.",
           'Give a `Switch` a `label`; the whole label is the click target. In a table cell leave the `label` out, use `size="sm"` and name it with `aria-label`: one of the two is required.',
           "Keep `checked` as it was while the change saves and pass `busy`: a click or a key does nothing, and it keeps its colour and its focus. Flip `checked` when the save lands.",
-          "A `hint` is a muted line under the label for a setting that needs a sentence, and an `error` replaces it in red; the switch sits on the label's first line.",
+          "A `hint` is a muted line under the label for a setting that needs a sentence, and an `error` goes under it in red; the switch sits on the label's first line.",
           "`size` is `sm`, `md` (default) or `lg`, the same scale as a `Checkbox`.",
           "Say why it cannot flip with `disabledReason`.",
           "A value sent with a form, ticked and then submitted, is a `Checkbox`. One of several is a `RadioGroup`, a `Select` or a `SegmentedControl`.",
@@ -159,7 +164,7 @@ export const forms: ComponentSection = {
         "A bare switch has no name of its own: `aria-label` is required.",
         "`busy` sets `aria-busy` and `aria-disabled` and keeps focus on the switch; `disabled` is the native one and takes it out of the tab order.",
         "`disabledReason` sets `aria-disabled` and keeps the switch in the tab order; a click, Space and Enter do nothing, and the reason shows as a tooltip on hover, keyboard focus and a tap, read out as its description (the native `title` without CSS anchor positioning).",
-        'A `hint` or an `error` is the switch\'s `aria-describedby`, added to any you pass; an `error` is `role="alert"` and marks the switch `aria-invalid`.',
+        "A `hint` and an `error` are the switch's `aria-describedby`, added to any you pass; an `error` is announced politely, not as an alert, and marks the switch `aria-invalid`.",
         "The thumb's slide stops under `prefers-reduced-motion`. The focus ring comes from the component.",
       ],
       api: ["Switch"],
@@ -175,7 +180,7 @@ export const forms: ComponentSection = {
         do: [
           "Give the `RadioGroup` a `label` that names the question, and a `Radio` per option with its own `label` and a `value`.",
           "Keep the choice with `defaultValue`, or control it with `value` and `onChange(value)`. `name` posts it in a form.",
-          "A `hint` on a `Radio` is a muted line under its label, for the option that needs a sentence; a `hint` on the group is a line under the group's label.",
+          'A `hint` on a `Radio` is a muted line under its label, for the option that needs a sentence; a `hint` on the group is a line under the group\'s label. When every option needs one (a plan, a delivery speed), `variant="card"` makes each a bordered card, the label its title.',
           "An `error` on the group is a red line under the options and marks every circle red; it is the same wording rule as `Field`'s. The group draws its own label and error, so it is never put in a `Field`.",
           "`disabled` on the group disables every option; on a `Radio` it disables that one. Say why in the group's `hint`.",
           "`required` marks a choice the form cannot submit without; the group is `aria-required`.",
@@ -186,7 +191,7 @@ export const forms: ComponentSection = {
       accessibility: [
         'The group is a `role="radiogroup"` named by its label; each `Radio` is a native `<input type="radio">` inside its `<label>`, so clicking the words chooses it.',
         "The group is one tab stop. The arrow keys move between the options and choose, wrapping at each end and skipping a disabled one.",
-        'An `error` is a `role="alert"` line and the group is `aria-invalid`; a `hint` is the option\'s `aria-describedby`.',
+        "An `error` is announced politely, not as an alert, and the group is `aria-invalid`; a `hint` is the option's `aria-describedby`.",
         "The focus ring is drawn round the option that has focus, by the component.",
       ],
       api: ["RadioGroup", "Radio"],
@@ -233,7 +238,7 @@ export const forms: ComponentSection = {
       pairs: ["FormRow/InlineEdit", "FormRow/TwoColumns"],
       usage: {
         do: [
-          'A form of several fields is a `FormGrid` of `Field`s: two columns from `md`, one below. A long control, such as a `Textarea`, takes `span="full"`.',
+          'A form of several fields is a `FormGrid` of `Field`s: two columns once the grid is 36rem wide (its own width, so one in a `Dialog`), one below. A long control, such as a `Textarea`, takes `span="full"`.',
           "A line of controls to edit one record in place is a `FormRow` of `FormRowField`s, with the save `Button` as `actions`.",
           "`FormRowField` `span` 1 to 4 is its share of the row's width.",
           "The `hint` or `error` goes on the `FormRow`, once, under the whole line. A `FormRowField` has no hint or error, and a `Field` does not belong inside a `FormRow`.",
@@ -242,8 +247,8 @@ export const forms: ComponentSection = {
       },
       accessibility: [
         "`FormRowField` renders a `<label>` tied to its control by `htmlFor`, as `Field` does.",
-        'The row\'s `error` is a `<p role="alert">`.',
-        "Under `md` the fields and the action stack in reading order.",
+        "The row's `error` sits under its hint and is announced politely, as `Field`'s is.",
+        "Narrower than 36rem (the row's own width) the fields and the action stack in reading order.",
       ],
       api: ["FormRow", "FormRowField", "FormGrid"],
       types: ["FormRowSpan"],
@@ -272,13 +277,13 @@ export const forms: ComponentSection = {
           "Several checkboxes answering one question: a `Fieldset` with the `Checkbox`es straight inside.",
           "A set of fields that belong together (opening hours, a low and high pair): a `Fieldset` round `Field`s, in a `FormGrid` for a row.",
           'The filter chips of one facet: a `Fieldset` round a `ButtonGroup` of `variant="outline"` `size="sm"` `Button`s with `pressed`. One `Fieldset` per facet; stack several in a `Stack`.',
-          "The `label` names the group in the `Field` label's look. A `hint` is one muted line under the group, and an `error` replaces it in red.",
+          "The `label` names the group in the `Field` label's look. A `hint` is one muted line under the group, and an `error` goes under it in red.",
           "One choice of several is a `RadioGroup`, which is its own group: never put it in a `Fieldset`. One control is a `Field`, or a `Checkbox` or `Switch` on its own.",
         ],
       },
       accessibility: [
         "A `<fieldset>` named by its `<legend>`, so a screen reader announces the group's name on entering it.",
-        'The hint, or the error in its place, is the group\'s `aria-describedby`; the error is a `role="alert"` line, announced when it appears.',
+        "The hint and then the error are the group's `aria-describedby`; the error is announced politely when it appears.",
         "`disabled` on the group disables every control in it.",
       ],
       api: ["Fieldset"],

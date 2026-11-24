@@ -18,9 +18,19 @@ type S = StoryObj;
 
 const noop = () => undefined;
 
-/** Enter sends and Shift+Enter is a newline; Send stays disabled until there is text. */
+/** Enter sends and Shift+Enter is a newline; the box grows with its text from 2 rows to 8. */
 export const Default: S = {
   render: () => <ChatComposer label="Message" placeholder="Ask a question" onSend={noop} />,
+};
+
+/** Send pressed on an empty box: nothing is sent, and `emptyReason` shows under the box until the next keystroke. */
+export const EmptySend: S = {
+  render: () => <ChatComposer label="Message" placeholder="Ask a question" onSend={noop} />,
+  play: ({ canvasElement }) => {
+    const form = canvasElement.querySelector("form");
+    if (!form) throw new Error("no ChatComposer");
+    form.requestSubmit();
+  },
 };
 
 /** While `busy` the button is Stop, and the reader can go on typing the next message. */

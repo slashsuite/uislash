@@ -1,12 +1,9 @@
 import { type ComponentPropsWithoutRef, type ReactElement, type Ref, useContext } from "react";
-import { CONTROL_PAD, controlClass, type ControlProps, type ControlSize } from "./control.js";
+import { controlClass, controlHeight, controlPad, type ControlProps } from "./control.js";
 import { cx } from "./cx.js";
 import { useTypeStep } from "./density.js";
 import { FieldContext, useFieldControl } from "./fieldControl.js";
 import type { Unstyled } from "./props.js";
-
-/** The height of a `Select` by `size`, the `Input`'s 26px, 38px and 46px: a native `<select>` sizes its text from the font and ignores the line height, so padding alone falls short at `md` and `lg`. */
-const SELECT_HEIGHT: Record<ControlSize, string> = { sm: "h-6.5", md: "h-9.5", lg: "h-11.5" };
 
 /** One choice of a `Select`. */
 export type SelectItem = {
@@ -50,8 +47,11 @@ export function Select({
       {...field}
       className={cx(
         controlClass(size, width ?? (inField ? "full" : "auto"), step),
-        SELECT_HEIGHT[size],
-        CONTROL_PAD[size].x,
+        // A native `<select>` sizes its text from the font and ignores the line height, so padding
+        // alone falls short at `md` and `lg`: it takes the `Input`'s height outright.
+        controlHeight(size),
+        controlPad(size),
+        "cursor-pointer disabled:cursor-not-allowed",
       )}
     >
       {items.map((item) => (

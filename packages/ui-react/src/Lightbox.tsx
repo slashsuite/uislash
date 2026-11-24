@@ -19,7 +19,7 @@ const VIEWER =
 
 /** A round control on the scrim, with a light focus ring: the accent is too dark on near-black in a light theme. */
 const CONTROL =
-  "inline-flex size-11 shrink-0 items-center justify-center rounded-full text-white transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white";
+  "inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full text-white transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white";
 
 /** The cross glyph on a 20px grid; `MediaTile`'s remove button draws the same one. */
 export const CLOSE =

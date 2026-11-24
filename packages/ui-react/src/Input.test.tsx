@@ -77,6 +77,43 @@ describe("Input clear button", () => {
     expect(clear()).toBeNull();
   });
 
+  it("Escape clears a field with a value and fires onChange", async () => {
+    const onChange = vi.fn<() => void>();
+    render(<Input type="search" defaultValue="tea" aria-label="Find" onChange={onChange} />);
+    const field = screen.getByRole<HTMLInputElement>("searchbox", { name: "Find" });
+    await user().type(field, "{Escape}");
+    expect(field.value).toBe("");
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(clear()).toBeNull();
+  });
+
+  it("Escape clears a controlled field through its onChange", async () => {
+    render(<Controlled />);
+    await user().type(screen.getByRole("searchbox", { name: "Find" }), "{Escape}");
+    expect(screen.getByRole<HTMLInputElement>("searchbox", { name: "Find" }).value).toBe("");
+  });
+
+  it("Escape that clears goes no further; in an empty field it passes on", async () => {
+    const outside = vi.fn<() => void>();
+    render(
+      <div role="presentation" onKeyDown={outside}>
+        <Input type="search" defaultValue="tea" aria-label="Find" />
+      </div>,
+    );
+    const field = screen.getByRole("searchbox", { name: "Find" });
+    await user().type(field, "{Escape}");
+    expect(outside).not.toHaveBeenCalled();
+    await user().type(field, "{Escape}");
+    expect(outside).toHaveBeenCalledTimes(1);
+  });
+
+  it("Escape leaves a read-only field as it is", async () => {
+    render(<Input type="search" defaultValue="tea" readOnly aria-label="Find" />);
+    const field = screen.getByRole<HTMLInputElement>("searchbox", { name: "Find" });
+    await user().type(field, "{Escape}");
+    expect(field.value).toBe("tea");
+  });
+
   it("appears once an uncontrolled field is typed into", async () => {
     render(<Input type="search" aria-label="Find" />);
     await user().type(screen.getByRole("searchbox", { name: "Find" }), "t");

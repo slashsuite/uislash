@@ -264,7 +264,7 @@ function ButtonRow(props: ListRowButtonProps & Pieces & { labelId: string }): Re
         {...guard}
         {...(selected ? { "aria-current": "true" as const } : {})}
         {...(expanded === undefined ? {} : { "aria-expanded": expanded })}
-        className={cx(OVERLAY, blocked && "cursor-not-allowed")}
+        className={cx(OVERLAY, blocked ? "cursor-not-allowed" : "cursor-pointer")}
       />
       {tooltip}
       {expanded !== undefined && <Chevron open={expanded} />}

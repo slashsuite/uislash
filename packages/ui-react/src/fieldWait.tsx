@@ -1,17 +1,15 @@
 import type { ReactElement, ReactNode } from "react";
 import { cx } from "./cx.js";
-import { useDensity } from "./density.js";
-import type { Size } from "./size.js";
+import { controlHeight } from "./control.js";
+import { useResponsiveDensity } from "./density.js";
+import type { ResponsiveSize, Size } from "./size.js";
 import { Bone, BusyLabel, busy, passthroughOf, useLoading } from "./skeleton.js";
 
 /* The bones of a form part waiting for its value: the label is drawn, the control is a bone. */
 
-/** A text control's height by `size`: its padding, line height and border, as `controlClass` draws it. */
-const CONTROL_HEIGHT: Record<Size, string> = { sm: "h-6.5", md: "h-9.5", lg: "h-11.5" };
-
 /** A bone the height of a text control at `size`, else the density around it (a `sm` table or card). */
-export function ControlBone({ size }: { size?: Size | undefined }): ReactElement {
-  return <Bone shape={cx("block w-full rounded-lg", CONTROL_HEIGHT[useDensity(size)])} />;
+export function ControlBone({ size }: { size?: Size | ResponsiveSize | undefined }): ReactElement {
+  return <Bone shape={cx("block w-full rounded-lg", controlHeight(useResponsiveDensity(size)))} />;
 }
 
 /**
@@ -63,7 +61,7 @@ export function WaitingField({
   loadingLabel: string | undefined;
   label: ReactNode;
   look: string;
-  size: Size | undefined;
+  size: Size | ResponsiveSize | undefined;
   attrs: object;
 }): ReactElement {
   const { loading, owner } = useLoading(own);

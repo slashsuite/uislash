@@ -132,9 +132,10 @@ export function DetailLayout({
   );
 }
 
-/** A form page: header (no header `actions`), then a `max-w-3xl` column that starts at the Container's start edge (it is not re-centred), with an `actions` row at the end. `error` is the submit's failure, a danger `Callout` (an alert) directly above that row. Other props go on the `<form>`. While `loading` it owns the wait and passes it to everything inside, the header too. */
+/** A form page: header (no header `actions`), then a `max-w-3xl` column that starts at the Container's start edge (it is not re-centred), with an `actions` row at the end. `note` is a muted line under that row, set apart from the form: a closing remark about the whole submit (when you will hear back, what happens next), never a field's hint. `error` is the submit's failure, a danger `Callout` (an alert) directly above that row. Other props go on the `<form>`. While `loading` it owns the wait and passes it to everything inside, the header too. */
 export function FormLayout({
   actions,
+  note,
   error,
   children,
   breadcrumbs,
@@ -147,6 +148,11 @@ export function FormLayout({
 }: Omit<PageHeaderProps, "actions"> & {
   /** The row at the end of the form: its submit and cancel buttons. */
   actions?: ReactNode;
+  /**
+   * A muted line under the `actions`, set apart from them: a closing remark about the whole form
+   * ("We reply within two working days."). A note about one field is that `Field`'s `hint`.
+   */
+  note?: ReactNode;
   /**
    * What went wrong with the whole submit (the server refused it, no connection), announced as an
    * alert directly above the `actions`. An error about one field is that `Field`'s `error`.
@@ -164,6 +170,7 @@ export function FormLayout({
           {error && <Callout tone="danger">{error}</Callout>}
           {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
         </Stack>
+        {note && <p className="mt-8 text-sm text-slate-500">{note}</p>}
         {wait.label}
       </form>
     </LoadingScope>

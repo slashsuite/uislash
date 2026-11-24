@@ -6,24 +6,22 @@ import {
   DateInput,
   DateRangePicker as AriaDateRangePicker,
   Group,
-  I18nProvider,
-  Label,
 } from "react-aria-components";
 import { cx } from "./cx.js";
 import { RangeCalendarPopover, calendarIcon } from "./DateCalendar.js";
 import {
   FieldSegment,
+  FieldLabel,
   type FieldProps,
-  LOCALE,
   type Read,
   fieldFlags,
   forcedInvalid,
   frameClass,
   iconButtonLook,
-  labelClass,
   Notes,
 } from "./DateField.js";
-import { PICKER_SIZE, useDialogContainer, usePickerFrame } from "./DateFieldCalendar.js";
+import { DateLocale } from "./dateLocale.js";
+import { pickerButton, useDialogContainer, usePickerFrame } from "./DateFieldCalendar.js";
 import { definedProps, type Passthrough } from "./props.js";
 import { ShownInput, type ShownRange, useShownRange } from "./shownDate.js";
 
@@ -35,7 +33,7 @@ export type DateRangePreset = { label: string; value: DateRange };
 
 export type DateRangePickerProps = Pick<
   FieldProps,
-  "label" | "hint" | "error" | "size" | "minValue" | "maxValue" | "required" | "disabled"
+  "label" | "hint" | "error" | "size" | "minValue" | "maxValue" | "required" | "disabled" | "locale"
 > &
   Passthrough & {
     /** The range, or `null` for none. Reported only when both days are complete, real and in order. */
@@ -114,7 +112,7 @@ function SideInput({
 }
 
 /**
- * A from and to date in one field: DD/MM/YYYY "to" DD/MM/YYYY and a calendar button that opens one
+ * A from and to date in one field, each side in the locale's order, and a calendar button that opens one
  * Monday-first month, where two presses pick the range. `presets` adds the app's ready-made ranges
  * above the month. The range is reported only when both sides are complete, real dates within
  * min/max and the start is on or before the end; otherwise `null`.
@@ -134,6 +132,7 @@ export function DateRangePicker({
   endName,
   presets,
   defaultOpen,
+  locale,
   size = "md",
   ...rest
 }: DateRangePickerProps): ReactElement {
@@ -148,7 +147,7 @@ export function DateRangePicker({
   });
   const { container, findDialog } = useDialogContainer();
   return (
-    <I18nProvider locale={LOCALE}>
+    <DateLocale locale={locale}>
       <AriaDateRangePicker<CalendarDate>
         {...definedProps(rest)}
         {...fieldFlags(disabled, required)}
@@ -162,9 +161,9 @@ export function DateRangePicker({
         shouldForceLeadingZeros
         className="flex flex-col gap-1.5"
       >
-        {({ isInvalid }) => (
+        {() => (
           <>
-            {label ? <Label className={labelClass}>{label}</Label> : null}
+            <FieldLabel label={label} required={required} />
             <Group className={(state) => cx(frameClass(state), frame)}>
               <SideInput
                 slot="start"
@@ -176,13 +175,13 @@ export function DateRangePicker({
                 to
               </span>
               <SideInput slot="end" name="End date" side={shown.end} onRead={shown.onReadEnd} />
-              <Button className={cx(iconButtonLook, PICKER_SIZE[size].button, "ml-auto")}>
+              <Button className={cx(iconButtonLook, pickerButton(size), "ml-auto")}>
                 {calendarIcon}
               </Button>
             </Group>
             <ShownInput name={startName} shown={shown.startShown} isDisabled={disabled} />
             <ShownInput name={endName} shown={shown.endShown} isDisabled={disabled} />
-            <Notes hint={hint} error={error} impossible={shown.problem} isInvalid={isInvalid} />
+            <Notes hint={hint} error={error} impossible={shown.problem} bounds={rest} />
             <RangeCalendarPopover
               container={container}
               presets={presets}
@@ -191,6 +190,6 @@ export function DateRangePicker({
           </>
         )}
       </AriaDateRangePicker>
-    </I18nProvider>
+    </DateLocale>
   );
 }
