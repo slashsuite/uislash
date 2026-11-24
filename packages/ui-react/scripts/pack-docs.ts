@@ -50,7 +50,7 @@ const problems = [
 ];
 if (problems.length > 0) {
   throw new Error(
-    `the tarball's agent docs are incomplete (run \`bunx moon run ui-react:agent-docs\`):\n${problems.join("\n")}`,
+    `the tarball's agent docs, or the README's pointer to them, are wrong (the docs come from \`bunx moon run ui-react:agent-docs\`):\n${problems.join("\n")}`,
   );
 }
 const skillProblems = packedSkillProblems(

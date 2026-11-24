@@ -7,7 +7,9 @@ export function readmePointerProblems(files: string[], readme: string | undefine
   if (readme === undefined) return ["README.md is missing from the tarball"];
   const heading = readme.search(/^# /m);
   const pointer = heading === -1 ? readme : readme.slice(0, heading);
-  const paths = [...pointer.matchAll(/`(agent-docs\/[^`]+)`/g)].map((match) => match[1]!);
+  const paths = [...pointer.matchAll(/`(agent-docs\/[^`]+)`/g)].flatMap((match) =>
+    match[1] === undefined ? [] : [match[1]],
+  );
   return [
     ...(paths.includes("agent-docs/llms.txt")
       ? []
