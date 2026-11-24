@@ -17,4 +17,4 @@ The docs for the installed version ship in the package, as Markdown, under `node
 
 ## When you're done
 
-Typecheck with `npx tsc --noEmit` and fix what it reports.
+Typecheck the way the project does: its `typecheck` script if `package.json` has one, else its `build` script. With neither, run `npx tsc -b` when the root `tsconfig.json` only lists `references` (as a Vite app's does: plain `tsc --noEmit` checks no files there), and `npx tsc --noEmit` otherwise. Fix what it reports.
