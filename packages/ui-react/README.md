@@ -1,3 +1,5 @@
+> **Agents:** the docs for this version ship in this package as Markdown. Read `agent-docs/llms.txt` (the index) first, then only the `agent-docs/components/<slug>.md` pages your task needs.
+
 # @slashsuite/ui-react
 
 UISlash React components, written against Tailwind v4 utilities. They carry no theme: pair them
