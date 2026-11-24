@@ -1,6 +1,6 @@
-import { CalendarDate } from "@internationalized/date";
+import { CalendarDate, CalendarDateTime } from "@internationalized/date";
 import { describe, expect, it } from "vitest";
-import { fromISODate, toISODate } from "./isoDate.js";
+import { fromISODate, fromISODateTime, toISODate, toISODateTime } from "./isoDate.js";
 
 describe("toISODate", () => {
   it("writes YYYY-MM-DD with leading zeros", () => {
@@ -35,5 +35,27 @@ describe("fromISODate", () => {
     expect(fromISODate("17/05/1990")).toBeNull();
     expect(fromISODate("1990-5-17")).toBeNull();
     expect(fromISODate("1990-05-17T00:00")).toBeNull();
+  });
+});
+
+describe("toISODateTime", () => {
+  it("writes YYYY-MM-DDTHH:mm, seconds dropped", () => {
+    expect(toISODateTime(new CalendarDateTime(2026, 11, 29, 7, 5, 59))).toBe("2026-11-29T07:05");
+    expect(toISODateTime(null)).toBe("");
+  });
+});
+
+describe("fromISODateTime", () => {
+  it("reads YYYY-MM-DDTHH:mm and round-trips", () => {
+    const value = fromISODateTime("2026-11-29T14:30");
+    expect(value?.compare(new CalendarDateTime(2026, 11, 29, 14, 30))).toBe(0);
+    expect(toISODateTime(value)).toBe("2026-11-29T14:30");
+  });
+
+  it("returns null for an impossible day or hour, or any other shape", () => {
+    expect(fromISODateTime("2026-02-30T10:00")).toBeNull();
+    expect(fromISODateTime("2026-02-28T24:00")).toBeNull();
+    expect(fromISODateTime("2026-02-28")).toBeNull();
+    expect(fromISODateTime("2026-02-28T10:00:00")).toBeNull();
   });
 });

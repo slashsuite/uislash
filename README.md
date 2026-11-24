@@ -129,7 +129,7 @@ Stories: `Layout/AppShell › HeaderSlots`, `LinkedBrand`, `RouterBrand` and `Hi
 
 ## Dates
 
-`DateField` is a segmented DD/MM/YYYY field; `calendar` adds a calendar popover. Values are `CalendarDate`s; `toISODate` and `fromISODate` convert to and from `"1990-05-17"`.
+`DateField` is a segmented date field in the browser's locale (`locale` overrides it); `calendar` adds a calendar popover. `DateTimeField` adds the time. Values are `CalendarDate`s; `toISODate` and `fromISODate` convert to and from `"1990-05-17"`.
 See [`packages/ui-react/README.md`](packages/ui-react/README.md#dates).
 
 ## Light and dark

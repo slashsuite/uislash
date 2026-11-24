@@ -109,7 +109,11 @@ export const WithPresets: S = {
 /** 31/02/2026 does not exist: after focus leaves, the end keeps the typed day, with the message. */
 export const Impossible: S = {
   render: () => (
-    <DateRangePicker label="Report period" defaultValue={range("2026-02-01", "2026-02-28")} />
+    <DateRangePicker
+      label="Report period"
+      locale="en-GB"
+      defaultValue={range("2026-02-01", "2026-02-28")}
+    />
   ),
   play: async ({ canvasElement }) => {
     await typeDigits(canvasElement, 3, "31");
@@ -135,6 +139,7 @@ export const OutOfRange: S = {
   render: () => (
     <DateRangePicker
       label="Report period"
+      locale="en-GB"
       minValue={fromISODate("2026-01-01") ?? undefined}
       maxValue={fromISODate("2026-10-15") ?? undefined}
       defaultValue={october}

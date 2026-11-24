@@ -1,9 +1,10 @@
 // @vitest-environment jsdom
 import { CalendarDate } from "@internationalized/date";
-import { useState } from "react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { useState, type ReactElement, type ReactNode } from "react";
+import { describe, expect, it, vi } from "vitest";
+import { I18nProvider } from "react-aria-components";
 import { DateField } from "./DateField.js";
-import { drawn, render, screen, user } from "./render.harness.js";
+import { drawn, render as renderPage, screen, user } from "./render.harness.js";
 
 /** A parent that stores what the field reports and passes it back. */
 function Controlled({
@@ -68,16 +69,11 @@ function Parent({
   );
 }
 
-beforeEach(() => {
-  // A US browser: the field must still read DD/MM/YYYY.
-  vi.spyOn(navigator, "language", "get").mockReturnValue("en-US");
-  vi.spyOn(navigator, "languages", "get").mockReturnValue(["en-US"]);
-  document.documentElement.lang = "en-US";
-});
-afterEach(() => {
-  vi.restoreAllMocks();
-  document.documentElement.lang = "";
-});
+/** A British app: its own `I18nProvider` puts every date field in DD/MM/YYYY. */
+function British({ children }: { children: ReactNode }) {
+  return <I18nProvider locale="en-GB">{children}</I18nProvider>;
+}
+const render = (ui: ReactElement) => renderPage(ui, { wrapper: British });
 
 const segments = () => screen.getAllByRole("spinbutton");
 const shown = () => segments().map((s) => s.textContent);

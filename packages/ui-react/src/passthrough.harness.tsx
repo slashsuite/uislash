@@ -1,4 +1,4 @@
-import { CalendarDate } from "@internationalized/date";
+import { CalendarDate, CalendarDateTime } from "@internationalized/date";
 import type { ReactElement } from "react";
 import * as ui from "./index.js";
 import { layoutCases } from "./passthroughLayouts.harness.js";
@@ -60,6 +60,9 @@ export const CASES: Record<string, () => ReactElement> = {
   CopyLine: () => <ui.CopyLine text="x" {...A} />,
   DateField: () => <ui.DateField label="Day" defaultValue={new CalendarDate(2026, 1, 2)} {...A} />,
   DateRangePicker: () => <ui.DateRangePicker label="Period" {...A} />,
+  DateTimeField: () => (
+    <ui.DateTimeField label="At" defaultValue={new CalendarDateTime(2026, 1, 2, 9, 30)} {...A} />
+  ),
   DetailLayout: () => (
     <ui.DetailLayout title="T" aside="a" {...A}>
       x

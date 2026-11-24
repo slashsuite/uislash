@@ -1,19 +1,16 @@
 // @vitest-environment jsdom
 import { CalendarDate } from "@internationalized/date";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { ReactElement, ReactNode } from "react";
+import { describe, expect, it, vi } from "vitest";
+import { I18nProvider } from "react-aria-components";
 import { type DateRange, DateRangePicker } from "./DateRangePicker.js";
-import { announced, drawn, render, screen, user, within } from "./render.harness.js";
+import { announced, drawn, render as renderPage, screen, user, within } from "./render.harness.js";
 
-beforeEach(() => {
-  // A US browser: the field must still read DD/MM/YYYY.
-  vi.spyOn(navigator, "language", "get").mockReturnValue("en-US");
-  vi.spyOn(navigator, "languages", "get").mockReturnValue(["en-US"]);
-  document.documentElement.lang = "en-US";
-});
-afterEach(() => {
-  vi.restoreAllMocks();
-  document.documentElement.lang = "";
-});
+/** A British app: its own `I18nProvider` puts every date field in DD/MM/YYYY. */
+function British({ children }: { children: ReactNode }) {
+  return <I18nProvider locale="en-GB">{children}</I18nProvider>;
+}
+const render = (ui: ReactElement) => renderPage(ui, { wrapper: British });
 
 const october: DateRange = {
   start: new CalendarDate(2026, 10, 1),

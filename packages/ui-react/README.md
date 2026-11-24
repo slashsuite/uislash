@@ -138,7 +138,7 @@ import { DateField, fromISODate, toISODate, type CalendarDate } from "@slashsuit
 <DateField
   calendar
   label="Date of birth"
-  hint="DD/MM/YYYY"
+  hint="As on your ID document."
   defaultValue={fromISODate("1990-05-17")}
   maxValue={fromISODate("2026-10-23")}
   onChange={(date: CalendarDate | null) => save(toISODate(date))}
@@ -147,8 +147,10 @@ import { DateField, fromISODate, toISODate, type CalendarDate } from "@slashsuit
 />;
 ```
 
-- `DateField` is a segmented DD/MM/YYYY field (always en-GB, whatever the browser's locale).
-  `calendar` adds a calendar button. The popover has ‹ › month steps, month and year dropdowns,
+- `DateField` is a segmented date field in the browser's locale: 11/29/2026 in en-US, 29/11/2026
+  in en-GB. `locale` (a BCP 47 tag) overrides it for the order, the month names and the messages;
+  an `I18nProvider` from `react-aria-components` around the app does the same for every field.
+  `name` posts `YYYY-MM-DD` whatever the locale. `calendar` adds a calendar button. The popover has ‹ › month steps, month and year dropdowns,
   Monday-first weeks and a Clear action. `defaultOpen` opens it on mount.
 - Without `calendar` it is typed only, for a date the person knows by heart.
 - It takes `label`, `hint`, `error`, `value` / `defaultValue` / `onChange`, `minValue`,
@@ -171,7 +173,11 @@ import { DateField, fromISODate, toISODate, type CalendarDate } from "@slashsuit
 - `error` is an error from outside the field, a server's say: it shows under the hint, in red
   and announced politely (as `Field`'s `error` does), and marks the field invalid. It wins over
   the built-in messages; clear it when the date changes.
-- `DateRangePicker` is a from and to date in one field, DD/MM/YYYY "to" DD/MM/YYYY, with a
+- `DateTimeField` is a date and a time, to the minute, in the same segments: a 24-hour clock where
+  the locale uses one (en-GB), AM/PM where it does not (en-US). Its value is a `CalendarDateTime`;
+  `name` posts `YYYY-MM-DDTHH:mm` on the 24-hour clock, and `toISODateTime` / `fromISODateTime`
+  convert. It has no calendar.
+- `DateRangePicker` is a from and to date in one field, each side in the locale's order, with a
   calendar button that opens one month, where two presses pick the range.
 - Its value is a `DateRange`, `{ start, end }`, or `null`; `onChange` reports a range only when both
   sides are complete, real, within `minValue` / `maxValue` and in order, and `null` otherwise.
@@ -179,7 +185,7 @@ import { DateField, fromISODate, toISODate, type CalendarDate } from "@slashsuit
 - `presets` are `DateRangePreset`s, `{ label, value }`, a row of buttons above the month. The app
   builds them from its own today; the picker never reads the clock.
 - `label`, `hint`, `error`, `minValue`, `maxValue`, `required`, `disabled`, `size`, `defaultOpen`,
-  `monthLabel` and `yearLabel` work as on a `DateField`.
+  `locale`, `monthLabel` and `yearLabel` work as on a `DateField`.
 
 ## Router links
 
