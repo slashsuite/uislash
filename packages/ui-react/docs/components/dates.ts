@@ -5,13 +5,14 @@ export const datePages: ComponentPage[] = [
   {
     slug: "date-field",
     name: "DateField",
-    summary: "A date in DD/MM/YYYY segments, with a calendar to pick from when `calendar` is set.",
+    summary:
+      "A date in segments ordered by the locale, with a calendar to pick from when `calendar` is set.",
     whenToUse:
       "Any date a person enters; leave `calendar` off for a date the person knows by heart.",
     pairs: ["DateField/Date", "DateField/Error", "DateField/Value", "DateField/TypedOnly"],
     usage: {
       do: [
-        "A date is a `DateField`, never an `Input`. The format is always DD/MM/YYYY and weeks start on Monday, whatever the browser's locale.",
+        "A date is a `DateField`, never an `Input`. It follows the browser's locale: 11/29/2026 in en-US, 29/11/2026 in en-GB. `locale` (a BCP 47 tag) sets another for the order, the month names and the messages; `name` posts `YYYY-MM-DD` whatever the locale. The calendar's weeks start on Monday.",
         "`calendar` adds a calendar button, and `defaultOpen` opens it on mount; without `calendar` the field is typed only, for a date the person knows by heart (a birthday).",
         "It draws its own label: give it `label` and `hint`, and do not wrap it in a `Field`.",
         "A message from outside, a server's say, is `error`: it marks the field invalid and replaces the hint. An impossible date, such as 31/02/1990, shows its own message.",
@@ -51,16 +52,47 @@ export const datePages: ComponentPage[] = [
         "A from and to date is one `DateRangePicker`, never two `DateField`s. A single date is a `DateField`.",
         "The value is `{ start, end }` of `CalendarDate`s, or `null`. It is reported only when both sides are complete, real dates within `minValue` and `maxValue` and the start is on or before the end; anything else reports `null` and the field says why. `startName` and `endName` post each side as `YYYY-MM-DD` in a form, or an empty string while there is no range.",
         'Presets come from the app: build "Last 7 days", "Last 30 days" and "Last 90 days" from the app\'s own today (`today(getLocalTimeZone())` from `@internationalized/date`) and pass them as `presets`. The picker has none of its own and never reads the clock. A preset sets the range and closes the calendar.',
-        "It draws its own label: give it `label` and `hint`, and do not wrap it in a `Field`. `error`, `size`, `disabled`, `required`, `monthLabel` and `yearLabel` work as on `DateField`.",
+        "It draws its own label: give it `label` and `hint`, and do not wrap it in a `Field`. `error`, `size`, `disabled`, `required`, `locale`, `monthLabel` and `yearLabel` work as on `DateField`.",
       ],
     },
     accessibility: [
-      'Each side is a `role="group"` named "Start date" and "End date", of DD, MM and YYYY segments (`role="spinbutton"`) that take digits or the arrow keys.',
+      'Each side is a `role="group"` named "Start date" and "End date", of day, month and year segments in the order of the locale (`role="spinbutton"`) that take digits or the arrow keys.',
       'The calendar button is labelled "Calendar" and opens a popover dialog: the arrow keys move across days, Enter on a day starts the range and Enter on a second ends it, and Escape closes it without a change.',
       'An impossible day, such as 31/02/2026, keeps what was typed and says which side and why: "End date: February 2026 has 28 days."',
       "Inside a `Dialog` or `Drawer` the calendar opens inside it, so it still takes focus. The focus ring comes from the component.",
     ],
     api: ["DateRangePicker"],
     types: ["DateRange", "DateRangePreset"],
+  },
+  {
+    slug: "date-time-field",
+    name: "DateTimeField",
+    summary: "A date and a time to the minute, in segments ordered by the locale.",
+    whenToUse: "A moment a person enters: a booking, a meeting's start, a deadline with its hour.",
+    pairs: ["DateTimeField/Moment"],
+    usage: {
+      do: [
+        "A date with its time is one `DateTimeField`, never a `DateField` beside an `Input`. A date alone is a `DateField`.",
+        "The clock follows the locale: 24-hour in en-GB, AM/PM in en-US. `locale` sets another, as on `DateField`.",
+        "The value is a `CalendarDateTime`. `name` posts `YYYY-MM-DDTHH:mm` on the 24-hour clock, or an empty string; `fromISODateTime` reads that string and `toISODateTime` writes one.",
+        "It has no calendar. `label`, `hint`, `error`, `minValue`, `maxValue`, `required`, `disabled`, `size` and `loading` work as on `DateField`.",
+      ],
+    },
+    accessibility: [
+      'The label names a `role="group"` of day, month, year, hour and minute segments (and AM/PM where the locale has it), each a `role="spinbutton"` that takes digits or the arrow keys.',
+      'A required field partly filled blocks the form and says "Enter the whole date and time."',
+      "The focus ring comes from the component.",
+    ],
+    api: ["DateTimeField"],
+    functions: [
+      {
+        name: "fromISODateTime",
+        text: 'Reads a stored `"YYYY-MM-DDTHH:mm"` into a `CalendarDateTime`; `null` for an empty, malformed or impossible string.',
+      },
+      {
+        name: "toISODateTime",
+        text: 'Writes a `CalendarDateTime` as `"YYYY-MM-DDTHH:mm"`, or `""` for none.',
+      },
+    ],
   },
 ];

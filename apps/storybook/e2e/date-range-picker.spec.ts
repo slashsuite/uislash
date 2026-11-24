@@ -1,5 +1,8 @@
 import { expect, type Page, test } from "@playwright/test";
 
+// A British browser: the picker follows the browser's locale, so the days come first (DD/MM/YYYY).
+test.use({ locale: "en-GB" });
+
 const story = (page: Page, id: string) =>
   page.goto(`/iframe.html?id=forms-daterangepicker--${id}&viewMode=story&globals=theme:default`);
 

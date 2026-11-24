@@ -6,25 +6,22 @@ import {
   DateFieldContext,
   DateInput,
   Group,
-  I18nProvider,
-  Label,
 } from "react-aria-components";
 import { cx } from "./cx.js";
 import { CalendarPopover, type CalendarLabels, calendarIcon } from "./DateCalendar.js";
 import {
   FieldSegment,
+  FieldLabel,
   type FieldProps,
-  LOCALE,
   fieldFlags,
   forcedInvalid,
   Notes,
   frameClass,
   iconButtonLook,
-  labelClass,
 } from "./DateField.js";
-import { RequiredMark } from "./Field.js";
+import { DateLocale } from "./dateLocale.js";
 import { definedProps } from "./props.js";
-import { ShownInput, useShownDate } from "./shownDate.js";
+import { DATE, ShownInput, useShownDate } from "./shownDate.js";
 import type { Size } from "./size.js";
 import { controlText, useTypeStep } from "./density.js";
 
@@ -89,22 +86,17 @@ export function CalendarDateField({
   defaultValue,
   onChange,
   name,
+  locale,
   size = "md",
   ...rest
 }: FieldProps & { defaultOpen?: boolean; labels: CalendarLabels }): ReactElement {
   const frame = usePickerFrame(size);
+  const bounds = { minValue: rest.minValue, maxValue: rest.maxValue };
   const { inner, setInner, shown, impossible, onRead, validate, leaving, onBlurCapture, onLeft } =
-    useShownDate({
-      value,
-      defaultValue,
-      onChange,
-      minValue: rest.minValue,
-      maxValue: rest.maxValue,
-      isRequired: required,
-    });
+    useShownDate({ value, defaultValue, onChange, ...bounds, isRequired: required }, DATE);
   const { container, findDialog } = useDialogContainer();
   return (
-    <I18nProvider locale={LOCALE}>
+    <DateLocale locale={locale}>
       <AriaDatePicker<CalendarDate>
         {...definedProps(rest)}
         {...fieldFlags(disabled, required)}
@@ -119,12 +111,7 @@ export function CalendarDateField({
       >
         {() => (
           <>
-            {label ? (
-              <Label className={labelClass}>
-                {label}
-                <RequiredMark required={required} />
-              </Label>
-            ) : null}
+            <FieldLabel label={label} required={required} />
             <Group className={(state) => cx(frameClass(state), frame)}>
               <div className="contents" onBlurCapture={onBlurCapture}>
                 <PickerInput leaving={leaving} onLeft={onLeft}>
@@ -143,11 +130,11 @@ export function CalendarDateField({
               </Button>
             </Group>
             <ShownInput name={name} shown={shown} isDisabled={disabled} />
-            <Notes hint={hint} error={error} impossible={impossible} />
+            <Notes hint={hint} error={error} impossible={impossible} bounds={bounds} />
             <CalendarPopover container={container} labels={labels} />
           </>
         )}
       </AriaDatePicker>
-    </I18nProvider>
+    </DateLocale>
   );
 }

@@ -1559,7 +1559,7 @@
   },
   "DateField": {
     "name": "DateField",
-    "description": "A segmented DD / MM / YYYY date input. Values are `CalendarDate`s; `name` posts it as\n`YYYY-MM-DD`. `calendar` adds a calendar button that opens a month view in a popover, at the\nsame height as the plain field; `defaultOpen` opens it on mount. While `loading` the label is\ndrawn and the field is a bone of its height.",
+    "description": "A segmented date input, in the order of its `locale` (by default the browser's): DD / MM / YYYY\nin en-GB. Values are `CalendarDate`s; `name` posts it as `YYYY-MM-DD`. `calendar` adds a calendar button that opens a month view in a popover, at the\nsame height as the plain field; `defaultOpen` opens it on mount. While `loading` the label is\ndrawn and the field is a bone of its height.",
     "props": [
       {
         "name": "calendar",
@@ -1633,6 +1633,13 @@
         "native": false
       },
       {
+        "name": "locale",
+        "type": "string",
+        "required": false,
+        "description": "The locale the field writes its date in, a BCP 47 tag: `en-GB` is DD/MM/YYYY, `en-US`\nMM/DD/YYYY, `en-ZA` YYYY/MM/DD. It sets the order of the segments, the month names, the\ncalendar's first weekday and the dates in its messages. Without it the field follows the app's\nown `I18nProvider`, or else the browser's language.",
+        "native": false
+      },
+      {
         "name": "maxValue",
         "type": "DateValue | null",
         "required": false,
@@ -1658,7 +1665,7 @@
         "name": "name",
         "type": "string",
         "required": false,
-        "description": "Posts the date in a form as `YYYY-MM-DD` under this key, or an empty string.",
+        "description": "Posts the date in a form as `YYYY-MM-DD` under this key, or an empty string, whatever the `locale`.",
         "native": false
       },
       {
@@ -1702,7 +1709,7 @@
   },
   "DateRangePicker": {
     "name": "DateRangePicker",
-    "description": "A from and to date in one field: DD/MM/YYYY \"to\" DD/MM/YYYY and a calendar button that opens one\nMonday-first month, where two presses pick the range. `presets` adds the app's ready-made ranges\nabove the month. The range is reported only when both sides are complete, real dates within\nmin/max and the start is on or before the end; otherwise `null`.",
+    "description": "A from and to date in one field, each side in the locale's order, and a calendar button that opens one\nMonday-first month, where two presses pick the range. `presets` adds the app's ready-made ranges\nabove the month. The range is reported only when both sides are complete, real dates within\nmin/max and the start is on or before the end; otherwise `null`.",
     "props": [
       {
         "name": "defaultOpen",
@@ -1758,6 +1765,13 @@
         "type": "ReactNode",
         "required": false,
         "description": "The field's visible label, above it. Without one, name the field with `aria-label`.",
+        "native": false
+      },
+      {
+        "name": "locale",
+        "type": "string",
+        "required": false,
+        "description": "The locale the field writes its date in, a BCP 47 tag: `en-GB` is DD/MM/YYYY, `en-US`\nMM/DD/YYYY, `en-ZA` YYYY/MM/DD. It sets the order of the segments, the month names, the\ncalendar's first weekday and the dates in its messages. Without it the field follows the app's\nown `I18nProvider`, or else the browser's language.",
         "native": false
       },
       {
@@ -1831,6 +1845,126 @@
         "required": false,
         "default": "Year",
         "description": "The year dropdown's name, for an app in another language.",
+        "native": false
+      }
+    ]
+  },
+  "DateTimeField": {
+    "name": "DateTimeField",
+    "description": "A segmented date and time input, to the minute: the date in the order of its `locale` (by default\nthe browser's), then hours and minutes on the clock the locale uses, 24-hour in en-GB and with\nAM/PM in en-US. Values are `CalendarDateTime`s; `name` posts it as `YYYY-MM-DDTHH:mm`. It has no\ncalendar. While `loading` the label is drawn and the field is a bone of its height.",
+    "props": [
+      {
+        "name": "defaultValue",
+        "type": "CalendarDateTime | null",
+        "required": false,
+        "description": "The date and time shown first when the field holds its own value.",
+        "native": false
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "required": false,
+        "description": "Disables the field: no typing, no calendar.",
+        "native": false
+      },
+      {
+        "name": "error",
+        "type": "ReactNode",
+        "required": false,
+        "description": "Marks the field invalid and shows this in red under the hint, announced politely, in place of\nthe built-in message (an impossible date, or one outside min/max). Like `Field`'s `error`.",
+        "native": false
+      },
+      {
+        "name": "hint",
+        "type": "ReactNode",
+        "required": false,
+        "description": "A muted line under the field that says more; it stays while an error shows under it.",
+        "native": false
+      },
+      {
+        "name": "id",
+        "type": "string",
+        "required": false,
+        "description": "The root element's `id`: an anchor, or the target of a `for` or an `aria-describedby`.",
+        "native": false
+      },
+      {
+        "name": "label",
+        "type": "ReactNode",
+        "required": false,
+        "description": "The field's visible label, above it. Without one, name the field with `aria-label`.",
+        "native": false
+      },
+      {
+        "name": "loading",
+        "type": "boolean",
+        "required": false,
+        "description": "The data is not here yet: an empty slot draws a bone of its shape, a filled one draws as usual.\nLeft out, the part takes the nearest loading layout's or part's; `false` opts it out inside one.",
+        "native": false
+      },
+      {
+        "name": "loadingLabel",
+        "type": "string",
+        "required": false,
+        "default": "Loading",
+        "description": "What a screen reader hears while this part is loading, when its own `loading` is set.",
+        "native": false
+      },
+      {
+        "name": "locale",
+        "type": "string",
+        "required": false,
+        "description": "The locale the field writes its date in, a BCP 47 tag: `en-GB` is DD/MM/YYYY, `en-US`\nMM/DD/YYYY, `en-ZA` YYYY/MM/DD. It sets the order of the segments, the month names, the\ncalendar's first weekday and the dates in its messages. Without it the field follows the app's\nown `I18nProvider`, or else the browser's language.",
+        "native": false
+      },
+      {
+        "name": "maxValue",
+        "type": "DateValue | null",
+        "required": false,
+        "description": "The latest date and time the field takes; later ones are invalid.",
+        "native": false
+      },
+      {
+        "name": "minValue",
+        "type": "DateValue | null",
+        "required": false,
+        "description": "The earliest date and time the field takes; earlier ones are invalid.",
+        "native": false
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "required": false,
+        "description": "Posts the date and time in a form as `YYYY-MM-DDTHH:mm` (24-hour) under this key, or an empty\nstring, whatever the `locale`.",
+        "native": false
+      },
+      {
+        "name": "onChange",
+        "type": "((value: CalendarDateTime | null) => void)",
+        "required": false,
+        "description": "Called with the date and time once every segment is filled, the day exists and it is within\n`minValue`/`maxValue`, and with `null` when it stops being one.",
+        "native": false
+      },
+      {
+        "name": "required",
+        "type": "boolean",
+        "required": false,
+        "description": "Marks a date required: the field is `aria-required`, and an empty one is invalid.",
+        "native": false
+      },
+      {
+        "name": "size",
+        "type": "\"sm\" | \"md\" | \"lg\"",
+        "required": false,
+        "default": "md",
+        "description": "The field's height and text, on the same scale as an `Input`: `sm` is `text-sm`, `md` `text-base`,\n`lg` `text-lg`, one step down under an `AppShell density=\"compact\"`, and never under 16px on touch.",
+        "native": false
+      },
+      {
+        "name": "value",
+        "type": "CalendarDateTime | null",
+        "required": false,
+        "description": "The date and time shown, controlled, with `onChange`; `null` is an empty field.",
         "native": false
       }
     ]
@@ -2874,6 +3008,12 @@
     "name": "fromISODate",
     "description": "The `CalendarDate` of a `\"YYYY-MM-DD\"` string; `null` for an empty, malformed or impossible one.",
     "signature": "fromISODate(iso: string | null | undefined): CalendarDate | null",
+    "props": []
+  },
+  "fromISODateTime": {
+    "name": "fromISODateTime",
+    "description": "The `CalendarDateTime` of a `\"YYYY-MM-DDTHH:mm\"` string; `null` for an empty, malformed or\nimpossible one (a day the month does not have, an hour past 23).",
+    "signature": "fromISODateTime(iso: string | null | undefined): CalendarDateTime | null",
     "props": []
   },
   "FullBleedLayout": {
@@ -4748,7 +4888,7 @@
       },
       {
         "name": "width",
-        "type": "\"narrow\" | \"full\" | \"wide\"",
+        "type": "\"full\" | \"narrow\" | \"wide\"",
         "required": false,
         "default": "narrow",
         "description": "The column's width: `narrow` max-w-3xl, `wide` max-w-5xl, `full` the Container's width.",
@@ -5087,7 +5227,7 @@
       },
       {
         "name": "width",
-        "type": "\"compact\" | \"narrow\" | \"full\" | \"default\" | \"wide\"",
+        "type": "\"compact\" | \"full\" | \"default\" | \"narrow\" | \"wide\"",
         "required": false,
         "default": "default",
         "description": "Caps the column: `compact` max-w-md (one card or one picture's column), `narrow` max-w-3xl (a\nreading measure), `wide` max-w-5xl, `full` the parent's whole width, `default` sets nothing.",
@@ -5705,7 +5845,7 @@
       },
       {
         "name": "width",
-        "type": "\"compact\" | \"narrow\" | \"full\" | \"default\" | \"wide\"",
+        "type": "\"compact\" | \"full\" | \"default\" | \"narrow\" | \"wide\"",
         "required": false,
         "default": "default",
         "description": "Caps the column: `compact` max-w-md (one card or one picture's column), `narrow` max-w-3xl (a\nreading measure), `wide` max-w-5xl, `full` the parent's whole width, `default` sets nothing.",
@@ -6864,6 +7004,12 @@
     "name": "toISODate",
     "description": "`\"1990-05-17\"` for `CalendarDate(1990, 5, 17)`; `\"\"` for no date, so it drops into a form field.",
     "signature": "toISODate(date: CalendarDate | null | undefined): string",
+    "props": []
+  },
+  "toISODateTime": {
+    "name": "toISODateTime",
+    "description": "`\"2026-11-29T14:30\"` for `CalendarDateTime(2026, 11, 29, 14, 30)`, seconds dropped; `\"\"` for none.",
+    "signature": "toISODateTime(value: CalendarDateTime | null | undefined): string",
     "props": []
   },
   "TrendChart": {

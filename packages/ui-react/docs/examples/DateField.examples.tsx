@@ -53,7 +53,9 @@ export const DontValue = () => {
 };
 
 /** `DateField` without `calendar` is the same input with no calendar button, for a date the person knows by heart. */
-export const DoTypedOnly = () => <DateField label="Date of birth" hint="DD/MM/YYYY" />;
+export const DoTypedOnly = () => <DateField label="Date of birth" hint="As on your ID document." />;
 
 /** A calendar for a date the person knows by heart makes them page back decades. A birthday is typed: leave `calendar` out. */
-export const DontTypedOnly = () => <DateField calendar label="Date of birth" hint="DD/MM/YYYY" />;
+export const DontTypedOnly = () => (
+  <DateField calendar label="Date of birth" hint="As on your ID document." />
+);
