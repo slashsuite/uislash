@@ -54,35 +54,40 @@ export function decideUpload(state: UploadState): UploadMode {
   return "branch";
 }
 
-/** A project's recent `main` build shas, or why the server gave none. */
+/** A subproject's recent `main` build shas, or why the server gave none. */
 export type MainShas = { kind: "ok"; shas: string[] } | Exclude<LookupResult, { kind: "ok" }>;
 
 /** How a branch upload asks the server what it holds, and git whether a commit is in reach. */
 export type BaselineDeps = {
   /**
-   * The shas of `project`'s recent `main` builds, newest first, or why the server gave none: the
-   * project is missing (or the token cannot see it), or the server did not answer.
+   * The shas of `subproject`'s recent `main` builds, newest first, or why the server gave none:
+   * the subproject is missing (or the token cannot see it), or the server did not answer.
    */
-  mainShas: (project: string) => Promise<MainShas>;
+  mainShas: (subproject: string) => Promise<MainShas>;
   /** `git merge-base --is-ancestor sha mergeBase`: a sha the checkout does not have is `false`. */
   isAncestor: (sha: string) => Promise<boolean>;
 };
 
 /**
- * The projects that hold no `main` build at the merge-base or one of its ancestors, the projects
- * the server does not have, and the ones it did not answer for. A branch upload without a baseline
- * reads "new" on every shot, so it stops here, before any capture.
+ * The subprojects that hold `main` builds but none at the merge-base or one of its ancestors, the
+ * ones that hold no `main` build at all (new: every shot reads as new until main's upload sets
+ * the baselines), the ones the server does not have, and the ones it did not answer for.
  */
 async function baselineGaps(
-  projects: string[],
+  subprojects: string[],
   deps: BaselineDeps,
-): Promise<{ missing: string[]; misses: LookupMiss[] }> {
+): Promise<{ missing: string[]; fresh: string[]; misses: LookupMiss[] }> {
   const missing: string[] = [];
+  const fresh: string[] = [];
   const misses: LookupMiss[] = [];
-  for (const project of projects) {
-    const result = await deps.mainShas(project);
+  for (const subproject of subprojects) {
+    const result = await deps.mainShas(subproject);
     if (result.kind !== "ok") {
-      misses.push({ project, result });
+      misses.push({ subproject, result });
+      continue;
+    }
+    if (result.shas.length === 0) {
+      fresh.push(subproject);
       continue;
     }
     let found = false;
@@ -92,20 +97,22 @@ async function baselineGaps(
         break;
       }
     }
-    if (!found) missing.push(project);
+    if (!found) missing.push(subproject);
   }
-  return { missing, misses };
+  return { missing, fresh, misses };
 }
 
 /**
- * The failure for `baselineGaps`, or `undefined` when every project has its baseline: one line per
- * kind, server failures first, then projects the server does not have, then missing baselines.
+ * The failure for `baselineGaps`, or `undefined` when every subproject has its baseline or is new:
+ * one line per kind, server failures first, then subprojects the server does not have, then
+ * missing baselines. A branch upload with a baseline gap reads "new" on every shot that main
+ * already holds, so it stops here, before any capture. `fresh` names the new subprojects.
  */
 export async function baselineFailure(
-  projects: string[],
+  subprojects: string[],
   deps: BaselineDeps,
-): Promise<string | undefined> {
-  const { missing, misses } = await baselineGaps(projects, deps);
+): Promise<{ failure: string | undefined; fresh: string[] }> {
+  const { missing, fresh, misses } = await baselineGaps(subprojects, deps);
   const lines: string[] = [];
   const lookup = lookupFailure(misses);
   if (lookup !== undefined) lines.push(lookup);
@@ -114,14 +121,14 @@ export async function baselineFailure(
       `no main build at the merge-base or its ancestors in ${missing.join(", ")}; ` +
         `upload main first: run \`${MAIN_COMMAND}\` on a checkout at origin/main`,
     );
-  return lines.length > 0 ? lines.join("\n") : undefined;
+  return { failure: lines.length > 0 ? lines.join("\n") : undefined, fresh };
 }
 
 /** Statuses of a build the server cannot diff against: it holds no finished shots yet, or none. */
 const NO_BASELINE = ["errored", "uploading", "processing"];
 
 /**
- * The `commit_sha` of each build in a `builds --json` listing, in the order given. A build that
+ * The `commit_sha` of each build in a builds listing, in the order given. A build that
  * errored or has not finished is no baseline (the server diffs only against an accepted one), so
  * it does not count.
  */
@@ -150,7 +157,7 @@ export type Counts = {
   toReview?: number;
 };
 
-/** A build as `builds --json` lists it, reduced to what the run needs. */
+/** A build as a builds listing has it, reduced to what the run needs. */
 export type BuildState = {
   id: string;
   status: string;
@@ -212,7 +219,7 @@ export function readBuild(reply: unknown): BuildState | undefined {
   };
 }
 
-/** The build `id` in a `builds --json` listing, as `readBuild` reads it. */
+/** The build `id` in a builds listing, as `readBuild` reads it. */
 export function buildIn(listing: unknown, id: string): BuildState | undefined {
   const builds = isRecord(listing) && Array.isArray(listing["builds"]) ? listing["builds"] : [];
   const entry: unknown = builds.find((build: unknown) => isRecord(build) && build["id"] === id);

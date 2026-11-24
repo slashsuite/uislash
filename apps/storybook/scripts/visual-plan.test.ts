@@ -29,11 +29,11 @@ const overviewEverywhere = [
 
 describe("groupStories", () => {
   it("puts every story file in exactly one group, the first section that names it", () => {
-    expect(grouping.groups.map((g) => [g.slug, g.project, g.files.map((f) => f.stem)])).toEqual([
-      ["layout", "hackcove-ui-layout", ["Stack"]],
-      ["content", "hackcove-ui-content", ["Card", "CardBadge"]],
-      ["actions", "hackcove-ui-actions", ["Button"]],
-      ["overview", "hackcove-ui-overview", allOverview],
+    expect(grouping.groups.map((g) => [g.slug, g.files.map((f) => f.stem)])).toEqual([
+      ["layout", ["Stack"]],
+      ["content", ["Card", "CardBadge"]],
+      ["actions", ["Button"]],
+      ["overview", allOverview],
     ]);
     expect(grouping.unsectioned).toEqual([]);
   });
@@ -54,7 +54,7 @@ describe("groupStories", () => {
 
   it("slugs a two-word section", () => {
     const [group] = groupStories([{ title: "Page layouts", pages: [] }], []).groups;
-    expect(group?.project).toBe("hackcove-ui-page-layouts");
+    expect(group?.slug).toBe("page-layouts");
   });
 });
 

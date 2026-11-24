@@ -58,55 +58,61 @@ describe("decideUpload", () => {
 describe("baselineFailure", () => {
   const ancestors = new Set(["c1", "c2"]);
   const listings: Record<string, MainShas> = {
-    "hackcove-ui-text": { kind: "ok", shas: ["m9", "m8"] },
-    "hackcove-ui-layout": { kind: "ok", shas: ["m9", "c2"] },
-    "hackcove-ui-empty": { kind: "ok", shas: [] },
-    gone: { kind: "missing", line: "no project gone" },
+    text: { kind: "ok", shas: ["m9", "m8"] },
+    layout: { kind: "ok", shas: ["m9", "c2"] },
+    fresh: { kind: "ok", shas: [] },
+    gone: { kind: "missing", line: "uislash has no subproject gone" },
     down: { kind: "failed", line: "GET /builds -> 500 internal: boom" },
     denied: { kind: "failed", line: "GET /builds -> 401 unauthorized" },
   };
   const deps = {
-    mainShas: async (project: string) => listings[project] ?? { kind: "ok", shas: [] },
+    mainShas: async (subproject: string) => listings[subproject] ?? { kind: "ok", shas: [] },
     isAncestor: async (sha: string) => ancestors.has(sha),
   };
+  const failureOf = async (subprojects: string[], with_ = deps) =>
+    (await baselineFailure(subprojects, with_)).failure;
 
   it("passes when a main build is an ancestor of the merge-base", async () => {
-    expect(await baselineFailure(["hackcove-ui-layout"], deps)).toBeUndefined();
+    expect(await failureOf(["layout"])).toBeUndefined();
   });
 
   it("passes the merge-base itself, which is its own ancestor", async () => {
     const own = { ...deps, isAncestor: async (sha: string) => sha === "m9" };
-    expect(await baselineFailure(["hackcove-ui-text"], own)).toBeUndefined();
+    expect(await failureOf(["text"], own)).toBeUndefined();
   });
 
-  it("fails naming the project and the main-mode command when no listed sha is an ancestor", async () => {
-    const failure = await baselineFailure(["hackcove-ui-layout", "hackcove-ui-text"], deps);
-    expect(failure).toContain("hackcove-ui-text");
-    expect(failure).not.toContain("hackcove-ui-layout");
+  it("fails naming the subproject and the main-mode command when no listed sha is an ancestor", async () => {
+    const failure = await failureOf(["layout", "text"]);
+    expect(failure).toContain("in text;");
+    expect(failure).not.toContain("layout");
     expect(failure).toContain("upload main first");
     expect(failure).toContain("bunx moon run storybook:visual-upload");
     expect(failure).toContain("origin/main");
   });
 
-  it("fails a project with no main build at all", async () => {
-    expect(await baselineFailure(["hackcove-ui-empty"], deps)).toContain("hackcove-ui-empty");
+  it("passes a new subproject with no main build at all, and names it as fresh", async () => {
+    expect(await baselineFailure(["fresh", "layout"], deps)).toEqual({
+      failure: undefined,
+      fresh: ["fresh"],
+    });
   });
 
-  it("reports a missing project as one to create, and a 500 as PixelSlash not answering", async () => {
-    const gone = await baselineFailure(["gone"], deps);
-    expect(gone).toMatch(/no PixelSlash project gone \(pixelslash: no project .*create/);
-    const down = await baselineFailure(["down"], deps);
+  it("reports a missing subproject as one to create, and a 500 as PixelSlash not answering", async () => {
+    const gone = await failureOf(["gone"]);
+    expect(gone).toMatch(/no PixelSlash subproject gone \(pixelslash: uislash has no .*create/);
+    expect(gone).toContain("--parent uislash");
+    const down = await failureOf(["down"]);
     expect(down).toMatch(/did not answer for down \(pixelslash: .*500 internal: boom.*architect/);
-    expect(down).not.toMatch(/no PixelSlash project|pixelslash project create/);
+    expect(down).not.toMatch(/no PixelSlash subproject|pixelslash project create/);
   });
 
   it("names every kind in one call, the server failure first", async () => {
-    const failure = await baselineFailure(["hackcove-ui-text", "gone", "denied", "down"], deps);
+    const failure = await failureOf(["text", "gone", "denied", "down"]);
     expect(failure?.split("\n")).toEqual([
       expect.stringMatching(/^PixelSlash did not answer for down \(pixelslash: .*-> 500/),
       expect.stringMatching(/^PixelSlash refused the token for denied \(/),
-      expect.stringMatching(/^the server has no PixelSlash project gone \(/),
-      expect.stringMatching(/^no main build .* in hackcove-ui-text; upload main first/),
+      expect.stringMatching(/^the server has no PixelSlash subproject gone \(/),
+      expect.stringMatching(/^no main build .* in text; upload main first/),
     ]);
   });
 });

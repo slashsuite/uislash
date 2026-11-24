@@ -1,49 +1,81 @@
 import { describe, expect, it } from "vitest";
-import { lookupFailure, lookupResult } from "./visual-lookup.js";
+import {
+  buildsResult,
+  failedLine,
+  lookupFailure,
+  missingSubproject,
+  subprojectIds,
+} from "./visual-lookup.js";
 
-describe("lookupResult", () => {
-  const listing = JSON.stringify({ builds: [] });
-
-  it("parses the listing on exit 0", () => {
-    expect(lookupResult(0, listing, "")).toEqual({ kind: "ok", listing: { builds: [] } });
+describe("failedLine", () => {
+  it("names the request, the status and the server's error string", () => {
+    expect(failedLine("/api/v1/projects", 500, JSON.stringify({ error: "boom" }))).toBe(
+      "GET /api/v1/projects -> 500 boom",
+    );
   });
 
-  it("reads exit 2, the CLI's usage error, as a missing project and keeps its line", () => {
-    const stderr = "no project hackcove-ui-gone\nusage: pixelslash builds --project <name>\n";
-    expect(lookupResult(2, "", stderr)).toEqual({
+  it("reads an error object's message", () => {
+    const body = JSON.stringify({ error: { code: "unauthorized", message: "bad token" } });
+    expect(failedLine("/x", 401, body)).toBe("GET /x -> 401 bad token");
+  });
+
+  it("keeps a body that is not JSON as sent, and drops an empty one", () => {
+    expect(failedLine("/x", 502, "Bad Gateway\n")).toBe("GET /x -> 502 Bad Gateway");
+    expect(failedLine("/x", 503, "")).toBe("GET /x -> 503");
+  });
+});
+
+describe("buildsResult", () => {
+  it("parses the listing on 200", () => {
+    expect(buildsResult("/b", 200, JSON.stringify({ builds: [] }))).toEqual({
+      kind: "ok",
+      listing: { builds: [] },
+    });
+  });
+
+  it("reads any other status as a failure, not a missing subproject", () => {
+    expect(buildsResult("/b", 500, JSON.stringify({ error: "boom" }))).toEqual({
+      kind: "failed",
+      line: "GET /b -> 500 boom",
+    });
+  });
+});
+
+describe("subprojectIds", () => {
+  const listing = {
+    projects: [
+      { id: "p1", name: "uislash", parent_project_id: null },
+      { id: "s1", name: "forms", parent_project_id: "p1" },
+      { id: "s2", name: "text", parent_project_id: "p1" },
+      { id: "o1", name: "forms", parent_project_id: "other" },
+      { id: "x1", name: "uislash", parent_project_id: "other" },
+    ],
+  };
+
+  it("maps the top-level project's subprojects by name, and no one else's", () => {
+    expect(subprojectIds(listing, "uislash")).toEqual(
+      new Map([
+        ["forms", "s1"],
+        ["text", "s2"],
+      ]),
+    );
+  });
+
+  it("is undefined when the token sees no top-level project of that name", () => {
+    expect(subprojectIds(listing, "gone")).toBeUndefined();
+    expect(subprojectIds({}, "uislash")).toBeUndefined();
+  });
+});
+
+describe("missingSubproject", () => {
+  it("says which is missing: the project, or the subproject under it", () => {
+    expect(missingSubproject(undefined, "forms")).toEqual({
       kind: "missing",
-      line: "no project hackcove-ui-gone",
+      line: "the token sees no project uislash",
     });
-  });
-
-  it("reads exit 3 with a 500 as a server failure, not a missing project", () => {
-    const stderr = "GET /api/projects/hackcove-ui-text/builds -> 500 internal: boom\n";
-    expect(lookupResult(3, "", stderr)).toEqual({
-      kind: "failed",
-      line: "GET /api/projects/hackcove-ui-text/builds -> 500 internal: boom",
-    });
-  });
-
-  it("reads exit 3 with a 401 as a server failure", () => {
-    const stderr = "GET /api/projects -> 401 unauthorized; run `pixelslash login --server x`\n";
-    expect(lookupResult(3, "", stderr)).toMatchObject({
-      kind: "failed",
-      line: expect.stringMatching(/-> 401/),
-    });
-  });
-
-  it("reads exit 3 with `cannot fetch` as a server failure", () => {
-    const stderr = "cannot fetch http://192.0.2.1:3000/api/projects: connection refused\n";
-    expect(lookupResult(3, "", stderr)).toEqual({
-      kind: "failed",
-      line: "cannot fetch http://192.0.2.1:3000/api/projects: connection refused",
-    });
-  });
-
-  it("reads any other non-zero exit as a failure, naming it when the CLI printed nothing", () => {
-    expect(lookupResult(1, "", "")).toEqual({
-      kind: "failed",
-      line: "pixelslash builds exited 1 and printed nothing",
+    expect(missingSubproject(new Map(), "forms")).toEqual({
+      kind: "missing",
+      line: "uislash has no subproject forms",
     });
   });
 });
@@ -52,18 +84,23 @@ describe("lookupFailure", () => {
   it("reports a 401 as a token that needs reissuing, not as PixelSlash not answering", () => {
     const failure = lookupFailure([
       {
-        project: "hackcove-ui-denied",
-        result: {
-          kind: "failed",
-          line: "GET /api/projects/hackcove-ui-denied/builds -> 401 unauthorized",
-        },
+        subproject: "denied",
+        result: { kind: "failed", line: "GET /api/v1/projects -> 401 unauthorized" },
       },
     ]);
-    expect(failure).toContain("PixelSlash refused the token for hackcove-ui-denied");
+    expect(failure).toContain("PixelSlash refused the token for denied");
     expect(failure).toContain("-> 401");
     expect(failure).toContain("needs reissuing");
     expect(failure).not.toContain("did not answer");
     expect(failure).not.toContain("pixelslash project create");
+  });
+
+  it("names a missing subproject with the command that creates it under uislash", () => {
+    const failure = lookupFailure([
+      { subproject: "forms", result: { kind: "missing", line: "uislash has no subproject forms" } },
+    ]);
+    expect(failure).toContain("no PixelSlash subproject forms");
+    expect(failure).toContain("pixelslash project create <name> --parent uislash");
   });
 
   it("is undefined when every lookup gave a listing", () => {
