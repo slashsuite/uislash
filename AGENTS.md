@@ -32,7 +32,7 @@ of options.
 
 | Project | Path | What it is |
 | --- | --- | --- |
-| `ui-react` | `packages/ui-react` | `@slashsuite/ui-react`: the components. Builds to `dist/` (ESM + `.d.ts`). Peers: react, react-dom, tailwindcss v4, and optional `@types/react` + `@types/react-dom` (types reach consumers under isolated linkers); one runtime dependency, react-aria-components (the date picker). No theme CSS. |
+| `ui-react` | `packages/ui-react` | `@slashsuite/ui-react`: the components. Builds to `dist/` (ESM + `.d.ts`). Peers: react, react-dom, tailwindcss v4, and optional `@types/react` + `@types/react-dom` (types reach consumers under isolated linkers); two runtime dependencies, react-aria-components (the date picker) and @dagrejs/dagre (`FlowDiagram`'s layout). No theme CSS. |
 | `themes` | `themes` | `@slashsuite/themes`: every theme, one CSS file each, shipped as-is: `catppuccin-mocha.css` (dark; scope `.dark`), `catppuccin-latte.css` (light; scope `.latte`), `thrifty-paper.css` (light; scope `.thrifty-paper`), `thriftloop.css` (light; scope `.thriftloop`), `thriftloop-dark.css` (dark; scope `.thriftloop-dark`), `slash-suite.css` (light; scope `.slash-suite`) and `slash-suite-dark.css` (dark; scope `.slash-suite-dark`). |
 | `oxlint-testing` | `packages/oxlint-testing` | `@slashsuite/oxlint-testing`: the shared oxlint config (`.oxlintrc.json`, overrides by glob) and plugin (`plugin.js`, plain ESM loaded through `jsPlugins`) for UI tests. Peers: oxlint, eslint-plugin-playwright and eslint-plugin-testing-library at exact versions. Its `test` runs the fixtures; `ui-react`'s, `storybook`'s and `hack-cove-site`'s `lint` enforce it through each project's `.oxlintrc.json`, and `bun run lint:testing` reports the counts for the projects that do not yet. |
 | `storybook` | `apps/storybook` | Storybook for the components; a toolbar switcher lists every theme CSS file in `themes/`. Its `e2e/` is the Playwright layer (`test:e2e`). Private. |
@@ -204,9 +204,10 @@ global rule; what is particular to uislash:
    `@slashsuite/themes`, wildcard exports and `files` that list no theme, rules scoped under each
    file's own scope class, no Tailwind import, remaps every palette utility, clears the WCAG AA contrast contract in `packages/themes-shared/src/contrastRules.ts` and the distinction contract in `packages/themes-shared/src/distinction.ts` (colours a page must tell apart, by OKLab distance); a dark theme also declares `@custom-variant dark`).
    The scope class is read from the CSS file, never listed. Do not add a theme list anywhere.
-3. **Packages stay (nearly) dependency-free at runtime.** `@slashsuite/ui-react` has one approved runtime
-   dependency, `react-aria-components`, for the date picker (with `@internationalized/date`, whose
-   `CalendarDate` is the picker's value type and which RAC already brings in); its peers are react,
+3. **Packages stay (nearly) dependency-free at runtime.** `@slashsuite/ui-react` has two approved runtime
+   dependencies: `react-aria-components`, for the date picker (with `@internationalized/date`, whose
+   `CalendarDate` is the picker's value type and which RAC already brings in), and `@dagrejs/dagre`,
+   which lays out `FlowDiagram`; its peers are react,
    react-dom and tailwindcss v4. `@slashsuite/themes` has only the tailwindcss peer. Any other dependency is a
    human decision.
 4. **`packages/ui-react` source imports use `.js` specifiers** (`./Card.js`, resolved to `Card.tsx`). A

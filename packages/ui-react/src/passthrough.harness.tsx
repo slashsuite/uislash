@@ -244,6 +244,9 @@ export const CASES: Record<string, () => ReactElement> = {
     <ui.StackedBar items={[{ label: "a", value: 1, tone: "info" }]} label="L" {...A} />
   ),
   StatTile: () => <ui.StatTile label="L" value="1" {...A} />,
+  FlowDiagram: () => (
+    <ui.FlowDiagram label="L" nodes={[{ id: "a", label: "a" }]} edges={[]} {...A} />
+  ),
   TrendChart: () => (
     <ui.TrendChart
       label="L"

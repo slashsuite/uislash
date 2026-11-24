@@ -1,4 +1,5 @@
 import {
+  FlowDiagram,
   Legend,
   ProgressBar,
   SplitBar,
@@ -42,7 +43,7 @@ const categories = [
   "Kitchen",
 ];
 
-/** The StatTile, ProgressBar, SplitBar, StackedBar, Legend and TrendChart rows of the Gallery. */
+/** The StatTile, ProgressBar, SplitBar, StackedBar, Legend, TrendChart and FlowDiagram rows of the Gallery. */
 export function GalleryBars() {
   return (
     <div className="flex flex-col gap-4">
@@ -114,6 +115,35 @@ export function GalleryBars() {
           ]}
         />
       </div>
+      <GalleryFlow />
     </div>
+  );
+}
+
+/** The FlowDiagram row of the Gallery: a small flow with a branch, a loop and the current box. */
+function GalleryFlow() {
+  return (
+    <FlowDiagram
+      label="How a build lands"
+      active="launched"
+      nodes={[
+        { id: "pending", label: "Queued" },
+        { id: "launching", label: "Launching" },
+        { id: "launched", label: "Building" },
+        { id: "gate", label: "Ready for gate", tone: "warn" },
+        { id: "merged", label: "Merged", tone: "positive" },
+        { id: "failed", label: "Failed", tone: "danger" },
+      ]}
+      edges={[
+        { from: "pending", to: "launching", label: "claim" },
+        { from: "launching", to: "launched", label: "stamp" },
+        { from: "launching", to: "pending", label: "retry" },
+        { from: "launched", to: "gate", label: "hand off" },
+        { from: "gate", to: "launched", label: "send back" },
+        { from: "gate", to: "merged", label: "land" },
+        { from: "merged", to: "launched", label: "reopen" },
+        { from: "launched", to: "failed", label: "fail" },
+      ]}
+    />
   );
 }

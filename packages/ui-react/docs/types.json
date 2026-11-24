@@ -134,6 +134,46 @@
     "description": "The page before or after this one in reading order.",
     "definition": "{ label: string; href: string }"
   },
+  "FlowBox": {
+    "name": "FlowBox",
+    "description": "Where a node or a group sits, its top left corner and its size, in CSS pixels.",
+    "definition": "{ x: number; y: number; width: number; height: number }"
+  },
+  "FlowDirection": {
+    "name": "FlowDirection",
+    "description": "`down` reads from the top, `right` from the start edge.",
+    "definition": "\"down\" | \"right\""
+  },
+  "FlowEdge": {
+    "name": "FlowEdge",
+    "description": "One arrow of a `FlowDiagram`, from one node's `id` to another's, with an optional short `label` on it.",
+    "definition": "{ from: string; to: string; label?: string }"
+  },
+  "FlowEdgePath": {
+    "name": "FlowEdgePath",
+    "description": "An arrow as laid out: the `from` and `to` ids, its place in `edges` (`index`), the points dagre\nrouted it through, the SVG path drawn through them (it ends on the target's edge, at the\narrowhead's tip) and its label's centre when it has one.",
+    "definition": "{ from: string; to: string; index: number; points: readonly FlowPoint[]; path: string; labelAt: FlowPoint | null }"
+  },
+  "FlowLayout": {
+    "name": "FlowLayout",
+    "description": "The whole diagram as laid out, in one coordinate space: `width` and `height`, a box per node and\nper group, and a path per arrow. `FlowDiagram` hands it to `overlay`.",
+    "definition": "{ width: number; height: number; nodes: readonly FlowNodeBox[]; groups: readonly (FlowBox & { name: string })[]; edges: readonly FlowEdgePath[] }"
+  },
+  "FlowNode": {
+    "name": "FlowNode",
+    "description": "One box of a `FlowDiagram`: its `id` (what an arrow's `from` and `to` name), its `label`, a\n`tone` that says what it means, the `group` it is framed in, and `content` drawn under the\nlabel (a few `Pill`s, a short list).",
+    "definition": "{ id: string; label: string; tone?: Tone; group?: string; content?: ReactNode }"
+  },
+  "FlowNodeBox": {
+    "name": "FlowNodeBox",
+    "description": "A node as laid out: its `id` and its box. A group's box (`group`) is the frame round its nodes.",
+    "definition": "{ x: number; y: number; width: number; height: number; id: string }"
+  },
+  "FlowPoint": {
+    "name": "FlowPoint",
+    "description": "A point in the diagram's own space, in CSS pixels from its top left corner.",
+    "definition": "{ x: number; y: number }"
+  },
   "FormRowSpan": {
     "name": "FormRowSpan",
     "description": "Relative widths in a `FormRow`: a field of `span` 2 is twice as wide as one of `span` 1.",
