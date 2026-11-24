@@ -37,19 +37,14 @@ const files = packs.flatMap((p) => p.files.map((file) => file.path));
 const index = files.includes("agent-docs/llms.txt")
   ? readFileSync(join(root, "agent-docs/llms.txt"), "utf8")
   : undefined;
-// npm packs the README whatever `files` lists.
-const readme = readFileSync(join(root, "README.md"), "utf8");
-const problems = [
-  ...packedDocsProblems(
-    files,
-    index,
-    componentPages.map((page) => page.slug),
-  ),
-  ...readmePointerProblems(files, readme),
-];
+const problems = packedDocsProblems(
+  files,
+  index,
+  componentPages.map((page) => page.slug),
+);
 if (problems.length > 0) {
   throw new Error(
-    `the tarball's agent docs, or the README's pointer to them, are wrong (the docs come from \`bunx moon run ui-react:agent-docs\`):\n${problems.join("\n")}`,
+    `the tarball's agent docs are incomplete (run \`bunx moon run ui-react:agent-docs\`):\n${problems.join("\n")}`,
   );
 }
 const skillProblems = packedSkillProblems(
@@ -58,4 +53,9 @@ const skillProblems = packedSkillProblems(
 );
 if (skillProblems.length > 0) {
   throw new Error(`the tarball's skill is incomplete:\n${skillProblems.join("\n")}`);
+}
+// npm packs the README whatever `files` lists.
+const readmeProblems = readmePointerProblems(files, readFileSync(join(root, "README.md"), "utf8"));
+if (readmeProblems.length > 0) {
+  throw new Error(`the README's pointer to the agent docs is wrong:\n${readmeProblems.join("\n")}`);
 }
