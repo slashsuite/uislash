@@ -68,21 +68,21 @@ async function get(path: string): Promise<{ status: number; body: string } | { l
   }
 }
 
-let subprojects: Map<string, string> | undefined;
+let subprojectCache: Map<string, string> | undefined;
 
 /**
  * The project's subprojects by name (`undefined` when the token sees no such project), or the
  * failed request. A listing is read once per run; a failure is not kept, so the next read retries.
  */
 async function readSubprojects(): Promise<Map<string, string> | undefined | LookupResult> {
-  if (subprojects !== undefined) return subprojects;
+  if (subprojectCache !== undefined) return subprojectCache;
   const path = "/api/v1/projects";
   const reply = await get(path);
   if ("line" in reply) return { kind: "failed", line: reply.line };
   if (reply.status !== 200)
     return { kind: "failed", line: failedLine(path, reply.status, reply.body) };
-  subprojects = subprojectIds(JSON.parse(reply.body), PIXELSLASH_PROJECT);
-  return subprojects;
+  subprojectCache = subprojectIds(JSON.parse(reply.body), PIXELSLASH_PROJECT);
+  return subprojectCache;
 }
 
 /**
