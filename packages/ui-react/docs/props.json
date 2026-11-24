@@ -1684,10 +1684,10 @@
       },
       {
         "name": "size",
-        "type": "\"sm\" | \"md\" | \"lg\"",
+        "type": "Size | ResponsiveSize",
         "required": false,
         "default": "md",
-        "description": "The field's height and text, on the same scale as an `Input`: `sm` is `text-sm`, `md` `text-base`,\n`lg` `text-lg`, one step down under an `AppShell density=\"compact\"`, and never under 16px on touch.",
+        "description": "The field's height and text, on the same scale as an `Input`: `sm` is `text-sm`, `md` `text-base`,\n`lg` `text-lg`, one step down under an `AppShell density=\"compact\"`, and never under 16px on touch.\n`{ base: \"md\", md: \"lg\" }` changes size at the `md` breakpoint (48rem), in CSS, as an `Input`'s does.",
         "native": false
       },
       {
@@ -1819,10 +1819,10 @@
       },
       {
         "name": "size",
-        "type": "\"sm\" | \"md\" | \"lg\"",
+        "type": "Size | ResponsiveSize",
         "required": false,
         "default": "md",
-        "description": "The field's height and text, on the same scale as an `Input`: `sm` is `text-sm`, `md` `text-base`,\n`lg` `text-lg`, one step down under an `AppShell density=\"compact\"`, and never under 16px on touch.",
+        "description": "The field's height and text, on the same scale as an `Input`: `sm` is `text-sm`, `md` `text-base`,\n`lg` `text-lg`, one step down under an `AppShell density=\"compact\"`, and never under 16px on touch.\n`{ base: \"md\", md: \"lg\" }` changes size at the `md` breakpoint (48rem), in CSS, as an `Input`'s does.",
         "native": false
       },
       {
@@ -1954,10 +1954,10 @@
       },
       {
         "name": "size",
-        "type": "\"sm\" | \"md\" | \"lg\"",
+        "type": "Size | ResponsiveSize",
         "required": false,
         "default": "md",
-        "description": "The field's height and text, on the same scale as an `Input`: `sm` is `text-sm`, `md` `text-base`,\n`lg` `text-lg`, one step down under an `AppShell density=\"compact\"`, and never under 16px on touch.",
+        "description": "The field's height and text, on the same scale as an `Input`: `sm` is `text-sm`, `md` `text-base`,\n`lg` `text-lg`, one step down under an `AppShell density=\"compact\"`, and never under 16px on touch.\n`{ base: \"md\", md: \"lg\" }` changes size at the `md` breakpoint (48rem), in CSS, as an `Input`'s does.",
         "native": false
       },
       {
@@ -3407,10 +3407,10 @@
       },
       {
         "name": "size",
-        "type": "\"sm\" | \"md\" | \"lg\"",
+        "type": "Size | ResponsiveSize",
         "required": false,
         "default": "md",
-        "description": "`sm` is compact, `text-sm` with less padding, for dense forms and table rows; `md` is `text-base`;\n`lg` is `text-lg` with more padding, for a hero form. Under an `AppShell density=\"compact\"` each\nis one type step down, and on a touch screen a field is never under 16px.",
+        "description": "`sm` is compact, `text-sm` with less padding, for dense forms and table rows; `md` is `text-base`;\n`lg` is `text-lg` with more padding, for a hero form. Under an `AppShell density=\"compact\"` each\nis one type step down, and on a touch screen a field is never under 16px.\n`{ base: \"md\", md: \"lg\" }` changes size at the `md` breakpoint (48rem), in CSS, as a `Button`'s\ndoes: give the field and the buttons in its row the same value, so the row stays aligned.",
         "native": false
       },
       {
@@ -5383,10 +5383,10 @@
       },
       {
         "name": "size",
-        "type": "\"sm\" | \"md\" | \"lg\"",
+        "type": "Size | ResponsiveSize",
         "required": false,
         "default": "md",
-        "description": "`sm` is compact, `text-sm` with less padding, for dense forms and table rows; `md` is `text-base`;\n`lg` is `text-lg` with more padding, for a hero form. Under an `AppShell density=\"compact\"` each\nis one type step down, and on a touch screen a field is never under 16px.",
+        "description": "`sm` is compact, `text-sm` with less padding, for dense forms and table rows; `md` is `text-base`;\n`lg` is `text-lg` with more padding, for a hero form. Under an `AppShell density=\"compact\"` each\nis one type step down, and on a touch screen a field is never under 16px.\n`{ base: \"md\", md: \"lg\" }` changes size at the `md` breakpoint (48rem), in CSS, as a `Button`'s\ndoes: give the field and the buttons in its row the same value, so the row stays aligned.",
         "native": false
       },
       {
@@ -6790,10 +6790,10 @@
       },
       {
         "name": "size",
-        "type": "\"sm\" | \"md\" | \"lg\"",
+        "type": "Size | ResponsiveSize",
         "required": false,
         "default": "md",
-        "description": "`sm` is compact, `text-sm` with less padding, for dense forms and table rows; `md` is `text-base`;\n`lg` is `text-lg` with more padding, for a hero form. Under an `AppShell density=\"compact\"` each\nis one type step down, and on a touch screen a field is never under 16px.",
+        "description": "`sm` is compact, `text-sm` with less padding, for dense forms and table rows; `md` is `text-base`;\n`lg` is `text-lg` with more padding, for a hero form. Under an `AppShell density=\"compact\"` each\nis one type step down, and on a touch screen a field is never under 16px.\n`{ base: \"md\", md: \"lg\" }` changes size at the `md` breakpoint (48rem), in CSS, as a `Button`'s\ndoes: give the field and the buttons in its row the same value, so the row stays aligned.",
         "native": false
       },
       {

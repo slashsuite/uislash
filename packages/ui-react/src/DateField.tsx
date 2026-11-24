@@ -24,7 +24,7 @@ import { type LoadingProps, useLoading } from "./skeleton.js";
 import { DATE } from "./shownDate.js";
 import { SegmentedField } from "./SegmentedField.js";
 import { monthNames, shownIn } from "./dateLocale.js";
-import type { Size } from "./size.js";
+import { type ResponsiveSize, type Size, sizeClass } from "./size.js";
 
 type Segment = NonNullable<ContextType<typeof DateFieldStateContext>>["segments"][number];
 
@@ -42,9 +42,10 @@ export type FieldProps = {
   /**
    * The field's height and text, on the same scale as an `Input`: `sm` is `text-sm`, `md` `text-base`,
    * `lg` `text-lg`, one step down under an `AppShell density="compact"`, and never under 16px on touch.
+   * `{ base: "md", md: "lg" }` changes size at the `md` breakpoint (48rem), in CSS, as an `Input`'s does.
    * @default md
    */
-  size?: Size;
+  size?: Size | ResponsiveSize;
   /** Disables the field: no typing, no calendar. */
   disabled?: boolean | undefined;
   /** Marks a date required: the field is `aria-required`, and an empty one is invalid. */
@@ -273,11 +274,26 @@ export function Notes({
 }
 
 /** A `DateField`'s padding, by `size`: the heights of an `Input`. Its type is `controlText`'s, as an `Input`'s. */
-export const FIELD_SIZE: Record<Size, string> = {
+const FIELD_SIZE: Record<Size, string> = {
   sm: "py-1 pl-2 pr-2",
   md: "py-2 pl-2.5 pr-2.5",
   lg: "py-2.5 pl-3 pr-3",
 };
+
+/** `FIELD_SIZE` from the `md` breakpoint up, for a responsive size. */
+const FIELD_SIZE_MD: Record<Size, string> = {
+  sm: "md:py-1 md:pl-2 md:pr-2",
+  md: "md:py-2 md:pl-2.5 md:pr-2.5",
+  lg: "md:py-2.5 md:pl-3 md:pr-3",
+};
+
+/** The padding table and its `md:` twin, for the data test. */
+export const fieldSizeTables = { pad: FIELD_SIZE, padMd: FIELD_SIZE_MD };
+
+/** A date field's padding at `size`. */
+export function fieldPad(size: Size | ResponsiveSize): string {
+  return sizeClass(FIELD_SIZE, FIELD_SIZE_MD, size);
+}
 
 export const labelClass = "text-sm font-medium text-slate-700";
 

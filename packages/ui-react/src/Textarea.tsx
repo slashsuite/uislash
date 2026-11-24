@@ -1,6 +1,6 @@
 import type { ComponentPropsWithoutRef, ReactElement, Ref } from "react";
 import {
-  CONTROL_PAD,
+  controlPad,
   controlClass,
   type ControlProps,
   type ControlSize,
@@ -10,6 +10,7 @@ import { cx } from "./cx.js";
 import { useTypeStep } from "./density.js";
 import { useFieldControl } from "./fieldControl.js";
 import type { Unstyled } from "./props.js";
+import type { ResponsiveSize } from "./size.js";
 
 export type TextareaProps = ControlProps & {
   /** The monospace face, for pasted CSV or statement text, where the columns must line up. Off by default. */
@@ -47,7 +48,7 @@ export function TextareaControl({
   grow = false,
   ...rest
 }: Omit<TextareaProps, "size" | "width" | "mono"> & {
-  size: ControlSize;
+  size: ControlSize | ResponsiveSize;
   width: ControlWidth;
   mono: boolean;
   grow?: boolean;
@@ -61,7 +62,7 @@ export function TextareaControl({
       {...field}
       className={cx(
         controlClass(size, width, step),
-        CONTROL_PAD[size].x,
+        controlPad(size),
         mono && "font-mono",
         grow && GROW,
       )}

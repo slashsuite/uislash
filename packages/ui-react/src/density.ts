@@ -111,17 +111,21 @@ export const controlTextTables = {
 
 /**
  * The type class of a control of `size` at `step`; `entry` adds the 16px floor on touch for a field
- * a person types in. A responsive size adds its `md` size from the breakpoint up.
+ * a person types in. A responsive size adds its `md` size from the breakpoint up, and the floor
+ * holds at both widths: `pointer-coarse:` comes after the breakpoints in Tailwind's order, so it
+ * wins over an `md:` size under 16px.
  */
 export function controlText(
   size: Size | ResponsiveSize,
   step: TypeStep | undefined,
   entry: boolean,
 ): string {
-  // The touch floor is judged on `base` only: no text-entry control takes a responsive size yet.
-  const base = isResponsive(size) ? size.base : size;
-  const plain = `${CONTROL_TEXT[step ?? "default"][base]} ${CONTROL_LEADING[base]}`;
-  const text = entry && !/text-(base|lg)/.test(plain) ? `${plain} ${TOUCH_TEXT}` : plain;
-  if (!isResponsive(size)) return text;
-  return `${text} ${CONTROL_TEXT_MD[step ?? "default"][size.md]} ${CONTROL_LEADING_MD[size.md]}`;
+  const table = CONTROL_TEXT[step ?? "default"];
+  const [base, wide] = isResponsive(size) ? [size.base, size.md] : [size, size];
+  const plain = `${table[base]} ${CONTROL_LEADING[base]}`;
+  const md = isResponsive(size)
+    ? ` ${CONTROL_TEXT_MD[step ?? "default"][wide]} ${CONTROL_LEADING_MD[wide]}`
+    : "";
+  const small = [table[base], table[wide]].some((text) => !/text-(base|lg)/.test(text));
+  return `${plain}${md}${entry && small ? ` ${TOUCH_TEXT}` : ""}`;
 }

@@ -1,8 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { buttonSizeTables } from "./Button.js";
-import { controlTextTables } from "./density.js";
+import { controlSizeTables } from "./control.js";
+import { fieldSizeTables } from "./DateField.js";
+import { pickerSizeTables } from "./DateFieldCalendar.js";
+import { controlText, controlTextTables } from "./density.js";
 import { iconSizeTables } from "./Icon.js";
 import { iconButtonSizeTables } from "./IconButton.js";
+import { shellSizeTables } from "./InputShell.js";
+import { searchSizeTables } from "./SearchInput.js";
 import { segmentSizeTables } from "./SegmentedControl.js";
 import { type Size, sizeClass } from "./size.js";
 
@@ -24,6 +29,19 @@ const pairs: Array<[string, Record<Size, string>, Record<Size, string>]> = [
   ["control text", controlTextTables.text.default, controlTextTables.textMd.default],
   ["compact control text", controlTextTables.text.compact, controlTextTables.textMd.compact],
   ["control leading", controlTextTables.leading, controlTextTables.leadingMd],
+  ["control vertical padding", controlSizeTables.padY, controlSizeTables.padYMd],
+  ["control horizontal padding", controlSizeTables.padX, controlSizeTables.padXMd],
+  ["control icon gutter", controlSizeTables.padIcon, controlSizeTables.padIconMd],
+  ["control height", controlSizeTables.height, controlSizeTables.heightMd],
+  ["input icon", shellSizeTables.icon, shellSizeTables.iconMd],
+  ["input prefix", shellSizeTables.prefix, shellSizeTables.prefixMd],
+  ["search padding", searchSizeTables.pad, searchSizeTables.padMd],
+  ["search padding with an icon", searchSizeTables.padIcon, searchSizeTables.padIconMd],
+  ["search clear button", searchSizeTables.clearBox, searchSizeTables.clearBoxMd],
+  ["search clear icon", searchSizeTables.clearIcon, searchSizeTables.clearIconMd],
+  ["date field padding", fieldSizeTables.pad, fieldSizeTables.padMd],
+  ["date picker frame", pickerSizeTables.frame, pickerSizeTables.frameMd],
+  ["date picker button", pickerSizeTables.button, pickerSizeTables.buttonMd],
 ];
 
 describe("the md: twin of each size table", () => {
@@ -40,5 +58,25 @@ describe("sizeClass", () => {
 
   it("joins the base entry and the twin's md entry for a responsive size", () => {
     expect(sizeClass(base, twin, { base: "md", md: "lg" })).toBe(`${base.md} ${twin.lg}`);
+  });
+});
+
+describe("controlText's touch floor", () => {
+  const FLOOR = "pointer-coarse:text-base";
+
+  it("holds a typed-in field at 16px on touch when its md size is smaller", () => {
+    expect(controlText({ base: "lg", md: "sm" }, undefined, true)).toContain(FLOOR);
+  });
+
+  it("holds when the base size is smaller", () => {
+    expect(controlText({ base: "sm", md: "lg" }, undefined, true)).toContain(FLOOR);
+  });
+
+  it("is left out when both sizes are 16px or more", () => {
+    expect(controlText({ base: "md", md: "lg" }, undefined, true)).not.toContain(FLOOR);
+  });
+
+  it("is left out of a control nobody types in", () => {
+    expect(controlText({ base: "sm", md: "sm" }, undefined, false)).not.toContain(FLOOR);
   });
 });
