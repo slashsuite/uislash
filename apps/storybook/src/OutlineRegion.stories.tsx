@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { OutlineRegion, RegionFrame } from "@slashsuite/ui-react";
-import { sampleShot, sampleShotSize } from "./sampleShot";
+import { sampleShot, sampleShotSize } from "../../../packages/ui-react/docs/examples/sampleShot.js";
+import * as examples from "../../../packages/ui-react/docs/examples/OutlineRegion.examples.js";
 
 const meta: Meta = { title: "Content/OutlineRegion" };
 export default meta;
@@ -82,25 +83,10 @@ export const Aspects: S = {
   ),
 };
 
-/** A `label` says why the area is marked, so a reader can tell an ignored area from a flagged one. */
 export const DoLabel: S = {
-  render: () => (
-    <RegionFrame src={sampleShot} alt="The dashboard">
-      <OutlineRegion
-        rect={{ x: 228, y: 4, width: 80, height: 20 }}
-        within={sampleShotSize}
-        label="ignored"
-        hatched
-      />
-    </RegionFrame>
-  ),
+  render: examples.DoLabel,
 };
 
-/** An unlabelled box leaves the reader to guess what it marks and where it came from. */
 export const DontLabel: S = {
-  render: () => (
-    <RegionFrame src={sampleShot} alt="The dashboard">
-      <OutlineRegion rect={{ x: 228, y: 4, width: 80, height: 20 }} within={sampleShotSize} />
-    </RegionFrame>
-  ),
+  render: examples.DontLabel,
 };

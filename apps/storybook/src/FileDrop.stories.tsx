@@ -1,6 +1,6 @@
-import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Field, FileDrop } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/FileDrop.examples.js";
 
 const meta: Meta = { title: "Forms/FileDrop" };
 export default meta;
@@ -27,21 +27,12 @@ export const Small: S = {
   ),
 };
 
-/** Name the file the zone wants in its prompt, restrict it with `accept`, and show the chosen file's name from `onChange`. */
 export const DoChosen: S = {
-  render: () => {
-    const [name, setName] = useState("");
-    return (
-      <FileDrop accept=".csv" onChange={(event) => setName(event.target.files?.[0]?.name ?? "")}>
-        {name === "" ? "Drop a bank statement here or click to choose" : name}
-      </FileDrop>
-    );
-  },
+  render: examples.DoChosen,
 };
 
-/** A prompt that never changes leaves the person unsure the file was taken, and with no `accept` any file is. */
 export const DontChosen: S = {
-  render: () => <FileDrop>Drop here</FileDrop>,
+  render: examples.DontChosen,
 };
 
 /** `sm`, `md` (the default) and `lg`: the zone's padding. */

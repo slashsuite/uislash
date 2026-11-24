@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Cluster, Kbd, KeyValue, KeyValueList, Stack, Text } from "@slashsuite/ui-react";
+import { Kbd, KeyValue, KeyValueList } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/KeyValueList.examples.js";
 
 const meta: Meta = { title: "Content/KeyValueList" };
 export default meta;
@@ -48,53 +49,20 @@ export const ValuesAtStart: S = {
   ),
 };
 
-/** Label and value pairs are a `KeyValueList`: one row per fact, the label muted, the value in tabular figures. */
 export const DoFactsList: S = {
-  render: () => (
-    <KeyValueList>
-      <KeyValue label="Size">1280×720</KeyValue>
-      <KeyValue label="Changed pixels">0.4%</KeyValue>
-      <KeyValue label="Captured">2 min ago</KeyValue>
-    </KeyValueList>
-  ),
+  render: examples.DoFactsList,
 };
 
-/** Rows built by hand from a `Cluster` and `Text` drift from the list's label colour and figures. Use `KeyValueList`. */
 export const DontFactsList: S = {
-  render: () => (
-    <Stack gap="xs">
-      <Cluster justify="between">
-        <Text as="span">Size</Text>
-        <Text as="span">1280×720</Text>
-      </Cluster>
-      <Cluster justify="between">
-        <Text as="span">Changed pixels</Text>
-        <Text as="span">0.4%</Text>
-      </Cluster>
-    </Stack>
-  ),
+  render: examples.DontFactsList,
 };
 
-/** `align="start"` puts the values in one left-aligned column, for long values or a mix of short and long ones. */
 export const DoAlignStart: S = {
-  render: () => (
-    <KeyValueList align="start">
-      <KeyValue label="Branch">hc-145-docs-for-every-export</KeyValue>
-      <KeyValue label="Commit">83422a6</KeyValue>
-      <KeyValue label="Captured">2 min ago</KeyValue>
-    </KeyValueList>
-  ),
+  render: examples.DoAlignStart,
 };
 
-/** Long values at the default `align="end"` push against the right edge in a ragged column. Long values take `align="start"`. */
 export const DontAlignStart: S = {
-  render: () => (
-    <KeyValueList>
-      <KeyValue label="Branch">hc-145-docs-for-every-export</KeyValue>
-      <KeyValue label="Commit">83422a6</KeyValue>
-      <KeyValue label="Captured">2 min ago</KeyValue>
-    </KeyValueList>
-  ),
+  render: examples.DontAlignStart,
 };
 
 /** `total` closes a column of amounts: a firm rule above it and strong text, for the sum the rows add up to. */

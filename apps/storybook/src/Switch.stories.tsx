@@ -11,8 +11,8 @@ import {
   TableHead,
   TableHeaderCell,
   TableRow,
-  Text,
 } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/Switch.examples.js";
 
 const meta: Meta = { title: "Forms/Switch" };
 export default meta;
@@ -154,68 +154,24 @@ export const Bare: S = {
   },
 };
 
-/** A Switch takes a `label`: the whole label is the click target, and it names the switch. */
 export const DoLabel: S = {
-  render: () => {
-    const [checked, setChecked] = useState(true);
-    return <Switch label="Live in staging" checked={checked} onChange={setChecked} />;
-  },
+  render: examples.DoLabel,
 };
 
-/** Words beside the switch, not in it, name nothing: clicking the words does nothing. */
 export const DontLabel: S = {
-  render: () => {
-    const [checked, setChecked] = useState(true);
-    return (
-      <Cluster gap="sm">
-        <Switch aria-label="Live in staging" checked={checked} onChange={setChecked} />
-        <Text>Live in staging</Text>
-      </Cluster>
-    );
-  },
+  render: examples.DontLabel,
 };
 
-/** In a table cell there is no room for words: leave the `label` out, use `size="sm"` and name the switch with `aria-label`. */
 export const DoRow: S = {
-  render: () => {
-    const [checked, setChecked] = useState(true);
-    return (
-      <Table label="Flags">
-        <TableBody>
-          <TableRow>
-            <TableCell mono>checkout-v2</TableCell>
-            <TableCell>
-              <Switch
-                size="sm"
-                aria-label="checkout-v2 in staging"
-                checked={checked}
-                onChange={setChecked}
-              />
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-    );
-  },
+  render: examples.DoRow,
 };
 
-/** `disabledReason` says why it cannot flip: it washes out, keeps its focus and shows the reason as its tooltip. */
 export const DoDisabledReason: S = {
-  render: () => (
-    <Switch
-      label="Live in production"
-      checked={false}
-      onChange={() => undefined}
-      disabledReason="Pass the staging check first"
-    />
-  ),
+  render: examples.DoDisabledReason,
 };
 
-/** A bare `disabled` switch drops out of the tab order and never says why. */
 export const DontDisabledReason: S = {
-  render: () => (
-    <Switch label="Live in production" checked={false} onChange={() => undefined} disabled />
-  ),
+  render: examples.DontDisabledReason,
 };
 
 /** While `loading` the label is drawn and the track is a bone of its size. */

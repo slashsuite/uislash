@@ -1,33 +1,25 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { CodeBlock, Cluster, Code, CopyButton, CopyLine } from "@slashsuite/ui-react";
+import { CopyLine } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/CopyLine.examples.js";
 
 const meta: Meta = { title: "Actions/CopyLine" };
 export default meta;
 type S = StoryObj;
 
-/** One command or token to paste: `CopyLine` is the box and the copy button together. */
 export const DoCommand: S = {
-  render: () => <CopyLine text="bun add @slashsuite/ui-react" />,
+  render: examples.DoCommand,
 };
 
-/** Inline code beside a loose `CopyButton` is two parts that drift apart; the text can differ from what is copied. */
 export const DontCommand: S = {
-  render: () => (
-    <Cluster>
-      <Code>bun add @slashsuite/ui-react</Code>
-      <CopyButton text="bun add @slashsuite/ui-react" />
-    </Cluster>
-  ),
+  render: examples.DontCommand,
 };
 
-/** Several lines are a `CodeBlock`; it keeps the line breaks. */
 export const DoBlock: S = {
-  render: () => <CodeBlock label="bash" language="bash" lines={["bun install", "bun run build"]} />,
+  render: examples.DoBlock,
 };
 
-/** `CopyLine` is one line of text: a newline in it collapses into a space and the box runs on. */
 export const DontBlock: S = {
-  render: () => <CopyLine text={"bun install\nbun run build"} />,
+  render: examples.DontBlock,
 };
 
 export const Default: S = {

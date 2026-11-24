@@ -1,7 +1,8 @@
 import { useRef } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Button, Field, Input, Textarea } from "@slashsuite/ui-react";
+import { Button, Field, Textarea } from "@slashsuite/ui-react";
 import { CompactApp } from "./typeSteps";
+import * as examples from "../../../packages/ui-react/docs/examples/Textarea.examples.js";
 
 const meta: Meta = { title: "Forms/Textarea" };
 export default meta;
@@ -44,22 +45,12 @@ export const Disabled: S = {
   render: () => <Textarea placeholder="What did you find? How were the prices?" disabled />,
 };
 
-/** Text that runs to a paragraph is a `Textarea` in a `Field`, so the person can see what they wrote. */
 export const DoLongText: S = {
-  render: () => (
-    <Field label="Review" htmlFor="do-review" hint="What did you find? How were the prices?">
-      <Textarea id="do-review" rows={4} />
-    </Field>
-  ),
+  render: examples.DoLongText,
 };
 
-/** An `Input` is one line: a paragraph typed into it scrolls out of sight. */
 export const DontLongText: S = {
-  render: () => (
-    <Field label="Review" htmlFor="dont-review" hint="What did you find? How were the prices?">
-      <Input id="dont-review" />
-    </Field>
-  ),
+  render: examples.DontLongText,
 };
 
 /** `mono` sets the monospace face, for pasted CSV or statement text where the columns must line up. */

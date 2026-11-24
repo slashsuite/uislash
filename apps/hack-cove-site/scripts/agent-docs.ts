@@ -3,7 +3,7 @@
  * `renderAgentDocs` in `src/docs/llms.ts`. Run by ui-react's `agent-docs` task and its `prepack`;
  * the output is a build artifact, never committed.
  *
- * The docs read the stories through `import.meta.glob`, so the renderer is loaded through Vite's
+ * The docs read the examples through `import.meta.glob`, so the renderer is loaded through Vite's
  * SSR loader rather than imported by Bun.
  */
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";

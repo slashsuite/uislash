@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
-import { Cluster, Lightbox, MediaTile } from "@slashsuite/ui-react";
-import { samplePortrait, sampleScenes } from "./sampleScene";
+import { MediaTile } from "@slashsuite/ui-react";
+import {
+  samplePortrait,
+  sampleScenes,
+} from "../../../packages/ui-react/docs/examples/sampleScene.js";
+import * as examples from "../../../packages/ui-react/docs/examples/MediaTile.examples.js";
 
 const meta: Meta = { title: "Content/MediaTile" };
 export default meta;
@@ -110,49 +113,12 @@ export const Placeholder: S = {
   ),
 };
 
-/** A thumbnail that opens a photo is a `MediaTile` with `onClick` that opens a `Lightbox`, which steps through the set. */
 export const DoViewer: S = {
-  render: () => {
-    const [at, setAt] = useState<number | null>(null);
-    const photo = at === null ? undefined : sampleScenes[at];
-    return (
-      <>
-        <Cluster>
-          {sampleScenes.map((scene, index) => (
-            <MediaTile
-              key={scene.src}
-              src={scene.src}
-              alt={scene.alt}
-              label="Anna"
-              caption={`09:1${index}`}
-              onClick={() => setAt(index)}
-            />
-          ))}
-        </Cluster>
-        {at !== null && photo && (
-          <Lightbox
-            label={photo.alt}
-            title="Anna"
-            caption={photo.caption}
-            onClose={() => setAt(null)}
-            onPrevious={at > 0 ? () => setAt(at - 1) : undefined}
-            onNext={at < sampleScenes.length - 1 ? () => setAt(at + 1) : undefined}
-          >
-            <img src={photo.src} alt={photo.alt} />
-          </Lightbox>
-        )}
-      </>
-    );
-  },
+  render: examples.DoViewer,
 };
 
-/** A bare `<img>` in a button has no shape, frame or label, and no placeholder when it fails to load. */
 export const DontViewer: S = {
-  render: () => (
-    <button type="button">
-      <img src={sampleScenes[0]?.src} alt={sampleScenes[0]?.alt} width={120} />
-    </button>
-  ),
+  render: examples.DontViewer,
 };
 
 /** While `loading`, a tile with no `src` yet is a bone of its shape; its caption is drawn. */

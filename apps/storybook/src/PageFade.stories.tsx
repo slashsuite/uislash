@@ -1,13 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import {
-  Button,
-  PageFade,
-  SegmentedControl,
-  Stack,
-  startPageTransition,
-  Text,
-} from "@slashsuite/ui-react";
+import { PageFade, SegmentedControl, startPageTransition, Text } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/PageFade.examples.js";
 
 const meta: Meta = { title: "Feedback/PageFade" };
 export default meta;
@@ -46,92 +40,18 @@ export const Default: S = {
   },
 };
 
-/** `PageFade` wraps only the content that changes between pages; the frame around it, with the control, stays put. */
 export const DoChangingArea: S = {
-  render: () => {
-    const [value, setValue] = useState("overview");
-    const items = [
-      { value: "overview", label: "Overview" },
-      { value: "activity", label: "Activity" },
-    ];
-    return (
-      <Stack gap="sm">
-        <SegmentedControl
-          label="Page"
-          items={items}
-          value={value}
-          onChange={(next) => startPageTransition(() => setValue(next))}
-        />
-        <PageFade>
-          <Text>The {value} page.</Text>
-        </PageFade>
-      </Stack>
-    );
-  },
+  render: examples.DoChangingArea,
 };
 
-/** Wrapping the frame too makes the control fade with the content, so the page flickers instead of changing in place. */
 export const DontChangingArea: S = {
-  render: () => {
-    const [value, setValue] = useState("overview");
-    const items = [
-      { value: "overview", label: "Overview" },
-      { value: "activity", label: "Activity" },
-    ];
-    return (
-      <PageFade>
-        <Stack gap="sm">
-          <SegmentedControl
-            label="Page"
-            items={items}
-            value={value}
-            onChange={(next) => startPageTransition(() => setValue(next))}
-          />
-          <Text>The {value} page.</Text>
-        </Stack>
-      </PageFade>
-    );
-  },
+  render: examples.DontChangingArea,
 };
 
-/** The change goes through `startPageTransition`, so the browser has the old and the new page to fade between. */
 export const DoTransition: S = {
-  render: () => {
-    const [value, setValue] = useState("overview");
-    return (
-      <Stack gap="sm">
-        <Button
-          variant="outline"
-          onClick={() =>
-            startPageTransition(() => setValue(value === "overview" ? "activity" : "overview"))
-          }
-        >
-          Switch page
-        </Button>
-        <PageFade>
-          <Text>The {value} page.</Text>
-        </PageFade>
-      </Stack>
-    );
-  },
+  render: examples.DoTransition,
 };
 
-/** A plain state change swaps the content at once: there is no transition to fade. */
 export const DontTransition: S = {
-  render: () => {
-    const [value, setValue] = useState("overview");
-    return (
-      <Stack gap="sm">
-        <Button
-          variant="outline"
-          onClick={() => setValue(value === "overview" ? "activity" : "overview")}
-        >
-          Switch page
-        </Button>
-        <PageFade>
-          <Text>The {value} page.</Text>
-        </PageFade>
-      </Stack>
-    );
-  },
+  render: examples.DontTransition,
 };

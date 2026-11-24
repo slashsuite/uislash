@@ -20,9 +20,9 @@ import {
   Text,
   Video,
 } from "@slashsuite/ui-react";
-import { ProseDoc } from "./ProseDoc";
+import { ProseDoc } from "../../../packages/ui-react/docs/examples/ProseDoc.js";
 import { samplePhoto } from "./samplePhoto";
-import { sampleShot, sampleShotSize } from "./sampleShot";
+import { sampleShot, sampleShotSize } from "../../../packages/ui-react/docs/examples/sampleShot.js";
 import { sampleVideo } from "./sampleVideo";
 
 /** The options a text run takes: italic, a long string, alignment and a fixed amount width. */

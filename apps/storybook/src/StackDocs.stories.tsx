@@ -1,53 +1,18 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import {
-  Button,
-  Card,
-  Cluster,
-  Display,
-  Field,
-  Input,
-  KeyValue,
-  KeyValueList,
-  Lead,
-  ListRow,
-  Overline,
-  Section,
-  SectionHeading,
-  Stack,
-  Text,
-} from "@slashsuite/ui-react";
+import { Button, Card, Field, Input, ListRow, Section, Stack, Text } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/StackDocs.examples.js";
 
 /** The docs examples for `Stack` and `Section`. */
 const meta: Meta = { title: "Layout/Stack" };
 export default meta;
 type S = StoryObj;
 
-/** Blocks that follow each other go in a `Stack`: the gap is one step of the scale, `md` by default. */
 export const DoGap: S = {
-  render: () => (
-    <Stack>
-      <Card title="Build 412">
-        <Text>3 changed</Text>
-      </Card>
-      <Card title="Build 411">
-        <Text>No changes</Text>
-      </Card>
-    </Stack>
-  ),
+  render: examples.DoGap,
 };
 
-/** Blocks in a bare `div` touch each other. Space is the Stack's job, never left to the blocks. */
 export const DontGap: S = {
-  render: () => (
-    <div>
-      <Card title="Build 412">
-        <Text>3 changed</Text>
-      </Card>
-      <Card title="Build 411">
-        <Text>No changes</Text>
-      </Card>
-    </div>
-  ),
+  render: examples.DontGap,
 };
 
 /** `rule` draws a hairline under the title row, across its full width with the actions, for a section that must read as set apart from what follows. */
@@ -61,98 +26,28 @@ export const SectionRule: S = {
   ),
 };
 
-/** A titled group is a `Section`: the title, the actions beside it and the blocks under it, as one named region. */
 export const DoSectionTitle: S = {
-  render: () => (
-    <Section title="Recent builds" actions={<Button variant="outline">All builds</Button>}>
-      <Card>
-        <Text>Build 412 · 3 changed</Text>
-      </Card>
-      <Card>
-        <Text>Build 411 · no changes</Text>
-      </Card>
-    </Section>
-  ),
+  render: examples.DoSectionTitle,
 };
 
-/** A heading row built by hand is not tied to its group: nothing names the region and the row's spacing is a guess. Use `Section`. */
 export const DontSectionTitle: S = {
-  render: () => (
-    <Stack gap="sm">
-      <Cluster justify="between">
-        <SectionHeading>Recent builds</SectionHeading>
-        <Button variant="outline">All builds</Button>
-      </Cluster>
-      <Card>
-        <Text>Build 412 · 3 changed</Text>
-      </Card>
-      <Card>
-        <Text>Build 411 · no changes</Text>
-      </Card>
-    </Stack>
-  ),
+  render: examples.DontSectionTitle,
 };
 
-/** A list of things is `Stack as="ul"` with an `li` per item: the spacing of a Stack and a list that assistive tech announces. */
 export const DoList: S = {
-  render: () => (
-    <Stack as="ul" gap="sm" aria-label="Builds">
-      <li>
-        <Card>
-          <Text>Build 412 · 3 changed</Text>
-        </Card>
-      </li>
-      <li>
-        <Card>
-          <Text>Build 411 · no changes</Text>
-        </Card>
-      </li>
-    </Stack>
-  ),
+  render: examples.DoList,
 };
 
-/** The same cards in a plain Stack are two unrelated blocks: no list, no count, nothing to jump by. */
 export const DontList: S = {
-  render: () => (
-    <Stack gap="sm">
-      <Card>
-        <Text>Build 412 · 3 changed</Text>
-      </Card>
-      <Card>
-        <Text>Build 411 · no changes</Text>
-      </Card>
-    </Stack>
-  ),
+  render: examples.DontList,
 };
 
-/** A width cap on one block is a `Stack` around it: `width="compact"` is one card's width, at the left edge. */
 export const DoWidth: S = {
-  render: () => (
-    <Stack width="compact">
-      <Card title="Opening hours" size="sm">
-        <KeyValueList>
-          <KeyValue label="Mon to Fri">08:00 to 17:00</KeyValue>
-          <KeyValue label="Saturday">08:00 to 13:00</KeyValue>
-          <KeyValue label="Sunday">Closed</KeyValue>
-        </KeyValueList>
-      </Card>
-    </Stack>
-  ),
+  render: examples.DoWidth,
 };
 
-/** Left to the page, a small card stretches across it and its few lines float in a wide box. */
 export const DontWidth: S = {
-  render: () => (
-    <Stack>
-      <Card title="Opening hours" size="sm">
-        <KeyValueList>
-          <KeyValue label="Mon to Fri">08:00 to 17:00</KeyValue>
-          <KeyValue label="Saturday">08:00 to 13:00</KeyValue>
-          <KeyValue label="Sunday">Closed</KeyValue>
-        </KeyValueList>
-      </Card>
-    </Stack>
-  ),
+  render: examples.DontWidth,
 };
 
 /** A column whose children keep their own width is `align="start"`: the button under the fields is as wide as its label. */
@@ -230,83 +125,18 @@ export const AlignStart: S = {
   ),
 };
 
-/** A small titled group inside a card or a panel is `Section size="sm"`: a region named by its small title, its lines `xs` apart, an action at the end of the title row. */
 export const DoSmallSection: S = {
-  render: () => (
-    <Card>
-      <Stack gap="sm">
-        <Section
-          size="sm"
-          title="Flaky"
-          actions={
-            <Button variant="ghost" size="sm">
-              Rerun
-            </Button>
-          }
-        >
-          <Text>checkout.spec.ts failed once in the last 20 runs.</Text>
-        </Section>
-        <Section size="sm" title="Ignore areas">
-          <Text>The clock in the header and the avatar.</Text>
-        </Section>
-      </Stack>
-    </Card>
-  ),
+  render: examples.DoSmallSection,
 };
 
-/** Built from a `Stack as="section"` and an `Overline as="h2"`, the group is an unnamed section whose gap is a guess. */
 export const DontSmallSection: S = {
-  render: () => (
-    <Card>
-      <Stack gap="sm">
-        <Stack as="section" gap="xs">
-          <Cluster justify="between">
-            <Overline as="h2">Flaky</Overline>
-            <Button variant="ghost" size="sm">
-              Rerun
-            </Button>
-          </Cluster>
-          <Text>checkout.spec.ts failed once in the last 20 runs.</Text>
-        </Stack>
-        <Stack as="section" gap="xs">
-          <Overline as="h2">Ignore areas</Overline>
-          <Text>The clock in the header and the avatar.</Text>
-        </Stack>
-      </Stack>
-    </Card>
-  ),
+  render: examples.DontSmallSection,
 };
 
-/** A landing page's section is `Section size="lg"`: the kicker, the display title and the lede in one region named by its title. */
 export const DoLandingSection: S = {
-  render: () => (
-    <Section
-      size="lg"
-      overline="Fit"
-      title="Built for agents."
-      description="A site from props alone, in every theme."
-    >
-      <Card>
-        <Text>Each tool answers one question about a change.</Text>
-      </Card>
-    </Section>
-  ),
+  render: examples.DoLandingSection,
 };
 
-/** An `Overline`, a `Display as="h2"` and a `Lead` by hand: nothing names the region and the spacing drifts from every other landing section. */
 export const DontLandingSection: S = {
-  render: () => (
-    <Stack as="section" gap="lg">
-      <Stack gap="sm">
-        <header>
-          <Overline mono>Fit</Overline>
-          <Display as="h2">Built for agents.</Display>
-        </header>
-        <Lead>A site from props alone, in every theme.</Lead>
-      </Stack>
-      <Card>
-        <Text>Each tool answers one question about a change.</Text>
-      </Card>
-    </Stack>
-  ),
+  render: examples.DontLandingSection,
 };

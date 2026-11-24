@@ -1,49 +1,33 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Button, IconButton } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/IconButton.examples.js";
 
 const meta: Meta = { title: "Actions/IconButton" };
 export default meta;
 type S = StoryObj;
 
-/** `label` names the button for a screen reader and shows as its tooltip; the icon is only decoration. */
 export const DoLabel: S = {
-  render: () => <IconButton label="Delete quote" tone="danger" variant="ghost" icon="close" />,
+  render: examples.DoLabel,
 };
 
-/** A `Button` holding a glyph has no accessible name, no tooltip and the wrong box; an icon-only action is an `IconButton`. */
 export const DontLabel: S = {
-  render: () => (
-    <Button variant="ghost" tone="danger" size="sm">
-      <span aria-hidden="true">x</span>
-    </Button>
-  ),
+  render: examples.DontLabel,
 };
 
-/** `count` pins the count to the corner and adds it to the accessible name ("Alerts, 3"). */
 export const DoBadge: S = {
-  render: () => <IconButton label="Alerts" count={3} icon="bell" />,
+  render: examples.DoBadge,
 };
 
-/** A count typed into the label shows only in the tooltip, so a sighted user never sees it on the button. */
 export const DontBadge: S = {
-  render: () => <IconButton label="Alerts (3)" icon="bell" />,
+  render: examples.DontBadge,
 };
 
-/** Going to another page is `href`: the same look on a real anchor, with middle-click and the URL. */
 export const DoNavigate: S = {
-  render: () => <IconButton href="#settings" label="Settings" variant="ghost" icon="settings" />,
+  render: examples.DoNavigate,
 };
 
-/** A button that sets `location` loses middle-click, the status-bar URL and crawlability. */
 export const DontNavigate: S = {
-  render: () => (
-    <IconButton
-      label="Settings"
-      variant="ghost"
-      onClick={() => location.assign("#settings")}
-      icon="settings"
-    />
-  ),
+  render: examples.DontNavigate,
 };
 
 export const Default: S = {
@@ -113,19 +97,10 @@ export const Tooltip: S = {
   },
 };
 
-/** `disabledReason` says why it cannot be pressed: the button dims, stays in the tab order and shows the reason as its tooltip. */
 export const DoDisabledReason: S = {
-  render: () => (
-    <IconButton
-      label="Delete quote"
-      tone="danger"
-      icon="close"
-      disabledReason="Only the owner can delete it"
-    />
-  ),
+  render: examples.DoDisabledReason,
 };
 
-/** A bare `disabled` drops it from the tab order and gives no reason. */
 export const DontDisabledReason: S = {
-  render: () => <IconButton label="Delete quote" tone="danger" icon="close" disabled />,
+  render: examples.DontDisabledReason,
 };

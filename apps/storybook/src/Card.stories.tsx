@@ -7,63 +7,30 @@ import {
   CardGrid,
   ListRow,
   Pill,
-  Stack,
-  SubsectionHeading,
   Text,
   TextLink,
 } from "@slashsuite/ui-react";
 import { SampleTable } from "./sampleTable";
+import * as examples from "../../../packages/ui-react/docs/examples/Card.examples.js";
 
 const meta: Meta = { title: "Content/Card" };
 export default meta;
 type S = StoryObj;
 
-/** `status` puts a Pill directly beside the title; `actions` stays at the far end. */
 export const DoStatus: S = {
-  render: () => (
-    <Card title="PixelSlash" status={<Pill tone="warn">Coming soon</Pill>}>
-      <Text tone="muted">Visual review for every pull request.</Text>
-    </Card>
-  ),
+  render: examples.DoStatus,
 };
 
-/** A hand-built title row drifts from every other Card's: use `title` and `status`. */
 export const DontStatus: S = {
-  render: () => (
-    <Card>
-      <SubsectionHeading>PixelSlash</SubsectionHeading>
-      <Pill tone="warn">Coming soon</Pill>
-      <Text tone="muted">Visual review for every pull request.</Text>
-    </Card>
-  ),
+  render: examples.DontStatus,
 };
 
-/** A `Stack` spaces the Cards; the gap is the one the whole library uses. */
 export const DoSpacing: S = {
-  render: () => (
-    <Stack>
-      <Card title="Open" count={3}>
-        <Text tone="muted">Three things to do.</Text>
-      </Card>
-      <Card title="Done" count={12}>
-        <Text tone="muted">Twelve things finished.</Text>
-      </Card>
-    </Stack>
-  ),
+  render: examples.DoSpacing,
 };
 
-/** Cards with nothing between them butt together. Space them with `Stack` or `CardGrid`. */
 export const DontSpacing: S = {
-  render: () => (
-    <>
-      <Card title="Open" count={3}>
-        <Text tone="muted">Three things to do.</Text>
-      </Card>
-      <Card title="Done" count={12}>
-        <Text tone="muted">Twelve things finished.</Text>
-      </Card>
-    </>
-  ),
+  render: examples.DontSpacing,
 };
 
 /** `status` puts a Pill (or any node) directly beside the title; `actions` stays at the far end. */

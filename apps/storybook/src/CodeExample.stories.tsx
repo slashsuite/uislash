@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Button, CodeBlock, CodeExample, Stack } from "@slashsuite/ui-react";
+import { Button, CodeExample } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/CodeExample.examples.js";
 
 const meta: Meta = { title: "Text/CodeExample" };
 export default meta;
@@ -72,21 +73,10 @@ export const Copy: S = {
   ),
 };
 
-/** `CodeExample` frames a rendered part with the code that makes it, in one box. */
 export const DoPreview: S = {
-  render: () => (
-    <CodeExample code={'<Button variant="primary">Save</Button>'}>
-      <Button variant="primary">Save</Button>
-    </CodeExample>
-  ),
+  render: examples.DoPreview,
 };
 
-/** A loose preview with a `CodeBlock` under it is two unrelated things: no shared frame, and they drift apart. */
 export const DontPreview: S = {
-  render: () => (
-    <Stack gap="sm">
-      <Button variant="primary">Save</Button>
-      <CodeBlock>{'<Button variant="primary">Save</Button>'}</CodeBlock>
-    </Stack>
-  ),
+  render: examples.DontPreview,
 };

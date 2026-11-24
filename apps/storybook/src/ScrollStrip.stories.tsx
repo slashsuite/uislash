@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Avatar, Cluster, MediaTile, ScrollStrip } from "@slashsuite/ui-react";
-import { sampleScenes } from "./sampleScene";
+import { Avatar, MediaTile, ScrollStrip } from "@slashsuite/ui-react";
+import { sampleScenes } from "../../../packages/ui-react/docs/examples/sampleScene.js";
+import * as examples from "../../../packages/ui-react/docs/examples/ScrollStrip.examples.js";
 
 const meta: Meta = { title: "Content/ScrollStrip" };
 export default meta;
@@ -54,24 +55,10 @@ export const Gaps: S = {
   ),
 };
 
-/** A row of media that runs past the page is a `ScrollStrip`: one line, a thin scrollbar, snapping. */
 export const DoRow: S = {
-  render: () => (
-    <ScrollStrip label="Recent statuses">
-      {[...sampleScenes, ...sampleScenes].map((scene, index) => (
-        <MediaTile key={index} src={scene.src} alt={scene.alt} label="Anna" />
-      ))}
-    </ScrollStrip>
-  ),
+  render: examples.DoRow,
 };
 
-/** A `Cluster` wraps the tiles onto several lines, so the row takes over the page instead of staying in one line. */
 export const DontRow: S = {
-  render: () => (
-    <Cluster>
-      {[...sampleScenes, ...sampleScenes].map((scene, index) => (
-        <MediaTile key={index} src={scene.src} alt={scene.alt} label="Anna" />
-      ))}
-    </Cluster>
-  ),
+  render: examples.DontRow,
 };

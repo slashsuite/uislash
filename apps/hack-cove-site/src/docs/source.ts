@@ -1,35 +1,31 @@
 /**
- * Cuts what the docs show out of a `*.stories.tsx` file with the TypeScript compiler API: the body
- * of a story's `render`, the story's JSDoc as its caption, and the imports the body needs.
+ * Cuts what the docs show out of a `*.examples.tsx` file with the TypeScript compiler API: the body
+ * of an exported example (`export const DoX = () => …`), its JSDoc as its caption, and the imports
+ * the body needs.
  */
 import ts from "typescript";
 
 export type StoryParts = {
-  /** The imports the snippet uses, then the body of `render`, dedented. */
+  /** The imports the snippet uses, then the body of the example, dedented. */
   code: string;
-  /** The story's JSDoc, which the docs show as its caption. */
+  /** The example's JSDoc, which the docs show as its caption. */
   caption: string | undefined;
 };
 
 const parse = (raw: string) =>
-  ts.createSourceFile("story.tsx", raw, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  ts.createSourceFile("example.tsx", raw, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 
-function exportedStory(file: ts.SourceFile, name: string): ts.VariableStatement | undefined {
+function exportedExample(file: ts.SourceFile, name: string): ts.VariableStatement | undefined {
   return file.statements.filter(ts.isVariableStatement).find((s) => {
     const exported = s.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword) ?? false;
     return exported && s.declarationList.declarations.some((d) => d.name.getText() === name);
   });
 }
 
-function renderOf(statement: ts.VariableStatement): ts.ArrowFunction | undefined {
+/** The arrow function an example is: `export const DoX = () => …`. */
+function arrowOf(statement: ts.VariableStatement): ts.ArrowFunction | undefined {
   const init = statement.declarationList.declarations[0]?.initializer;
-  if (init === undefined || !ts.isObjectLiteralExpression(init)) return undefined;
-  const render = init.properties.find(
-    (p): p is ts.PropertyAssignment => ts.isPropertyAssignment(p) && p.name.getText() === "render",
-  );
-  return render !== undefined && ts.isArrowFunction(render.initializer)
-    ? render.initializer
-    : undefined;
+  return init !== undefined && ts.isArrowFunction(init) ? init : undefined;
 }
 
 /** Dedent by the smallest indent of any non-blank line. */
@@ -68,7 +64,7 @@ function importsFor(file: ts.SourceFile, snippet: string): string {
   const lines = file.statements.filter(ts.isImportDeclaration).flatMap((decl) => {
     const spec = decl.moduleSpecifier.getText().slice(1, -1);
     const named = decl.importClause?.namedBindings;
-    if (spec.startsWith(".") || spec.startsWith("@storybook") || named === undefined) return [];
+    if (spec.startsWith(".") || named === undefined) return [];
     if (!ts.isNamedImports(named)) return [];
     const names = named.elements.map((e) => e.name.text).filter(used);
     if (names.length === 0) return [];
@@ -81,7 +77,7 @@ function importsFor(file: ts.SourceFile, snippet: string): string {
   return lines.join("\n");
 }
 
-/** The names a story file declares at top level (not imports): a snippet cannot use them. */
+/** The names an examples file declares at top level (not imports): a snippet cannot use them. */
 function localNames(file: ts.SourceFile): string[] {
   return file.statements.flatMap((statement) => {
     if (ts.isVariableStatement(statement))
@@ -107,17 +103,17 @@ function captionOf(statement: ts.VariableStatement): string | undefined {
   return text?.replace(/\s*\n\s*/g, " ").trim();
 }
 
-/** The code and caption of the named story in `raw`, or `undefined` when it has no `render`. */
+/** The code and caption of the named example in `raw`, or `undefined` when it has none. */
 export function storyParts(raw: string, name: string): StoryParts | undefined {
   const file = parse(raw);
-  const statement = exportedStory(file, name);
-  const render = statement === undefined ? undefined : renderOf(statement);
-  if (statement === undefined || render === undefined) return undefined;
-  const body = bodyText(render, raw);
-  const stray = identifiersIn(render).find((id) => localNames(file).includes(id));
+  const statement = exportedExample(file, name);
+  const example = statement === undefined ? undefined : arrowOf(statement);
+  if (statement === undefined || example === undefined) return undefined;
+  const body = bodyText(example, raw);
+  const stray = identifiersIn(example).find((id) => localNames(file).includes(id));
   if (stray !== undefined) {
     throw new Error(
-      `Story "${name}" uses "${stray}" from its own file; a doc snippet must stand alone`,
+      `Example "${name}" uses "${stray}" from its own file; a doc snippet must stand alone`,
     );
   }
   const imports = importsFor(file, body);

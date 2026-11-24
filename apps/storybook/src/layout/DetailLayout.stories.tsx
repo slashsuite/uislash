@@ -1,18 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
-  AppShell,
   Button,
   Card,
   DetailLayout,
   KeyValue,
   KeyValueList,
-  ListLayout,
-  Tabs,
   Text,
   StatTile,
 } from "@slashsuite/ui-react";
-import { DemoShell, layoutPage } from "./DemoShell";
+import { DemoShell, layoutPage } from "../../../../packages/ui-react/docs/examples/DemoShell.js";
 import { DetailPage } from "./pages";
+import * as examples from "../../../../packages/ui-react/docs/examples/DetailLayout.examples.js";
 
 /** Main two thirds and aside one third from `lg`; the aside stacks below main under it. `sticky` keeps the aside in view under the header from `lg` as a long page scrolls. */
 const meta: Meta = {
@@ -23,43 +21,8 @@ const meta: Meta = {
 export default meta;
 type S = StoryObj;
 
-/** A whole record page: the shell with its brand and nav, then the layout with the record in `children` and its facts in `aside`. */
 export const FullPage: S = {
-  render: () => (
-    <AppShell
-      brand={<a href="#">Hack Cove</a>}
-      nav={
-        <Tabs
-          label="Main"
-          items={[
-            { label: "Quotes", href: "#quotes", selected: true },
-            { label: "Clients", href: "#clients" },
-          ]}
-        />
-      }
-    >
-      <DetailLayout
-        title="Quote Q-1042"
-        description="Naledi Mokoena"
-        actions={<Button variant="outline">Edit</Button>}
-        aside={
-          <Card title="Details">
-            <KeyValueList>
-              <KeyValue label="Status">Sent</KeyValue>
-              <KeyValue label="Premium">R 1 240 / mo</KeyValue>
-            </KeyValueList>
-          </Card>
-        }
-      >
-        <Card title="Cover">
-          <Text>Life cover of R 1 500 000, to age 65.</Text>
-        </Card>
-        <Card title="Notes">
-          <Text>The client asked to be debited on the 25th.</Text>
-        </Card>
-      </DetailLayout>
-    </AppShell>
-  ),
+  render: examples.FullPage,
 };
 
 export const MainAndAside: S = {
@@ -129,48 +92,12 @@ export const StickyAsideText: S = {
   ),
 };
 
-/** The record's content is the main column; the facts about it go in `aside`. */
 export const DoRecord: S = {
-  render: () => (
-    <DetailLayout
-      title="Quote Q-1042"
-      description="Naledi Mokoena"
-      actions={<Button variant="outline">Edit</Button>}
-      aside={
-        <Card title="Details">
-          <KeyValueList>
-            <KeyValue label="Status">Sent</KeyValue>
-            <KeyValue label="Premium">R 1 240 / mo</KeyValue>
-          </KeyValueList>
-        </Card>
-      }
-    >
-      <Card title="Cover">
-        <Text>Life cover of R 1 500 000, to age 65.</Text>
-      </Card>
-    </DetailLayout>
-  ),
+  render: examples.DoRecord,
 };
 
-/** `ListLayout` has no aside, so the facts become one more block under the content. Use `DetailLayout` for a record. */
 export const DontRecord: S = {
-  render: () => (
-    <ListLayout
-      title="Quote Q-1042"
-      description="Naledi Mokoena"
-      actions={<Button variant="outline">Edit</Button>}
-    >
-      <Card title="Cover">
-        <Text>Life cover of R 1 500 000, to age 65.</Text>
-      </Card>
-      <Card title="Details">
-        <KeyValueList>
-          <KeyValue label="Status">Sent</KeyValue>
-          <KeyValue label="Premium">R 1 240 / mo</KeyValue>
-        </KeyValueList>
-      </Card>
-    </ListLayout>
-  ),
+  render: examples.DontRecord,
 };
 
 /** While `loading` the layout owns the wait: the header draws as itself and every part inside waits with it. */

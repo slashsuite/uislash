@@ -559,4 +559,4 @@ A theme remaps every utility in `palette.json`; a component uses no colour utili
 From the workspace root: `bunx moon run ui-react:typecheck ui-react:lint ui-react:test ui-react:build` and
 `bunx moon run ui-react:pack-check` (the tarball is `dist/` plus `package.json`, `README.md`, `LICENSE`; it also typechecks the tarball in a
 consumer app: `scripts/consumer-types.ts`).
-The stories live in `apps/storybook`.
+The docs' code examples live in `docs/examples`, one module per component; the site's docs and the Storybook stories both render them.

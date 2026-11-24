@@ -1,14 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import {
-  Caption,
-  Card,
-  Divider,
-  MetaList,
-  Section,
-  Stack,
-  Text,
-  TextLink,
-} from "@slashsuite/ui-react";
+import { Caption, Divider, MetaList, Section, Stack, Text, TextLink } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/Divider.examples.js";
 
 const meta: Meta = { title: "Layout/Divider" };
 export default meta;
@@ -44,28 +36,12 @@ export const AboveAFooter: S = {
   ),
 };
 
-/** A `Divider` is one hairline between two parts of a page, here the content and its footer. The space around it is the `Stack`'s. */
 export const DoFooter: S = {
-  render: () => (
-    <Stack gap="lg">
-      <Text>The last paragraph of a page.</Text>
-      <Divider />
-      <Caption>Hack Cove (Pty) Ltd</Caption>
-    </Stack>
-  ),
+  render: examples.DoFooter,
 };
 
-/** A `Divider` and a footer placed by hand inside a `Card`: the card's own `footer` draws that strip, its line and its spacing. */
 export const DontFooter: S = {
-  render: () => (
-    <Card title="Quote 12">
-      <Stack gap="lg">
-        <Text>Two lines, R 1 200.</Text>
-        <Divider />
-        <Caption>Total R 1 200</Caption>
-      </Stack>
-    </Card>
-  ),
+  render: examples.DontFooter,
 };
 
 /** A line between two `Section`s of one page is a `Divider` in the `Stack` that holds them: the Stack's gap is the space on both sides. */
@@ -83,31 +59,10 @@ export const BetweenSections: S = {
   ),
 };
 
-/** Bordered blocks need no rule between them: the Stack's gap separates them. */
 export const DoCards: S = {
-  render: () => (
-    <Stack>
-      <Card title="Build 412">
-        <Text>3 changed</Text>
-      </Card>
-      <Card title="Build 411">
-        <Text>No changes</Text>
-      </Card>
-    </Stack>
-  ),
+  render: examples.DoCards,
 };
 
-/** A `Divider` between two Cards is a second line on top of their borders and the gap. */
 export const DontCards: S = {
-  render: () => (
-    <Stack>
-      <Card title="Build 412">
-        <Text>3 changed</Text>
-      </Card>
-      <Divider />
-      <Card title="Build 411">
-        <Text>No changes</Text>
-      </Card>
-    </Stack>
-  ),
+  render: examples.DontCards,
 };

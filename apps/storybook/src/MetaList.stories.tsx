@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Caption, Code, MetaList, Text as Prose, TextLink } from "@slashsuite/ui-react";
+import { Code, MetaList, TextLink } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/MetaList.examples.js";
 
 const meta: Meta = { title: "Text/MetaList" };
 export default meta;
@@ -48,20 +49,12 @@ export const Wraps: S = {
   ),
 };
 
-/** A row of facts is a `MetaList`; an item is text, a `Code` or a `TextLink`. */
 export const DoFacts: S = {
-  render: () => (
-    <MetaList>
-      <TextLink href="#hc-145">hc-145</TextLink>
-      <Code>0f9d376</Code>
-      <span>26 Oct 2026</span>
-    </MetaList>
-  ),
+  render: examples.DoFacts,
 };
 
-/** Dots typed into one string are one item to a screen reader and can wrap onto the end of a line. */
 export const DontFacts: S = {
-  render: () => <Caption>hc-145 · 0f9d376 · 26 Oct 2026</Caption>,
+  render: examples.DontFacts,
 };
 
 const links = [
@@ -97,25 +90,12 @@ export const LinksWrap: S = {
   ),
 };
 
-/** A row of links is a `MetaList nowrap`: it spaces them, wraps them and hides the separator from a screen reader. */
 export const DoFooter: S = {
-  render: () => (
-    <MetaList>
-      <TextLink href="#privacy">Privacy</TextLink>
-      <TextLink href="#terms">Terms</TextLink>
-      <TextLink href="#contact">Contact</TextLink>
-    </MetaList>
-  ),
+  render: examples.DoFooter,
 };
 
-/** Separators typed by hand are read aloud and can wrap onto the end of a line. */
 export const DontFooter: S = {
-  render: () => (
-    <Prose as="p">
-      <TextLink href="#privacy">Privacy</TextLink> | <TextLink href="#terms">Terms</TextLink> |{" "}
-      <TextLink href="#contact">Contact</TextLink>
-    </Prose>
-  ),
+  render: examples.DontFooter,
 };
 
 type Loading = StoryObj<{ loading: boolean }>;

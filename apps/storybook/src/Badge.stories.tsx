@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Badge, Cluster, IconButton, Pill } from "@slashsuite/ui-react";
+import { Badge, IconButton } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/Badge.examples.js";
 
 const meta: Meta = { title: "Content/Badge" };
 export default meta;
@@ -31,41 +32,20 @@ export const OnAnIcon: S = {
   ),
 };
 
-/** `count` on an `IconButton` pins the count to the corner and adds it to the button's name ("Alerts, 3"). */
 export const DoOnIcon: S = {
-  render: () => <IconButton label="Alerts" count={3} icon="bell" />,
+  render: examples.DoOnIcon,
 };
 
-/** A Pill beside the button is not pinned to it and a screen reader never hears it as part of the button. Use `count`. */
 export const DontOnIcon: S = {
-  render: () => (
-    <Cluster>
-      <IconButton label="Alerts" icon="bell" />
-      <Pill tone="danger" round>
-        3
-      </Pill>
-    </Cluster>
-  ),
+  render: examples.DontOnIcon,
 };
 
-/** On its own a Badge is a count; above 99 it reads `99+`. */
 export const DoCount: S = {
-  render: () => (
-    <Cluster>
-      <Badge count={7} />
-      <Badge count={120} />
-    </Cluster>
-  ),
+  render: examples.DoCount,
 };
 
-/** A count is not a `Pill`: a Pill is a status label, and it prints `120` where a Badge caps at `99+`. */
 export const DontCount: S = {
-  render: () => (
-    <Cluster>
-      <Pill>7</Pill>
-      <Pill>120</Pill>
-    </Cluster>
-  ),
+  render: examples.DontCount,
 };
 
 type Loading = StoryObj<{ loading: boolean }>;

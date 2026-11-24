@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Code, Step, Steps } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/Steps.examples.js";
 
 const meta: Meta = { title: "Content/Steps" };
 export default meta;
@@ -33,50 +34,20 @@ export const TitlesOnly: S = {
   ),
 };
 
-/** `Steps` numbers itself: give each `Step` a `title` and a line of detail, in the order they are done. */
 export const DoNumbers: S = {
-  render: () => (
-    <Steps aria-label="Get started">
-      <Step title="Install the CLI">
-        Run <Code>bun add -d pixelslash</Code> in your repo.
-      </Step>
-      <Step title="Upload a build">
-        Run <Code>pixelslash upload</Code>.
-      </Step>
-    </Steps>
-  ),
+  render: examples.DoNumbers,
 };
 
-/** Typed numbers double up with the ones `Steps` draws, and drift when a step is added. Leave the numbering to `Steps`. */
 export const DontNumbers: S = {
-  render: () => (
-    <Steps aria-label="Get started">
-      <Step title="1. Install the CLI">Run bun add -d pixelslash in your repo.</Step>
-      <Step title="2. Upload a build">Run pixelslash upload.</Step>
-    </Steps>
-  ),
+  render: examples.DontNumbers,
 };
 
-/** `Steps` is for things done in order, from the first to the last. */
 export const DoOrder: S = {
-  render: () => (
-    <Steps>
-      <Step title="Sign in" />
-      <Step title="Pick a project" />
-      <Step title="Upload a build" />
-    </Steps>
-  ),
+  render: examples.DoOrder,
 };
 
-/** Numbering features that have no order tells the reader there is a sequence to follow. Use a `BulletList`. */
 export const DontOrder: S = {
-  render: () => (
-    <Steps>
-      <Step title="Light and dark themes" />
-      <Step title="Keyboard shortcuts" />
-      <Step title="Email digests" />
-    </Steps>
-  ),
+  render: examples.DontOrder,
 };
 
 /** `size="lg"`: the steps across a landing page from `md`, each number at feature size; stacked on a phone. Two to four steps. */

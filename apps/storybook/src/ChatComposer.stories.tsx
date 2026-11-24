@@ -1,15 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ChatComposer, Stack } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/ChatComposer.examples.js";
 
 const meta: Meta = {
   title: "Content/ChatComposer",
   parameters: { layout: "padded" },
-  // A chat takes the width it is given, so a story gives it a realistic one.
   decorators: [
     (Story) => (
-      <Stack width="narrow">
+      <examples.Frame>
         <Story />
-      </Stack>
+      </examples.Frame>
     ),
   ],
 };
@@ -52,14 +52,10 @@ export const Labels: S = {
   ),
 };
 
-/** While a reply arrives, `busy` keeps the box open and offers Stop. */
 export const DoBusy: S = {
-  render: () => (
-    <ChatComposer label="Message" busy onSend={() => undefined} onStop={() => undefined} />
-  ),
+  render: examples.DoBusy,
 };
 
-/** `disabled` during a reply takes the box away from a reader mid-thought, with no way to stop the reply. */
 export const DontBusy: S = {
-  render: () => <ChatComposer label="Message" disabled onSend={() => undefined} />,
+  render: examples.DontBusy,
 };

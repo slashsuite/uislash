@@ -1,6 +1,6 @@
 /**
  * The component docs as plain text for agents, made from the same sources as the pages
- * (`packages/ui-react/docs/components/`, the stories and `packages/ui-react/docs/props.json`), so
+ * (`packages/ui-react/docs/components/`, the examples in `packages/ui-react/docs/examples` and `packages/ui-react/docs/props.json`), so
  * they cannot drift. Two outputs share every part: the site's `/ui/llms.txt` (one file, every
  * component's section) and the docs shipped in `@slashsuite/ui-react` under `agent-docs/` (an
  * index and one file per component page, written by ui-react's `agent-docs` task at build time).

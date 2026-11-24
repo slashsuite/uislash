@@ -31,8 +31,11 @@ import {
 } from "@slashsuite/ui-react";
 import { GalleryMarketing } from "./GalleryMarketing";
 import { samplePhoto } from "./samplePhoto";
-import { sampleCode } from "./sampleCode";
-import { samplePortrait, sampleScenes } from "./sampleScene";
+import { sampleCode } from "../../../packages/ui-react/docs/examples/sampleCode.js";
+import {
+  samplePortrait,
+  sampleScenes,
+} from "../../../packages/ui-react/docs/examples/sampleScene.js";
 
 /** The page header block of the Gallery: a Display title, a Hero, a PageHeader, a Section size lg, a SiteFooter and a Tabs row of links. */
 export function GalleryHeader() {

@@ -1,15 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import {
-  Button,
-  Card,
-  Code,
-  EmptyState,
-  Section,
-  Stack,
-  Step,
-  Steps,
-  Text,
-} from "@slashsuite/ui-react";
+import { Button, Card, Code, EmptyState, Section, Step, Steps, Text } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/EmptyState.examples.js";
 
 const meta: Meta = { title: "Feedback/EmptyState" };
 export default meta;
@@ -73,38 +64,20 @@ export const GetStarted: S = {
   ),
 };
 
-/** An empty page says what belongs here and offers the first step as the primary action. */
 export const DoNextStep: S = {
-  render: () => (
-    <EmptyState title="No builds yet" actions={<Button>Create a project</Button>}>
-      <Text>Builds appear here once a project has uploaded its first capture.</Text>
-    </EmptyState>
-  ),
+  render: examples.DoNextStep,
 };
 
-/** A bare "Nothing here" is a dead end: it does not say what belongs here or what to do next. */
 export const DontNextStep: S = {
-  render: () => <EmptyState title="Nothing here" />,
+  render: examples.DontNextStep,
 };
 
-/** An empty list inside a card gives its `empty` slot an `EmptyState`, which the list draws as one muted line. */
 export const DoInline: S = {
-  render: () => (
-    <Card title="Builds">
-      <Stack as="ul" empty={<EmptyState title="No builds yet." />}>
-        {[]}
-      </Stack>
-    </Card>
-  ),
+  render: examples.DoInline,
 };
 
-/** A muted `Text` written by hand is a second empty look, and it stays on screen when the list fills. */
 export const DontInline: S = {
-  render: () => (
-    <Card title="Builds">
-      <Text tone="muted">No builds yet.</Text>
-    </Card>
-  ),
+  render: examples.DontInline,
 };
 
 /** `size="sm"` is one centred muted line with no heading: the form a table, a timeline or a list draws. */

@@ -3,13 +3,12 @@ import {
   Button,
   Callout,
   Card,
-  ErrorPage,
   FullBleedLayout,
-  Section,
   Stack,
   Text,
   TextLink,
 } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/Callout.examples.js";
 
 const meta: Meta = { title: "Feedback/Callout" };
 export default meta;
@@ -121,54 +120,20 @@ export const Linked: S = {
   ),
 };
 
-/** The tone matches how much the message matters: `warn` for a thing to check before going on. */
 export const DoTone: S = {
-  render: () => (
-    <Stack gap="sm">
-      <Callout tone="info">The import runs overnight.</Callout>
-      <Callout tone="warn" title="3 uncategorised.">
-        Sort them before the month closes.
-      </Callout>
-    </Stack>
-  ),
+  render: examples.DoTone,
 };
 
-/** `danger` on a plain note cries wolf: when everything is red, a real failure no longer stands out. */
 export const DontTone: S = {
-  render: () => (
-    <Stack gap="sm">
-      <Callout tone="danger">The import runs overnight.</Callout>
-      <Callout tone="danger" title="3 uncategorised.">
-        Sort them before the month closes.
-      </Callout>
-    </Stack>
-  ),
+  render: examples.DontTone,
 };
 
-/** The action goes in `actions`, at the end of the row, so every callout puts it in the same place. */
 export const DoAction: S = {
-  render: () => (
-    <Callout
-      tone="warn"
-      title="Import failed."
-      actions={
-        <Button size="sm" variant="outline">
-          Retry
-        </Button>
-      }
-    >
-      The last file did not finish.
-    </Callout>
-  ),
+  render: examples.DoAction,
 };
 
-/** A button inside the body drops under the text and leaves the row without its action. */
 export const DontAction: S = {
-  render: () => (
-    <Callout tone="warn" title="Import failed.">
-      The last file did not finish. <Button size="sm">Retry</Button>
-    </Callout>
-  ),
+  render: examples.DontAction,
 };
 
 /** `align="center"` centres the text of a notice that stands alone, such as a success state. */
@@ -180,26 +145,10 @@ export const Centred: S = {
   ),
 };
 
-/** A section that failed to load is a danger `Callout`: a title that says what failed and one button that tries again. The rest of the page stays. */
 export const DoRetry: S = {
-  render: () => (
-    <Section title="Recent builds">
-      <Callout
-        tone="danger"
-        title="The builds did not load."
-        actions={<Button size="sm">Try again</Button>}
-      >
-        Nothing was lost; the list is still on the server.
-      </Callout>
-    </Section>
-  ),
+  render: examples.DoRetry,
 };
 
-/** A whole error page inside one section takes over the screen for a part that failed. */
 export const DontRetry: S = {
-  render: () => (
-    <Section title="Recent builds">
-      <ErrorPage />
-    </Section>
-  ),
+  render: examples.DontRetry,
 };

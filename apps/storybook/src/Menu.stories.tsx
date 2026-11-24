@@ -3,7 +3,6 @@ import {
   Button,
   Card,
   Dialog,
-  IconButton,
   type LinkAdapter,
   LinkProvider,
   ListRow,
@@ -12,15 +11,15 @@ import {
   Text,
 } from "@slashsuite/ui-react";
 import { useState } from "react";
+import * as examples from "../../../packages/ui-react/docs/examples/Menu.examples.js";
 
 const meta: Meta = {
   title: "Actions/Menu",
-  // Room under the trigger for the open menu, which is laid over the page.
   decorators: [
     (Story) => (
-      <div className="min-h-72 max-w-md">
+      <examples.Frame>
         <Story />
-      </div>
+      </examples.Frame>
     ),
   ],
 };
@@ -38,84 +37,20 @@ const ROW_ACTIONS: [MenuAction, ...MenuAction[]] = [
   { label: "Hide chat", tone: "danger", onSelect: () => undefined },
 ];
 
-/** A row's secondary actions in one `Menu`, beside its one visible action. */
 export const DoOverflow: S = {
-  render: () => (
-    <Card flush>
-      <ListRow
-        size="sm"
-        actions={
-          <>
-            <Button size="sm" variant="outline">
-              Reply
-            </Button>
-            <Menu
-              size="sm"
-              label="More actions"
-              items={[
-                { label: "Favourite", icon: "plus", onSelect: () => undefined },
-                { label: "Settings", icon: "settings", onSelect: () => undefined },
-                { label: "Hide chat", tone: "danger", onSelect: () => undefined },
-              ]}
-            />
-          </>
-        }
-      >
-        Ada Lovelace
-      </ListRow>
-    </Card>
-  ),
+  render: examples.DoOverflow,
 };
 
-/** Four ghost buttons in a row crowd it, and every one of them is a tab stop. */
 export const DontOverflow: S = {
-  render: () => (
-    <Card flush>
-      <ListRow
-        size="sm"
-        actions={
-          <>
-            <IconButton size="sm" variant="ghost" label="Reply" icon="chevron-right" />
-            <IconButton size="sm" variant="ghost" label="Favourite" icon="plus" />
-            <IconButton size="sm" variant="ghost" label="Settings" icon="settings" />
-            <IconButton size="sm" variant="ghost" tone="danger" label="Hide chat" icon="close" />
-          </>
-        }
-      >
-        Ada Lovelace
-      </ListRow>
-    </Card>
-  ),
+  render: examples.DontOverflow,
 };
 
-/** The destructive item is last and `tone="danger"`, so the arrows never land on it first. */
 export const DoDestructive: S = {
-  render: () => (
-    <Menu
-      label="More actions"
-      defaultOpen
-      items={[
-        { label: "Favourite", icon: "plus", onSelect: () => undefined },
-        { label: "Settings", icon: "settings", onSelect: () => undefined },
-        { label: "Hide chat", tone: "danger", onSelect: () => undefined },
-      ]}
-    />
-  ),
+  render: examples.DoDestructive,
 };
 
-/** A red item first is the one a quick Enter chooses. */
 export const DontDestructive: S = {
-  render: () => (
-    <Menu
-      label="More actions"
-      defaultOpen
-      items={[
-        { label: "Hide chat", tone: "danger", onSelect: () => undefined },
-        { label: "Favourite", icon: "plus", onSelect: () => undefined },
-        { label: "Settings", icon: "settings", onSelect: () => undefined },
-      ]}
-    />
-  ),
+  render: examples.DontDestructive,
 };
 
 /** What the chosen action did, shown on the page, so the e2e can read it. */

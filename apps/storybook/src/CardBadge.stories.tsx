@@ -11,7 +11,7 @@ import {
   Text,
   TextLink,
 } from "@slashsuite/ui-react";
-import { DemoShell, layoutPage } from "./layout/DemoShell";
+import { DemoShell, layoutPage } from "../../../packages/ui-react/docs/examples/DemoShell.js";
 
 /** Card's `badge` and `attention`, apart from Card.stories.tsx so each file stays short. */
 const meta: Meta = { title: "Content/Card" };

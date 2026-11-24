@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Avatar, AvatarStack, Cluster, Stack } from "@slashsuite/ui-react";
+import { AvatarStack, Stack } from "@slashsuite/ui-react";
 import { samplePhoto } from "./samplePhoto";
+import * as examples from "../../../packages/ui-react/docs/examples/AvatarStack.examples.js";
 
 const meta: Meta = { title: "Content/AvatarStack" };
 export default meta;
@@ -54,35 +55,12 @@ export const Square: S = {
   ),
 };
 
-/** With many people, `max` keeps the row short and the "+N" says how many more there are. */
 export const DoMax: S = {
-  render: () => (
-    <AvatarStack
-      items={[
-        { name: "Ada Lovelace" },
-        { name: "Grace Hopper" },
-        { name: "Linus Torvalds" },
-        { name: "Margaret Hamilton" },
-        { name: "Dennis Ritchie" },
-        { name: "Ken Thompson" },
-      ]}
-      max={4}
-    />
-  ),
+  render: examples.DoMax,
 };
 
-/** Avatars side by side are a row of separate marks: they take the width of the whole team and read as a list, not a group. */
 export const DontMax: S = {
-  render: () => (
-    <Cluster gap="xs">
-      <Avatar name="Ada Lovelace" />
-      <Avatar name="Grace Hopper" />
-      <Avatar name="Linus Torvalds" />
-      <Avatar name="Margaret Hamilton" />
-      <Avatar name="Dennis Ritchie" />
-      <Avatar name="Ken Thompson" />
-    </Cluster>
-  ),
+  render: examples.DontMax,
 };
 
 /** While `loading`, a stack with no members yet is three avatar bones. */

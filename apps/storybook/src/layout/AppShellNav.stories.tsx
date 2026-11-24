@@ -6,7 +6,7 @@ import {
   PageHeader,
   Tabs,
 } from "@slashsuite/ui-react";
-import { layoutPage } from "./DemoShell";
+import { layoutPage } from "../../../../packages/ui-react/docs/examples/DemoShell.js";
 
 /** The header's nav measured against its row: the visual check shoots it at 1280, where it fits. */
 const meta: Meta = {

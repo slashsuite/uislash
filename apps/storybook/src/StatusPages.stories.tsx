@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Button, ErrorPage, Forbidden, Maintenance, NotFound, Offline } from "@slashsuite/ui-react";
-import { DemoShell, layoutPage } from "./layout/DemoShell";
+import { DemoShell, layoutPage } from "../../../packages/ui-react/docs/examples/DemoShell.js";
+import * as examples from "../../../packages/ui-react/docs/examples/StatusPages.examples.js";
 
 /** Whole pages for the states every site has. Each renders as the content of an AppShell, with fixed copy; `title` and the body can be overridden. */
 const meta: Meta = {
@@ -87,36 +88,24 @@ export const CustomAction: S = {
   ),
 };
 
-/** A missing page is `NotFound`: the reader needs a way home, and a retry would load the same nothing. */
 export const DoPickPage: S = {
   parameters: { bare: false },
-  render: () => <NotFound />,
+  render: examples.DoPickPage,
 };
 
-/** `ErrorPage` with a retry for a missing page promises that trying again helps, and it does not. */
 export const DontPickPage: S = {
   parameters: { bare: false },
-  render: () => <ErrorPage onRetry={() => {}} />,
+  render: examples.DontPickPage,
 };
 
-/** `detail` is a request id or a short message the reader can quote, and `onRetry` offers another go. */
 export const DoErrorDetail: S = {
   parameters: { bare: false },
-  render: () => <ErrorPage detail="Request 4f2a91 failed: upstream timed out" onRetry={() => {}} />,
+  render: examples.DoErrorDetail,
 };
 
-/** A stack trace shows the reader your internals and buries the one line they can act on. */
 export const DontErrorDetail: S = {
   parameters: { bare: false },
-  render: () => (
-    <ErrorPage
-      detail={
-        "TypeError: Cannot read properties of undefined\n  at loadBuild (build.ts:42:9)\n" +
-        "  at async handler (route.ts:17:3)"
-      }
-      onRetry={() => {}}
-    />
-  ),
+  render: examples.DontErrorDetail,
 };
 
 /** Without an AppShell: in a Container, as the whole page. */

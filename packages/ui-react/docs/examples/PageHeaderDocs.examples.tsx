@@ -1,0 +1,76 @@
+import {
+  Breadcrumbs,
+  Button,
+  Card,
+  Cluster,
+  Tabs,
+  PageHeader,
+  PageHeading,
+  Stack,
+  Text,
+} from "@slashsuite/ui-react";
+
+/** Breadcrumbs, title, description, actions and tabs are slots of one `PageHeader`; each is optional. */
+export const DoSlots = () => (
+  <PageHeader
+    breadcrumbs={
+      <Breadcrumbs
+        items={[
+          { label: "Hack Cove", href: "#project" },
+          { label: "Builds", href: "#builds" },
+          "Build 412",
+        ]}
+      />
+    }
+    title="Build 412"
+    description="main · 3 changed"
+    actions={
+      <>
+        <Button variant="outline">Reject</Button>
+        <Button>Accept all</Button>
+      </>
+    }
+    tabs={
+      <Tabs
+        label="Build"
+        items={[
+          { label: "Changed", href: "#changed", selected: true },
+          { label: "New", href: "#new" },
+        ]}
+      />
+    }
+  />
+);
+
+/** A title row built from a heading, a description and a `Cluster` is a second header that drifts from every other page's. Use `PageHeader`. */
+export const DontSlots = () => (
+  <Cluster justify="between">
+    <Stack gap="xs">
+      <PageHeading>Build 412</PageHeading>
+      <Text>main · 3 changed</Text>
+    </Stack>
+    <Button>Accept all</Button>
+  </Cluster>
+);
+
+/** As a direct child of a `Stack`, the header drops its own bottom margin, so the Stack's `gap` is the only space under it. */
+export const DoInStack = () => (
+  <Stack gap="lg">
+    <PageHeader title="Members" description="Who can see this project." />
+    <Card title="Active">
+      <Text>3 members</Text>
+    </Card>
+  </Stack>
+);
+
+/** Wrapped in a `div`, the header is no longer a direct child of the Stack, keeps its margin and doubles the space. */
+export const DontInStack = () => (
+  <Stack gap="lg">
+    <div>
+      <PageHeader title="Members" description="Who can see this project." />
+    </div>
+    <Card title="Active">
+      <Text>3 members</Text>
+    </Card>
+  </Stack>
+);

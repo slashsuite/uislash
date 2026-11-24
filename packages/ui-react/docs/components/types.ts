@@ -2,7 +2,7 @@
    The component docs, as data: the words on /ui/<slug>/ and in /ui/llms.txt.
    ---------------------------------------------------------------------------
    Both read these files, so they cannot drift. The code and the Do/Don't examples are never
-   written here: `pairs` name stories in apps/storybook/src, and the props are
+   written here: `pairs` name examples in docs/examples, and the props are
    read from packages/ui-react. A page says one right way and what not to do; it has no recipe for
    extending a component and no styling escape hatch.
    --------------------------------------------------------------------------- */

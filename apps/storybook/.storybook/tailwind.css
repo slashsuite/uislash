@@ -4,6 +4,8 @@
    here: preview.tsx injects the selected theme, so switching themes swaps the whole palette. */
 @source "../../../packages/ui-react/src";
 @source "../../../packages/ui-react/palette.json";
+/* The stories render the docs' examples, whose own layout classes live there. */
+@source "../../../packages/ui-react/docs/examples";
 
 /* The frame's page colour. Layered, so a theme's own unlayered scope rule (thrifty-paper's
    cream canvas, Mocha's mantle) wins; a theme that paints no canvas gets the browser's canvas

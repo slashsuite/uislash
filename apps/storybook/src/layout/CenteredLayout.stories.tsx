@@ -1,16 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import {
-  AppShell,
-  Button,
-  CenteredLayout,
-  Field,
-  FormLayout,
-  Icon,
-  Input,
-  Tabs,
-  Text,
-} from "@slashsuite/ui-react";
-import { DemoShell, layoutPage } from "./DemoShell";
+import { Button, CenteredLayout, Field, Icon, Input, Text } from "@slashsuite/ui-react";
+import { DemoShell, layoutPage } from "../../../../packages/ui-react/docs/examples/DemoShell.js";
+import * as examples from "../../../../packages/ui-react/docs/examples/CenteredLayout.examples.js";
 
 /** The one layout whose width differs on purpose: a narrow centred card, asserted on its own terms (e2e/layout.spec.ts). */
 const meta: Meta = {
@@ -21,29 +12,8 @@ const meta: Meta = {
 export default meta;
 type S = StoryObj;
 
-/** A whole sign-in page: the shell with its brand and nav, then one narrow card, centred. */
 export const FullPage: S = {
-  render: () => (
-    <AppShell
-      brand={<a href="#">Hack Cove</a>}
-      nav={
-        <Tabs
-          label="Main"
-          items={[
-            { label: "Quotes", href: "#quotes", selected: true },
-            { label: "Clients", href: "#clients" },
-          ]}
-        />
-      }
-    >
-      <CenteredLayout title="Sign in" description="Use your Hack Cove account.">
-        <Field label="Email" htmlFor="full-page-email">
-          <Input id="full-page-email" type="email" placeholder="you@example.com" />
-        </Field>
-        <Button>Continue</Button>
-      </CenteredLayout>
-    </AppShell>
-  ),
+  render: examples.FullPage,
 };
 
 export const SignIn: S = {
@@ -84,31 +54,12 @@ export const Mark: S = {
   ),
 };
 
-/** Sign-in, landing, not-found and error pages are one narrow card, centred. */
 export const DoPage: S = {
-  render: () => (
-    <CenteredLayout title="Sign in" description="Use your Hack Cove account.">
-      <Field label="Email" htmlFor="do-page-email">
-        <Input id="do-page-email" type="email" placeholder="you@example.com" />
-      </Field>
-      <Button>Continue</Button>
-    </CenteredLayout>
-  ),
+  render: examples.DoPage,
 };
 
-/** `FormLayout` is for a form inside the app: its wide column hangs off the left edge, which is wrong for a sign-in. Use `CenteredLayout`. */
 export const DontPage: S = {
-  render: () => (
-    <FormLayout
-      title="Sign in"
-      description="Use your Hack Cove account."
-      actions={<Button type="submit">Continue</Button>}
-    >
-      <Field label="Email" htmlFor="dont-page-email">
-        <Input id="dont-page-email" type="email" placeholder="you@example.com" />
-      </Field>
-    </FormLayout>
-  ),
+  render: examples.DontPage,
 };
 
 /** While `loading` the layout owns the wait: the header draws as itself and every part inside waits with it. */

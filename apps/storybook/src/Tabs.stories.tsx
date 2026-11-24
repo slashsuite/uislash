@@ -1,14 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import {
-  Breadcrumbs,
-  Button,
-  Tabs,
-  PageHeader,
-  SegmentedControl,
-  Stack,
-  Text,
-} from "@slashsuite/ui-react";
+import { Breadcrumbs, Button, Tabs, PageHeader, Text } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/Tabs.examples.js";
 
 const meta: Meta = { title: "Navigation/Tabs" };
 export default meta;
@@ -20,120 +13,28 @@ const views = ["overview", "activity", "settings"].map((value) => ({
   controls: "panel",
 }));
 
-/** `Tabs` switches a view in place; the panel it controls sits right under the row. */
 export const DoSwitchView: S = {
-  render: () => {
-    const [value, setValue] = useState("overview");
-    return (
-      <Stack>
-        <Tabs
-          label="Project views"
-          value={value}
-          onChange={setValue}
-          items={[
-            { value: "overview", label: "Overview", controls: "panel" },
-            { value: "activity", label: "Activity", controls: "panel" },
-            { value: "settings", label: "Settings", controls: "panel" },
-          ]}
-        />
-        <Text id="panel" role="tabpanel">
-          Showing {value}.
-        </Text>
-      </Stack>
-    );
-  },
+  render: examples.DoSwitchView,
 };
 
-/** A `SegmentedControl` that swaps the panel under it picks a value, not a view: no tab list, no panel tied to it. Switching the panel is `Tabs`. */
 export const DontSwitchView: S = {
-  render: () => {
-    const [value, setValue] = useState("overview");
-    return (
-      <Stack>
-        <SegmentedControl
-          label="Project views"
-          value={value}
-          onChange={setValue}
-          items={[
-            { value: "overview", label: "Overview" },
-            { value: "activity", label: "Activity" },
-            { value: "settings", label: "Settings" },
-          ]}
-        />
-        <Text>Showing {value}.</Text>
-      </Stack>
-    );
-  },
+  render: examples.DontSwitchView,
 };
 
-/** Going to another page is not a tab: `Tabs` with `href` items are links, so the URL and history move. */
 export const DoSwitchPage: S = {
-  render: () => (
-    <Tabs
-      label="Sections"
-      items={[
-        { label: "Quotes", href: "#quotes", selected: true },
-        { label: "Invoices", href: "#invoices" },
-      ]}
-    />
-  ),
+  render: examples.DoSwitchPage,
 };
 
-/** A `Tabs` row that only navigates leaves the URL, the back button and a new tab behind. */
 export const DontSwitchPage: S = {
-  render: () => {
-    const [value, setValue] = useState("quotes");
-    return (
-      <Tabs
-        label="Sections"
-        value={value}
-        onChange={(next) => {
-          setValue(next);
-          location.assign(`#${next}`);
-        }}
-        items={[
-          { value: "quotes", label: "Quotes" },
-          { value: "invoices", label: "Invoices" },
-        ]}
-      />
-    );
-  },
+  render: examples.DontSwitchPage,
 };
 
-/** A `count` sits muted after the label and is read as part of the tab's name. */
 export const DoCount: S = {
-  render: () => {
-    const [value, setValue] = useState("shots");
-    return (
-      <Tabs
-        label="Assets"
-        value={value}
-        onChange={setValue}
-        items={[
-          { value: "shots", label: "Shots", count: 12 },
-          { value: "clips", label: "Clips", count: 3 },
-        ]}
-      />
-    );
-  },
+  render: examples.DoCount,
 };
 
-/** A count typed into the label is plain text: it does not mute, and it cannot be styled the same. */
 export const DontCount: S = {
-  render: () => {
-    const [value, setValue] = useState("shots");
-    return (
-      <Tabs
-        label="Assets"
-        value={value}
-        onChange={setValue}
-        items={[
-          { value: "shots", label: "Shots (12)" },
-          { value: "clips", label: "Clips (3)" },
-        ]}
-      />
-    );
-  },
+  render: examples.DontCount,
 };
 
 /** The caller owns `value`; click a tab, or Tab in and use the arrow keys, Home and End. */

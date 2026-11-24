@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Callout, Disclosure, Stack, Text } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/Disclosure.examples.js";
 
 const meta: Meta = { title: "Content/Disclosure" };
 export default meta;
@@ -65,43 +66,18 @@ export const Bordered: S = {
   ),
 };
 
-/** Detail the person may not need, behind a summary that says what it is, is a `Disclosure`. */
 export const DoSecondary: S = {
-  render: () => (
-    <Stack gap="xs">
-      <Text>Order 1042 was posted on Monday.</Text>
-      <Disclosure summary="Tracking history">
-        <Text>Posted Monday · Sorted Tuesday · Out for delivery Wednesday.</Text>
-      </Disclosure>
-    </Stack>
-  ),
+  render: examples.DoSecondary,
 };
 
-/** A hand-built `<details>` and `<summary>` has none of the library's look or focus ring. `Disclosure` replaces it. */
 export const DontSecondary: S = {
-  render: () => (
-    <Stack gap="xs">
-      <Text>Order 1042 was posted on Monday.</Text>
-      <details>
-        <summary>Tracking history</summary>
-        <Text>Posted Monday · Sorted Tuesday · Out for delivery Wednesday.</Text>
-      </details>
-    </Stack>
-  ),
+  render: examples.DontSecondary,
 };
 
-/** What the person must read to carry on, such as an error, is in view: a `Callout`, not a `Disclosure`. */
 export const DoEssential: S = {
-  render: () => (
-    <Callout tone="danger">Your payment was declined. Your order is not placed.</Callout>
-  ),
+  render: examples.DoEssential,
 };
 
-/** What the person must read to carry on, such as an error, is not hidden behind a summary: show it. */
 export const DontEssential: S = {
-  render: () => (
-    <Disclosure summary="Details">
-      <Callout tone="danger">Your payment was declined. Your order is not placed.</Callout>
-    </Disclosure>
-  ),
+  render: examples.DontEssential,
 };

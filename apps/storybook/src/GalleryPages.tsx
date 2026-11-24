@@ -19,7 +19,7 @@ import {
   StickyBar,
   Text,
 } from "@slashsuite/ui-react";
-import { DemoShell } from "./layout/DemoShell";
+import { DemoShell } from "../../../packages/ui-react/docs/examples/DemoShell.js";
 import { DetailPage, FormPage, ListPage, ProsePage, StatTiles } from "./layout/pages";
 
 /** An AppShell in a box that scrolls under its sticky header; `bleed` is for the full-height layouts. */

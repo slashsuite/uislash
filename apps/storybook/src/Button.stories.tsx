@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Button, ButtonGroup } from "@slashsuite/ui-react";
 import { CompactApp } from "./typeSteps";
+import * as examples from "../../../packages/ui-react/docs/examples/Button.examples.js";
 
 const meta: Meta = { title: "Actions/Button" };
 export default meta;
@@ -16,72 +17,36 @@ export const Default: S = {
   ),
 };
 
-/** One primary action per view: the quieter variants carry the rest. */
 export const DoOnePrimary: S = {
-  render: () => (
-    <ButtonGroup>
-      <Button>Save</Button>
-      <Button variant="outline">Cancel</Button>
-    </ButtonGroup>
-  ),
+  render: examples.DoOnePrimary,
 };
 
-/** Two primaries compete for the eye, and nobody can tell which action the view is about. */
 export const DontOnePrimary: S = {
-  render: () => (
-    <ButtonGroup>
-      <Button>Save</Button>
-      <Button>Save and close</Button>
-    </ButtonGroup>
-  ),
+  render: examples.DontOnePrimary,
 };
 
-/** `disabledReason` greys the button and shows the reason as a tooltip on hover, keyboard focus and a tap; the button stays in the tab order. */
 export const DoDisabledReason: S = {
-  render: () => <Button disabledReason="Pick a shop first">Save</Button>,
+  render: examples.DoDisabledReason,
 };
 
-/** A bare `disabled` leaves the user guessing why nothing happens. */
 export const DontDisabledReason: S = {
-  render: () => <Button disabled>Save</Button>,
+  render: examples.DontDisabledReason,
 };
 
-/** Going to another page is a link: `Button` with `href` keeps the anchor, middle-click and the URL. */
 export const DoNavigate: S = {
-  render: () => (
-    <Button href="#quotes" variant="outline">
-      Open quotes
-    </Button>
-  ),
+  render: examples.DoNavigate,
 };
 
-/** A button that sets `location` loses middle-click, the status-bar URL and crawlability. */
 export const DontNavigate: S = {
-  render: () => (
-    <Button variant="outline" onClick={() => location.assign("#quotes")}>
-      Open quotes
-    </Button>
-  ),
+  render: examples.DontNavigate,
 };
 
-/** A destructive action is `tone="danger"`, so the red says what the button does before it is read. */
 export const DoDestructive: S = {
-  render: () => (
-    <ButtonGroup>
-      <Button tone="danger">Delete quote</Button>
-      <Button variant="outline">Cancel</Button>
-    </ButtonGroup>
-  ),
+  render: examples.DoDestructive,
 };
 
-/** A delete in the primary look reads as the safe, expected action; the tone is what warns. */
 export const DontDestructive: S = {
-  render: () => (
-    <ButtonGroup>
-      <Button>Delete quote</Button>
-      <Button variant="outline">Cancel</Button>
-    </ButtonGroup>
-  ),
+  render: examples.DontDestructive,
 };
 
 export const Variants: S = {

@@ -17,7 +17,7 @@ import {
   Cluster,
   Show,
 } from "@slashsuite/ui-react";
-import { DemoShell, layoutPage } from "./DemoShell";
+import { DemoShell, layoutPage } from "../../../../packages/ui-react/docs/examples/DemoShell.js";
 
 /** Each page story here keeps the page title at the logo's x; the visual check shoots each at 1280. */
 const meta: Meta = {

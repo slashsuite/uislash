@@ -1,48 +1,25 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Breadcrumbs } from "@slashsuite/ui-react";
+import * as examples from "../../../packages/ui-react/docs/examples/Breadcrumbs.examples.js";
 
 const meta: Meta = { title: "Navigation/Breadcrumbs" };
 export default meta;
 type S = StoryObj;
 
-/** A parent crumb is `{ label, href }` and the last is plain text: the trail that leads back up, ending at the current page. */
 export const DoTrail: S = {
-  render: () => (
-    <Breadcrumbs
-      items={[
-        { label: "Projects", href: "#projects" },
-        { label: "Launch film", href: "#launch-film" },
-        "Shots",
-      ]}
-    />
-  ),
+  render: examples.DoTrail,
 };
 
-/** Parents given as plain text look like the trail but lead nowhere, so a reader cannot go back up. */
 export const DontTrail: S = {
-  render: () => <Breadcrumbs items={["Projects", "Launch film", "Shots"]} />,
+  render: examples.DontTrail,
 };
 
-/** Breadcrumbs show where the page sits in a hierarchy. */
 export const DoHierarchy: S = {
-  render: () => (
-    <Breadcrumbs
-      items={[{ label: "Acme", href: "#acme" }, { label: "Quotes", href: "#quotes" }, "Quote 12"]}
-    />
-  ),
+  render: examples.DoHierarchy,
 };
 
-/** Siblings are not a hierarchy: switching between peer sections is `Tabs` of links. */
 export const DontHierarchy: S = {
-  render: () => (
-    <Breadcrumbs
-      items={[
-        { label: "Quotes", href: "#quotes" },
-        { label: "Invoices", href: "#invoices" },
-        "Receipts",
-      ]}
-    />
-  ),
+  render: examples.DontHierarchy,
 };
 
 const link = (href: string, label: string) => ({ label, href });
