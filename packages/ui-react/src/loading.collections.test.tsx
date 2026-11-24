@@ -18,6 +18,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } fro
 import { Timeline, TimelineItem } from "./Timeline.js";
 import { TrendChart } from "./TrendChart.js";
 import { FlowDiagram } from "./FlowDiagram.js";
+import { StateMachine } from "./StateMachine.js";
 
 /** The bones on the page, by the marker each one renders: every one hidden from assistive tech. */
 function bones(): HTMLElement[] {
@@ -179,6 +180,7 @@ describe("parts whose value is a number are all bone while loading", () => {
       <StackedBar loading items={[{ label: "Open", value: 3, tone: "warn" }]} label="Tickets" />
     ),
     FlowDiagram: <FlowDiagram loading label="Flow" nodes={[]} edges={[]} />,
+    StateMachine: <StateMachine loading label="Flow" states={[]} transitions={[]} />,
     TrendChart: (
       <TrendChart
         loading

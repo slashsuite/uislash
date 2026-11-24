@@ -36,14 +36,19 @@ export type FlowEdge = {
   label?: string | undefined;
 };
 
-/** A box's frame by tone: the Callout's soft surfaces, and a white box for `neutral`. */
-const NODE_TONE: Record<Tone, string> = {
+/** A box's frame by tone: the Callout's soft surfaces, a white box for `neutral`, a grey one for `muted`. */
+const NODE_TONE: Record<ViewTone, string> = {
   ...TONE_SURFACE,
   neutral: "border-slate-300 bg-white",
+  muted: "border-slate-200 bg-slate-50",
 };
 
-/** A box's ink by tone; `neutral` is the primary ink. */
-const NODE_INK: Record<Tone, string> = { ...TONE_TEXT, neutral: "text-slate-900" };
+/** A box's ink by tone; `neutral` is the primary ink, `muted` the quiet one. */
+const NODE_INK: Record<ViewTone, string> = {
+  ...TONE_TEXT,
+  neutral: "text-slate-900",
+  muted: "text-slate-500",
+};
 
 /**
  * Boxes joined by arrows, laid out for you: a flow, a pipeline, a state machine. Give it the
@@ -102,15 +107,66 @@ export function FlowDiagram({
     );
   }
 
+  return (
+    <FlowView
+      {...rest}
+      label={label}
+      nodes={nodes}
+      edges={edges}
+      active={active}
+      overlay={overlay}
+      canvas={canvas}
+      drawn={drawn}
+    />
+  );
+}
+
+/** A box's tone in the internal view: the public tones, and `muted` for a box that is over. */
+export type ViewTone = Tone | "muted";
+
+/** A box of the internal view: a `FlowNode` that may also be `muted`. */
+export type ViewNode = Omit<FlowNode, "tone"> & { tone?: ViewTone | undefined };
+
+/**
+ * The laid-out diagram, drawn: `FlowDiagram` without its loading bone, and with `layer`, which
+ * `StateMachine` draws its dots in. The caller lays it out (`useFlowLayout`) and hands over the
+ * `canvas` ref and the layout `drawn`. Unlike `overlay`, the layer is read by a screen reader and its
+ * children may take the pointer (`pointer-events-auto`), so they can be links. With a layer, the
+ * image is the drawing alone and the scrolling box round it is a group named by `label`. Internal.
+ */
+export function FlowView({
+  label,
+  nodes,
+  edges,
+  active,
+  overlay,
+  layer,
+  canvas,
+  drawn,
+  ...rest
+}: {
+  label: string;
+  nodes: readonly ViewNode[];
+  edges: readonly FlowEdge[];
+  active: string | undefined;
+  overlay?: ((layout: FlowLayout) => ReactNode) | undefined;
+  layer?: ((layout: FlowLayout) => ReactNode) | undefined;
+  canvas: ReturnType<typeof useFlowLayout>["canvas"];
+  drawn: FlowLayout;
+} & Passthrough): ReactElement {
   const known = new Set(nodes.map((n) => n.id));
   const shown = edges.flatMap((edge, index) =>
     known.has(edge.from) && known.has(edge.to) ? [{ edge, index }] : [],
   );
+  const image = {
+    role: "img",
+    "aria-label": `${label}: ${count(known.size, "box", "boxes")} and ${count(shown.length, "arrow", "arrows")}`,
+  };
+  const drawing = <FlowCanvas drawn={drawn} nodes={nodes} edges={shown} active={active} />;
   return (
     <div {...rest} className="flex min-w-0 flex-col">
       <div
-        role="img"
-        aria-label={`${label}: ${count(known.size, "box", "boxes")} and ${count(shown.length, "arrow", "arrows")}`}
+        {...(layer ? { role: "group", "aria-label": label } : image)}
         // A diagram wider than its room scrolls, so it takes the focus for the arrow keys.
         tabIndex={0}
         className="max-w-full overflow-auto rounded-lg outline-offset-2 focus-visible:outline-2 focus-visible:outline-violet-600"
@@ -120,12 +176,19 @@ export function FlowDiagram({
           className="relative mx-auto"
           style={{ width: drawn.width, height: drawn.height }}
         >
-          <FlowCanvas drawn={drawn} nodes={nodes} edges={shown} active={active} />
+          {layer ? (
+            <div {...image} className="absolute inset-0">
+              {drawing}
+            </div>
+          ) : (
+            drawing
+          )}
           {overlay && (
             <div aria-hidden="true" className="pointer-events-none absolute inset-0">
               {overlay(drawn)}
             </div>
           )}
+          {layer && <div className="pointer-events-none absolute inset-0">{layer(drawn)}</div>}
         </div>
       </div>
       <FlowList label={label} nodes={nodes} edges={shown} active={active} />
@@ -144,7 +207,7 @@ function FlowCanvas({
   active,
 }: {
   drawn: FlowLayout;
-  nodes: readonly FlowNode[];
+  nodes: readonly ViewNode[];
   edges: readonly { edge: FlowEdge; index: number }[];
   active: string | undefined;
 }): ReactElement {
@@ -229,7 +292,7 @@ function FlowBoxView({
   active,
 }: {
   box: FlowNodeBox;
-  node: FlowNode;
+  node: ViewNode;
   active: boolean;
 }): ReactElement {
   const tone = node.tone ?? "neutral";
@@ -262,7 +325,7 @@ function FlowList({
   active,
 }: {
   label: string;
-  nodes: readonly FlowNode[];
+  nodes: readonly ViewNode[];
   edges: readonly { edge: FlowEdge; index: number }[];
   active: string | undefined;
 }): ReactElement {

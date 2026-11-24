@@ -26,7 +26,10 @@ const EDGE_LINE = 16;
 
 type Size = { width: number; height: number };
 
-function guessNode(node: FlowNode): Size {
+/** What the layout reads from a node. */
+type SizedNode = Pick<FlowNode, "id" | "label" | "group" | "content">;
+
+function guessNode(node: SizedNode): Size {
   const text = Math.ceil(node.label.length * NODE_CHAR);
   const lines = Math.max(1, Math.ceil(text / (NODE_MAX - NODE_PAD_X)));
   return {
@@ -71,7 +74,7 @@ const sameSizes = (a: Record<string, Size>, b: Record<string, Size>): boolean =>
  * pass; the observer catches a later change (a web font arriving).
  */
 export function useFlowLayout(
-  nodes: readonly FlowNode[],
+  nodes: readonly SizedNode[],
   edges: readonly FlowEdge[],
   direction: FlowDirection,
 ): { canvas: RefObject<HTMLDivElement | null>; drawn: FlowLayout } {

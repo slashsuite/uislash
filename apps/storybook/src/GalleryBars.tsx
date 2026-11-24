@@ -1,5 +1,6 @@
 import {
   FlowDiagram,
+  StateMachine,
   Legend,
   ProgressBar,
   SplitBar,
@@ -43,7 +44,7 @@ const categories = [
   "Kitchen",
 ];
 
-/** The StatTile, ProgressBar, SplitBar, StackedBar, Legend, TrendChart and FlowDiagram rows of the Gallery. */
+/** The StatTile, ProgressBar, SplitBar, StackedBar, Legend, TrendChart, FlowDiagram and StateMachine rows of the Gallery. */
 export function GalleryBars() {
   return (
     <div className="flex flex-col gap-4">
@@ -116,6 +117,7 @@ export function GalleryBars() {
         />
       </div>
       <GalleryFlow />
+      <GalleryStateMachine />
     </div>
   );
 }
@@ -143,6 +145,35 @@ function GalleryFlow() {
         { from: "gate", to: "merged", label: "land" },
         { from: "merged", to: "launched", label: "reopen" },
         { from: "launched", to: "failed", label: "fail" },
+      ]}
+    />
+  );
+}
+
+/** The StateMachine row of the Gallery: every kind of state, an owner, items, and one unplaced. */
+function GalleryStateMachine() {
+  return (
+    <StateMachine
+      label="Article flow"
+      active="review"
+      states={[
+        { id: "draft", label: "Draft", kind: "initial", owner: "writer" },
+        { id: "review", label: "In review", kind: "human", owner: "editor" },
+        { id: "published", label: "Published", kind: "terminal" },
+        { id: "rejected", label: "Rejected", kind: "failed" },
+      ]}
+      transitions={[
+        { from: "draft", to: "review", event: "submit" },
+        { from: "review", to: "draft", event: "send back" },
+        { from: "review", to: "published", event: "approve" },
+        { from: "review", to: "rejected", event: "reject" },
+      ]}
+      items={[
+        { id: "A-12", label: "Spring launch post", state: "review" },
+        { id: "A-14", label: "Pricing page refresh", state: "review" },
+        { id: "A-15", label: "Customer story", state: "draft" },
+        { id: "A-3", label: "Year in review", state: "published" },
+        { id: "A-9", label: "Archived interview", state: "archived" },
       ]}
     />
   );

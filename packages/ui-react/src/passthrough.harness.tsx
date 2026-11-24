@@ -247,6 +247,9 @@ export const CASES: Record<string, () => ReactElement> = {
   FlowDiagram: () => (
     <ui.FlowDiagram label="L" nodes={[{ id: "a", label: "a" }]} edges={[]} {...A} />
   ),
+  StateMachine: () => (
+    <ui.StateMachine label="L" states={[{ id: "a", label: "a" }]} transitions={[]} {...A} />
+  ),
   TrendChart: () => (
     <ui.TrendChart
       label="L"
