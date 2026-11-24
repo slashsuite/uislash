@@ -28,93 +28,44 @@ export const Right: S = {
   render: () => <FlowDiagram label="How an article is published" direction="right" {...article} />,
 };
 
-const orderStates = [
-  ["cart", "Cart"],
-  ["checkout", "Checkout"],
-  ["payment", "Awaiting payment"],
-  ["declined", "Payment declined"],
-  ["paid", "Paid"],
-  ["fraud", "Fraud check"],
-  ["held", "Held for review"],
-  ["cancelled", "Cancelled"],
-  ["refunding", "Refunding"],
-  ["refunded", "Refunded"],
-  ["picking", "Picking"],
-  ["backorder", "Backordered"],
-  ["packing", "Packing"],
-  ["label", "Label printed"],
-  ["shipped", "Shipped"],
-  ["transit", "In transit"],
-  ["delayed", "Delayed"],
-  ["outForDelivery", "Out for delivery"],
-  ["failedDelivery", "Delivery failed"],
-  ["pickup", "At pickup point"],
-  ["delivered", "Delivered"],
-  ["returnAsked", "Return asked"],
-  ["returning", "Returning"],
-  ["inspecting", "Inspecting return"],
-  ["restocked", "Restocked"],
-  ["closed", "Closed"],
+/** A ticket's lifecycle, with its QA states. */
+const ticketStates = [
+  ["open", "Open"],
+  ["in_progress", "In progress"],
+  ["ready", "Ready"],
+  ["merged", "Merged"],
+  ["qa_ready", "Ready for QA"],
+  ["qa", "In QA"],
+  ["qa_rework", "QA rework"],
+  ["blocked", "Blocked"],
+  ["done", "Done"],
 ] as const;
 
-/** The states that wait on a person, that failed, and that are done; the rest are neutral. */
+/** The states that wait on a person, that stopped, and that are done; the rest are neutral. */
 const tones: Partial<Record<string, Tone>> = {
-  held: "warn",
-  inspecting: "warn",
-  backorder: "warn",
-  declined: "danger",
-  failedDelivery: "danger",
-  cancelled: "danger",
-  delivered: "positive",
-  closed: "positive",
-  refunded: "positive",
+  qa_rework: "warn",
+  blocked: "danger",
+  done: "positive",
 };
 
-const orderNodes: FlowNode[] = orderStates.map(([id, label]) => ({ id, label, tone: tones[id] }));
+const ticketNodes: FlowNode[] = ticketStates.map(([id, label]) => ({ id, label, tone: tones[id] }));
 
-const orderEdges: FlowEdge[] = [
-  { from: "cart", to: "checkout", label: "check out" },
-  { from: "checkout", to: "cart", label: "back" },
-  { from: "checkout", to: "payment", label: "place" },
-  { from: "payment", to: "paid", label: "captured" },
-  { from: "payment", to: "declined", label: "declined" },
-  { from: "declined", to: "payment", label: "retry" },
-  { from: "declined", to: "cancelled", label: "give up" },
-  { from: "payment", to: "cancelled", label: "expire" },
-  { from: "paid", to: "fraud" },
-  { from: "fraud", to: "picking", label: "clear" },
-  { from: "fraud", to: "held", label: "flag" },
-  { from: "held", to: "picking", label: "release" },
-  { from: "held", to: "refunding", label: "reject" },
-  { from: "picking", to: "packing" },
-  { from: "picking", to: "backorder", label: "short" },
-  { from: "backorder", to: "picking", label: "stock in" },
-  { from: "backorder", to: "refunding", label: "cancel" },
-  { from: "packing", to: "label" },
-  { from: "label", to: "shipped", label: "collected" },
-  { from: "shipped", to: "transit" },
-  { from: "transit", to: "delayed", label: "late" },
-  { from: "delayed", to: "transit", label: "moving" },
-  { from: "transit", to: "outForDelivery" },
-  { from: "outForDelivery", to: "delivered" },
-  { from: "outForDelivery", to: "failedDelivery", label: "no one in" },
-  { from: "failedDelivery", to: "outForDelivery", label: "retry" },
-  { from: "failedDelivery", to: "pickup", label: "redirect" },
-  { from: "pickup", to: "delivered", label: "collected" },
-  { from: "pickup", to: "returning", label: "unclaimed" },
-  { from: "delivered", to: "returnAsked", label: "ask" },
-  { from: "delivered", to: "closed", label: "30 days" },
-  { from: "returnAsked", to: "returning", label: "approve" },
-  { from: "returnAsked", to: "closed", label: "refuse" },
-  { from: "returning", to: "inspecting" },
-  { from: "inspecting", to: "restocked", label: "fine" },
-  { from: "inspecting", to: "refunding", label: "accept" },
-  { from: "inspecting", to: "returnAsked", label: "dispute" },
-  { from: "restocked", to: "refunding" },
-  { from: "refunding", to: "refunded" },
-  { from: "refunded", to: "closed" },
-  { from: "cancelled", to: "closed" },
-];
+/** Every move a ticket can make, from → the states it can go to. */
+const ticketMoves: Record<string, readonly string[]> = {
+  open: ["in_progress", "ready", "blocked", "done"],
+  in_progress: ["ready", "blocked", "done", "open"],
+  ready: ["merged", "in_progress", "blocked", "qa_ready", "done"],
+  merged: ["qa_ready", "done", "blocked"],
+  qa_ready: ["qa", "blocked", "done"],
+  qa: ["qa_rework", "done", "blocked"],
+  qa_rework: ["in_progress", "ready", "qa", "blocked", "done"],
+  blocked: ["open", "in_progress", "ready", "done"],
+  done: ["open"],
+};
+
+const ticketEdges: FlowEdge[] = Object.entries(ticketMoves).flatMap(([from, to]) =>
+  to.map((target) => ({ from, to: target })),
+);
 
 /**
  * A large graph: 26 states and 41 arrows, loops and arrows back up included. It is wider than
@@ -123,10 +74,10 @@ const orderEdges: FlowEdge[] = [
 export const LargeWithLoops: S = {
   render: () => (
     <FlowDiagram
-      label="The states an order goes through"
-      nodes={orderNodes}
-      edges={orderEdges}
-      active="transit"
+      label="The states a ticket goes through"
+      nodes={ticketNodes}
+      edges={ticketEdges}
+      active="qa"
     />
   ),
 };

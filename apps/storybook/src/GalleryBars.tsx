@@ -124,20 +124,26 @@ export function GalleryBars() {
 function GalleryFlow() {
   return (
     <FlowDiagram
-      label="How an article is published"
+      label="How a build lands"
       direction="right"
-      active="review"
+      active="launched"
       nodes={[
-        { id: "draft", label: "Draft" },
-        { id: "review", label: "In review" },
-        { id: "changes", label: "Changes asked", tone: "warn" },
-        { id: "live", label: "Published", tone: "positive" },
+        { id: "pending", label: "Queued" },
+        { id: "launching", label: "Launching" },
+        { id: "launched", label: "Building" },
+        { id: "gate", label: "Ready for gate", tone: "warn" },
+        { id: "merged", label: "Merged", tone: "positive" },
+        { id: "failed", label: "Failed", tone: "danger" },
       ]}
       edges={[
-        { from: "draft", to: "review", label: "submit" },
-        { from: "review", to: "changes", label: "reject" },
-        { from: "changes", to: "review" },
-        { from: "review", to: "live", label: "approve" },
+        { from: "pending", to: "launching", label: "claim" },
+        { from: "launching", to: "launched", label: "stamp" },
+        { from: "launching", to: "pending", label: "retry" },
+        { from: "launched", to: "gate", label: "hand off" },
+        { from: "gate", to: "launched", label: "send back" },
+        { from: "gate", to: "merged", label: "land" },
+        { from: "merged", to: "launched", label: "reopen" },
+        { from: "launched", to: "failed", label: "fail" },
       ]}
     />
   );

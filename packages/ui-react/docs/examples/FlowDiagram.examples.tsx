@@ -3,16 +3,16 @@ import { FlowDiagram } from "@slashsuite/ui-react";
 /** One box carries a tone, the step that waits on a person, and its label says so too. */
 export const DoTone = () => (
   <FlowDiagram
-    label="How an article is published"
+    label="How a build lands"
     nodes={[
-      { id: "draft", label: "Draft" },
-      { id: "review", label: "Waiting on a reviewer", tone: "warn" },
-      { id: "live", label: "Published" },
+      { id: "launched", label: "Building" },
+      { id: "gate", label: "Waiting on a reviewer", tone: "warn" },
+      { id: "merged", label: "Merged" },
     ]}
     edges={[
-      { from: "draft", to: "review", label: "submit" },
-      { from: "review", to: "draft", label: "changes" },
-      { from: "review", to: "live", label: "approve" },
+      { from: "launched", to: "gate", label: "hand off" },
+      { from: "gate", to: "launched", label: "send back" },
+      { from: "gate", to: "merged", label: "land" },
     ]}
   />
 );
@@ -20,16 +20,16 @@ export const DoTone = () => (
 /** A tone on every box means nothing: the one that needs a person no longer stands out. */
 export const DontTone = () => (
   <FlowDiagram
-    label="How an article is published"
+    label="How a build lands"
     nodes={[
-      { id: "draft", label: "Draft", tone: "info" },
-      { id: "review", label: "Waiting on a reviewer", tone: "warn" },
-      { id: "live", label: "Published", tone: "positive" },
+      { id: "launched", label: "Building", tone: "info" },
+      { id: "gate", label: "Waiting on a reviewer", tone: "warn" },
+      { id: "merged", label: "Merged", tone: "positive" },
     ]}
     edges={[
-      { from: "draft", to: "review", label: "submit" },
-      { from: "review", to: "draft", label: "changes" },
-      { from: "review", to: "live", label: "approve" },
+      { from: "launched", to: "gate", label: "hand off" },
+      { from: "gate", to: "launched", label: "send back" },
+      { from: "gate", to: "merged", label: "land" },
     ]}
   />
 );

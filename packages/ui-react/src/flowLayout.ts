@@ -153,7 +153,7 @@ export function layoutFlow(
         to: e.to,
         index,
         points,
-        path: basisPath(points),
+        path: stepPath(points, direction),
         labelAt:
           e.label && routed.x !== undefined && routed.y !== undefined
             ? { x: round(routed.x), y: round(routed.y) }
@@ -164,23 +164,24 @@ export function layoutFlow(
 }
 
 /**
- * A smooth path through dagre's route points: a uniform B-spline, pinned to the first and last
- * point (d3's `curveBasis`), so an arrow bends round the boxes and still ends on its target.
+ * A square path through dagre's route points: each step leaves along the rank `direction`, turns
+ * once halfway across, and arrives along it again, so every arrow is made of straight runs at
+ * right angles and ends exactly on the last point, where its arrowhead sits.
  */
-export function basisPath(points: readonly FlowPoint[]): string {
-  const [first] = points;
+export function stepPath(points: readonly FlowPoint[], direction: FlowDirection): string {
+  const [first, ...rest] = points;
   if (!first) return "";
-  if (points.length < 3) return `M${points.map((p) => `${p.x},${p.y}`).join("L")}`;
-  const at = (i: number): FlowPoint => points[i] ?? first;
-  const f = round;
-  const second = at(1);
-  let d = `M${first.x},${first.y}L${f((5 * first.x + second.x) / 6)},${f((5 * first.y + second.y) / 6)}`;
-  for (let i = 1; i < points.length - 1; i++) {
-    const [a, b, c] = [at(i - 1), at(i), at(i + 1)];
-    d += `C${f((2 * a.x + b.x) / 3)},${f((2 * a.y + b.y) / 3)} ${f((a.x + 2 * b.x) / 3)},${f((a.y + 2 * b.y) / 3)} ${f((a.x + 4 * b.x + c.x) / 6)},${f((a.y + 4 * b.y + c.y) / 6)}`;
+  let d = `M${first.x},${first.y}`;
+  let from = first;
+  for (const to of rest) {
+    if (direction === "right") {
+      const mid = round((from.x + to.x) / 2);
+      d += `H${mid}V${to.y}H${to.x}`;
+    } else {
+      const mid = round((from.y + to.y) / 2);
+      d += `V${mid}H${to.x}V${to.y}`;
+    }
+    from = to;
   }
-  const y = at(points.length - 2);
-  const z = at(points.length - 1);
-  d += `C${f((2 * y.x + z.x) / 3)},${f((2 * y.y + z.y) / 3)} ${f((y.x + 2 * z.x) / 3)},${f((y.y + 2 * z.y) / 3)} ${z.x},${z.y}`;
   return d;
 }
