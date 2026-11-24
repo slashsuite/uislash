@@ -18,8 +18,8 @@ for (const reducedMotion of ["no-preference", "reduce"] as const) {
     await page.getByRole("button", { name: "Save" }).click();
     const region = page.getByRole("region", { name: "Notifications" });
     const status = region.getByRole("status");
-    // The status reads the toast as text; the toast on screen is the one after it.
-    const toast = region.locator('[role="status"] ~ *').getByText("Saved", { exact: true });
+    // The status reads the toast as text, so the toast on screen is found by its own close button.
+    const toast = region.getByRole("button", { name: "Dismiss" });
     await expect(status).toContainText("Saved");
     await expect(toast).toBeVisible();
     await finishAnimations(page);

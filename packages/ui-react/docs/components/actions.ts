@@ -166,7 +166,6 @@ export const actions: ComponentSection = {
         "The accessible name is always `label`. A copy shows `copiedLabel` (or `failedLabel`) for two seconds and a polite status region beside the button announces it, again on every press; the region empties when the label goes back.",
         "The button is at least 24px square, the WCAG minimum target.",
         "No `<style>` element: the two seconds are a Web Animation, so the label works under a strict, nonce-based CSP.",
-        "A refused or missing clipboard leaves the label unchanged; nothing is announced.",
       ],
       api: ["CopyButton"],
       functions: [

@@ -1,4 +1,4 @@
-import { useRef, type ComponentPropsWithoutRef, type MouseEvent, type ReactElement } from "react";
+import { type ComponentPropsWithoutRef, type MouseEvent, type ReactElement } from "react";
 import { focusRing } from "./cx.js";
 import type { Unstyled } from "./props.js";
 
@@ -62,11 +62,9 @@ export function CopyButton({
    */
   failedLabel?: string;
 } & Unstyled<Omit<ComponentPropsWithoutRef<"button">, "children">>): ReactElement {
-  const button = useRef<HTMLButtonElement>(null);
   return (
     <>
       <button
-        ref={button}
         type="button"
         aria-label={label}
         {...rest}

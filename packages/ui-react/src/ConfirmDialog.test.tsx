@@ -90,6 +90,19 @@ describe("ConfirmDialog", () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
+  it("shows a thrown error as an alert and stays open, as a rejection does", async () => {
+    const onClose = vi.fn<() => void>();
+    open(() => {
+      throw new Error("No connection.");
+    }, onClose);
+    await user().click(button("Delete"));
+    expect(within(screen.getByRole("alertdialog")).getByRole("alert").textContent).toBe(
+      "No connection.",
+    );
+    expect(button("Delete").getAttribute("aria-busy")).toBeNull();
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
   it("takes cancel and closeLabel in another language", () => {
     render(
       <ConfirmDialog

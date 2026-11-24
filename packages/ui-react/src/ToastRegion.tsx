@@ -6,6 +6,7 @@ import {
   type RefObject,
   useEffect,
   useRef,
+  useState,
 } from "react";
 import { TONE_SURFACE, TONE_TEXT } from "./Callout.js";
 import { cx } from "./cx.js";
@@ -74,6 +75,7 @@ function focusAfter(toast: Element, back: RefObject<HTMLElement | null>): void {
   const next = sibling?.querySelector<HTMLElement>("[data-toast-dismiss]");
   if (next) return next.focus();
   if (back.current?.isConnected) back.current.focus();
+  back.current = null;
 }
 
 function ToastItem({
@@ -145,7 +147,7 @@ function ToastItem({
  * a polite `role="status"` kept in the page while empty, which reads each new toast's text once,
  * followed by "Actions available" when it has actions; its buttons are not read out. Dismissing the
  * toast that holds focus moves focus to the next toast, or back where it was. A toast raised while a
- * `Dialog`, `Drawer` or `Lightbox` is open is held back, shown and read once the modal has closed.
+ * `Dialog`, `Drawer` or `Lightbox` is open is held back (those already shown stay), shown and read once the modal has closed.
  */
 export function ToastRegion({
   toasts,
@@ -179,6 +181,12 @@ export function ToastRegion({
   /** What had focus before it came into the region, to hand it back when the last toast goes. */
   const back = useRef<HTMLElement | null>(null);
   const held = useModalOpen();
+  // The toasts on screen when a modal opened stay; only newer ones are held back. The ids shown
+  // are kept from the last render with no modal open, adjusted during render rather than in an effect.
+  const [kept, setKept] = useState<readonly string[]>([]);
+  const ids = toasts.map((toast) => toast.id);
+  if (!held && ids.join("\n") !== kept.join("\n")) setKept(ids);
+  const visible = held ? toasts.filter((toast) => kept.includes(toast.id)) : toasts;
   return (
     <section
       aria-label={label}
@@ -194,19 +202,17 @@ export function ToastRegion({
       {/* The live region holds only words, put there by each toast (`useAnnounce`). */}
       <div ref={live} role="status" aria-live="polite" aria-atomic="false" className="sr-only" />
       <div className="flex w-full max-w-sm flex-col gap-2">
-        {held
-          ? null
-          : toasts.map((toast) => (
-              <ToastItem
-                key={toast.id}
-                toast={toast}
-                dismissLabel={dismissLabel}
-                actionsLabel={actionsLabel}
-                live={live}
-                back={back}
-                onDismiss={onDismiss}
-              />
-            ))}
+        {visible.map((toast) => (
+          <ToastItem
+            key={toast.id}
+            toast={toast}
+            dismissLabel={dismissLabel}
+            actionsLabel={actionsLabel}
+            live={live}
+            back={back}
+            onDismiss={onDismiss}
+          />
+        ))}
       </div>
     </section>
   );

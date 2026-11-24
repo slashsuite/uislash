@@ -14,7 +14,7 @@ import { look } from "./IconButton.js";
 import type { IconName } from "./icons.js";
 import { definedProps, type Passthrough } from "./props.js";
 import type { Size } from "./size.js";
-import { Tipped } from "./Tooltip.js";
+import { Tipped, type TriggerProps } from "./Tooltip.js";
 
 export type PopoverProps = Passthrough & {
   /** The trigger's accessible name and the panel's. Without `icon` it is the trigger's visible text. */
@@ -83,7 +83,8 @@ export function Popover({
     if (defaultOpen) panel.current?.showPopover();
   }, [defaultOpen]);
 
-  const trigger = (own: object) => (
+  // The tooltip's props come after the caller's, merged with them; its anchor joins the panel's.
+  const trigger = ({ style, ...own }: TriggerProps<HTMLButtonElement>) => (
     <button
       {...definedProps(rest)}
       {...own}
@@ -92,7 +93,7 @@ export function Popover({
       aria-expanded={open}
       {...(icon ? { "aria-label": label } : {})}
       className={icon ? look({ variant: "ghost", size }) : buttonClass("outline", { size })}
-      style={{ anchorName: anchor }}
+      style={{ anchorName: [style?.anchorName, anchor].filter(Boolean).join(", ") }}
     >
       <Face icon={icon} label={label} size={size} />
     </button>
@@ -101,8 +102,8 @@ export function Popover({
   return (
     <>
       {icon ? (
-        <Tipped<HTMLButtonElement> text={label} describes={false} own={{}}>
-          {({ style: _style, ...tip }) => trigger(tip)}
+        <Tipped<HTMLButtonElement> text={label} describes={false} own={definedProps(rest)}>
+          {trigger}
         </Tipped>
       ) : (
         trigger({})

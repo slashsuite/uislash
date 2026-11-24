@@ -31,13 +31,12 @@ function TwoToasts() {
   );
 }
 
-/** A toast raised under an open Dialog, which closes itself through `onClose`. */
-function ToastUnderDialog() {
-  const [open, setOpen] = useState(true);
+/** A Dialog that may be open, over a region showing `toasts`. */
+function Shown({ open, toasts }: { open: boolean; toasts: Toast[] }) {
   return (
     <>
-      {open && <Dialog title="Rename" onClose={() => setOpen(false)} />}
-      <ToastRegion toasts={[SAVED]} onDismiss={() => undefined} />
+      {open && <Dialog title="Rename" onClose={() => undefined} />}
+      <ToastRegion toasts={toasts} onDismiss={() => undefined} />
     </>
   );
 }
@@ -110,11 +109,23 @@ describe("ToastRegion", () => {
 
   it("holds toasts back while a Dialog is open, and shows and reads them once it closes", async () => {
     stubDialog();
-    render(<ToastUnderDialog />);
+    const { rerender } = render(<Shown open toasts={[]} />);
+    rerender(<Shown open toasts={[SAVED]} />);
     expect(screen.queryByText("Saved")).toBeNull();
     expect(screen.getByRole("status").textContent).toBe("");
-    await act(async () => screen.getByRole<HTMLDialogElement>("dialog").close());
+    await act(async () => rerender(<Shown open={false} toasts={[SAVED]} />));
     expect(screen.getByText("Saved")).toBeTruthy();
+    expect(screen.getByRole("status").textContent).toBe("Saved. Your draft is safe.");
+  });
+
+  it("keeps a toast already shown when a Dialog opens, and holds back only the new one", () => {
+    stubDialog();
+    const late: Toast = { id: "late", tone: "danger", title: "Not sent" };
+    const { rerender } = render(<Shown open={false} toasts={[SAVED]} />);
+    rerender(<Shown open toasts={[SAVED]} />);
+    rerender(<Shown open toasts={[SAVED, late]} />);
+    expect(screen.getByText("Saved")).toBeTruthy();
+    expect(screen.queryByText("Not sent")).toBeNull();
     expect(screen.getByRole("status").textContent).toBe("Saved. Your draft is safe.");
   });
 

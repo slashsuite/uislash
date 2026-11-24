@@ -28,23 +28,26 @@ export type { BottomSheetSnap } from "./sheetSnap.js";
 const SHEET =
   "absolute inset-x-0 bottom-0 z-10 flex max-h-full flex-col overflow-hidden rounded-t-2xl border border-b-0 border-slate-200 bg-white pb-[env(safe-area-inset-bottom)] text-slate-900 shadow-2xl transition-[height] duration-200 ease-out data-dragging:transition-none motion-reduce:transition-none";
 
+/** From `md` up, a sheet that is not inline is a panel at the start edge. */
+const PANEL = "md:start-4 md:end-auto md:w-96";
+
 /**
  * From `md` up: a panel at the start edge, or, with `inlineFrom`, plain content in the parent's flow
- * from that width (no docking, no height of its own, no handle), so the parent's grid places it.
+ * from that width (no docking, no height of its own, no handle), so the parent's grid places it;
+ * its body still scrolls within the parent's height.
  */
-const WIDE: Record<"panel" | InlineFrom, { sheet: string; handle: string; body: string }> = {
-  panel: { sheet: "md:start-4 md:end-auto md:w-96", handle: "", body: "" },
+const WIDE: Record<"panel" | InlineFrom, { sheet: string; handle: string; header: string }> = {
+  panel: { sheet: PANEL, handle: "", header: "" },
   md: {
     sheet:
-      "md:static md:z-auto md:h-auto! md:max-h-none md:overflow-visible md:rounded-none md:border-0 md:pb-0 md:shadow-none",
+      "md:static md:z-auto md:h-auto! md:max-h-full md:rounded-none md:border-0 md:pb-0 md:shadow-none",
     handle: "md:hidden",
-    body: "md:flex-none md:overflow-visible",
+    header: "md:pt-3.5",
   },
   lg: {
-    sheet:
-      "lg:static lg:z-auto lg:h-auto! lg:max-h-none lg:overflow-visible lg:rounded-none lg:border-0 lg:pb-0 lg:shadow-none",
+    sheet: `${PANEL} lg:static lg:z-auto lg:h-auto! lg:w-auto lg:max-h-full lg:rounded-none lg:border-0 lg:pb-0 lg:shadow-none`,
     handle: "lg:hidden",
-    body: "lg:flex-none lg:overflow-visible",
+    header: "lg:pt-3.5",
   },
 };
 
@@ -121,6 +124,7 @@ function useReportedHeight(
 ): void {
   const report = useRef(onHeightChange);
   const reported = useRef<number | null>(null);
+  const dragging = useRef(false);
   useEffect(() => {
     report.current = onHeightChange;
   });
@@ -129,6 +133,7 @@ function useReportedHeight(
   useEffect(() => {
     const el = sheet.current;
     const parent = el && parentOf(el);
+    dragging.current = dragHeight !== null;
     const px = dragHeight ?? (parent ? snapPx(resting, parent.clientHeight) : null);
     if (px === null || px === reported.current) return;
     reported.current = px;
@@ -138,9 +143,10 @@ function useReportedHeight(
     const el = sheet.current;
     const parent = el && parentOf(el);
     if (!parent) return undefined;
+    // A resize mid-drag reports nothing: the drag reports the height the sheet is at.
     const send = () => {
       const px = snapPx(resting, parent.clientHeight);
-      if (px === reported.current) return;
+      if (dragging.current || px === reported.current) return;
       reported.current = px;
       report.current?.(px);
     };
@@ -303,14 +309,16 @@ export function BottomSheet({
         {GRIP}
       </button>
       {header != null && (
-        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-200 px-5.5 pb-3.5">
+        <div
+          className={cx(
+            "flex shrink-0 items-center justify-between gap-3 border-b border-slate-200 px-5.5 pb-3.5",
+            wide.header,
+          )}
+        >
           {header}
         </div>
       )}
-      <div
-        id={bodyId}
-        className={cx("min-h-0 flex-1 overflow-y-auto overscroll-contain px-5.5 py-4", wide.body)}
-      >
+      <div id={bodyId} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5.5 py-4">
         <GapProvider gap="xs">{children}</GapProvider>
       </div>
       {footer != null && (

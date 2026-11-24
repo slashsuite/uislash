@@ -53,8 +53,10 @@ function useSwipeClose(dialog: RefObject<HTMLDialogElement | null>) {
 
   const onPointerDown = (event: PointerEvent<HTMLDialogElement>) => {
     if (event.pointerType !== "touch" || swipe.current || event.target === dialog.current) return;
-    // A field, a slider or a horizontally scrolling area keeps its own horizontal drag.
-    if (event.target instanceof Element && event.target.closest(OWN_DRAG)) return;
+    // A field, a slider or a horizontally scrolling area keeps its own horizontal drag, and a dialog
+    // opened from inside the drawer (React portals its events up through it) is not the drawer.
+    const target = event.target instanceof Element ? event.target : null;
+    if (target?.closest(OWN_DRAG) || target?.closest("dialog") !== dialog.current) return;
     swipe.current = {
       pointer: event.pointerId,
       x: event.clientX,

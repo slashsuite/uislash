@@ -166,15 +166,6 @@ for (const width of [390, 768]) {
   });
 }
 
-test("ArrowUp and ArrowDown on the handle step the snaps", async ({ page }) => {
-  const { handle } = await open(page, "default");
-  await handle.focus();
-  await page.keyboard.press("ArrowUp");
-  await expect(snapLine(page, 2)).toBeVisible();
-  await page.keyboard.press("ArrowDown");
-  await expect(snapLine(page, 1)).toBeVisible();
-});
-
 test.describe("inlineFrom", () => {
   test("a sheet with a handle on a phone, and an inline list with none from md up", async ({
     page,

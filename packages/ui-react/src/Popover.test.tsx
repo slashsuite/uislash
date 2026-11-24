@@ -39,6 +39,19 @@ describe("Popover", () => {
     expect(panelOf("Notifications").textContent).toBe("Nothing new");
   });
 
+  it("keeps an icon trigger's own aria-describedby beside its tooltip", () => {
+    render(
+      <>
+        <p id="hint">Three unread</p>
+        <Popover label="Notifications" icon="bell" aria-describedby="hint">
+          Nothing new
+        </Popover>
+      </>,
+    );
+    const trigger = screen.getByRole("button", { name: "Notifications" });
+    expect(trigger.getAttribute("aria-describedby")).toBe("hint");
+  });
+
   it("opens on mount with defaultOpen: the panel the trigger targets, as a popover", () => {
     render(
       <Popover label="Filters" defaultOpen>

@@ -50,13 +50,15 @@ function useConfirm(onConfirm: () => void | Promise<unknown>) {
     const dialog = event.currentTarget.closest("dialog");
     setError(null);
     setBusy(true);
-    void Promise.resolve(onConfirm()).then(
-      () => dialog?.close(),
-      (e: unknown) => {
-        setBusy(false);
-        setError(e instanceof Error ? e.message : String(e));
-      },
-    );
+    void Promise.resolve()
+      .then(() => onConfirm())
+      .then(
+        () => dialog?.close(),
+        (e: unknown) => {
+          setBusy(false);
+          setError(e instanceof Error ? e.message : String(e));
+        },
+      );
   };
   return { busy, error, run };
 }
