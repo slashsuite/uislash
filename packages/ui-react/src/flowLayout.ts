@@ -153,7 +153,7 @@ export function layoutFlow(
         to: e.to,
         index,
         points,
-        path: stepPath(points, direction),
+        path: stepPath(points, direction, LANES[index % LANES.length]),
         labelAt:
           e.label && routed.x !== undefined && routed.y !== undefined
             ? { x: round(routed.x), y: round(routed.y) }
@@ -165,20 +165,28 @@ export function layoutFlow(
 
 /**
  * A square path through dagre's route points: each step leaves along the rank `direction`, turns
- * once halfway across, and arrives along it again, so every arrow is made of straight runs at
- * right angles and ends exactly on the last point, where its arrowhead sits.
+ * once at `lane` of the way across (0.5 is halfway), and arrives along it again, so every arrow is
+ * made of straight runs at right angles and ends exactly on the last point, where its arrowhead
+ * sits. Arrows between the same two ranks take different lanes, so their cross runs do not overlap.
  */
-export function stepPath(points: readonly FlowPoint[], direction: FlowDirection): string {
+/** Where each arrow turns between two ranks, by its index: spread so parallel runs stay apart. */
+const LANES = [0.5, 0.3, 0.7, 0.4, 0.6] as const;
+
+export function stepPath(
+  points: readonly FlowPoint[],
+  direction: FlowDirection,
+  lane = 0.5,
+): string {
   const [first, ...rest] = points;
   if (!first) return "";
   let d = `M${first.x},${first.y}`;
   let from = first;
   for (const to of rest) {
     if (direction === "right") {
-      const mid = round((from.x + to.x) / 2);
+      const mid = round(from.x + (to.x - from.x) * lane);
       d += `H${mid}V${to.y}H${to.x}`;
     } else {
-      const mid = round((from.y + to.y) / 2);
+      const mid = round(from.y + (to.y - from.y) * lane);
       d += `V${mid}H${to.x}V${to.y}`;
     }
     from = to;

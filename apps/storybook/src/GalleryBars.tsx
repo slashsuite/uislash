@@ -125,7 +125,6 @@ function GalleryFlow() {
   return (
     <FlowDiagram
       label="How a build lands"
-      direction="right"
       active="launched"
       nodes={[
         { id: "pending", label: "Queued" },

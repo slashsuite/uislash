@@ -50,22 +50,21 @@ const tones: Partial<Record<string, Tone>> = {
 
 const ticketNodes: FlowNode[] = ticketStates.map(([id, label]) => ({ id, label, tone: tones[id] }));
 
-/** Every move a ticket can make, from → the states it can go to. */
-const ticketMoves: Record<string, readonly string[]> = {
-  open: ["in_progress", "ready", "blocked", "done"],
-  in_progress: ["ready", "blocked", "done", "open"],
-  ready: ["merged", "in_progress", "blocked", "qa_ready", "done"],
-  merged: ["qa_ready", "done", "blocked"],
-  qa_ready: ["qa", "blocked", "done"],
-  qa: ["qa_rework", "done", "blocked"],
-  qa_rework: ["in_progress", "ready", "qa", "blocked", "done"],
-  blocked: ["open", "in_progress", "ready", "done"],
-  done: ["open"],
-};
-
-const ticketEdges: FlowEdge[] = Object.entries(ticketMoves).flatMap(([from, to]) =>
-  to.map((target) => ({ from, to: target })),
-);
+/** A ticket's main moves: the way forward, QA's loop back, a block, a send back and a reopen. */
+const ticketEdges: FlowEdge[] = [
+  { from: "open", to: "in_progress", label: "start" },
+  { from: "in_progress", to: "ready", label: "finish" },
+  { from: "ready", to: "merged", label: "merge" },
+  { from: "ready", to: "in_progress", label: "send back" },
+  { from: "merged", to: "qa_ready", label: "deploy" },
+  { from: "qa_ready", to: "qa", label: "test" },
+  { from: "qa", to: "qa_rework", label: "fail" },
+  { from: "qa_rework", to: "in_progress", label: "rework" },
+  { from: "qa", to: "done", label: "pass" },
+  { from: "in_progress", to: "blocked", label: "block" },
+  { from: "blocked", to: "in_progress", label: "unblock" },
+  { from: "done", to: "open", label: "reopen" },
+];
 
 /**
  * A large graph: 26 states and 41 arrows, loops and arrows back up included. It is wider than

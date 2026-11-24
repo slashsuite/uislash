@@ -211,4 +211,8 @@ describe("stepPath", () => {
   it("runs across, down halfway, then across onto the last point, ranked right", () => {
     expect(stepPath(route, "right")).toBe("M0,0H30V40H60");
   });
+
+  it("turns at its lane, so arrows between the same ranks do not overlap", () => {
+    expect(stepPath(route, "down", 0.25)).toBe("M0,0V10H60V40");
+  });
 });
