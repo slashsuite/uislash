@@ -1,4 +1,5 @@
 import {
+  FlowDiagram,
   Legend,
   ProgressBar,
   SplitBar,
@@ -42,7 +43,7 @@ const categories = [
   "Kitchen",
 ];
 
-/** The StatTile, ProgressBar, SplitBar, StackedBar, Legend and TrendChart rows of the Gallery. */
+/** The StatTile, ProgressBar, SplitBar, StackedBar, Legend, TrendChart and FlowDiagram rows of the Gallery. */
 export function GalleryBars() {
   return (
     <div className="flex flex-col gap-4">
@@ -114,6 +115,30 @@ export function GalleryBars() {
           ]}
         />
       </div>
+      <GalleryFlow />
     </div>
+  );
+}
+
+/** The FlowDiagram row of the Gallery: a small flow with a branch, a loop and the current box. */
+function GalleryFlow() {
+  return (
+    <FlowDiagram
+      label="How an article is published"
+      direction="right"
+      active="review"
+      nodes={[
+        { id: "draft", label: "Draft" },
+        { id: "review", label: "In review" },
+        { id: "changes", label: "Changes asked", tone: "warn" },
+        { id: "live", label: "Published", tone: "positive" },
+      ]}
+      edges={[
+        { from: "draft", to: "review", label: "submit" },
+        { from: "review", to: "changes", label: "reject" },
+        { from: "changes", to: "review" },
+        { from: "review", to: "live", label: "approve" },
+      ]}
+    />
   );
 }

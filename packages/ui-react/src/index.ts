@@ -12,6 +12,15 @@ export {
   type VizTone,
 } from "./StackedBar.js";
 export { TrendChart, type TrendSeries } from "./TrendChart.js";
+export { FlowDiagram, type FlowEdge, type FlowNode } from "./FlowDiagram.js";
+export type {
+  FlowBox,
+  FlowDirection,
+  FlowEdgePath,
+  FlowLayout,
+  FlowNodeBox,
+  FlowPoint,
+} from "./flowLayout.js";
 export { Markdown } from "./Markdown.js";
 export { AppShell, AppShellBrand, type AppShellDensity, appShellRootClassFor } from "./AppShell.js";
 export { SiteFooter, type SiteFooterLink } from "./SiteFooter.js";

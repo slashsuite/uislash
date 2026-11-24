@@ -18,9 +18,10 @@ bun add @slashsuite/ui-react
 # optional type peers: @types/react, @types/react-dom (install them in a TypeScript app)
 ```
 
-One runtime dependency comes with it: `react-aria-components` (and `@internationalized/date`),
+Two runtime dependencies come with it: `react-aria-components` (and `@internationalized/date`),
 for the date controls (`DateField`, `DateRangePicker`), `Menu`, `Disclosure`, `RadioGroup` and
-`SortableList`'s keyboard and drag. It brings no CSS; the classes are ours.
+`SortableList`'s keyboard and drag, and `@dagrejs/dagre`, which lays out `FlowDiagram`. Neither
+brings CSS; the classes are ours.
 
 Tailwind skips `node_modules`, so tell it to scan the build for the utilities the components use,
 in the stylesheet that imports Tailwind (the path is relative to that file):

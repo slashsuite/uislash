@@ -59,8 +59,8 @@ export const Example = () => (
 );
 ```
 
-`@slashsuite/ui-react` has one runtime dependency, `react-aria-components` (with `@internationalized/date`),
-for the date picker. Any other dependency is a human decision.
+`@slashsuite/ui-react` has two runtime dependencies, `react-aria-components` (with `@internationalized/date`),
+for the date picker, and `@dagrejs/dagre`, which lays out `FlowDiagram`. Any other dependency is a human decision.
 
 ### Coming from `@hackcove/ui`?
 

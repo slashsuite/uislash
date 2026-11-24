@@ -98,8 +98,9 @@ classic compiler API for it to parse them with.
    components render in Tailwind's own default colours; that works, but it is only what a theme
    remaps, not a look the repo designs or checks, so Storybook offers no unthemed choice.
 2. **A theme is a file and nothing else registers it.** No theme name appears in code.
-3. **Almost no runtime dependencies.** `@slashsuite/ui-react` has one approved dependency,
-   `react-aria-components` (with `@internationalized/date`), for the date picker; its peers are react,
+3. **Almost no runtime dependencies.** `@slashsuite/ui-react` has two approved dependencies,
+   `react-aria-components` (with `@internationalized/date`), for the date picker, and `@dagrejs/dagre`,
+   for `FlowDiagram`'s layout; its peers are react,
    react-dom and tailwindcss v4, plus `@types/react` and `@types/react-dom` as optional peers (types only, so a consumer's
    tsc resolves `react` under strict linkers). `@slashsuite/themes` has only the tailwindcss peer. A new dependency needs a
    maintainer's agreement first.

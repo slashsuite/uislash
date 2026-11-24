@@ -17,6 +17,7 @@ import { Legend, StackedBar } from "./StackedBar.js";
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "./Table.js";
 import { Timeline, TimelineItem } from "./Timeline.js";
 import { TrendChart } from "./TrendChart.js";
+import { FlowDiagram } from "./FlowDiagram.js";
 
 /** The bones on the page, by the marker each one renders: every one hidden from assistive tech. */
 function bones(): HTMLElement[] {
@@ -177,6 +178,7 @@ describe("parts whose value is a number are all bone while loading", () => {
     StackedBar: (
       <StackedBar loading items={[{ label: "Open", value: 3, tone: "warn" }]} label="Tickets" />
     ),
+    FlowDiagram: <FlowDiagram loading label="Flow" nodes={[]} edges={[]} />,
     TrendChart: (
       <TrendChart
         loading
