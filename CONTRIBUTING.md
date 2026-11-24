@@ -150,9 +150,9 @@ it to contribute**: it runs from a separate checkout of PixelSlash.
 (`.github/workflows/visual.yml`) checks out the pull request's head commit (never GitHub's merge
 commit) and PixelSlash at a pinned commit, runs `storybook:visual-upload`, and sends every group to
 the maintainers' PixelSlash server, whose address is the `PIXELSLASH_SERVER` secret. The server diffs
-a pull request against the `main` build it holds, one `hackcove-ui-<section>` project per section, and
-the maintainers review the result there (it posts no GitHub check); a push to `main` becomes the next
-baseline. A fork's pull request gets no secrets, so the job skips with a notice and the maintainers
+a pull request against the `main` build it holds, one subproject of the `uislash` project per section,
+and posts one GitHub status for the project (`PixelSlash / uislash`) on the head commit; the
+maintainers review the result there, and a push to `main` becomes the next baseline. A fork's pull request gets no secrets, so the job skips with a notice and the maintainers
 check its visuals. A pull request behind `main`'s tip needs no rebase for this: the server diffs it
 against the `main` build at its merge-base, so it shows only its own changes.
 A local `bunx moon run storybook:visual` is your own check and needs no server. A manual
@@ -162,7 +162,7 @@ never mixes a local capture into a pull request's build.
 The stories are split into groups, one per section of the [component docs](https://hack-cove.com/ui/)
 (Layout, Page layouts, Text, … and Overview), read from
 `packages/ui-react/docs/components`. Each group is its own folder (`.pixelslash/<section>/`)
-and its own PixelSlash project (`hackcove-ui-<section>`), with its own baseline and review queue.
+and its own PixelSlash subproject (`uislash/<section>`), with its own baseline and review queue.
 A story file goes in the section of the docs page that names it in `pairs`, `fullPage` or
 `stories`; one that no page names fails the storybook tests, so a new story file comes with its
 docs page.

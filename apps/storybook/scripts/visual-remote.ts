@@ -7,8 +7,12 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { isRecord } from "./visual-index.js";
 import {
+  PIXELSLASH_PROJECT,
+  buildsResult,
+  failedLine,
   lookupFailure,
-  lookupResult,
+  missingSubproject,
+  subprojectIds,
   type LookupMiss,
   type LookupResult,
 } from "./visual-lookup.js";
@@ -31,41 +35,85 @@ const tokenPathFlags = () => {
 };
 
 /**
- * `pixelslash upload` into `project`, run from `cwd`, the checkout whose commit, branch and
+ * `pixelslash upload` into the subproject, run from `cwd`, the checkout whose commit, branch and
  * merge-base it sends. Not `bun run --cwd` like the other calls: that would read git from the
  * pixelslash checkout.
  */
-async function uploadSnapshots(dir: string, cwd: string, project: string, ...flags: string[]) {
+async function uploadSnapshots(dir: string, cwd: string, subproject: string, ...flags: string[]) {
   await run(
-    ["bun", pixelslashCli, "upload", dir, "--project", project, ...tokenPathFlags(), ...flags],
+    [
+      "bun",
+      pixelslashCli,
+      "upload",
+      dir,
+      "--project",
+      PIXELSLASH_PROJECT,
+      "--subproject",
+      subproject,
+      ...tokenPathFlags(),
+      ...flags,
+    ],
     cwd,
   );
 }
 
-/** `pixelslash builds --json` for `project`: the parsed reply, or why there is none. */
-async function listBuilds(project: string, ...flags: string[]): Promise<LookupResult> {
-  const proc = Bun.spawn(
-    ["bun", pixelslashCli, "builds", "--project", project, ...flags, "--json", ...tokenPathFlags()],
-    { cwd: repoRoot, stdout: "pipe", stderr: "pipe" },
-  );
-  const [stdout, stderr] = await Promise.all([
-    new Response(proc.stdout).text(),
-    new Response(proc.stderr).text(),
-  ]);
-  const exitCode = await proc.exited;
-  // Exits 2 and 3 print one line, which the failure quotes; anything else (a crash in the CLI, or
-  // a warning on success) goes to the terminal whole, as it did before stderr was read.
-  if (exitCode !== 2 && exitCode !== 3) process.stderr.write(stderr);
-  return lookupResult(exitCode, stdout, stderr);
+/** `GET <path>` on the server with the token: the status and the body, or why there was none. */
+async function get(path: string): Promise<{ status: number; body: string } | { line: string }> {
+  const url = `${(process.env["PIXELSLASH_SERVER"] ?? "").replace(/\/+$/, "")}${path}`;
+  try {
+    const response = await fetch(url, { headers: { Authorization: `Bearer ${token()}` } });
+    return { status: response.status, body: await response.text() };
+  } catch (error) {
+    return {
+      line: `cannot fetch ${url}: ${error instanceof Error ? error.message : String(error)}`,
+    };
+  }
+}
+
+let subprojectCache: Map<string, string> | undefined;
+
+/**
+ * The project's subprojects by name (`undefined` when the token sees no such project), or the
+ * failed request. A listing is read once per run; a failure is not kept, so the next read retries.
+ */
+async function readSubprojects(): Promise<Map<string, string> | undefined | LookupResult> {
+  if (subprojectCache !== undefined) return subprojectCache;
+  const path = "/api/v1/projects";
+  const reply = await get(path);
+  if ("line" in reply) return { kind: "failed", line: reply.line };
+  if (reply.status !== 200)
+    return { kind: "failed", line: failedLine(path, reply.status, reply.body) };
+  subprojectCache = subprojectIds(JSON.parse(reply.body), PIXELSLASH_PROJECT);
+  return subprojectCache;
 }
 
 /**
- * The shas of `project`'s 100 newest `main` builds (the PixelSlash CLI's most), or why the server
- * gave none. A branch behind origin/main's tip finds its merge-base's build among them; a branch
- * more than 100 main uploads behind still fails with "upload main first".
+ * The subproject's builds, newest first (the API's reply, as `pixelslash builds --json` prints a
+ * project's), or why there are none.
  */
-async function mainShas(project: string): Promise<MainShas> {
-  const result = await listBuilds(project, "--branch", "main", "--limit", "100");
+async function listBuilds(
+  subproject: string,
+  query: { branch?: string; limit: number },
+): Promise<LookupResult> {
+  const ids = await readSubprojects();
+  if (ids !== undefined && !(ids instanceof Map)) return ids;
+  const id = ids?.get(subproject);
+  if (id === undefined) return missingSubproject(ids, subproject);
+  const params = new URLSearchParams({ limit: String(query.limit) });
+  if (query.branch !== undefined) params.set("branch", query.branch);
+  const path = `/api/v1/projects/${encodeURIComponent(id)}/builds?${params.toString()}`;
+  const reply = await get(path);
+  if ("line" in reply) return { kind: "failed", line: reply.line };
+  return buildsResult(path, reply.status, reply.body);
+}
+
+/**
+ * The shas of the subproject's 100 newest `main` builds (the API's most), or why the server gave
+ * none. A branch behind origin/main's tip finds its merge-base's build among them; a branch more
+ * than 100 main uploads behind still fails with "upload main first".
+ */
+async function mainShas(subproject: string): Promise<MainShas> {
+  const result = await listBuilds(subproject, { branch: "main", limit: 100 });
   return result.kind === "ok" ? { kind: "ok", shas: shasOf(result.listing) } : result;
 }
 
@@ -86,23 +134,19 @@ function token(): string {
 
 /**
  * What `--upload` needs, checked before any capture, and which upload this is (`decideUpload`). A
- * branch is diffed by the server against the main build it already holds, so every project must
- * hold one at the merge-base or an ancestor of it; main's own upload needs none. One token uploads
- * to every group's project, so it must be one that names a project, and each project must exist.
+ * branch is diffed by the server against the main build it already holds, so every subproject must
+ * hold one at the merge-base or an ancestor of it, unless it holds no main build at all (a new
+ * subproject, whose first build reads every shot as new); main's own upload needs none. Each
+ * subproject must exist: an upload never creates one.
  */
-export async function checkUpload(projects: string[]): Promise<UploadMode> {
+export async function checkUpload(subprojects: string[]): Promise<UploadMode> {
   if (!process.env["PIXELSLASH_SERVER"]) throw new VisualError("--upload needs PIXELSLASH_SERVER");
   if (process.env["VISUAL_BASE"])
     throw new VisualError("--upload diffs against origin/main on the server; unset VISUAL_BASE");
   const state = await uploadState();
   const mode = decide(state);
-  if (token().startsWith("psci_"))
-    throw new VisualError(
-      "the PixelSlash token is a project CI token (psci_), which uploads to its one project only; " +
-        "each docs section has its own project, so use an org token (psorg_) or a personal one (psu_)",
-    );
-  if (mode === "main") await requireProjects(projects);
-  else await requireBaselines(projects, state.mergeBase);
+  if (mode === "main") await requireSubprojects(subprojects);
+  else await requireBaselines(subprojects, state.mergeBase);
   return mode;
 }
 
@@ -125,40 +169,45 @@ function decide(state: UploadState): UploadMode {
   }
 }
 
-/** Main's own upload needs no baseline, only a project to send to. */
-async function requireProjects(projects: string[]) {
+/** Main's own upload needs no baseline, only a subproject to send to. */
+async function requireSubprojects(subprojects: string[]) {
   const misses: LookupMiss[] = [];
-  for (const project of projects) {
-    const result = await listBuilds(project, "--limit", "1");
-    if (result.kind !== "ok") misses.push({ project, result });
+  for (const subproject of subprojects) {
+    const result = await listBuilds(subproject, { limit: 1 });
+    if (result.kind !== "ok") misses.push({ subproject, result });
   }
   const failure = lookupFailure(misses);
   if (failure !== undefined) throw new VisualError(failure);
 }
 
-async function requireBaselines(projects: string[], mergeBase: string) {
-  const failure = await baselineFailure(projects, {
+async function requireBaselines(subprojects: string[], mergeBase: string) {
+  const { failure, fresh } = await baselineFailure(subprojects, {
     mainShas,
     isAncestor: (sha) => isAncestor(sha, mergeBase),
   });
   if (failure !== undefined) throw new VisualError(failure);
+  if (fresh.length > 0)
+    log(
+      `no main build yet in ${fresh.join(", ")}: a new subproject, so every shot reads as new ` +
+        "until main's next upload sets its baselines",
+    );
 }
 
 const POLL_TIMEOUT_MS = 5 * 60_000;
 const POLL_INTERVAL_MS = 3000;
 
 /**
- * The build `id` as `pixelslash builds --json` lists it. Not `status --build --json`, which prints
- * every shot (about 0.5 MB for 444) and is cut short when read through a pipe; the listing carries
+ * The build `id` as the subproject's builds listing has it. Not the build itself
+ * (`GET /api/v1/builds/:id`), which carries every shot (about 0.5 MB for 444); the listing carries
  * the same status and counts in a line.
  */
-async function readBuildState(project: string, id: string): Promise<BuildState> {
-  const result = await listBuilds(project, "--limit", "20");
+async function readBuildState(subproject: string, id: string): Promise<BuildState> {
+  const result = await listBuilds(subproject, { limit: 20 });
   if (result.kind !== "ok")
-    throw new VisualError(lookupFailure([{ project, result }]) ?? result.line);
+    throw new VisualError(lookupFailure([{ subproject, result }]) ?? result.line);
   const build = buildIn(result.listing, id);
   if (build === undefined)
-    throw new VisualError(`${project} lists no build ${id} among its newest 20`);
+    throw new VisualError(`${subproject} lists no build ${id} among its newest 20`);
   return build;
 }
 
@@ -173,28 +222,29 @@ function recordedBuild(dir: string): string {
 }
 
 /**
- * The group's capture sent to `project`: on the branch, or as `main` in main mode. Then waits for
- * the server to finish diffing it and returns the build, whose counts and page are the result.
- * Nothing about main is built or captured here: the server holds the baseline.
+ * The group's capture sent to its subproject: on the branch, or as `main` in main mode. Then
+ * waits for the server to finish diffing it and returns the build, whose counts and page are the
+ * result. Nothing about main is built or captured here: the server holds the baseline.
  */
-export async function uploadGroup(project: string, dir: string, mode: UploadMode) {
+export async function uploadGroup(subproject: string, dir: string, mode: UploadMode) {
   const snapshots = join(dir, "branch");
+  const target = `${PIXELSLASH_PROJECT}/${subproject}`;
   log(
     mode === "main"
-      ? `uploading this commit to ${project} as main`
-      : `uploading the branch to ${project}`,
+      ? `uploading this commit to ${target} as main`
+      : `uploading the branch to ${target}`,
   );
   await uploadSnapshots(
     snapshots,
     repoRoot,
-    project,
+    subproject,
     ...(mode === "main" ? ["--branch", "main"] : []),
   );
   const id = recordedBuild(snapshots);
   let build: BuildState;
   try {
     build = await settle(id, {
-      read: () => readBuildState(project, id),
+      read: () => readBuildState(subproject, id),
       sleep: (ms) => Bun.sleep(ms),
       now: Date.now,
       timeoutMs: POLL_TIMEOUT_MS,
@@ -202,8 +252,8 @@ export async function uploadGroup(project: string, dir: string, mode: UploadMode
     });
   } catch (error) {
     if (error instanceof VisualError) throw error;
-    throw new VisualError(`${project}: ${error instanceof Error ? error.message : String(error)}`);
+    throw new VisualError(`${target}: ${error instanceof Error ? error.message : String(error)}`);
   }
-  log(build.url ? `build: ${build.url}` : `uploaded ${project} build ${id}, which lists no page`);
+  log(build.url ? `build: ${build.url}` : `uploaded ${target} build ${id}, which lists no page`);
   return build;
 }

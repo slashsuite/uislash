@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import {
-  baselineFailure,
   buildIn,
   decideUpload,
   readBuild,
@@ -10,7 +9,6 @@ import {
   uploadTotalLine,
   type GroupResult,
   type BuildState,
-  type MainShas,
   type UploadState,
 } from "./visual-upload.js";
 
@@ -52,62 +50,6 @@ describe("decideUpload", () => {
   it("refuses a detached commit on origin/main behind its tip, which is no branch", () => {
     const stale = state({ branch: "", mergeBase: other });
     expect(() => decideUpload(stale)).toThrow(/on origin\/main, behind its tip/);
-  });
-});
-
-describe("baselineFailure", () => {
-  const ancestors = new Set(["c1", "c2"]);
-  const listings: Record<string, MainShas> = {
-    "hackcove-ui-text": { kind: "ok", shas: ["m9", "m8"] },
-    "hackcove-ui-layout": { kind: "ok", shas: ["m9", "c2"] },
-    "hackcove-ui-empty": { kind: "ok", shas: [] },
-    gone: { kind: "missing", line: "no project gone" },
-    down: { kind: "failed", line: "GET /builds -> 500 internal: boom" },
-    denied: { kind: "failed", line: "GET /builds -> 401 unauthorized" },
-  };
-  const deps = {
-    mainShas: async (project: string) => listings[project] ?? { kind: "ok", shas: [] },
-    isAncestor: async (sha: string) => ancestors.has(sha),
-  };
-
-  it("passes when a main build is an ancestor of the merge-base", async () => {
-    expect(await baselineFailure(["hackcove-ui-layout"], deps)).toBeUndefined();
-  });
-
-  it("passes the merge-base itself, which is its own ancestor", async () => {
-    const own = { ...deps, isAncestor: async (sha: string) => sha === "m9" };
-    expect(await baselineFailure(["hackcove-ui-text"], own)).toBeUndefined();
-  });
-
-  it("fails naming the project and the main-mode command when no listed sha is an ancestor", async () => {
-    const failure = await baselineFailure(["hackcove-ui-layout", "hackcove-ui-text"], deps);
-    expect(failure).toContain("hackcove-ui-text");
-    expect(failure).not.toContain("hackcove-ui-layout");
-    expect(failure).toContain("upload main first");
-    expect(failure).toContain("bunx moon run storybook:visual-upload");
-    expect(failure).toContain("origin/main");
-  });
-
-  it("fails a project with no main build at all", async () => {
-    expect(await baselineFailure(["hackcove-ui-empty"], deps)).toContain("hackcove-ui-empty");
-  });
-
-  it("reports a missing project as one to create, and a 500 as PixelSlash not answering", async () => {
-    const gone = await baselineFailure(["gone"], deps);
-    expect(gone).toMatch(/no PixelSlash project gone \(pixelslash: no project .*create/);
-    const down = await baselineFailure(["down"], deps);
-    expect(down).toMatch(/did not answer for down \(pixelslash: .*500 internal: boom.*architect/);
-    expect(down).not.toMatch(/no PixelSlash project|pixelslash project create/);
-  });
-
-  it("names every kind in one call, the server failure first", async () => {
-    const failure = await baselineFailure(["hackcove-ui-text", "gone", "denied", "down"], deps);
-    expect(failure?.split("\n")).toEqual([
-      expect.stringMatching(/^PixelSlash did not answer for down \(pixelslash: .*-> 500/),
-      expect.stringMatching(/^PixelSlash refused the token for denied \(/),
-      expect.stringMatching(/^the server has no PixelSlash project gone \(/),
-      expect.stringMatching(/^no main build .* in hackcove-ui-text; upload main first/),
-    ]);
   });
 });
 

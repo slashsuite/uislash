@@ -86,8 +86,8 @@ names, so a new theme needs no test edit.
 
 **The visual check** (PixelSlash, `CONTRIBUTING.md`, "The visual check") is split into one group
 per section of the site's component docs, read from `componentSections`: one `.pixelslash/<section>/` folder
-and one PixelSlash project `hackcove-ui-<section>` each, plus Overview, which is
-always captured. Every story is shot in the reference theme, the first theme file
+and one PixelSlash subproject `<section>` each, under the one project `uislash`, plus Overview,
+which is always captured. Every story is shot in the reference theme, the first theme file
 in sorted order (`themeFiles`), read from `themes/`, never named in code. Every other theme is shot
 in **Overview / Gallery sections** only, which must render every component `index.ts` exports
 (`visual-shots.test.ts`), so a theme added costs one Gallery, not every story. A theme whose file
@@ -106,8 +106,9 @@ flags, a `HEAD` that moved since the plan, and an unknown slug. A bare `--run` s
 
 **CI uploads the shots.** `.github/workflows/visual.yml` runs `storybook:visual-upload` on every
 pull request's head commit and on every push to `main`, against the maintainers' PixelSlash server
-(its address is the `PIXELSLASH_SERVER` secret), which builds one `hackcove-ui-<section>` project per
-section. It posts no GitHub check, so the builds are read on the server or with the PixelSlash CLI.
+(its address is the `PIXELSLASH_SERVER` secret), which builds one subproject of `uislash` per
+section. It posts one GitHub status for the whole project (`PixelSlash / uislash`) on the head
+commit; each section's build is read on the server.
 A local `storybook:visual` is the contributor's own check and needs no server. A manual
 `visual-upload` to that server (with `PIXELSLASH_SERVER` and `PIXELSLASH_TOKEN`) is only for re-seeding `main`, and never mixes a local capture into a
 pull request's build.
@@ -169,12 +170,15 @@ uislash lands through pull requests (Jacobus, 2026-10-27). Who opens and who mer
 global rule; what is particular to uislash:
 
 - **Shots before the merge.** The `Visual` workflow uploads the PR's head commit, every
-  group whole, each to its own `hackcove-ui-<section>` project, and the server diffs it against the
-  `main` build it already holds. The server posts no GitHub check, so the architect reads every
-  group's build for the head with the PixelSlash CLI and opens the report for any group that changed. A PR
+  group whole, each to its own subproject of `uislash` (`uislash/<section>`), and the server diffs it
+  against the `main` build that subproject already holds. The server posts one GitHub status for the
+  project, `PixelSlash / uislash`, on the head; the architect reads it, and opens the report for any
+  section that changed. A PR
   behind origin/main's tip needs no rebase for it: the server diffs it against the `main` build at its
-  merge-base (or the nearest ancestor that has one), so it shows only the PR's own changes. A project
-  that holds no `main` build at the merge-base or an ancestor fails the job, named. Nobody uploads a PR by hand.
+  merge-base (or the nearest ancestor that has one), so it shows only the PR's own changes. A
+  subproject that holds `main` builds but none at the merge-base or an ancestor fails the job, named;
+  one that holds no `main` build at all is new, and its build reads every shot as new until the merge
+  sets its baseline. Nobody uploads a PR by hand.
 - **Shots after the merge.** The `Visual` run on the push to `main` uploads the merge
   commit as `main`, which the server takes as the baseline for the next branch. Nobody uploads it
   by hand. A release commit that `publish.yml` pushes needs no upload of its own: the server picks
@@ -187,7 +191,7 @@ global rule; what is particular to uislash:
   because `nx release` reads it.
 - **No branch protection.** `publish.yml` pushes its release commit straight to `main`, so
   nothing on GitHub blocks a merge and the architect enforces the rule: no merge while CI or a
-  `hackcove-ui-<section>` build for the head is failing, pending or holds unreviewed changes, unless the PR changes nothing a shot can see and
+  `uislash` subproject build for the head is failing, pending or holds unreviewed changes, unless the PR changes nothing a shot can see and
   says so.
 - No commit, PR title or PR body carries a `Co-Authored-By` or any other AI attribution line.
 

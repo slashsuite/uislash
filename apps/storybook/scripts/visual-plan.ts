@@ -49,8 +49,6 @@ export type Group = {
   /** `actions`, `page-layouts`: the group's `.pixelslash/<slug>/` folder. */
   slug: string;
   title: string;
-  /** The PixelSlash project the group uploads to. */
-  project: string;
   files: StoryFile[];
 };
 
@@ -88,8 +86,6 @@ export const slugOf = (title: string) =>
     .replaceAll(/[^a-z0-9]+/g, "-")
     .replaceAll(/^-|-$/g, "");
 
-export const projectOf = (slug: string) => `hackcove-ui-${slug}`;
-
 const isOverview = (file: StoryFile) =>
   file.title === "Overview" || file.title.startsWith("Overview/");
 
@@ -117,10 +113,10 @@ export function groupStories(sections: Section[], storyFiles: StoryFile[]): Grou
           placements.push({ file, section, page });
         }
       }
-    return { slug, title: section.title, project: projectOf(slug), files };
+    return { slug, title: section.title, files };
   });
   const overview = storyFiles.filter(isOverview);
-  groups.push({ slug: OVERVIEW, title: "Overview", project: projectOf(OVERVIEW), files: overview });
+  groups.push({ slug: OVERVIEW, title: "Overview", files: overview });
   for (const file of overview) placed.add(file.path);
   const unsectioned = storyFiles.filter((file) => !placed.has(file.path));
   return { groups, placements, unsectioned, unknown: [...new Set(unknown)] };

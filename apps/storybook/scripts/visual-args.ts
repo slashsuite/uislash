@@ -11,7 +11,6 @@ import type { UploadMode } from "./visual-upload.js";
 /** A group's captures, in order: the reference theme's, then the Gallery sections' in the others. */
 export type PlannedGroup = {
   slug: string;
-  project: string;
   skipped: boolean;
   captures: Selection[];
 };
@@ -84,7 +83,6 @@ function isGroup(value: unknown): value is PlannedGroup {
   return (
     isRecord(value) &&
     typeof value["slug"] === "string" &&
-    typeof value["project"] === "string" &&
     typeof value["skipped"] === "boolean" &&
     Array.isArray(value["captures"]) &&
     value["captures"].every(isSelection)

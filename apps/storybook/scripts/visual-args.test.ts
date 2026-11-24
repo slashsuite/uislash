@@ -10,7 +10,6 @@ const plan: SavedPlan = {
   head: "a".repeat(40),
   groups: ["overview", "actions", "forms"].map((slug) => ({
     slug,
-    project: `hackcove-ui-${slug}`,
     skipped: slug === "actions",
     captures: [],
   })),

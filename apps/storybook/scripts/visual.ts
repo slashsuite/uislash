@@ -3,7 +3,7 @@
  * themes it reaches?
  *
  * The stories are split into groups, one per section of the site's component docs, and each group
- * is its own PixelSlash project (`hackcove-ui-<slug>`). `--run` (the `visual` and `visual:upload`
+ * is its own PixelSlash subproject (`<slug>`, under the project `uislash`). `--run` (the `visual` and `visual:upload`
  * scripts) does three steps, after moon has built Storybook:
  *
  * - The plan reads the diff against the base and writes `.pixelslash/plan.json`: which groups,
@@ -33,11 +33,13 @@
  * worktree and captured, and `pixelslash compare` writes the local report.
  *
  * `--upload` builds and captures no base at all. It captures the working tree and sends it to the
- * group's PixelSlash project on `PIXELSLASH_SERVER`, in one of two modes (`visual-upload.ts`):
+ * group's PixelSlash subproject on `PIXELSLASH_SERVER`, in one of two modes (`visual-upload.ts`):
  *
  * - On a branch (on origin/main's tip or behind it), it uploads the branch and the server diffs it
- *   against the main build at its merge-base or nearest ancestor. It first checks that each project holds one at the merge-base or
- *   an ancestor, and fails naming the project when not.
+ *   against the main build at its merge-base or nearest ancestor. It first checks that each subproject holds one at the merge-base or
+ *   an ancestor, and fails naming the subproject when not. A subproject with no main build at all
+ *   is new: its first branch build reads every shot as new, and main's next upload sets its
+ *   baselines.
  * - On a checkout at origin/main's tip, it uploads that commit as branch `main`, which the server
  *   auto-accepts as the baseline. This is the post-merge step that keeps those main builds there.
  *
@@ -172,12 +174,12 @@ async function planMode(): Promise<SavedPlan> {
     changed: await changedSince(base.sha),
     everything: everything || upload,
   });
-  const mode = upload ? await checkUpload(grouping.groups.map((g) => g.project)) : null;
+  const mode = upload ? await checkUpload(grouping.groups.map((g) => g.slug)) : null;
   const picked = new Map(plan.picked.map((g) => [g.slug, g]));
   const groups = grouping.groups.map((group) => {
     const pick = picked.get(group.slug);
     const captures = titlesOf(pick?.captures ?? []);
-    return { slug: group.slug, project: group.project, skipped: !pick, captures };
+    return { slug: group.slug, skipped: !pick, captures };
   });
   const head = await git(repoRoot, "rev-parse", "HEAD");
   const saved: SavedPlan = {
@@ -249,7 +251,7 @@ async function groupMode(plan: SavedPlan, group: PlannedGroup) {
   checkShotSizes(join(dir, "branch"), slug);
   if (plan.mode !== null) {
     // An upload builds and captures nothing of main: the server holds the baseline and diffs.
-    const build = await uploadGroup(group.project, dir, plan.mode);
+    const build = await uploadGroup(slug, dir, plan.mode);
     log(`${slug}: done in ${Math.round((Date.now() - started) / 1000)}s`);
     writeFileSync(
       result,
@@ -338,7 +340,7 @@ function summaryMode(plan: SavedPlan) {
  * The plan, then each group, then the summary: what the moon task runs. The local compare takes one
  * group at a time (they build and capture the base under one lock); an upload takes
  * `VISUAL_PARALLEL` at once, each writing its own `.pixelslash/<slug>/` and uploading to its own
- * server project. A failed group does not stop the others; the summary runs only when none failed.
+ * subproject. A failed group does not stop the others; the summary runs only when none failed.
  *
  * The split run takes the same three steps one invocation at a time: `--plan-only` writes the plan
  * (and, for a local compare, builds the base, which starts no browser), `--group <slug>` runs the
