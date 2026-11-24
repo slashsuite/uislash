@@ -21,7 +21,7 @@ rounds, with both arms of a round at the same moment:
 
 | Arm | The installed package | Skill in the app |
 | --- | --- | --- |
-| A | Without `agent-docs/` and `skills/` | None |
+| A | Without `agent-docs/`, `skills/` and the README lines that point at them | None |
 | C | As packed | The package's `skills/uislash/SKILL.md`, copied to `.claude/skills/uislash/` |
 
 Six runs on the defaults cost about $1.15 and take a few minutes. Flags go after `--`:

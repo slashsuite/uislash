@@ -2,8 +2,8 @@
  * The consumer app each run works in: the packed `@slashsuite/ui-react` from this checkout,
  * installed once into a template and copied per run, then shaped to its arm.
  *
- *   A  the package without its `agent-docs/` and `skills/`, its README without the section that
- *      points at them, and no skill in the app.
+ *   A  the package without its `agent-docs/` and `skills/`, its README without the lines that
+ *      point at them (the agents' note above the heading, the "Agent skill" section), no skill.
  *   C  the package as packed, and its `skills/uislash/SKILL.md` installed as the app's project skill.
  */
 import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -85,9 +85,11 @@ export function makeTemplate(repo: string, out: string): string {
   return template;
 }
 
-/** A's README: the package's, less its "Agent skill" section, which names what A removed. */
-function withoutAgentSection(readme: string): string {
-  const stripped = readme.replace(/^## Agent skill\n[\s\S]*?(?=^## )/m, "");
+/** A's README: the package's, less the lines that send an agent to what A removed. */
+function withoutAgentPointers(readme: string): string {
+  const stripped = readme
+    .slice(Math.max(0, readme.search(/^# /m)))
+    .replace(/^## Agent skill\n[\s\S]*?(?=^## )/m, "");
   if (/agent-docs|skills\//.test(stripped))
     throw new Error("arm A: the package README still points at agent-docs/ or skills/");
   return stripped;
@@ -102,7 +104,7 @@ export function setup(template: string, arm: Arm, dir: string): string {
     rmSync(join(lib, "agent-docs"), { recursive: true, force: true });
     rmSync(join(lib, "skills"), { recursive: true, force: true });
     const readme = join(lib, "README.md");
-    writeFileSync(readme, withoutAgentSection(readFileSync(readme, "utf8")));
+    writeFileSync(readme, withoutAgentPointers(readFileSync(readme, "utf8")));
   } else {
     mkdirSync(join(dir, ".claude/skills/uislash"), { recursive: true });
     cpSync(join(lib, "skills/uislash/SKILL.md"), join(dir, ".claude/skills/uislash/SKILL.md"));
