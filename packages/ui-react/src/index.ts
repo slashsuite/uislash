@@ -21,6 +21,21 @@ export type {
   FlowNodeBox,
   FlowPoint,
 } from "./flowLayout.js";
+export {
+  StateMachine,
+  type StateMachineDefinition,
+  type StateMachineItem,
+  type StateMachineKind,
+  type StateMachineState,
+  type StateMachineTransition,
+} from "./StateMachine.js";
+export {
+  fromXState,
+  type XStateMachineLike,
+  type XStateNodeConfig,
+  type XStateStateInput,
+  type XStateTransitionConfig,
+} from "./fromXState.js";
 export { Markdown } from "./Markdown.js";
 export { AppShell, AppShellBrand, type AppShellDensity, appShellRootClassFor } from "./AppShell.js";
 export { SiteFooter, type SiteFooterLink } from "./SiteFooter.js";

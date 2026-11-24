@@ -309,6 +309,31 @@
     "description": "A `Stack`'s width cap at the start edge: `compact`, `narrow` (a reading measure), `default`, `wide` or `full`.",
     "definition": "\"compact\" | \"narrow\" | \"default\" | \"wide\" | \"full\""
   },
+  "StateMachineDefinition": {
+    "name": "StateMachineDefinition",
+    "description": "The machine: its states and the transitions between them. `fromXState` makes one from an xstate machine.",
+    "definition": "{ states: readonly StateMachineState[]; transitions: readonly StateMachineTransition[] }"
+  },
+  "StateMachineItem": {
+    "name": "StateMachineItem",
+    "description": "A thing in the machine: its short `id` (a ref, shown by its dot), its full `label` (the dot's\nname and tooltip), the `state` it is in, and an optional `href` its dot links to.",
+    "definition": "{ id: string; label: string; state: string; href?: string }"
+  },
+  "StateMachineKind": {
+    "name": "StateMachineKind",
+    "description": "What a state is: `initial` (where things start), `normal`, `human` (waiting on a person),\n`terminal` (done, nothing leaves it) or `failed` (stopped on an error).",
+    "definition": "\"initial\" | \"normal\" | \"human\" | \"terminal\" | \"failed\""
+  },
+  "StateMachineState": {
+    "name": "StateMachineState",
+    "description": "One state: its `id` (what a transition's `from` and `to` and an item's `state` name), its `label`, its `kind`, and the role that `owner`s it.",
+    "definition": "{ id: string; label: string; kind?: StateMachineKind; owner?: string }"
+  },
+  "StateMachineTransition": {
+    "name": "StateMachineTransition",
+    "description": "One move between states, with the `event` that makes it, shown on the arrow.",
+    "definition": "{ from: string; to: string; event?: string }"
+  },
   "StatTileTone": {
     "name": "StatTileTone",
     "description": "The colour of a tile's value (and of its accent bar): plain ink, green, amber or red.",
@@ -378,5 +403,25 @@
     "name": "VizTone",
     "description": "The colour of a `StackedBar` segment, a `Legend` swatch or a `TrendChart` series: the `TextTone`\nnames, painted as a fill, or a category colour, `cat1` to `cat8`. On a chart `neutral` is a grey\nof its own that sits apart from `muted` (for \"unmeasured\" next to \"same\"), and `accent` is the\ntheme's accent, apart from `info`. Categories with no meaning take `cat1` upwards in order; good\nand bad take the meaning tones; one chart never mixes the two.",
     "definition": "TextTone | \"cat1\" | \"cat2\" | \"cat3\" | \"cat4\" | \"cat5\" | \"cat6\" | \"cat7\" | \"cat8\""
+  },
+  "XStateMachineLike": {
+    "name": "XStateMachineLike",
+    "description": "A machine's config, or what `setup(…).createMachine(config)` returns (it keeps it as `config`).",
+    "definition": "{ id?: string | undefined; initial?: string | { target: string; } | undefined; states?: Record<string, XStateNodeConfig> | undefined; } | { config: { id?: string | undefined; initial?: string | { target: string; } | undefined; states?: Record<string, XStateNodeConfig> | undefined; }; }"
+  },
+  "XStateNodeConfig": {
+    "name": "XStateNodeConfig",
+    "description": "The part of an xstate v5 state node `fromXState` reads: its `id`, `type` and `meta`, and the\nways it moves on (`on`, `always`, `after`, and each `invoke`'s `onDone` and `onError`). Typed by\nshape, so the package does not depend on xstate.",
+    "definition": "{ id?: string; type?: string; meta?: Record<string, unknown>; on?: Record<string, XStateTransitionConfig | readonly XStateTransitionConfig[]>; always?: XStateTransitionConfig | readonly XStateTransitionConfig[]; after?: Record<string, XStateTransitionConfig | readonly XStateTransitionConfig[]>; invoke?: { onDone?: XStateTransitionConfig | readonly XStateTransitionConfig[]; onError?: XStateTransitionConfig | readonly XStateTransitionConfig[] } | readonly { onDone?: XStateTransitionConfig | readonly XStateTransitionConfig[]; onError?: XStateTransitionConfig | readonly XStateTransitionConfig[] }[]; states?: Record<string, XStateNodeConfig> }"
+  },
+  "XStateStateInput": {
+    "name": "XStateStateInput",
+    "description": "What `fromXState` makes of one state node before `state` adjusts it.",
+    "definition": "{ id: string; node: XStateNodeConfig; state: StateMachineState }"
+  },
+  "XStateTransitionConfig": {
+    "name": "XStateTransitionConfig",
+    "description": "One transition: a target, or `{ target, meta }`, or a list of them (the first that passes its guard).",
+    "definition": "string | { target?: string | readonly (string | undefined)[] | undefined; meta?: Record<string, unknown> | undefined; } | undefined"
   }
 }

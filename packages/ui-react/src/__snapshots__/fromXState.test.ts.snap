@@ -1,0 +1,87 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`fromXState > reads a small machine's states and transitions 1`] = `
+{
+  "states": [
+    {
+      "id": "cart",
+      "kind": "initial",
+      "label": "cart",
+    },
+    {
+      "id": "abandoned",
+      "kind": "terminal",
+      "label": "abandoned",
+    },
+    {
+      "id": "paying",
+      "kind": "normal",
+      "label": "Paying",
+      "owner": "billing",
+    },
+    {
+      "id": "shipping",
+      "kind": "human",
+      "label": "shipping",
+      "owner": "warehouse",
+    },
+    {
+      "id": "delivered",
+      "kind": "normal",
+      "label": "delivered",
+    },
+    {
+      "id": "done",
+      "kind": "terminal",
+      "label": "done",
+    },
+    {
+      "id": "failed",
+      "kind": "failed",
+      "label": "Payment failed",
+    },
+  ],
+  "transitions": [
+    {
+      "event": "CHECKOUT",
+      "from": "cart",
+      "to": "paying",
+    },
+    {
+      "event": "after 60000",
+      "from": "cart",
+      "to": "abandoned",
+    },
+    {
+      "event": "paid",
+      "from": "paying",
+      "to": "shipping",
+    },
+    {
+      "event": "DECLINED",
+      "from": "paying",
+      "to": "failed",
+    },
+    {
+      "event": "done",
+      "from": "paying",
+      "to": "shipping",
+    },
+    {
+      "event": "error",
+      "from": "paying",
+      "to": "failed",
+    },
+    {
+      "event": "DELIVERED",
+      "from": "shipping",
+      "to": "done",
+    },
+    {
+      "event": "always",
+      "from": "delivered",
+      "to": "done",
+    },
+  ],
+}
+`;

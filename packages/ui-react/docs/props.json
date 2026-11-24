@@ -3145,6 +3145,12 @@
     "signature": "fromISODateTime(iso: string | null | undefined): CalendarDateTime | null",
     "props": []
   },
+  "fromXState": {
+    "name": "fromXState",
+    "description": "Turns an xstate v5 machine (the machine, or its config) into a `StateMachine` definition: one\nstate per top-level state node, one transition per target in each node's `on`.\n\n- A state's `label` is its `meta.label`, else its key; its `owner` is `meta.owner`; its `kind`\n  is `meta.kind` when that is one of the five, else `terminal` for a `type: \"final\"` node,\n  `initial` for the machine's `initial`, and `normal` for the rest.\n- Each `on` event, `always`, each `after` delay and each `invoke`'s `onDone` and `onError` is a\n  transition. Its `event` is its `meta.label`, else the event's name (`always`, `after 500`,\n  `done`, `error`). A transition with no target\n  (it stays where it is), one that stays inside its own state, or one whose target is not a\n  top-level state is left out.\n- `state` adjusts each state, for a machine whose meta says it another way: return the state to\n  draw, given its key, its config and the state the rules above made of it.\n\nOnly the top level is read: a nested state is drawn as its parent.",
+    "signature": "fromXState(machine: XStateMachineLike, options?: { state?: ((input: XStateStateInput) => StateMachineState) | undefined; }): StateMachineDefinition",
+    "props": []
+  },
   "FullBleedLayout": {
     "name": "FullBleedLayout",
     "description": "Edge-to-edge `children` with an optional `aside` at the end (`lg:w-72`) that stacks below on a smaller\nscreen. Render it in `<AppShell bleed>`. It deliberately breaks the shared start edge: a viewer\nthat needs the whole width has no Container of its own, so `children` start at the viewport's\nstart edge. `padded` gives them the Container's padding instead (`px-4`, `sm:px-6`, `py-8`), for\na page of ordinary content beside a full-height `aside`. A `bar` is a `StickyBar` above both: the\nfull width, on the surface with a bottom line, sticking under AppShell's header as the page scrolls.\nWhile `loading` it owns the wait and passes it to everything inside, the header too.",
@@ -6254,6 +6260,70 @@
     "description": "Run `update` inside a view transition, so a `PageFade` cross-fades. `update` is a synchronous\nstate change, flushed at once as the browser needs the new DOM; for a router's navigation, which\nis async, use the router's own view-transition option instead. Where the browser has\nno View Transitions, or the user prefers reduced motion, `update` just runs. Call it from an event\nhandler, not during render.",
     "signature": "startPageTransition(update: () => void): void",
     "props": []
+  },
+  "StateMachine": {
+    "name": "StateMachine",
+    "description": "A state machine, drawn, with the things moving through it: each state a box, each transition an\narrow named by its event, laid out like a `FlowDiagram`. A state's `kind` sets its look and a tag\nthat says it: `human` takes the warn tone, `failed` the danger tone, `terminal` is muted, and\n`initial` is tagged start. Its `owner` is a tag beside it.\n\nEach of the `items` is a coloured dot with its short `id`, in the box of its `state`, which\ncounts them; a box shows up to nine and a `+N` for the rest. The dot's name and tooltip is its\nfull `label`, and with an `href` it is a link. An item whose state is not in the machine goes in\na box of its own, \"Not in any state\", so nothing is dropped. When an item's state changes, its\ndot runs along the arrow between the two (straight across when there is none); with reduced\nmotion it moves at once. `active` rings the one state that is current.\n\n`fromXState` makes `states` and `transitions` from an xstate machine.",
+    "props": [
+      {
+        "name": "active",
+        "type": "string",
+        "required": false,
+        "description": "The `id` of the one state to ring as current.",
+        "native": false
+      },
+      {
+        "name": "id",
+        "type": "string",
+        "required": false,
+        "description": "The root element's `id`: an anchor, or the target of a `for` or an `aria-describedby`.",
+        "native": false
+      },
+      {
+        "name": "items",
+        "type": "readonly StateMachineItem[]",
+        "required": false,
+        "default": "[]",
+        "description": "The things in the machine, each in the state its `state` names.",
+        "native": false
+      },
+      {
+        "name": "label",
+        "type": "string",
+        "required": true,
+        "description": "What the machine is: its accessible name.",
+        "native": false
+      },
+      {
+        "name": "loading",
+        "type": "boolean",
+        "required": false,
+        "description": "The data is not here yet: an empty slot draws a bone of its shape, a filled one draws as usual.\nLeft out, the part takes the nearest loading layout's or part's; `false` opts it out inside one.",
+        "native": false
+      },
+      {
+        "name": "loadingLabel",
+        "type": "string",
+        "required": false,
+        "default": "Loading",
+        "description": "What a screen reader hears while this part is loading, when its own `loading` is set.",
+        "native": false
+      },
+      {
+        "name": "states",
+        "type": "readonly StateMachineState[]",
+        "required": true,
+        "description": "The states, each with a unique `id`.",
+        "native": false
+      },
+      {
+        "name": "transitions",
+        "type": "readonly StateMachineTransition[]",
+        "required": true,
+        "description": "The moves between them. One whose `from` or `to` is not a state is not drawn.",
+        "native": false
+      }
+    ]
   },
   "StatTile": {
     "name": "StatTile",

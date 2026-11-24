@@ -1,0 +1,408 @@
+{
+  "states": [
+    {
+      "id": "idea",
+      "label": "Idea",
+      "role": "owner",
+      "human_required": true,
+      "terminal": false
+    },
+    {
+      "id": "exploring",
+      "label": "Exploring the design",
+      "role": "muse",
+      "human_required": false,
+      "terminal": false
+    },
+    {
+      "id": "confirm_complete",
+      "label": "Is the thought complete?",
+      "role": "owner",
+      "human_required": true,
+      "terminal": false
+    },
+    {
+      "id": "parked_idea",
+      "label": "Parked idea (tag idea)",
+      "role": "muse",
+      "human_required": false,
+      "terminal": false
+    },
+    {
+      "id": "ticketed",
+      "label": "Ticketed, in the queue",
+      "role": "architect",
+      "human_required": false,
+      "terminal": false
+    },
+    {
+      "id": "drilling",
+      "label": "Drilling (## Drilled, ## Done when)",
+      "role": "architect",
+      "human_required": false,
+      "terminal": false
+    },
+    {
+      "id": "checking",
+      "label": "Blind check (measure twice)",
+      "role": "checker",
+      "human_required": false,
+      "terminal": false
+    },
+    {
+      "id": "owner_plan_call",
+      "label": "Planning call only the owner can make",
+      "role": "owner",
+      "human_required": true,
+      "terminal": false
+    },
+    {
+      "id": "spike",
+      "label": "Spike running",
+      "role": "builder",
+      "human_required": false,
+      "terminal": false
+    },
+    {
+      "id": "go",
+      "label": "Go recorded, ready to dispatch",
+      "role": "architect",
+      "human_required": false,
+      "terminal": false
+    },
+    {
+      "id": "queued",
+      "label": "Spinoff queued",
+      "role": "system",
+      "human_required": false,
+      "terminal": false
+    },
+    {
+      "id": "launching",
+      "label": "Spinoff launching",
+      "role": "system",
+      "human_required": false,
+      "terminal": false
+    },
+    {
+      "id": "building",
+      "label": "Building",
+      "role": "builder",
+      "human_required": false,
+      "terminal": false
+    },
+    {
+      "id": "reviewing",
+      "label": "Skeptical review round",
+      "role": "reviewer",
+      "human_required": false,
+      "terminal": false
+    },
+    {
+      "id": "pr_ci",
+      "label": "PR open, waiting on CI",
+      "role": "builder",
+      "human_required": false,
+      "terminal": false
+    },
+    {
+      "id": "blocked",
+      "label": "Blocked (verdict)",
+      "role": "owner",
+      "human_required": true,
+      "terminal": false
+    },
+    {
+      "id": "partial",
+      "label": "Partial (verdict)",
+      "role": "builder",
+      "human_required": false,
+      "terminal": false
+    },
+    {
+      "id": "needs_human",
+      "label": "Needs human (verdict)",
+      "role": "owner",
+      "human_required": true,
+      "terminal": false
+    },
+    {
+      "id": "handed_off",
+      "label": "Handed off, in the sentinel inbox",
+      "role": "sentinel",
+      "human_required": false,
+      "terminal": false
+    },
+    {
+      "id": "gating",
+      "label": "Sentinel gating the PR head",
+      "role": "sentinel",
+      "human_required": false,
+      "terminal": false
+    },
+    {
+      "id": "updating_pr",
+      "label": "Sentinel updating a conflicting PR",
+      "role": "sentinel",
+      "human_required": false,
+      "terminal": false
+    },
+    {
+      "id": "owner_merge_call",
+      "label": "Merge call only the owner can make",
+      "role": "owner",
+      "human_required": true,
+      "terminal": false
+    },
+    {
+      "id": "merged_deployed",
+      "label": "Merged and deployed",
+      "role": "sentinel",
+      "human_required": false,
+      "terminal": false
+    },
+    {
+      "id": "closed",
+      "label": "Closed (ticket done)",
+      "role": "sentinel",
+      "human_required": false,
+      "terminal": true
+    },
+    {
+      "id": "spike_closed",
+      "label": "Spike closed",
+      "role": "architect",
+      "human_required": false,
+      "terminal": true
+    },
+    {
+      "id": "failed",
+      "label": "Failed or abandoned",
+      "role": "system",
+      "human_required": false,
+      "terminal": true
+    }
+  ],
+  "transitions": [
+    {
+      "from": "idea",
+      "to": "exploring",
+      "label": "opens muse"
+    },
+    {
+      "from": "exploring",
+      "to": "confirm_complete",
+      "label": "looks whole"
+    },
+    {
+      "from": "confirm_complete",
+      "to": "exploring",
+      "label": "no, keep going"
+    },
+    {
+      "from": "confirm_complete",
+      "to": "ticketed",
+      "label": "yes, ticket it"
+    },
+    {
+      "from": "exploring",
+      "to": "parked_idea",
+      "label": "note a raw idea"
+    },
+    {
+      "from": "parked_idea",
+      "to": "confirm_complete",
+      "label": "picks it up"
+    },
+    {
+      "from": "ticketed",
+      "to": "drilling",
+      "label": "next three in queue"
+    },
+    {
+      "from": "drilling",
+      "to": "checking",
+      "label": "seal score, run checker"
+    },
+    {
+      "from": "checking",
+      "to": "go",
+      "label": "go"
+    },
+    {
+      "from": "checking",
+      "to": "drilling",
+      "label": "no-go, change ticket"
+    },
+    {
+      "from": "drilling",
+      "to": "owner_plan_call",
+      "label": "owner's call"
+    },
+    {
+      "from": "owner_plan_call",
+      "to": "drilling",
+      "label": "answer"
+    },
+    {
+      "from": "drilling",
+      "to": "spike",
+      "label": "only by trying"
+    },
+    {
+      "from": "spike",
+      "to": "drilling",
+      "label": "answers on parent"
+    },
+    {
+      "from": "spike",
+      "to": "spike_closed",
+      "label": "spike closed"
+    },
+    {
+      "from": "drilling",
+      "to": "go",
+      "label": "no-check with reason"
+    },
+    {
+      "from": "go",
+      "to": "queued",
+      "label": "dispatch"
+    },
+    {
+      "from": "queued",
+      "to": "launching",
+      "label": "claim"
+    },
+    {
+      "from": "launching",
+      "to": "building",
+      "label": "thread opened"
+    },
+    {
+      "from": "launching",
+      "to": "queued",
+      "label": "retry launch"
+    },
+    {
+      "from": "launching",
+      "to": "failed",
+      "label": "attempt cap hit"
+    },
+    {
+      "from": "queued",
+      "to": "failed",
+      "label": "abandon"
+    },
+    {
+      "from": "building",
+      "to": "failed",
+      "label": "abandon or lost trial"
+    },
+    {
+      "from": "building",
+      "to": "reviewing",
+      "label": "review legs run"
+    },
+    {
+      "from": "reviewing",
+      "to": "building",
+      "label": "open finding, fix"
+    },
+    {
+      "from": "reviewing",
+      "to": "pr_ci",
+      "label": "0 open, open PR"
+    },
+    {
+      "from": "pr_ci",
+      "to": "building",
+      "label": "CI fails, fix"
+    },
+    {
+      "from": "pr_ci",
+      "to": "handed_off",
+      "label": "handoff, CI green"
+    },
+    {
+      "from": "pr_ci",
+      "to": "needs_human",
+      "label": "verdict needs-human"
+    },
+    {
+      "from": "needs_human",
+      "to": "handed_off",
+      "label": "owner hands off"
+    },
+    {
+      "from": "needs_human",
+      "to": "building",
+      "label": "owner asks a change"
+    },
+    {
+      "from": "building",
+      "to": "blocked",
+      "label": "verdict blocked"
+    },
+    {
+      "from": "building",
+      "to": "partial",
+      "label": "verdict partial"
+    },
+    {
+      "from": "blocked",
+      "to": "building",
+      "label": "owner unblocks"
+    },
+    {
+      "from": "partial",
+      "to": "building",
+      "label": "redispatch"
+    },
+    {
+      "from": "handed_off",
+      "to": "gating",
+      "label": "read inbox"
+    },
+    {
+      "from": "gating",
+      "to": "building",
+      "label": "sendback"
+    },
+    {
+      "from": "gating",
+      "to": "updating_pr",
+      "label": "conflict or overlap"
+    },
+    {
+      "from": "updating_pr",
+      "to": "gating",
+      "label": "pushed, re-gate"
+    },
+    {
+      "from": "gating",
+      "to": "owner_merge_call",
+      "label": "taste, waiver or flake"
+    },
+    {
+      "from": "owner_merge_call",
+      "to": "gating",
+      "label": "owner answers"
+    },
+    {
+      "from": "gating",
+      "to": "merged_deployed",
+      "label": "merge and deploy"
+    },
+    {
+      "from": "merged_deployed",
+      "to": "closed",
+      "label": "close"
+    },
+    {
+      "from": "closed",
+      "to": "building",
+      "label": "reopen"
+    }
+  ]
+}
