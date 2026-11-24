@@ -1,16 +1,19 @@
 $schema: "../../.moon/cache/schemas/project.json"
 
 # @slashsuite/ui-react. Each task runs the package.json script of its name (`prepack` is npm's, not a task).
-# docs/ is the component docs' data: only lint (check-slop) reads it, so the other tasks leave it out
-# of their hash.
+# docs/ is the component docs' data. Lint (check-slop) reads all of it; typecheck and pack-check read
+# docs/components (scripts/pack-docs.ts checks the tarball holds one agent-docs page per docs page);
+# build and test leave it out of their hash. agent-docs/ ships in the package and is never
+# committed: the agent-docs task writes it (the renderer is the site's, from the same sources as
+# /ui/llms.txt), and `prepack` runs it, so npm publish packs a fresh copy.
 tasks:
   build:
     command: "bun run build"
-    inputs: ["**/*", "!docs/**/*"]
+    inputs: ["**/*", "!docs/**/*", "!agent-docs/**/*"]
     outputs: ["dist"]
   typecheck:
     command: "bun run typecheck"
-    inputs: ["**/*", "!docs/**/*"]
+    inputs: ["**/*", "!docs/*.json"]
   lint:
     command: "bun run lint"
     # The testing config this project's .oxlintrc.json extends: another project's files.
@@ -18,8 +21,15 @@ tasks:
       ["**/*", "/packages/oxlint-testing/.oxlintrc.json", "/packages/oxlint-testing/plugin.js"]
   test:
     command: "bun run test"
-    inputs: ["**/*", "!docs/**/*"]
+    inputs: ["**/*", "!docs/**/*", "!agent-docs/**/*"]
+  # Reads the built dist through the stories, so it runs after build. Never cached: it reads the
+  # site's docs, the stories and the themes, too many sources to list as inputs, and takes seconds.
+  agent-docs:
+    command: "bun run agent-docs"
+    deps: ["~:build"]
+    options:
+      cache: false
   pack-check:
     command: "bun run pack-check"
-    inputs: ["**/*", "!docs/**/*"]
-    deps: ["~:build"]
+    inputs: ["**/*", "!docs/*.json"]
+    deps: ["~:build", "~:agent-docs"]

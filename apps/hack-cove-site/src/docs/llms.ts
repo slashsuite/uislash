@@ -1,11 +1,14 @@
 /**
- * `/ui/llms.txt`: the component docs as plain text for agents, one section per component. It is
- * made from the same sources as the pages (`packages/ui-react/docs/components/`, the
- * stories and `packages/ui-react/docs/props.json`), so the two cannot drift.
+ * The component docs as plain text for agents, made from the same sources as the pages
+ * (`packages/ui-react/docs/components/`, the stories and `packages/ui-react/docs/props.json`), so
+ * they cannot drift. Two outputs share every part: the site's `/ui/llms.txt` (one file, every
+ * component's section) and the docs shipped in `@slashsuite/ui-react` under `agent-docs/` (an
+ * index and one file per component page, written by ui-react's `agent-docs` task at build time).
  */
 import {
   componentPageOf,
   componentPages,
+  componentSections,
   sectionOfPage,
   type ComponentPage,
 } from "../../../../packages/ui-react/docs/components/index.js";
@@ -76,17 +79,23 @@ function fullPageOf(page: ComponentPage): string[] {
   return [`### Full page\n${captioned(story)}`];
 }
 
+/** Where a sibling page is: its address on the site, or its file beside this one in `agent-docs/components/`. */
+type LinkOf = (slug: string) => string;
+const siteLink: LinkOf = (slug) => `/ui/${slug}/`;
+const fileLink: LinkOf = (slug) => `${slug}.md`;
+
 /** The "Use instead" list: each sibling page with when to use it instead of this one. */
-function siblingsOf(page: ComponentPage): string[] {
+function siblingsOf(page: ComponentPage, linkOf: LinkOf): string[] {
   const { siblings = [] } = page;
   return siblings.length === 0
     ? []
     : [
-        `### Use instead\n${siblings.map(({ slug, when }) => `- ${componentPageOf(slug).name} (/ui/${slug}/): ${when}`).join("\n")}`,
+        `### Use instead\n${siblings.map(({ slug, when }) => `- ${componentPageOf(slug).name} (${linkOf(slug)}): ${when}`).join("\n")}`,
       ];
 }
 
-function sectionOf(page: ComponentPage): string {
+/** One component page, from its `## <name>` heading to its last list. */
+function sectionOf(page: ComponentPage, linkOf: LinkOf): string {
   const [lead] = page.pairs;
   const right = lead === undefined ? undefined : pairOf(lead).do;
   if (right === undefined) throw new Error(`llms.txt: ${page.name} has no Do story to lead with`);
@@ -94,7 +103,7 @@ function sectionOf(page: ComponentPage): string {
     `## ${page.name}`,
     `Group: ${sectionOfPage(page.slug).title}`,
     `When to use: ${page.whenToUse}`,
-    ...siblingsOf(page),
+    ...siblingsOf(page, linkOf),
     `### The one right way\n${captioned(right)}`,
     ...fullPageOf(page),
     `### Do\n${bullets(page.usage.do)}`,
@@ -125,13 +134,50 @@ function setupOf(): string {
   ].join("\n\n");
 }
 
-/** The whole file. */
-export function renderLlms(): string {
-  const head = [
+/** The title, the purpose and the rule every component follows. */
+function headOf(): string {
+  return [
     "# UISlash",
     `> ${site.ui.subtitle}`,
     ...site.ui.intro,
     "Every component has one right way to use it. There are no extension recipes and no styling escape hatches: do not restyle a component, compose the parts.",
   ].join("\n\n");
-  return `${[head, setupOf(), ...componentPages.map(sectionOf)].join("\n\n")}\n`;
+}
+
+/** The site's `/ui/llms.txt`: the setup, then every component's section in rail order. */
+export function renderLlms(): string {
+  const sections = componentPages.map((page) => sectionOf(page, siteLink));
+  return `${[headOf(), setupOf(), ...sections].join("\n\n")}\n`;
+}
+
+/** The packaged index's list: each group, and under it each page's file and when to use it. */
+function indexOf(): string {
+  const groups = componentSections.map(({ title, pages }) =>
+    [
+      `### ${title}`,
+      ...pages.map(
+        ({ name, slug, whenToUse }) => `- ${name} (components/${fileLink(slug)}): ${whenToUse}`,
+      ),
+    ].join("\n"),
+  );
+  return [
+    "## Components",
+    "Each component page is its own file under `components/`: the one right way, do and don't, accessibility and props. Read the page before you use the component.",
+    ...groups,
+  ].join("\n\n");
+}
+
+/**
+ * The docs shipped in `@slashsuite/ui-react`, by path under `agent-docs/`: `llms.txt` (the setup and
+ * an index of the pages) and `components/<slug>.md` (one per component page, the same section as on
+ * `/ui/llms.txt`, linking its siblings by file).
+ */
+export function renderAgentDocs(): Map<string, string> {
+  return new Map([
+    ["llms.txt", `${[headOf(), setupOf(), indexOf()].join("\n\n")}\n`],
+    ...componentPages.map((page): [string, string] => [
+      `components/${fileLink(page.slug)}`,
+      `${sectionOf(page, fileLink)}\n`,
+    ]),
+  ]);
 }
