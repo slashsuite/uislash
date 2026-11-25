@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
 import * as ui from "./index.js";
 
-/** The side-column layouts' cases of `CASES` (`passthrough.harness.tsx`), each given the probe attributes `a`. */
+/** The side-column layouts' and the article's cases of `CASES` (`passthrough.harness.tsx`), each given the probe attributes `a`. */
 export function layoutCases(a: Record<string, string>): Record<string, () => ReactElement> {
   return {
     SideColumn: () => (
@@ -18,6 +18,11 @@ export function layoutCases(a: Record<string, string>): Record<string, () => Rea
       <ui.DocsLayout nav={[]} asideLabel="Docs" title="t" {...a}>
         x
       </ui.DocsLayout>
+    ),
+    ArticleLayout: () => (
+      <ui.ArticleLayout title="T" {...a}>
+        x
+      </ui.ArticleLayout>
     ),
   };
 }

@@ -54,6 +54,7 @@ export {
   ListLayout,
   ProseLayout,
 } from "./PageLayouts.js";
+export { ArticleLayout } from "./ArticleLayout.js";
 export { SidebarLayout } from "./SidebarLayout.js";
 export {
   DocsLayout,

@@ -162,6 +162,112 @@
     "signature": "appShellRootClassFor(scheme: ColourScheme, schemes?: ColourSchemeClasses): string",
     "props": []
   },
+  "ArticleLayout": {
+    "name": "ArticleLayout",
+    "description": "A blog article: the title (the page's `h1`) and its lede, a byline of the author, the date and the\nreading time in muted text, the lead picture, the body, and a \"More like this\" row of cards at the\nfoot. The article sits in the reading column (`max-w-3xl`) at the Container's start edge, and the\nrelated cards take the Container's whole width under it. The date is a `<time>` when `dateTime`\nsays which day it is. Every part but the title is optional. While `loading` it owns the wait and\npasses it to everything inside, the header too.",
+    "props": [
+      {
+        "name": "author",
+        "type": "ReactNode",
+        "required": false,
+        "description": "Who wrote it: a name, or a `TextLink` to their page.",
+        "native": false
+      },
+      {
+        "name": "breadcrumbs",
+        "type": "ReactNode",
+        "required": false,
+        "description": "A `Breadcrumbs` above the title.",
+        "native": false
+      },
+      {
+        "name": "children",
+        "type": "ReactNode",
+        "required": false,
+        "description": "The article itself: `Prose`, or `SectionHeading`s and `Text` paragraphs, spaced `md` apart.",
+        "native": false
+      },
+      {
+        "name": "date",
+        "type": "string",
+        "required": false,
+        "description": "When it was published, as the reader reads it: \"12 November 2026\".",
+        "native": false
+      },
+      {
+        "name": "dateTime",
+        "type": "string",
+        "required": false,
+        "description": "The same day as an ISO date (`2026-11-12`), for the `<time>` a machine reads.",
+        "native": false
+      },
+      {
+        "name": "description",
+        "type": "ReactNode",
+        "required": false,
+        "description": "The lede under the title: a `Lead`, so it outranks the body text after it.",
+        "native": false
+      },
+      {
+        "name": "id",
+        "type": "string",
+        "required": false,
+        "description": "The root element's `id`: an anchor, or the target of a `for` or an `aria-describedby`.",
+        "native": false
+      },
+      {
+        "name": "image",
+        "type": "ReactNode",
+        "required": false,
+        "description": "The lead picture under the byline: an `Image` at `width=\"full\"`.",
+        "native": false
+      },
+      {
+        "name": "loading",
+        "type": "boolean",
+        "required": false,
+        "description": "The data is not here yet: an empty slot draws a bone of its shape, a filled one draws as usual.\nLeft out, the part takes the nearest loading layout's or part's; `false` opts it out inside one.",
+        "native": false
+      },
+      {
+        "name": "loadingLabel",
+        "type": "string",
+        "required": false,
+        "default": "Loading",
+        "description": "What a screen reader hears while this part is loading, when its own `loading` is set.",
+        "native": false
+      },
+      {
+        "name": "readingTime",
+        "type": "string",
+        "required": false,
+        "description": "How long it takes to read, worked out by the app: \"6 min read\".",
+        "native": false
+      },
+      {
+        "name": "related",
+        "type": "ReactNode",
+        "required": false,
+        "description": "The cards at the foot under \"More like this\", three to a row from `lg`: a `.map` of `Card`s or\n`ProductTile`s. Left out, there is no foot.",
+        "native": false
+      },
+      {
+        "name": "relatedTitle",
+        "type": "string",
+        "required": false,
+        "default": "More like this",
+        "description": "The heading over `related`, for an app in another language or another word (\"Recipes for this kit\").",
+        "native": false
+      },
+      {
+        "name": "title",
+        "type": "ReactNode",
+        "required": true,
+        "description": "The page's `h1`.",
+        "native": false
+      }
+    ]
+  },
   "Audio": {
     "name": "Audio",
     "description": "An `<audio>` with the browser's own controls, at one fixed size: 20rem wide, narrower only when its column is. It loads\nmetadata only, and lazily where the browser can, so the page does not pull the file until it is\nplayed. A voice note or a clip has no visible title, so `label` names the player. `src` is the\napp's own file; `children` is the fallback for a browser that cannot play it.",

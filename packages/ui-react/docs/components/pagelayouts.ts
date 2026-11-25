@@ -124,6 +124,29 @@ export const pagelayouts: ComponentSection = {
       api: ["ProseLayout"],
     },
     {
+      slug: "article-layout",
+      name: "ArticleLayout",
+      summary: "A blog article: byline, lead picture, body and related posts at the foot.",
+      whenToUse: "A blog post, a news item or a recipe: writing with an author and a date.",
+      pairs: ["ArticleLayout/Post"],
+      fullPage: "ArticleLayout/FullPage",
+      usage: {
+        do: [
+          "The body is the `children`: `Prose`, or `SectionHeading`s and `Text` paragraphs, spaced `md` apart.",
+          "`author`, `date` and `readingTime` make the byline under the lede. Pass `dateTime` (`2026-11-12`) with `date` so it is a `<time>`; the app works out the reading time.",
+          '`image` is the lead picture: an `Image` at `width="full"`.',
+          '`related` is a `.map` of `Card`s or `ProductTile`s, three to a row under "More like this"; `relatedTitle` names it another way.',
+          "A page of text with no author or date (privacy, terms, help) is a `ProseLayout`.",
+        ],
+      },
+      accessibility: [
+        "The article is an `<article>` and its title the page's `h1`.",
+        "The related posts are a `section` named by their heading, and a list of cards.",
+        "`data-*` and `aria-*` go on the page's wrapper.",
+      ],
+      api: ["ArticleLayout"],
+    },
+    {
       slug: "sidebar-layout",
       name: "SidebarLayout",
       summary: "A rail of links beside the page.",
