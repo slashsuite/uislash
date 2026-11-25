@@ -1,6 +1,6 @@
 import { type ReactElement, useState } from "react";
 import { cx, focusRing } from "./cx.js";
-import type { FlowLayout, FlowNodeBox } from "./flowLayout.js";
+import type { FlowLayout, FlowNodeBox, FlowSpacing } from "./flowLayout.js";
 import { renderLink } from "./link.js";
 import { type CategoryTone, VIZ_TONE } from "./StackedBar.js";
 import type { StateMachineItem } from "./StateMachine.js";
@@ -17,7 +17,7 @@ export const SLOT_W = 76;
 export const SLOT_H = 22;
 export const COLS = 3;
 /** Up to this many dots show in a box; past it, one fewer and a `+N` that shows the rest. */
-const LIMIT = 9;
+const LIMIT = 6;
 /** From a box's bottom edge to its dots' bottom: its border and its bottom padding. */
 const BOX_INSET = 9;
 /** From a slot's left edge to its dot's centre: the chip's inset, its padding and half the dot. */
@@ -105,7 +105,7 @@ export function slotsFor(count: number, open: boolean): number {
 }
 
 /**
- * The rows a box reserves for its dots, whatever its count: the nine it shows (the `+N` included),
+ * The rows a box reserves for its dots, whatever its count: the six it shows (the `+N` included),
  * or the rows of an open box's full list. A box with few or no items reserves the same rows, so
  * its size does not depend on how many items it holds.
  */
@@ -115,11 +115,17 @@ export function rowsFor(slots: number): number {
 
 /**
  * The room a box reserves under its tags for `slots` dots: the full grid's width and `rowsFor`'s
- * height, so it is the same at 0, 1, 9 or 12 items (closed) and grows only when a box is opened.
+ * height, so it is the same at 0, 1, 6 or 12 items (closed) and grows only when a box is opened.
  */
 export function dotArea(slots: number): { width: number; height: number } {
   return { width: COLS * SLOT_W, height: rowsFor(slots) * SLOT_H };
 }
+
+/**
+ * A machine's gaps, closer than `FlowDiagram`'s: its boxes are all one size, and every gap between
+ * two ranks also holds a rank of arrow labels, so the loose gaps leave wide empty bands.
+ */
+export const MACHINE_SPACING: FlowSpacing = { node: 24, rank: 32, edge: 8 };
 
 /** A box's tag row: one small pill's height. */
 export const TAG_ROW = 20;

@@ -5,6 +5,7 @@ import type { Passthrough } from "./props.js";
 import { Bone, BusyLabel, busy, type LoadingProps, useLoading } from "./skeleton.js";
 import {
   boxContentSize,
+  MACHINE_SPACING,
   dotArea,
   dotLayer,
   placeOf,
@@ -173,10 +174,11 @@ function useOpenBoxes(opened: () => void): [ReadonlySet<string>, (id: string) =>
  * A state machine, drawn, with the things moving through it: each state a box, each transition an
  * arrow named by its event, laid out like a `FlowDiagram`. A state's `kind` sets its look and a tag
  * that says it: `human` takes the warn tone, `failed` the danger tone, `terminal` is muted, and
- * `initial` is tagged start. Its `owner` is a tag beside it.
+ * `initial` is tagged start. Its `owner` is a tag beside it. Every box is one size, the label wrapping
+ * inside it, and the boxes sit close.
  *
  * Each of the `items` is a coloured dot with its short `id`, in the box of its `state`, which
- * counts them; a box shows up to nine and a `+N` for the rest. The dot's name and tooltip is its
+ * counts them; a box shows up to six and a `+N` for the rest. The dot's name and tooltip is its
  * full `label`, and with an `href` it is a link. An item whose state is not in the machine goes in
  * a box of its own, "Not in any state", so nothing is dropped. When an item's state changes, its
  * dot runs along the arrow between the two (straight across when there is none); with reduced
@@ -213,7 +215,10 @@ export function StateMachine({
   const inBox = itemsByBox(items, known);
   const nodes = boxesFor(states, inBox, open);
   const edges = transitions.map((t) => ({ from: t.from, to: t.to, label: t.event }));
-  const { canvas, drawn } = useFlowLayout(nodes, edges, "down");
+  const { canvas, drawn } = useFlowLayout(nodes, edges, "down", {
+    uniform: true,
+    spacing: MACHINE_SPACING,
+  });
 
   if (waiting && states.length === 0) {
     return (
@@ -236,6 +241,7 @@ export function StateMachine({
       canvas={canvas}
       drawn={drawn}
       fit
+      uniform
     />
   );
 }

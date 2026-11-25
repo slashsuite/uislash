@@ -1,11 +1,10 @@
 import { type ReactElement, type ReactNode, useId } from "react";
-import { TONE_SURFACE, TONE_TEXT } from "./Callout.js";
-import { cx } from "./cx.js";
-import type { FlowDirection, FlowLayout, FlowNodeBox } from "./flowLayout.js";
+import { FlowBoxView } from "./flowBox.js";
+import type { FlowDirection, FlowLayout } from "./flowLayout.js";
 import type { Passthrough } from "./props.js";
 import { Bone, BusyLabel, busy, type LoadingProps, useLoading } from "./skeleton.js";
 import type { Tone } from "./tone.js";
-import { edgeKey, nodeKey, useFit, useFlowLayout } from "./useFlowLayout.js";
+import { edgeKey, useFit, useFlowLayout } from "./useFlowLayout.js";
 
 /**
  * One box of a `FlowDiagram`: its `id` (what an arrow's `from` and `to` name), its `label`, a
@@ -34,20 +33,6 @@ export type FlowEdge = {
   to: string;
   /** A word or two on the arrow: the event or the action that moves along it. */
   label?: string | undefined;
-};
-
-/** A box's frame by tone: the Callout's soft surfaces, a white box for `neutral`, a grey one for `muted`. */
-const NODE_TONE: Record<ViewTone, string> = {
-  ...TONE_SURFACE,
-  neutral: "border-slate-300 bg-white",
-  muted: "border-slate-200 bg-slate-50",
-};
-
-/** A box's ink by tone; `neutral` is the primary ink, `muted` the quiet one. */
-const NODE_INK: Record<ViewTone, string> = {
-  ...TONE_TEXT,
-  neutral: "text-slate-900",
-  muted: "text-slate-500",
 };
 
 /**
@@ -133,7 +118,9 @@ export type ViewNode = Omit<FlowNode, "tone"> & { tone?: ViewTone | undefined };
  * `canvas` ref and the layout `drawn`. Unlike `overlay`, the layer is read by a screen reader and its
  * children may take the pointer (`pointer-events-auto`), so they can be links. With a layer, the
  * image is the drawing alone and the scrolling box round it is a group named by `label`. With `fit`,
- * a drawing wider than its room is shrunk to the room's width instead of scrolling. Internal.
+ * a drawing wider than its room is shrunk to the room's width instead of scrolling. With `uniform`
+ * (laid out by `useFlowLayout`'s `uniform`), every box fills its slot: its label wraps to the box's
+ * width and its content sits at the bottom. Internal.
  */
 export function FlowView({
   label,
@@ -145,6 +132,7 @@ export function FlowView({
   canvas,
   drawn,
   fit = false,
+  uniform = false,
   ...rest
 }: {
   label: string;
@@ -156,6 +144,7 @@ export function FlowView({
   canvas: ReturnType<typeof useFlowLayout>["canvas"];
   drawn: FlowLayout;
   fit?: boolean | undefined;
+  uniform?: boolean | undefined;
 } & Passthrough): ReactElement {
   const { frame, scale } = useFit(fit ? drawn.width : 0);
   const known = new Set(nodes.map((n) => n.id));
@@ -166,7 +155,9 @@ export function FlowView({
     role: "img",
     "aria-label": `${label}: ${count(known.size, "box", "boxes")} and ${count(shown.length, "arrow", "arrows")}`,
   };
-  const drawing = <FlowCanvas drawn={drawn} nodes={nodes} edges={shown} active={active} />;
+  const drawing = (
+    <FlowCanvas drawn={drawn} nodes={nodes} edges={shown} active={active} uniform={uniform} />
+  );
   return (
     <div {...rest} className="flex min-w-0 flex-col">
       <div
@@ -219,11 +210,13 @@ function FlowCanvas({
   nodes,
   edges,
   active,
+  uniform,
 }: {
   drawn: FlowLayout;
   nodes: readonly ViewNode[];
   edges: readonly { edge: FlowEdge; index: number }[];
   active: string | undefined;
+  uniform: boolean;
 }): ReactElement {
   const marker = `flow-arrow-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
   const byId = new Map(nodes.map((n) => [n.id, n]));
@@ -256,7 +249,7 @@ function FlowCanvas({
       {drawn.nodes.map((b) => {
         const node = byId.get(b.id);
         return node ? (
-          <FlowBoxView key={b.id} box={b} node={node} active={active === b.id} />
+          <FlowBoxView key={b.id} box={b} node={node} active={active === b.id} uniform={uniform} />
         ) : null;
       })}
     </>
@@ -296,38 +289,6 @@ function FlowArrows({ drawn, marker }: { drawn: FlowLayout; marker: string }): R
         />
       ))}
     </svg>
-  );
-}
-
-/** One box, placed: its label and content, sized by them, centred in the slot the layout gave it. */
-function FlowBoxView({
-  box,
-  node,
-  active,
-}: {
-  box: FlowNodeBox;
-  node: ViewNode;
-  active: boolean;
-}): ReactElement {
-  const tone = node.tone ?? "neutral";
-  return (
-    <div
-      className="absolute flex items-center justify-center"
-      style={{ left: box.x, top: box.y, width: box.width, height: box.height }}
-    >
-      <div
-        data-measure={nodeKey(box.id)}
-        className={cx(
-          "w-max max-w-72 shrink-0 rounded-lg border px-3 py-2 text-sm",
-          NODE_TONE[tone],
-          NODE_INK[tone],
-          active && "outline-2 outline-offset-2 outline-violet-600",
-        )}
-      >
-        <div className="font-medium">{node.label}</div>
-        {node.content != null && <div className="mt-2">{node.content}</div>}
-      </div>
-    </div>
   );
 }
 

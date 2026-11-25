@@ -1,13 +1,6 @@
 {
   "states": [
     {
-      "id": "idea",
-      "label": "Idea",
-      "role": "owner",
-      "human_required": true,
-      "terminal": false
-    },
-    {
       "id": "exploring",
       "label": "Exploring the design",
       "role": "muse",
@@ -29,13 +22,6 @@
       "terminal": false
     },
     {
-      "id": "ticketed",
-      "label": "Ticketed, in the queue",
-      "role": "architect",
-      "human_required": false,
-      "terminal": false
-    },
-    {
       "id": "drilling",
       "label": "Drilling (## Drilled, ## Done when)",
       "role": "architect",
@@ -45,7 +31,7 @@
     {
       "id": "checking",
       "label": "Blind check (measure twice)",
-      "role": "checker",
+      "role": "reviewer",
       "human_required": false,
       "terminal": false
     },
@@ -60,13 +46,6 @@
       "id": "spike",
       "label": "Spike running",
       "role": "builder",
-      "human_required": false,
-      "terminal": false
-    },
-    {
-      "id": "go",
-      "label": "Go recorded, ready to dispatch",
-      "role": "architect",
       "human_required": false,
       "terminal": false
     },
@@ -106,8 +85,8 @@
       "terminal": false
     },
     {
-      "id": "blocked",
-      "label": "Blocked (verdict)",
+      "id": "owner_call",
+      "label": "Owner's call (verdict blocked or needs-human)",
       "role": "owner",
       "human_required": true,
       "terminal": false
@@ -117,13 +96,6 @@
       "label": "Partial (verdict)",
       "role": "builder",
       "human_required": false,
-      "terminal": false
-    },
-    {
-      "id": "needs_human",
-      "label": "Needs human (verdict)",
-      "role": "owner",
-      "human_required": true,
       "terminal": false
     },
     {
@@ -142,8 +114,8 @@
     },
     {
       "id": "updating_pr",
-      "label": "Sentinel updating a conflicting PR",
-      "role": "sentinel",
+      "label": "Sent back, builder updating the PR",
+      "role": "builder",
       "human_required": false,
       "terminal": false
     },
@@ -155,23 +127,9 @@
       "terminal": false
     },
     {
-      "id": "merged_deployed",
-      "label": "Merged and deployed",
-      "role": "sentinel",
-      "human_required": false,
-      "terminal": false
-    },
-    {
       "id": "closed",
       "label": "Closed (ticket done)",
       "role": "sentinel",
-      "human_required": false,
-      "terminal": true
-    },
-    {
-      "id": "spike_closed",
-      "label": "Spike closed",
-      "role": "architect",
       "human_required": false,
       "terminal": true
     },
@@ -185,11 +143,6 @@
   ],
   "transitions": [
     {
-      "from": "idea",
-      "to": "exploring",
-      "label": "opens muse"
-    },
-    {
       "from": "exploring",
       "to": "confirm_complete",
       "label": "looks whole"
@@ -201,7 +154,7 @@
     },
     {
       "from": "confirm_complete",
-      "to": "ticketed",
+      "to": "drilling",
       "label": "yes, ticket it"
     },
     {
@@ -215,19 +168,14 @@
       "label": "picks it up"
     },
     {
-      "from": "ticketed",
-      "to": "drilling",
-      "label": "next three in queue"
-    },
-    {
       "from": "drilling",
       "to": "checking",
       "label": "seal score, run checker"
     },
     {
       "from": "checking",
-      "to": "go",
-      "label": "go"
+      "to": "queued",
+      "label": "go, ob spinoff"
     },
     {
       "from": "checking",
@@ -256,18 +204,13 @@
     },
     {
       "from": "spike",
-      "to": "spike_closed",
+      "to": "closed",
       "label": "spike closed"
     },
     {
       "from": "drilling",
-      "to": "go",
-      "label": "no-check with reason"
-    },
-    {
-      "from": "go",
       "to": "queued",
-      "label": "dispatch"
+      "label": "no-check with reason"
     },
     {
       "from": "queued",
@@ -326,33 +269,28 @@
     },
     {
       "from": "pr_ci",
-      "to": "needs_human",
+      "to": "owner_call",
       "label": "verdict needs-human"
     },
     {
-      "from": "needs_human",
+      "from": "owner_call",
       "to": "handed_off",
       "label": "owner hands off"
     },
     {
-      "from": "needs_human",
+      "from": "owner_call",
       "to": "building",
-      "label": "owner asks a change"
+      "label": "owner answers"
     },
     {
       "from": "building",
-      "to": "blocked",
+      "to": "owner_call",
       "label": "verdict blocked"
     },
     {
       "from": "building",
       "to": "partial",
       "label": "verdict partial"
-    },
-    {
-      "from": "blocked",
-      "to": "building",
-      "label": "owner unblocks"
     },
     {
       "from": "partial",
@@ -366,18 +304,13 @@
     },
     {
       "from": "gating",
-      "to": "building",
+      "to": "updating_pr",
       "label": "sendback"
     },
     {
-      "from": "gating",
-      "to": "updating_pr",
-      "label": "conflict or overlap"
-    },
-    {
       "from": "updating_pr",
-      "to": "gating",
-      "label": "pushed, re-gate"
+      "to": "handed_off",
+      "label": "fixed, handoff again"
     },
     {
       "from": "gating",
@@ -391,13 +324,8 @@
     },
     {
       "from": "gating",
-      "to": "merged_deployed",
-      "label": "merge and deploy"
-    },
-    {
-      "from": "merged_deployed",
       "to": "closed",
-      "label": "close"
+      "label": "merge, deploy, close"
     },
     {
       "from": "closed",

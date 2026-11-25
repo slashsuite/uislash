@@ -17,9 +17,17 @@ tasks:
     deps: ["core:build"]
   # Every task reads core's source through its `development` export condition, so core's src is an
   # input of each.
+  # stateMachineLayout.test.ts lays out Storybook's role machine fixture, so typecheck, lint and test
+  # read that file too.
   typecheck:
     command: "bun run typecheck"
-    inputs: ["**/*", "!docs/*.json", "/packages/core/src/**/*"]
+    inputs:
+      [
+        "**/*",
+        "!docs/*.json",
+        "/packages/core/src/**/*",
+        "/apps/storybook/src/role-state-machine.json",
+      ]
   lint:
     command: "bun run lint"
     # The testing config this project's .oxlintrc.json extends: another project's files.
@@ -29,9 +37,15 @@ tasks:
       - "/packages/oxlint-testing/plugin.js"
       - "/packages/oxlint-testing/rules/**/*"
       - "/packages/core/src/**/*"
+      - "/apps/storybook/src/role-state-machine.json"
   test:
     command: "bun run test"
-    inputs: ["**/*", "!docs/**/*", "!agent-docs/**/*", "/packages/core/src/**/*"]
+    inputs:
+      - "**/*"
+      - "!docs/**/*"
+      - "!agent-docs/**/*"
+      - "/packages/core/src/**/*"
+      - "/apps/storybook/src/role-state-machine.json"
   # Never cached: it reads tools/docs, the docs data, the examples and the themes, too many sources
   # to list as inputs, and takes seconds.
   agent-docs:

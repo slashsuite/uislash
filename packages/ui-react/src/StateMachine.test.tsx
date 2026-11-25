@@ -16,7 +16,7 @@ import {
   TAG_GAP,
   TAG_ROW,
 } from "./stateMachineDots.js";
-import { guessNode } from "./useFlowLayout.js";
+import { contentKey, uniformSizes } from "./useFlowLayout.js";
 
 const states: StateMachineState[] = [
   { id: "draft", label: "Draft", kind: "initial", owner: "writer" },
@@ -35,17 +35,27 @@ const machine = (items: StateMachineItem[] = []) => (
   <StateMachine label="Articles" states={states} transitions={transitions} items={items} />
 );
 
-/** Where a one-line box's first dot row starts, from the box's top, in its guessed (server) layout. */
-function firstDotTop(n: number, open: boolean): number {
+/**
+ * Where a box's first dot row starts, from the box's top, in its guessed (server) layout, in a
+ * machine whose other box is labelled `other` (by default as short as its own).
+ */
+function firstDotTop(n: number, open: boolean, other = "Done"): number {
   const slots = slotsFor(n, open);
-  const size = guessNode({
-    id: "queued",
-    label: "Queued",
-    content: "tags and dots",
-    contentSize: boxContentSize(slots),
-  });
+  const box = { label: "Queued", content: "tags and dots", contentSize: boxContentSize(slots) };
+  const sizes = uniformSizes(
+    [
+      { id: "queued", ...box },
+      { id: "other", ...box, label: other, contentSize: boxContentSize(slotsFor(0, false)) },
+    ],
+    {},
+  );
+  const size = sizes.get("queued") ?? { width: 0, height: 0 };
   return slotAt({ id: "queued", x: 0, y: 0, ...size }, 0, slots).y - SLOT_H / 2;
 }
+
+/** Each box's height, in `nodes` order. */
+const heights = (sizes: Map<string, { height: number }>) =>
+  [...sizes.values()].map((size) => size.height);
 
 describe("StateMachine", () => {
   it("draws every state and every transition", () => {
@@ -126,26 +136,27 @@ describe("StateMachine", () => {
     expect(dot.hasAttribute("data-hc-sm-arrive")).toBe(false);
   });
 
-  it("shows nine dots in a box, then eight and a +N that shows the rest", async () => {
+  it("shows six dots in a box, then five and a +N that shows the rest", async () => {
     const items = Array.from({ length: 12 }, (_, i) => ({
       id: `B-${i}`,
       label: `Build ${i}`,
       state: "draft",
     }));
     render(machine(items));
-    expect(screen.getAllByRole("img", { name: /, in Draft$/ })).toHaveLength(8);
-    await user().click(screen.getByRole("button", { name: "Show 4 more in Draft" }));
+    expect(screen.getAllByRole("img", { name: /, in Draft$/ })).toHaveLength(5);
+    await user().click(screen.getByRole("button", { name: "Show 7 more in Draft" }));
     expect(screen.getAllByRole("img", { name: /, in Draft$/ })).toHaveLength(12);
     await user().click(screen.getByRole("button", { name: "Show fewer in Draft" }));
-    expect(screen.getAllByRole("img", { name: /, in Draft$/ })).toHaveLength(8);
+    expect(screen.getAllByRole("img", { name: /, in Draft$/ })).toHaveLength(5);
   });
 
-  it("reserves the same dot room in a box at 0, 1, 9 and 12 items", () => {
+  it("reserves the same two rows of dot room in a box at 0, 1, 6 and 12 items", () => {
     // A box's size is its label, its tag row and this room; none of it may follow the count, or
     // the diagram moves when an item arrives.
     const empty = dotArea(slotsFor(0, false));
-    for (const n of [1, 9, 12]) expect(dotArea(slotsFor(n, false)), `${n} items`).toEqual(empty);
-    // Opened past nine, a box grows to show every item.
+    expect(empty.height).toBe(2 * SLOT_H);
+    for (const n of [1, 6, 12]) expect(dotArea(slotsFor(n, false)), `${n} items`).toEqual(empty);
+    // Opened past six, a box grows to show every item.
     expect(dotArea(slotsFor(12, true)).height).toBeGreaterThan(empty.height);
   });
 
@@ -154,8 +165,32 @@ describe("StateMachine", () => {
     // the guess must hold the tag row: from the box's top, its border and padding, the label
     // line, the gap to the content, the tags and the gap under them all come before a dot.
     const tagsEnd = 9 + 20 + 8 + TAG_ROW + TAG_GAP;
-    for (const n of [0, 1, 9, 12]) expect(firstDotTop(n, false), `${n} items`).toBe(tagsEnd);
+    for (const n of [0, 1, 6, 12]) expect(firstDotTop(n, false), `${n} items`).toBe(tagsEnd);
     expect(firstDotTop(12, true), "12 items, open").toBe(tagsEnd);
+  });
+
+  it("makes every box as tall as the longest label makes one, its dots still under its tags", () => {
+    // Another box's label wraps to two lines, so this box takes a line's height more; its content
+    // sits at the bottom, so its dots stay the same way under its tags.
+    const long = "Owner's call (verdict blocked or needs-human)";
+    expect(firstDotTop(0, false, long)).toBe(firstDotTop(0, false) + 20);
+  });
+
+  it("makes every box taller when one box's tags wrap to a second row", () => {
+    // A long owner wraps its box's tag row; the box's content is measured, so every box grows by
+    // the row and keeps its dots at its bottom, under its tags.
+    const content = boxContentSize(slotsFor(0, false));
+    const boxes = ["a", "b"].map((id) => ({
+      id,
+      label: id,
+      content: "tags and dots",
+      contentSize: content,
+    }));
+    const wrapped = {
+      [contentKey("b")]: { width: content.width, height: 8 + content.height + TAG_ROW },
+    };
+    const before = heights(uniformSizes(boxes, {}));
+    expect(heights(uniformSizes(boxes, wrapped))).toEqual(before.map((h) => h + TAG_ROW));
   });
 
   it("keeps the tag row in a box with no items, so it is as tall as a box with some", () => {

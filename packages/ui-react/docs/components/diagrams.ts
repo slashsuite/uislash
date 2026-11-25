@@ -54,6 +54,7 @@ export const diagramPages: ComponentPage[] = [
         "Give it `states` (`{ id, label, kind, owner }`), `transitions` (`{ from, to, event }`) and `items` (`{ id, label, state, href }`), plain data with no layout: it is drawn like a `FlowDiagram`.",
         "`kind` says what a state is: `human` for a state waiting on a person (the warn tone), `failed` for an error (danger), `terminal` for done (muted), `initial` for the start. Each is also a tag in words. Leave the rest `normal`.",
         "`owner` is the role or lane that acts in a state, a tag on its box.",
+        "Keep a state's `label` short: every box is drawn one size, so the boxes line up, and a long label wraps inside it and makes every box a line taller.",
         "An item's `id` is its short ref, shown by its dot; its `label` is the full name, its tooltip and what a screen reader says. Give `href` and the dot is a link.",
         "Change an item's `state` and its dot runs along the arrow to its new box; there is nothing to call.",
         "`active` rings the one state that is current, for a machine with one thing in it.",
@@ -66,7 +67,7 @@ export const diagramPages: ComponentPage[] = [
     },
     accessibility: [
       "The drawing is an image named by `label`, with the count of states and transitions; the box round it is a group named by `label`, and takes the keyboard focus so a machine that scrolls can be scrolled with the arrow keys.",
-      "Each dot is named by its item's label and its state (`Fix the login, in Review`), and takes the focus; one with `href` is a link. A box with more than nine shows a `+N` button that shows the rest.",
+      "Each dot is named by its item's label and its state (`Fix the login, in Review`), and takes the focus; one with `href` is a link. A box with more than six shows a `+N` button that shows the rest.",
       "A visually hidden list after it carries every state, its tags and the transitions out of it, as `FlowDiagram`'s does.",
       "With reduced motion a dot moves to its new state at once, with no run.",
     ],

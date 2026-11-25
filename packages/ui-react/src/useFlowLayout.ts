@@ -3,6 +3,7 @@ import type { FlowEdge, FlowNode } from "./FlowDiagram.js";
 import {
   type FlowDirection,
   type FlowLayout,
+  type FlowSpacing,
   type LayoutEdge,
   type LayoutNode,
   layoutFlow,
@@ -37,9 +38,13 @@ export type SizedNode = Pick<FlowNode, "id" | "label" | "group" | "content"> & {
   contentSize?: Size | undefined;
 };
 
+/** How many lines a box's label wraps to at `room` wide, guessed from its characters. */
+const guessLines = (label: string, room: number): number =>
+  Math.max(1, Math.ceil(Math.ceil(label.length * NODE_CHAR) / room));
+
 export function guessNode(node: SizedNode): Size {
   const text = Math.ceil(node.label.length * NODE_CHAR);
-  const lines = Math.max(1, Math.ceil(text / (NODE_MAX - NODE_PAD_X)));
+  const lines = guessLines(node.label, NODE_MAX - NODE_PAD_X);
   const content = node.contentSize ?? { width: 0, height: CONTENT_GUESS - CONTENT_GAP };
   return {
     width: Math.min(NODE_MAX, Math.max(text, content.width) + NODE_PAD_X),
@@ -55,6 +60,47 @@ const guessLabel = (label: string): Size => ({
 
 export const nodeKey = (id: string): string => `n:${id}`;
 export const edgeKey = (index: number): string => `e:${index}`;
+export const labelKey = (id: string): string => `l:${id}`;
+export const contentKey = (id: string): string => `c:${id}`;
+
+/**
+ * Every box the same size (`uniform`): as wide as the widest content, its label wrapped to that
+ * width, and as tall as the tallest label and the tallest content make a box. A box's label
+ * (`labelKey`) and content (`contentKey`, its gap above included) are measured, not the box: their
+ * width is fixed, so their height does not depend on the layout, and a box drawn at its slot's size
+ * is never read back as its own size. A content measured taller than its `contentSize` (a row of
+ * tags that wraps) makes every box taller.
+ */
+export function uniformSizes(
+  nodes: readonly SizedNode[],
+  measured: Readonly<Record<string, Size>>,
+): Map<string, Size> {
+  const room = Math.max(0, ...nodes.map((n) => n.contentSize?.width ?? 0));
+  const tallest = Math.max(
+    NODE_LINE,
+    ...nodes.map((n) => measured[labelKey(n.id)]?.height ?? guessLines(n.label, room) * NODE_LINE),
+  );
+  const content = Math.max(
+    0,
+    ...nodes.map((n) =>
+      n.content == null
+        ? 0
+        : Math.max(
+            CONTENT_GAP + (n.contentSize?.height ?? 0),
+            measured[contentKey(n.id)]?.height ?? 0,
+          ),
+    ),
+  );
+  return new Map(
+    nodes.map((n) => [
+      n.id,
+      {
+        width: room + NODE_PAD_X,
+        height: tallest + NODE_PAD_Y + (n.content == null ? 0 : content),
+      },
+    ]),
+  );
+}
 
 /**
  * Reads the drawn size of every box and arrow label under `root`, keyed by `data-measure`, in the
@@ -113,29 +159,35 @@ const sameSizes = (a: Record<string, Size>, b: Record<string, Size>): boolean =>
  * Lays the diagram out, first at guessed sizes, then at the sizes the browser draws each box and
  * arrow label at: every render measures them, and lays out again when one's size is not the one
  * the layout used. A box's size never depends on where it is placed, so this settles after one
- * pass; the observer catches a later change (a web font arriving).
+ * pass; the observer catches a later change (a web font arriving). `uniform` draws every box at one
+ * size (`uniformSizes`), and `spacing` sets dagre's gaps (`layoutFlow`'s default when not given).
  */
 export function useFlowLayout(
   nodes: readonly SizedNode[],
   edges: readonly FlowEdge[],
   direction: FlowDirection,
+  options: { uniform?: boolean; spacing?: FlowSpacing } = {},
 ): { canvas: RefObject<HTMLDivElement | null>; drawn: FlowLayout } {
   const canvas = useRef<HTMLDivElement>(null);
   const [measured, setMeasured] = useState<Record<string, Size>>({});
+  const uniform = options.uniform ? uniformSizes(nodes, measured) : undefined;
   const layoutNodes: LayoutNode[] = nodes.map((n) => ({
     id: n.id,
     group: n.group,
-    ...(measured[nodeKey(n.id)] ?? guessNode(n)),
+    ...(uniform?.get(n.id) ?? measured[nodeKey(n.id)] ?? guessNode(n)),
   }));
   const layoutEdges: LayoutEdge[] = edges.map((e, index) => ({
     from: e.from,
     to: e.to,
     label: e.label ? (measured[edgeKey(index)] ?? guessLabel(e.label)) : undefined,
   }));
-  const key = JSON.stringify([direction, layoutNodes, layoutEdges]);
+  const key = JSON.stringify([direction, options.spacing, layoutNodes, layoutEdges]);
   // The key holds every input the layout reads, so the layout reruns only when one changes.
-  // oxlint-disable-next-line react-hooks/exhaustive-deps -- keyed on the serialised input above
-  const drawn = useMemo(() => layoutFlow(layoutNodes, layoutEdges, direction), [key]);
+  const drawn = useMemo(
+    () => layoutFlow(layoutNodes, layoutEdges, direction, options.spacing),
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- keyed on the serialised input above
+    [key],
+  );
 
   useLayoutEffect(() => {
     const root = canvas.current;
