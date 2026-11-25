@@ -217,7 +217,7 @@
   "IconName": {
     "name": "IconName",
     "description": "The names of the icon set: feature ideas, then UI glyphs, then the ideas the docs sections stand for.",
-    "definition": "\"baseline\" | \"diff\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"search\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"alert\" | \"plus\" | \"minus\" | \"more\" | \"grid\" | \"window\" | \"type\" | \"card\" | \"pointer\" | \"field\" | \"table\" | \"compass\" | \"page\" | \"briefcase\""
+    "definition": "\"baseline\" | \"diff\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"search\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"alert\" | \"plus\" | \"minus\" | \"more\" | \"grid\" | \"window\" | \"type\" | \"card\" | \"pointer\" | \"field\" | \"table\" | \"compass\" | \"page\" | \"briefcase\" | \"cart\" | \"pause\" | \"play\""
   },
   "ImageAspect": {
     "name": "ImageAspect",
@@ -268,6 +268,11 @@
     "name": "PillTone",
     "description": "A Pill's tones: the five meanings, and `accent` for a category that is none of them.",
     "definition": "Tone | \"accent\""
+  },
+  "ProductTileStatus": {
+    "name": "ProductTileStatus",
+    "description": "What a tile's corner says: the thing is on sale, or there are none left.",
+    "definition": "\"sale\" | \"sold-out\""
   },
   "RegionRect": {
     "name": "RegionRect",

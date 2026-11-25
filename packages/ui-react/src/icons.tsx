@@ -40,6 +40,9 @@ const NAMES = [
   "compass",
   "page",
   "briefcase",
+  "cart",
+  "pause",
+  "play",
 ] as const;
 
 /** The names of the icon set: feature ideas, then UI glyphs, then the ideas the docs sections stand for. */
@@ -229,6 +232,17 @@ const GLYPHS: Record<IconName, ReactNode> = {
       <path d="M8.5 7.5V6a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v1.5M3 13h18M12 12v2.5" />
     </>
   ),
+  /** A shopping bag: what a visitor has picked to buy (the cart). */
+  cart: (
+    <>
+      <path d="M5.5 8h13l-1 11.5a1.5 1.5 0 0 1-1.5 1.5H8a1.5 1.5 0 0 1-1.5-1.5Z" />
+      <path d="M9 10.5V7a3 3 0 0 1 6 0v3.5" />
+    </>
+  ),
+  /** Stop a moving thing for now: two upright bars. */
+  pause: <path d="M9 6v12M15 6v12" />,
+  /** Start a moving thing: a triangle pointing forward. */
+  play: <path d="M8 5.5v13l10-6.5Z" />,
 };
 
 /** The icon `name` as an `<svg>`: the set's one grid, stroke, caps and joins, drawn in `currentColor`. */

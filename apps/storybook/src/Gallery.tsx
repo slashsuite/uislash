@@ -27,6 +27,7 @@ import {
 } from "@slashsuite/ui-react";
 import { GalleryBars } from "./GalleryBars";
 import { GalleryMedia } from "./GalleryMedia";
+import { GalleryShop } from "./GalleryShop";
 import { GalleryControls } from "./GalleryControls";
 import { GalleryButtons } from "./GalleryButtons";
 import { GalleryBottomSheet } from "./GalleryBottomSheet";
@@ -294,6 +295,7 @@ export const gallerySections: GallerySection[] = [
       </>
     ),
   },
+  { id: "marketing-and-shop", title: "Marketing and shop", render: () => <GalleryShop /> },
   { id: "page-layouts", title: "Page layouts", render: () => <GalleryPages /> },
   { id: "page-grids", title: "Grids and sidebars", render: () => <GalleryGridPages /> },
   { id: "page-bleed", title: "Full-bleed pages", render: () => <GalleryBleedPages /> },

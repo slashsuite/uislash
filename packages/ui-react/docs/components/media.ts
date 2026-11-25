@@ -140,6 +140,7 @@ export const mediaPages: ComponentPage[] = [
       { slug: "image", when: "The picture is only shown, with no label, click or remove." },
       { slug: "video", when: "The video plays in the page: the player." },
       { slug: "lightbox", when: "One photo or video opens over the page, at full size." },
+      { slug: "product-tile", when: "The tile is a thing for sale, with its name and price." },
     ],
     pairs: ["MediaTile/Viewer"],
     usage: {

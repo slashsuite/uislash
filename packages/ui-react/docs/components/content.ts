@@ -1,6 +1,7 @@
 import { chatPages } from "./chat";
 import { mediaPages } from "./media";
 import { outlineRegionPage } from "./outlineRegion";
+import { shopPages } from "./shop";
 import type { ComponentSection } from "./types";
 
 export const content: ComponentSection = {
@@ -271,6 +272,7 @@ export const content: ComponentSection = {
       types: ["KeyValueAlign"],
     },
     ...mediaPages,
+    ...shopPages,
     ...chatPages,
     outlineRegionPage,
   ],

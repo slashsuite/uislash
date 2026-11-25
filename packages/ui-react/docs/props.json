@@ -555,7 +555,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"alert\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"alert\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\" | \"cart\" | \"pause\" | \"play\"",
         "required": false,
         "description": "An icon from the `Icon` set before the label, decorative, at the button's size.",
         "native": false
@@ -663,7 +663,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"alert\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"alert\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\" | \"cart\" | \"pause\" | \"play\"",
         "required": false,
         "description": "One of the library's icons, at the start of the box beside the text.",
         "native": false
@@ -873,7 +873,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"alert\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"alert\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\" | \"cart\" | \"pause\" | \"play\"",
         "required": false,
         "description": "One of the library's icons, drawn at feature size in the accent colour above the title: the\nmark of a feature card. Ignored with `bar` and `flush`.\n\nPick it by the idea it stands for.",
         "native": false
@@ -1060,6 +1060,63 @@
         "type": "string",
         "required": false,
         "description": "The root element's `id`: an anchor, or the target of a `for` or an `aria-describedby`.",
+        "native": false
+      }
+    ]
+  },
+  "CartButton": {
+    "name": "CartButton",
+    "description": "The header's cart: the bag icon, how many things are in it and, with `total`, what they come to.\nIt is one ghost button that opens the cart (a `Drawer`), so pass `aria-expanded` and\n`aria-controls` with the drawer's state; with `href` it is a link to the cart page instead. A\nscreen reader hears it as \"Cart, 2 items, R480\": the label, the count in words and the total.\nThe count is drawn whatever it is, `0` included, so the header does not shift as things go in.",
+    "props": [
+      {
+        "name": "count",
+        "type": "number",
+        "required": true,
+        "description": "How many things are in the cart; `0` is shown.",
+        "native": false
+      },
+      {
+        "name": "href",
+        "type": "string",
+        "required": false,
+        "description": "The cart's own page, in place of a drawer; an in-app path goes through `LinkProvider`.",
+        "native": false
+      },
+      {
+        "name": "id",
+        "type": "string",
+        "required": false,
+        "description": "The root element's `id`: an anchor, or the target of a `for` or an `aria-describedby`.",
+        "native": false
+      },
+      {
+        "name": "itemsLabel",
+        "type": "((count: number) => string)",
+        "required": false,
+        "default": "(count: number): string => (count === 1 ? \"1 item\" : `${count} items`)",
+        "description": "The count in words, for a screen reader, in an app's own language.",
+        "native": false
+      },
+      {
+        "name": "label",
+        "type": "string",
+        "required": false,
+        "default": "Cart",
+        "description": "The button's name before the count.",
+        "native": false
+      },
+      {
+        "name": "onClick",
+        "type": "MouseEventHandler<HTMLButtonElement>",
+        "required": false,
+        "description": "Opens the cart; pass `aria-expanded` and `aria-controls` for the drawer it opens.",
+        "native": false
+      },
+      {
+        "name": "total",
+        "type": "string",
+        "required": false,
+        "description": "What they come to, formatted by the app (\"R480\"). Left out, only the count shows.",
         "native": false
       }
     ]
@@ -2944,7 +3001,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"alert\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"alert\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\" | \"cart\" | \"pause\" | \"play\"",
         "required": false,
         "description": "One of the library's icons, at feature size in the muted ink above the title.",
         "native": false
@@ -3731,7 +3788,7 @@
       },
       {
         "name": "name",
-        "type": "\"page\" | \"grid\" | \"search\" | \"alert\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"alert\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\" | \"cart\" | \"pause\" | \"play\"",
         "required": false,
         "description": "One of the library's icons, named for the idea it stands for.",
         "native": false
@@ -3787,7 +3844,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"alert\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"alert\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\" | \"cart\" | \"pause\" | \"play\"",
         "required": true,
         "description": "The one icon it holds, from the `Icon` set, at the button's size.",
         "native": false
@@ -3976,7 +4033,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"alert\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"alert\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\" | \"cart\" | \"pause\" | \"play\"",
         "required": false,
         "description": "A leading icon inside the field, by name (`search`). Not with `prefix`.",
         "native": false
@@ -5649,7 +5706,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"alert\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"alert\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\" | \"cart\" | \"pause\" | \"play\"",
         "required": false,
         "description": "Makes the trigger a ghost square button holding this glyph, named by `label` (shown as its\ntooltip). Without it the trigger is an outline `Button` reading `label`, with a chevron.",
         "native": false
@@ -5674,6 +5731,142 @@
         "required": false,
         "default": "md",
         "description": "The trigger's height, the same steps as `IconButton` and `Button`: `sm` inside a row or a card\nheader. The panel does not change with it.",
+        "native": false
+      }
+    ]
+  },
+  "Price": {
+    "name": "Price",
+    "description": "A price as the page already formatted it (\"R52\"), in tabular figures so a column of prices lines\nup. With `was` the old price follows it struck through, and a screen reader hears \"R52, was R65\",\nsince a strike says nothing out loud. It formats nothing: the app owns the currency and the\nlocale. While `loading` with no `value` yet it is a bone of its size.",
+    "props": [
+      {
+        "name": "id",
+        "type": "string",
+        "required": false,
+        "description": "The root element's `id`: an anchor, or the target of a `for` or an `aria-describedby`.",
+        "native": false
+      },
+      {
+        "name": "loading",
+        "type": "boolean",
+        "required": false,
+        "description": "The data is not here yet: an empty slot draws a bone of its shape, a filled one draws as usual.\nLeft out, the part takes the nearest loading layout's or part's; `false` opts it out inside one.",
+        "native": false
+      },
+      {
+        "name": "loadingLabel",
+        "type": "string",
+        "required": false,
+        "default": "Loading",
+        "description": "What a screen reader hears while this part is loading, when its own `loading` is set.",
+        "native": false
+      },
+      {
+        "name": "size",
+        "type": "\"sm\" | \"md\" | \"lg\"",
+        "required": false,
+        "default": "md",
+        "description": "`sm` for a dense row, `md` for a tile, `lg` for a product's own page.",
+        "native": false
+      },
+      {
+        "name": "value",
+        "type": "string | undefined",
+        "required": true,
+        "description": "The price, formatted for the reader (\"R52\", \"€12.50\"). While `loading`, none yet is a bone.",
+        "native": false
+      },
+      {
+        "name": "was",
+        "type": "string",
+        "required": false,
+        "description": "The price before a sale, struck through after `value`.",
+        "native": false
+      }
+    ]
+  },
+  "ProductTile": {
+    "name": "ProductTile",
+    "description": "One thing for sale in a shop's grid: its picture, its name and its `Price` (with the was price\non a sale), and a corner word for `sale` or `sold-out`. The whole tile is one link to the\nproduct's page, named by what it says: \"Linen shirt, R52, was R65, Sale\". The picture is\ndecoration, since the name says what it is. It fills its column, so a set of them goes in a\n`CardGrid`. While `loading` the picture, the name and the price that are not here yet are bones.",
+    "props": [
+      {
+        "name": "aspect",
+        "type": "\"square\" | \"3:4\"",
+        "required": false,
+        "default": "square",
+        "description": "The picture's shape: `square` for most things, `3:4` for clothes on a person.",
+        "native": false
+      },
+      {
+        "name": "href",
+        "type": "string",
+        "required": true,
+        "description": "The product's page; an in-app path goes through `LinkProvider`.",
+        "native": false
+      },
+      {
+        "name": "id",
+        "type": "string",
+        "required": false,
+        "description": "The root element's `id`: an anchor, or the target of a `for` or an `aria-describedby`.",
+        "native": false
+      },
+      {
+        "name": "loading",
+        "type": "boolean",
+        "required": false,
+        "description": "The data is not here yet: an empty slot draws a bone of its shape, a filled one draws as usual.\nLeft out, the part takes the nearest loading layout's or part's; `false` opts it out inside one.",
+        "native": false
+      },
+      {
+        "name": "loadingLabel",
+        "type": "string",
+        "required": false,
+        "default": "Loading",
+        "description": "What a screen reader hears while this part is loading, when its own `loading` is set.",
+        "native": false
+      },
+      {
+        "name": "name",
+        "type": "string | undefined",
+        "required": true,
+        "description": "The product's name, the tile's first words. While `loading`, none yet is a bone.",
+        "native": false
+      },
+      {
+        "name": "price",
+        "type": "string | undefined",
+        "required": true,
+        "description": "The price, formatted by the app (\"R52\"), as `Price`'s `value`.",
+        "native": false
+      },
+      {
+        "name": "src",
+        "type": "string",
+        "required": false,
+        "description": "The product's picture. Left out, or if it fails to load, the picture's placeholder shows.",
+        "native": false
+      },
+      {
+        "name": "status",
+        "type": "\"sale\" | \"sold-out\"",
+        "required": false,
+        "description": "A word on the picture's top-left corner: `sale`, or `sold-out` when there are none left.",
+        "native": false
+      },
+      {
+        "name": "statusLabel",
+        "type": "string",
+        "required": false,
+        "default": "Sale, or Sold out",
+        "description": "The corner's word, for an app in another language.",
+        "native": false
+      },
+      {
+        "name": "was",
+        "type": "string",
+        "required": false,
+        "description": "The price before the sale, struck through after `price`.",
         "native": false
       }
     ]
@@ -8126,7 +8319,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"alert\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"alert\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\" | \"cart\" | \"pause\" | \"play\"",
         "required": false,
         "description": "An icon after the words (`chevron-right`, say), at one size on the baseline; it is decorative and hidden from assistive tech.",
         "native": false
