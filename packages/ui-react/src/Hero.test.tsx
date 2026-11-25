@@ -2,7 +2,7 @@
 import { renderToStaticMarkup } from "react-dom/server"; // markup read as data, below
 import { describe, expect, it } from "vitest";
 import { Hero } from "./Hero.js";
-import { follows, render, screen, within } from "./render.harness.js";
+import { follows, render, screen, user, within } from "./render.harness.js";
 import { Lead } from "./typography.js";
 
 const hero = (
@@ -51,5 +51,36 @@ describe("Hero markup, read as data", () => {
 
   it("writes its stylesheet with no character a server renderer may escape", () => {
     expect(stylesheet()).not.toMatch(/[<>&"']/);
+  });
+});
+
+describe("Hero pause", () => {
+  it("is a checkbox that holds the glow still, named for an app's own language", async () => {
+    render(<Hero title="Title" pauseLabel="Stop die beweging" />);
+    const pause = screen.getByRole("checkbox", { name: "Stop die beweging" });
+    expect(pause).toHaveProperty("checked", false);
+    await user().click(pause);
+    expect(pause).toHaveProperty("checked", true);
+  });
+
+  it("pauses the ribbons while checked, and hides itself under reduced motion, in CSS", () => {
+    expect(stylesheet()).toContain(
+      "[data-hero-text]:has([data-hero-pause] input:checked) [data-hero-glow] span{animation-play-state:paused}",
+    );
+    expect(stylesheet()).toContain(
+      "@media (prefers-reduced-motion:reduce){[data-hero-pause]{display:none}}",
+    );
+  });
+});
+
+describe("Hero media", () => {
+  it("puts the picture after the words", () => {
+    render(<Hero title="Title" media={<img alt="The product" src="/p.png" />} />);
+    expect(
+      follows(
+        screen.getByRole("heading", { level: 1 }),
+        screen.getByRole("img", { name: "The product" }),
+      ),
+    ).toBeTruthy();
   });
 });

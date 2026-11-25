@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import {
+  ArticleLayout,
   Button,
   Card,
   CardGrid,
@@ -95,7 +96,7 @@ export function GalleryBleedPages() {
   );
 }
 
-/** The page sequence, then ProseLayout in its two widths. */
+/** The page sequence, then ProseLayout in its two widths, then ArticleLayout. */
 export function GalleryPages() {
   return (
     <div className="flex flex-col gap-6">
@@ -107,6 +108,22 @@ export function GalleryPages() {
         <ProseLayout width="wide" title="Pricing" description="Pay for what you review.">
           <StatTiles columns={3} />
         </ProseLayout>
+      </PageBox>
+      <PageBox label="ArticleLayout">
+        <ArticleLayout
+          title="Brewing a pale ale at home"
+          description="Everything you need for a first brew."
+          author="Sam Mokoena"
+          date="12 November 2026"
+          readingTime="6 min read"
+          related={["Stout in a weekend", "Your first lager"].map((title) => (
+            <Card key={title} title={title}>
+              <Text>A recipe and the kit that brews it.</Text>
+            </Card>
+          ))}
+        >
+          <Text>Heat the water to 67°C, stir in the grain and hold it there for an hour.</Text>
+        </ArticleLayout>
       </PageBox>
     </div>
   );

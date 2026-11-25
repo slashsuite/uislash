@@ -89,7 +89,7 @@ const TOGGLE_OFF: Look = {
 // The count chip: a pill in the button's own text colour (a hairline of `currentColor`), so it reads
 // on every variant and tone and needs no palette entry. The size is a Badge's: rem text and a
 // min-height, so the chip grows with the reader's text size.
-const COUNT =
+export const COUNT =
   "inline-flex min-h-4 min-w-4 items-center justify-center rounded-full border border-current px-1 text-[0.625rem]/[1.4] font-semibold tabular-nums";
 
 /** The label, then the count chip. The comma is for a screen reader only, so the name reads "Splits, 3". */

@@ -179,20 +179,23 @@ export const text: ComponentSection = {
     {
       slug: "markdown",
       name: "Markdown",
-      summary: "A small, safe renderer for a summary written in markdown.",
-      whenToUse: "Text that arrives as markdown, such as an agent's summary, shown on a page.",
+      summary: "A small, safe renderer for a summary or rich text written in markdown.",
+      whenToUse:
+        "Text that arrives as markdown, such as an agent's summary or a CMS article, shown on a page.",
       pairs: ["Markdown/Summary"],
       usage: {
         do: [
-          "Pass the markdown as `md`. It renders `##` as a label heading, `###` as a subheading, lines starting `- ` or `* ` as bullets, `**bold**` and plain paragraphs.",
-          "Nothing else is supported: no `#` title, numbered list, link, code span, table or HTML. Those show as plain text.",
-          "The text becomes React nodes and never HTML, so untrusted text cannot inject markup.",
+          "Pass the markdown as `md`. It renders `##` as a label heading, `###` as a subheading, lines starting `- ` or `* ` as bullets, `1. ` as a numbered list, `**bold**`, `[words](href)` as a `TextLink`, a line that is only `![alt](src)` as an `Image`, a GFM table as a `Table`, and plain paragraphs.",
+          "A table is named by the heading above it; one with no heading is named by `tableLabel` (Table), so pass it in an app in another language.",
+          "Nothing else is supported: no `#` title, code span, quote or HTML. Those show as plain text.",
+          "The text becomes React nodes and never HTML, so untrusted text cannot inject markup. A link whose address is not a web, mail or phone address or a path on the site (a `javascript:` one) keeps its words and loses the link; a picture whose address is not a web, site or data-image one shows the placeholder.",
           "Text you write yourself is not markdown: use `Text`, `BulletList` and the heading components.",
         ],
       },
       accessibility: [
-        "`##` renders an `h2` and `###` an `h3`, bullets render a `ul` with `li`s, bold a `strong` and a paragraph a `p`.",
+        "`##` renders an `h2` and `###` an `h3`, bullets render a `ul` and numbers an `ol` with `li`s, bold a `strong` and a paragraph a `p`.",
         "The headings start at `h2`, so the page needs its own `h1` above.",
+        "A link is underlined, since it sits in running text. A picture is named by its alt text, so write one.",
         "`aria-*` and `data-*` go on the root.",
       ],
       api: ["Markdown"],

@@ -89,8 +89,10 @@ export const layout: ComponentSection = {
         do: [
           "One `Hero` per page, and only on the landing page: it is the page's top block. Inner pages use `PageHeader`.",
           "Pass `title` and, if it has one, `overline`; put a `Lead` in `children`, then the page's first actions in a `Cluster` if there are any: a primary `Button` and an `outline` or `ghost` one in the default tone, or a `TextLink`. That is the text the theme's contrast check holds over the glow.",
-          "The glow is always on and takes no prop. Its colours and its strength are the theme's, so a paper theme keeps it faint.",
+          "The glow is always on. Its colours and its strength are the theme's, so a paper theme keeps it faint.",
           "It caps itself at a reading measure at the parent's start edge, and the glow is clipped to it, so a phone never scrolls sideways. Put it as the first child of the page's `Stack`.",
+          'A product page passes its picture as `media`: an `Image` at `width="full"`, beside the words from `md` up and under them on a phone.',
+          'A landing page with no picture and one or two actions may set `align="center"`, with its actions\' `Cluster` at `justify="center"`.',
         ],
         dont: [
           "Never build the block from an `Overline`, a `Display` and a `Lead` by hand: the hand-built one has no glow and drifts from the one top block.",
@@ -100,6 +102,7 @@ export const layout: ComponentSection = {
         "The title is the page's `<h1>`, in a `<header>` with the overline.",
         'The glow is `aria-hidden="true"` and takes no pointer; the text sits above it and holds AA contrast over it in every theme.',
         "The glow drifts only under `prefers-reduced-motion: no-preference`; with reduced motion it stands still. It is plain markup and CSS, so it renders on the server and needs no script.",
+        "The drift never ends on its own, so a checkbox in the hero's top corner, named by `pauseLabel` (Pause the background motion), holds it still. It is a native checkbox, reached by Tab and toggled by Space, and is not drawn under reduced motion.",
       ],
       api: ["Hero"],
     },

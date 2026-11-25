@@ -31,6 +31,7 @@ export const Choices = slice("choices");
 export const Navigation = slice("navigation");
 export const Details = slice("details");
 export const Layout = slice("layout");
+export const MarketingAndShop = slice("marketing-and-shop");
 export const PageLayouts = slice("page-layouts");
 export const PageGrids = slice("page-grids");
 export const PageBleed = slice("page-bleed");

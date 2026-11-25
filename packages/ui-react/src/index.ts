@@ -54,6 +54,7 @@ export {
   ListLayout,
   ProseLayout,
 } from "./PageLayouts.js";
+export { ArticleLayout } from "./ArticleLayout.js";
 export { SidebarLayout } from "./SidebarLayout.js";
 export {
   DocsLayout,
@@ -186,6 +187,11 @@ export { EmbedFrame } from "./EmbedFrame.js";
 export { ColourSwatch } from "./ColourSwatch.js";
 export { Image, type ImageAspect, type ImageWidth } from "./Image.js";
 export { MediaTile } from "./MediaTile.js";
+export { Price } from "./Price.js";
+export { ProductTile, type ProductTileStatus } from "./ProductTile.js";
+export { CartButton } from "./CartButton.js";
+export { PromoBanner } from "./PromoBanner.js";
+export { CallToAction } from "./CallToAction.js";
 export { ScrollStrip } from "./ScrollStrip.js";
 export { TextLink, type TextLinkSize, type TextLinkTone } from "./TextLink.js";
 export { TableOfContents, type TableOfContentsItem } from "./TableOfContents.js";
