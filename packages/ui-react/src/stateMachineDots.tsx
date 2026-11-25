@@ -104,13 +104,43 @@ export function slotsFor(count: number, open: boolean): number {
   return open ? count + 1 : LIMIT;
 }
 
-/** Where slot `i` of `slots` sits in `box`: its left edge and its vertical centre. */
-function slotAt(box: FlowNodeBox, i: number, slots: number): { left: number; y: number } {
-  const cols = Math.min(COLS, slots);
-  const rows = Math.ceil(slots / COLS);
-  const top = box.y + box.height - BOX_INSET - rows * SLOT_H;
+/**
+ * The rows a box reserves for its dots, whatever its count: the nine it shows (the `+N` included),
+ * or the rows of an open box's full list. A box with few or no items reserves the same rows, so
+ * its size does not depend on how many items it holds.
+ */
+export function rowsFor(slots: number): number {
+  return Math.ceil(Math.max(LIMIT, slots) / COLS);
+}
+
+/**
+ * The room a box reserves under its tags for `slots` dots: the full grid's width and `rowsFor`'s
+ * height, so it is the same at 0, 1, 9 or 12 items (closed) and grows only when a box is opened.
+ */
+export function dotArea(slots: number): { width: number; height: number } {
+  return { width: COLS * SLOT_W, height: rowsFor(slots) * SLOT_H };
+}
+
+/** A box's tag row: one small pill's height. */
+export const TAG_ROW = 20;
+/** The gap between the tag row and the dot area (`mt-1`). */
+export const TAG_GAP = 4;
+
+/**
+ * The size of what a box holds under its label: its tag row, then its dot area. The layout takes
+ * it before the box can be measured (a server render), so the dots, placed up from the box's
+ * bottom, already sit under the tags and never on them.
+ */
+export function boxContentSize(slots: number): { width: number; height: number } {
+  const area = dotArea(slots);
+  return { width: area.width, height: TAG_ROW + TAG_GAP + area.height };
+}
+
+/** Where slot `i` of `slots` sits in `box`: its left edge and its vertical centre, on the box's fixed grid. */
+export function slotAt(box: FlowNodeBox, i: number, slots: number): { left: number; y: number } {
+  const top = box.y + box.height - BOX_INSET - rowsFor(slots) * SLOT_H;
   return {
-    left: box.x + box.width / 2 - (cols * SLOT_W) / 2 + (i % COLS) * SLOT_W,
+    left: box.x + box.width / 2 - (COLS * SLOT_W) / 2 + (i % COLS) * SLOT_W,
     y: top + Math.floor(i / COLS) * SLOT_H + SLOT_H / 2,
   };
 }

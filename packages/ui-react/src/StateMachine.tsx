@@ -4,16 +4,15 @@ import { Pill, type PillTone } from "./Pill.js";
 import type { Passthrough } from "./props.js";
 import { Bone, BusyLabel, busy, type LoadingProps, useLoading } from "./skeleton.js";
 import {
-  COLS,
+  boxContentSize,
+  dotArea,
   dotLayer,
   placeOf,
-  SLOT_H,
-  SLOT_W,
   slotsFor,
   UNPLACED,
   useMoves,
 } from "./stateMachineDots.js";
-import { useFlowLayout } from "./useFlowLayout.js";
+import { type SizedNode, useFlowLayout } from "./useFlowLayout.js";
 
 /**
  * What a state is: `initial` (where things start), `normal`, `human` (waiting on a person),
@@ -67,13 +66,16 @@ const KIND_TAG: Record<StateMachineKind, { text: string; tone: PillTone } | null
   failed: { text: "failed", tone: "danger" },
 };
 
-/** A box's tags: what kind of state it is, who owns it, and how many items it holds. */
+/**
+ * A box's tags: what kind of state it is, who owns it, and how many items it holds. The row is
+ * always there: a box with no items keeps an invisible count tag in it, so an empty box and a full
+ * one are the same height.
+ */
 function boxTags(
   tag: { text: string; tone: PillTone } | null,
   owner: string | undefined,
   count: number,
 ): ReactNode {
-  if (!tag && !owner && count === 0) return null;
   return (
     <span className="flex flex-wrap items-center justify-center gap-1">
       {tag && (
@@ -82,31 +84,31 @@ function boxTags(
         </Pill>
       )}
       {owner && <Pill size="sm">{owner}</Pill>}
-      {count > 0 && (
+      {count > 0 ? (
         <Pill size="sm" tone="accent" dot>
           {count === 1 ? "1 item" : `${count} items`}
         </Pill>
+      ) : (
+        <span aria-hidden="true" className="flex invisible">
+          <Pill size="sm" tone="accent" dot>
+            0 items
+          </Pill>
+        </span>
       )}
     </span>
   );
 }
 
-/** What a box holds under its label: its tags and the room its dots take. */
+/**
+ * What a box holds under its label: its tags, and the dot area it always reserves (the full grid,
+ * even empty), so a box keeps its size whatever its item count.
+ */
 function boxContent(state: StateMachineState | null, count: number, slots: number): ReactNode {
   const tags = boxTags(state ? KIND_TAG[state.kind ?? "normal"] : null, state?.owner, count);
-  if (tags === null) return undefined;
-  const cols = Math.min(COLS, slots);
-  const rows = Math.ceil(slots / COLS);
   return (
     <>
       {tags}
-      {slots > 0 && (
-        <span
-          aria-hidden="true"
-          className="mx-auto mt-1 block"
-          style={{ width: cols * SLOT_W, height: rows * SLOT_H }}
-        />
-      )}
+      <span aria-hidden="true" className="mx-auto mt-1 block" style={dotArea(slots)} />
     </>
   );
 }
@@ -130,13 +132,14 @@ function boxesFor(
   states: readonly StateMachineState[],
   inBox: ReadonlyMap<string, readonly StateMachineItem[]>,
   open: ReadonlySet<string>,
-): ViewNode[] {
+): (ViewNode & SizedNode)[] {
   const slots = (id: string) => slotsFor(inBox.get(id)?.length ?? 0, open.has(id));
-  const boxes: ViewNode[] = states.map((s) => ({
+  const boxes: (ViewNode & SizedNode)[] = states.map((s) => ({
     id: s.id,
     label: s.label,
     tone: KIND_TONE[s.kind ?? "normal"],
     content: boxContent(s, inBox.get(s.id)?.length ?? 0, slots(s.id)),
+    contentSize: boxContentSize(slots(s.id)),
   }));
   const unplaced = inBox.get(UNPLACED)?.length ?? 0;
   if (unplaced === 0) return boxes;
@@ -147,6 +150,7 @@ function boxesFor(
       label: "Not in any state",
       tone: "warn",
       content: boxContent(null, unplaced, slots(UNPLACED)),
+      contentSize: boxContentSize(slots(UNPLACED)),
     },
   ];
 }

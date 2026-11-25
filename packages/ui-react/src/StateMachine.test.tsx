@@ -7,6 +7,16 @@ import {
   type StateMachineState,
   type StateMachineTransition,
 } from "./StateMachine.js";
+import {
+  boxContentSize,
+  dotArea,
+  SLOT_H,
+  slotAt,
+  slotsFor,
+  TAG_GAP,
+  TAG_ROW,
+} from "./stateMachineDots.js";
+import { guessNode } from "./useFlowLayout.js";
 
 const states: StateMachineState[] = [
   { id: "draft", label: "Draft", kind: "initial", owner: "writer" },
@@ -24,6 +34,18 @@ const transitions: StateMachineTransition[] = [
 const machine = (items: StateMachineItem[] = []) => (
   <StateMachine label="Articles" states={states} transitions={transitions} items={items} />
 );
+
+/** Where a one-line box's first dot row starts, from the box's top, in its guessed (server) layout. */
+function firstDotTop(n: number, open: boolean): number {
+  const slots = slotsFor(n, open);
+  const size = guessNode({
+    id: "queued",
+    label: "Queued",
+    content: "tags and dots",
+    contentSize: boxContentSize(slots),
+  });
+  return slotAt({ id: "queued", x: 0, y: 0, ...size }, 0, slots).y - SLOT_H / 2;
+}
 
 describe("StateMachine", () => {
   it("draws every state and every transition", () => {
@@ -116,6 +138,37 @@ describe("StateMachine", () => {
     expect(screen.getAllByRole("img", { name: /, in Draft$/ })).toHaveLength(12);
     await user().click(screen.getByRole("button", { name: "Show fewer in Draft" }));
     expect(screen.getAllByRole("img", { name: /, in Draft$/ })).toHaveLength(8);
+  });
+
+  it("reserves the same dot room in a box at 0, 1, 9 and 12 items", () => {
+    // A box's size is its label, its tag row and this room; none of it may follow the count, or
+    // the diagram moves when an item arrives.
+    const empty = dotArea(slotsFor(0, false));
+    for (const n of [1, 9, 12]) expect(dotArea(slotsFor(n, false)), `${n} items`).toEqual(empty);
+    // Opened past nine, a box grows to show every item.
+    expect(dotArea(slotsFor(12, true)).height).toBeGreaterThan(empty.height);
+  });
+
+  it("puts the first row of dots under the tag row before the box is measured, at any count", () => {
+    // A server render lays the boxes out at their guessed size and places the dots from it, so
+    // the guess must hold the tag row: from the box's top, its border and padding, the label
+    // line, the gap to the content, the tags and the gap under them all come before a dot.
+    const tagsEnd = 9 + 20 + 8 + TAG_ROW + TAG_GAP;
+    for (const n of [0, 1, 9, 12]) expect(firstDotTop(n, false), `${n} items`).toBe(tagsEnd);
+    expect(firstDotTop(12, true), "12 items, open").toBe(tagsEnd);
+  });
+
+  it("keeps the tag row in a box with no items, so it is as tall as a box with some", () => {
+    render(
+      <StateMachine
+        label="Queue"
+        states={[{ id: "queued", label: "Queued" }]}
+        transitions={[]}
+        items={[]}
+      />,
+    );
+    // The count tag holds its room, hidden, until an item arrives.
+    expect(screen.getAllByText("0 items")).not.toHaveLength(0);
   });
 
   it("rings the active state", () => {

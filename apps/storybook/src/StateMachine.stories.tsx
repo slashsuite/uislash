@@ -145,5 +145,28 @@ function Moving() {
 
 export const Play: S = { render: () => <Moving /> };
 
+const queued: StateMachineState[] = [
+  { id: "queued", label: "Queued" },
+  { id: "done", label: "Done", kind: "terminal" },
+];
+const finish: StateMachineTransition[] = [{ from: "queued", to: "done", event: "finish" }];
+
+/** Four machines, one queued box each, holding 0, 1, 9 and 12 items: each box keeps its size. */
+export const BoxSizes: S = {
+  render: () => (
+    <div className="flex flex-wrap items-start gap-6">
+      {[0, 1, 9, 12].map((n) => (
+        <StateMachine
+          key={n}
+          label={`${n} items`}
+          states={queued}
+          transitions={finish}
+          items={many(`Q${n}`, n, "queued")}
+        />
+      ))}
+    </div>
+  ),
+};
+
 export const DoKind: S = { render: examples.DoKind };
 export const DontKind: S = { render: examples.DontKind };
