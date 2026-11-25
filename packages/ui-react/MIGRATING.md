@@ -412,7 +412,16 @@ the same thing, and prints a `file:line` for each one a person decides.
 A `FormRowField`'s `htmlFor` stays: it is still required and goes straight onto the `<label>`, so
 the codemod neither removes nor reports it.
 
-## 0.12 to 0.13: date fields follow the locale
+## 0.12 to 0.13: one breaking pass
+
+0.13 breaks in these areas, each in its own section below: dates, forms and fields, the AppShell
+menu, the docs that left the site, the cards and layouts, the table and list drag, the navigation
+and tabs, the overlays, menus and toasts, and the names in "One word for one job". The codemod
+(`--to-0.13`, at the end of this section) makes most of the renames. Nothing else in 0.13 is
+breaking, so an app that compiles against the 0.12 names and runs its tests after these edits is
+ready.
+
+### Date fields follow the locale
 
 `DateField`, `DateRangePicker` and the calendar were always en-GB (DD/MM/YYYY, English month names).
 They now follow the browser's locale: an en-US reader sees 11/29/2026, an en-ZA reader 2026/11/29.
@@ -430,6 +439,65 @@ values are still `CalendarDate`s. TypeScript flags nothing.
 
 New, nothing to change: `DateTimeField` (a `CalendarDateTime`, posted as `YYYY-MM-DDTHH:mm`),
 `toISODateTime`, `fromISODateTime` and the `CalendarDateTime` type.
+
+### Forms: errors keep the hint and are announced once
+
+A field's error now draws under its hint, with an alert icon, where it used to replace the hint. The
+error is announced through one `aria-live="polite"` region per page (or per open dialog), not a
+`role="alert"` on each field. The control names its drawn error in `aria-describedby`. TypeScript
+flags nothing. Check these in your app:
+
+- A test that asks for the `alert` of a field finds nothing. Find the error by its text, or by the
+  control's `aria-describedby`.
+- A field error is polite, so a screen reader waits for a pause. A message that must interrupt is a
+  `Callout tone="danger"`, which is still `role="alert"`.
+- A test that expected the hint to disappear on error now sees both the hint and the error.
+- `FormGrid` and `FormRow` stack by the width they have (a 36rem container query), so a grid in a
+  `Dialog` or a side column stacks.
+- A small choice (`Checkbox`, `Radio`, a `Switch` `sm`) grows its hit area to 44px under a coarse
+  pointer (a finger). A test that clicks by pixel position on a desktop viewport is unaffected.
+
+### Forms: submit, Escape and the search field
+
+- `FieldDialog` and `ChatComposer` no longer disable submit on an empty field. An empty submit marks
+  the field invalid, shows `emptyReason` as its error (`ChatComposer` defaults to "Write a message
+  first.") and keeps focus there. A test that expected a disabled submit submits and reads the error.
+- After a `Dialog` form's `onSubmit` settles (sync, resolved or rejected), focus moves to the first
+  field with `aria-invalid="true"`.
+- In an `Input type="search"` with a value, Escape empties the field and fires `onChange`, and the
+  focus stays. The key does not bubble past the field, so a `Dialog` around it stays open. A caller's
+  `onKeyDown` that calls `preventDefault` stops the clear.
+
+### AppShell's phone menu is a popover
+
+The phone menu is the browser's popover (`popovertarget`), not a `<details>`. The nav and
+`menuControls` render once, inside the panel, and fold into the menu together. From `md` the panel
+draws no box and its parts sit in the header row. The subnav is its own row from `md` and never
+folds; below `md` its phone copy is hidden, so there is one `nav` with that name at every width.
+
+A test or stylesheet that targets the `<details>` menu, or that finds the nav twice (once in the
+header, once in the menu), finds it once now.
+
+### The docs left the site
+
+The hack-cove.com site lives in its own repository. This repo keeps the docs tooling as
+`@slashsuite/docs` (`tools/docs`), and the site's `apps/hack-cove-site` is gone. No package API
+changes. Three things can reach an app:
+
+- An app that imported `apps/hack-cove-site/src/content/ui.ts` imports `packages/ui-react/docs/ui.ts`.
+  Only that file's header comment changed.
+- A caller of the `ui-review.yml` reusable workflow pinned to an older ref keeps the old site build.
+  Move the pin to a ref that has `tools/docs` to build `llms.txt` with `docs:llms`.
+- `ui-review-self.yml` is removed. It reviewed the site as consumer code, and no consumer code is
+  left in this repo.
+
+### Also visible in 0.13, not breaking
+
+- The colour scheme follows the system live when nothing is stored. `ColourSchemeToggle`'s `onChange`
+  gets a second argument, `followsSystem`, and choosing the system's scheme forgets the stored choice.
+  Add `<meta name="color-scheme" content="light dark">` (the README's "Light and dark").
+- `StackedBar` and its `Legend` swatch take a `quiet` tone that draws no fill, for the remainder
+  that matters least.
 
 ### A tab's `controls` is gone: give it its `panel`
 
