@@ -1,15 +1,15 @@
 $schema: "../../.moon/cache/schemas/project.json"
 
 # How Storybook and the docs find the themes. Each task runs the package.json script of its name.
-# Its tests also cover the release workflow's pick script (scripts/releasePick.ts), so the
-# typecheck and the test list that file.
+# Its tests also cover the release workflow's pick script (scripts/releasePick.ts) and the parity
+# line check (scripts/parityLine.ts), so the typecheck and the test list both files.
 tasks:
   typecheck:
     command: "bun run typecheck"
-    inputs: ["**/*", "/scripts/releasePick.ts"]
+    inputs: ["**/*", "/scripts/releasePick.ts", "/scripts/parityLine.ts"]
   lint:
     command: "bun run lint"
     inputs: ["**/*"]
   test:
     command: "bun run test"
-    inputs: ["**/*", "/scripts/releasePick.ts"]
+    inputs: ["**/*", "/scripts/releasePick.ts", "/scripts/parityLine.ts"]

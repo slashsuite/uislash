@@ -75,3 +75,25 @@ jobs:
       - run: bunx playwright install --with-deps chromium
 
       - run: bunx moon run storybook:e2e
+
+  # A pull request that changes a component on one renderer only changes its twin too, or says it
+  # will follow with a "Parity: follow-up <ref>" line in its body (scripts/parityLine.ts; it exits
+  # 8 naming each component out of step). The body reaches the script through the environment,
+  # never through the shell, so nothing in it runs.
+  parity:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: .bun-version
+
+      - run: bun scripts/parityLine.ts
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          PR_BODY: ${{ github.event.pull_request.body }}
