@@ -4335,6 +4335,13 @@
         "native": false
       },
       {
+        "name": "stripe",
+        "type": "\"info\" | \"positive\" | \"warn\" | \"danger\" | \"muted\" | \"accent\"",
+        "required": false,
+        "description": "The row's status, as a stripe on its leading edge in this tone, as a `Table` row's `stripe`. The\ncolour says it to the eye only, so the row's words say it too (a `Pill`, a status in `trailing`).",
+        "native": false
+      },
+      {
         "name": "trailing",
         "type": "ReactNode",
         "required": false,
@@ -4596,7 +4603,7 @@
   },
   "MetaList": {
     "name": "MetaList",
-    "description": "A wrapping row of facts or links in muted small text, joined by a `·`: branch · SHA · date, or a\nfooter's Privacy · Terms · Email. An item is text, a `Code` or a `TextLink`. The separator is\n`aria-hidden` and trails each item but the last, held to its item like a comma, so a wrap leaves\nit at the end of a line and never at the start; `separator` swaps it for a `•` or none. An item never breaks inside itself: the\nrow wraps between items. `mono` sets the whole row in the monospace face, for ids and paths.\nWhile `loading` with no items it draws three word-sized bones.",
+    "description": "A wrapping row of facts or links in muted small text, joined by a `·`: branch · SHA · date, or a\nfooter's Privacy · Terms · Email. An item is text, a `Code` or a `TextLink`. The separator is\n`aria-hidden` and leads every item in a slot of its own; the list starts one slot before its box,\nwhich clips it, so the separator of whichever item starts a line falls outside and no line starts\nor ends with one, at any width. `separator` swaps it for a `•` or none. An item never breaks\ninside itself: the row wraps between items. `mono` sets the whole row in the monospace face, for ids and paths.\nWhile `loading` with no items it draws three word-sized bones.",
     "props": [
       {
         "name": "id",
@@ -6430,7 +6437,7 @@
   },
   "SortableItem": {
     "name": "SortableItem",
-    "description": "One row of a `SortableList`: a grip handle, the title, and an optional meta line under it. A\npointer drags the row itself; the handle (`reorderLabel` and the title, \"Reorder <title>\") is how a keyboard or screen reader\nstarts a move.",
+    "description": "One row of a `SortableList`: a grip handle, the title, and an optional meta line under it. A\npointer drags the row by its handle only (a drag that starts anywhere else on the row is no\ndrag); the handle (`reorderLabel` and the title, \"Reorder <title>\") is also how a keyboard or\nscreen reader starts a move.",
     "props": [
       {
         "name": "children",
@@ -7131,7 +7138,7 @@
   },
   "Table": {
     "name": "Table",
-    "description": "A list of records in a rounded, bordered card that scrolls sideways on a narrow screen. Compose it\nfrom `TableHead`, `TableBody`, `TableFoot`, `TableRow`, `TableHeaderCell` and `TableCell`. `label`\nnames the table for assistive tech and is not drawn. Inside a `Card` it is plain: no card of its\nown (border, fill and shadow), no tinted head strip and no row hover, only the row dividers. A\ncolumn of figures says so once, with `numeric` on its `TableHeaderCell`: its cells then take end\nalignment and tabular figures. `size` is the row padding, and the buttons and pills in the rows follow it\n(`sm` by default); a field keeps its own `size`. Other props (`id`, `data-*`, `aria-*`) go on the `<table>`. While `loading`, a\nbody with no rows draws five rows of bones, one per column, and an empty cell draws a bone; the\ntable keeps its role and its name.",
+    "description": "A list of records in a rounded, bordered card. Compose it\nfrom `TableHead`, `TableBody`, `TableFoot`, `TableRow`, `TableHeaderCell` and `TableCell`. `label`\nnames the table for assistive tech and is not drawn. Inside a `Card` it is plain: no card of its\nown (border, fill and shadow), no tinted head strip and no row hover, only the row dividers. A\ncolumn of figures says so once, with `numeric` on its `TableHeaderCell`: its cells then take end\nalignment and tabular figures. `size` is the row padding, and the buttons and pills in the rows follow it\n(`sm` by default); a field keeps its own `size`. Other props (`id`, `data-*`, `aria-*`) go on the `<table>`. While `loading`, a\nbody with no rows draws five rows of bones, one per column, and an empty cell draws a bone; the\ntable keeps its role and its name. A table that fits its box keeps its head row in view (under\nthe `AppShell` header) while the page scrolls past its rows; one wider than its box scrolls\nsideways instead, and takes a tab stop when nothing in it can take focus. `narrow=\"stack\"` draws\neach row as a card on a screen narrower than `sm` (a phone), the cells as lines labelled by their column's\ntitle. A click on a sortable title has the table say the new sort aloud, in `sortedLabel`'s words.",
     "props": [
       {
         "name": "label",
@@ -7156,11 +7163,27 @@
         "native": false
       },
       {
+        "name": "narrow",
+        "type": "\"scroll\" | \"stack\"",
+        "required": false,
+        "default": "scroll",
+        "description": "What the table does on a screen narrower than `sm` (a phone): `scroll` sideways, or `stack` each row into\na card, the first cell its title and every other cell a line labelled by its column's title.\nStack a table whose rows a person reads one at a time; keep `scroll` for one they compare\ndown a column.",
+        "native": false
+      },
+      {
         "name": "size",
         "type": "\"sm\" | \"md\" | \"lg\"",
         "required": false,
         "default": "sm",
         "description": "The row padding; the buttons and fields in the rows take the same size.",
+        "native": false
+      },
+      {
+        "name": "sortedLabel",
+        "type": "((column: string, sort: \"ascending\" | \"descending\") => string)",
+        "required": false,
+        "default": "`Sorted by Name, ascending`",
+        "description": "What a screen reader hears after a click on a sortable title, from the column's title and the\nnew direction.",
         "native": false
       }
     ]
@@ -7180,7 +7203,7 @@
   },
   "TableCell": {
     "name": "TableCell",
-    "description": "A `<td>`. `tone` is the text weight and colour (see `CellTone`; in a `TableFoot` it defaults to\n`strong`); `numeric` sets end alignment and tabular figures (a cell under a `numeric` head cell is\nnumeric already), `mono` a small mono face. `secondary` is a second,\nmuted line under the content. One rule for wrapping: prose (a cell of plain text) wraps onto more\nlines (never narrower than `min-w-48`, so it scrolls the table before it becomes a sliver), a cell\nthat holds a control or a link takes that content's width, and a `numeric` or `mono` cell (a\nfigure, a code, a type) never breaks. `lines={1}` caps a long value's width, cuts it with\nan ellipsis on one line and puts the full text in a `title`; the content is then plain text (strings and\nnumbers), since that is what the title shows. `colSpan` passes through: a cell that\nspans the row is a full-width panel (a note under a group), and `align=\"center\"` centres it. A\ntable with no rows takes `TableBody empty`, not a cell built by hand. `span=\"full\"` spans every\ncolumn the head declares, so a panel under a row needs no count. `indent` sets a start-aligned cell in by 1 to 3 levels, for a line under a parent row.\nWhile `loading` an empty cell draws one bone, the width of a short value.",
+    "description": "A `<td>`. `tone` is the text weight and colour (see `CellTone`; in a `TableFoot` it defaults to\n`strong`); `numeric` sets end alignment and tabular figures (a cell under a `numeric` head cell is\nnumeric already), `mono` a small mono face. `secondary` is a second,\nmuted line under the content. One rule for wrapping: prose (a cell of plain text) wraps onto more\nlines (never narrower than `min-w-48`, so it scrolls the table before it becomes a sliver); any\nother cell stays on one line at its content's width: one that holds a control or a link, and a\n`numeric` or `mono` cell (a figure, a code, a type). `lines={1}` caps a long value's width, cuts it with\nan ellipsis on one line and puts the full text in a `title`; the content is then plain text (strings and\nnumbers), since that is what the title shows. `colSpan` passes through: a cell that\nspans the row is a full-width panel (a note under a group), and `align=\"center\"` centres it. A\ntable with no rows takes `TableBody empty`, not a cell built by hand. `span=\"full\"` spans every\ncolumn the head declares, so a panel under a row needs no count. `indent` sets a start-aligned cell in by 1 to 3 levels, for a line under a parent row.\nWhile `loading` an empty cell draws one bone, the width of a short value.",
     "props": [
       {
         "name": "align",
@@ -7208,7 +7231,7 @@
         "name": "lines",
         "type": "1",
         "required": false,
-        "description": "`1` caps the width and cuts a long value with an ellipsis on one line, the full text in a\n`title`, as `lines={1}` does on `Text`. Plain text content only.\n\nWithout it, a prose cell wraps down to a floor so it never becomes a sliver, a cell that holds\na control or a link (a `Pill`, a `Switch`, a `Button`, a `TextLink`) takes its content's width,\nand a `numeric` or `mono` cell never breaks.",
+        "description": "`1` caps the width and cuts a long value with an ellipsis on one line, the full text in a\n`title`, as `lines={1}` does on `Text`. Plain text content only.\n\nWithout it, a prose cell wraps down to a floor so it never becomes a sliver, and any other cell\n(a `Pill`, a `Switch`, a `Button`, a `TextLink`, a `numeric` or `mono` value) stays on one line\nat its content's width.",
         "native": false
       },
       {
@@ -7441,12 +7464,12 @@
   },
   "TableHead": {
     "name": "TableHead",
-    "description": "The `<thead>`: small uppercase column titles, on a tinted strip unless the table is in a card. Holds one `TableRow` of `TableHeaderCell`s.",
+    "description": "The `<thead>`: small uppercase column titles, on a tinted strip unless the table is in a card.\nHolds one `TableRow` of `TableHeaderCell`s. Unless the table is in a card, it stays in view under\nthe `AppShell` header while the page scrolls past the rows, as long as the table fits its box.",
     "props": []
   },
   "TableHeaderCell": {
     "name": "TableHeaderCell",
-    "description": "A column title, `<th scope=\"col\">`. `numeric` declares a column of figures, once: the title and\nevery cell under it take end alignment and tabular figures. A column with nothing to show in its\nhead (a row's actions) takes `label` instead of `children`: the name a screen reader hears\n(\"Actions\"), visually hidden so the head keeps its column. `sort` and `onSort` make the column\nsortable: the title becomes a button that asks for the next direction, and the column says where\nit stands with `aria-sort`. The app sorts its rows; the table never does.",
+    "description": "A header cell. In the `TableHead` it is a column title, `<th scope=\"col\">`. `numeric` declares a\ncolumn of figures, once: the title and every cell under it take end alignment and tabular figures.\nA column with nothing to show in its head (a row's actions) takes `label` instead of `children`:\nthe name a screen reader hears (\"Actions\"), visually hidden so the head keeps its column. `sort`\nand `onSort` make the column sortable: the title becomes a button that fills the cell and asks for\nthe next direction, the column says where it stands with `aria-sort`, and the table says the new\nsort aloud. The app sorts its rows; the table never does. In a body or foot row it is the row's\nheader, `<th scope=\"row\">`: the cell that names the row (a name, a date), drawn like a `strong`\ncell, so a screen reader reads it before each of the row's values.",
     "props": [
       {
         "name": "align",

@@ -25,27 +25,39 @@ function holdsTabbable(scroller: HTMLElement): boolean {
  * scrolls: "y" (down, the default) or "x" (sideways); overflow the other way is not measured,
  * since the box does not scroll that way. `measured` is false until the box has been measured once
  * and true after: a page rendered to HTML and never hydrated is never measured, and neither is a
- * box where `ResizeObserver` is missing (a consumer's jsdom tests with no stub).
+ * box where `ResizeObserver` is missing (a consumer's jsdom tests with no stub). `overflows` is
+ * whether the box overflowed when last measured. `wider`, for a box that may stop scrolling while it
+ * fits (a `Table`'s, which clips instead so its head can stick to the page), measures the overflow
+ * from the content instead of the box's own scroll width.
  */
-export function useScrollStop(axis: "x" | "y" = "y"): {
+export function useScrollStop(
+  axis: "x" | "y" = "y",
+  wider?: (box: HTMLElement) => boolean,
+): {
   element: HTMLElement | null;
   attach: (el: HTMLDivElement | null) => void;
   stop: boolean;
   measured: boolean;
+  overflows: boolean;
 } {
   const [element, setElement] = useState<HTMLElement | null>(null);
   const [stop, setStop] = useState(false);
   const [measured, setMeasured] = useState(false);
+  const [overflowing, setOverflowing] = useState(false);
 
   useEffect(() => {
     // jsdom (a consumer's own tests) has no ResizeObserver.
     if (!element || typeof ResizeObserver === "undefined") return undefined;
-    const overflows = () =>
-      axis === "y"
+    const overflows = () => {
+      if (wider) return wider(element);
+      return axis === "y"
         ? element.scrollHeight > element.clientHeight
         : element.scrollWidth > element.clientWidth;
+    };
     const measure = () => {
-      setStop(overflows() && !holdsTabbable(element));
+      const over = overflows();
+      setOverflowing(over);
+      setStop(over && !holdsTabbable(element));
       setMeasured(true);
     };
     // Each observer reports once when it starts, and again when the box is resized, its content
@@ -64,9 +76,15 @@ export function useScrollStop(axis: "x" | "y" = "y"): {
       resize.disconnect();
       change.disconnect();
     };
-  }, [element, axis]);
+  }, [element, axis, wider]);
 
-  return { element, attach: setElement, stop: stop && element !== null, measured };
+  return {
+    element,
+    attach: setElement,
+    stop: stop && element !== null,
+    measured,
+    overflows: overflowing && element !== null,
+  };
 }
 
 /**

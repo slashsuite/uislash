@@ -24,7 +24,8 @@ const ROW_TONE: Record<RowTone, string> = {
   danger: "bg-red-50 text-red-700",
   muted: "opacity-60",
 };
-const STRIPE = "shadow-[inset_4px_0_0_0_currentColor]";
+/** A stripe on the leading edge in the current text colour. Shared with `ListRow`. */
+export const STRIPE = "shadow-[inset_4px_0_0_0_currentColor]";
 
 /** The row's mark: a `tone` (stripe and fill, or faded), a `stripe` alone or `emphasis`, only one of them. */
 export type RowMark =
@@ -93,6 +94,29 @@ export const PAD: Record<Size, { head: string; cell: string; group: string }> = 
   md: { head: "px-5 py-3", cell: "px-5 py-4", group: "px-5 py-2.5" },
   lg: { head: "px-6 py-3.5", cell: "px-6 py-5", group: "px-6 py-3" },
 };
+
+/**
+ * The look of a `Table` with `narrow="stack"` on a screen narrower than `sm` (a phone): the table,
+ * its sections and its rows become blocks, the head is hidden but still read, and each cell is a
+ * line of the row's card, its column's title at the start and its value at the end. The first
+ * column is the card's title. A viewport query, not a container query: a container has no width
+ * of its own, so a table in a box that sizes to its content would collapse to nothing.
+ */
+export const STACK = {
+  table: "max-sm:block",
+  head: "max-sm:sr-only",
+  section: "max-sm:block",
+  row: "max-sm:block max-sm:py-2",
+  cell: "max-sm:flex max-sm:min-w-0 max-sm:items-baseline max-sm:justify-between max-sm:gap-4 max-sm:whitespace-normal max-sm:py-1",
+  block: "max-sm:block max-sm:min-w-0 max-sm:whitespace-normal max-sm:py-1",
+  label: "hidden shrink-0 text-xs font-medium uppercase tracking-wide text-slate-500 max-sm:block",
+  value: "min-w-0 max-sm:text-right",
+} as const;
+
+/** The ARIA role a stacking table puts on a part, since a part drawn as a block can lose its table role in some browsers. */
+export function stackRole(stack: boolean, role: string): { role?: string } {
+  return stack ? { role } : {};
+}
 
 /** Where a table cell's content sits across it: `start`, `center` or `end` (numbers). */
 export type CellAlign = "start" | "center" | "end";

@@ -285,7 +285,7 @@ export const text: ComponentSection = {
       },
       accessibility: [
         "A `MetaList` renders a `<ul>` with an `<li>` per item.",
-        "The separators are `aria-hidden` and trail every item but the last, held to their item like a comma, so a wrap never leaves one at the start of a line.",
+        "The separators are `aria-hidden` and lead each item; the one before whichever item starts a line falls in a margin the row clips, so no line starts or ends with one, at any width.",
         "Each link keeps its own focus ring; the row adds no extra tab stop.",
         "`aria-*` and `data-*` go on the list.",
       ],

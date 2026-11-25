@@ -1,8 +1,16 @@
 import { Children, type ReactElement, type ReactNode, useContext } from "react";
 import { cx } from "./cx.js";
 import type { Size } from "./size.js";
-import { TableContext, useNumericColumn } from "./tableColumns.js";
-import { ALIGN, type CellAlign, PAD, type Rest, SectionContext } from "./tableRow.js";
+import { TableContext, useNumericColumn, useStackLabel } from "./tableColumns.js";
+import {
+  ALIGN,
+  type CellAlign,
+  PAD,
+  type Rest,
+  SectionContext,
+  STACK,
+  stackRole,
+} from "./tableRow.js";
 import { SortButton, type SortProps } from "./tableSort.js";
 import { Bone, BusyLabel, busy, isEmptySlot, type LoadingProps, useLoading } from "./skeleton.js";
 import { CELL_BONE } from "./tableEmpty.js";
@@ -30,12 +38,15 @@ function HeadTitle({ label, children }: { label: string | undefined; children: R
 }
 
 /**
- * A column title, `<th scope="col">`. `numeric` declares a column of figures, once: the title and
- * every cell under it take end alignment and tabular figures. A column with nothing to show in its
- * head (a row's actions) takes `label` instead of `children`: the name a screen reader hears
- * ("Actions"), visually hidden so the head keeps its column. `sort` and `onSort` make the column
- * sortable: the title becomes a button that asks for the next direction, and the column says where
- * it stands with `aria-sort`. The app sorts its rows; the table never does.
+ * A header cell. In the `TableHead` it is a column title, `<th scope="col">`. `numeric` declares a
+ * column of figures, once: the title and every cell under it take end alignment and tabular figures.
+ * A column with nothing to show in its head (a row's actions) takes `label` instead of `children`:
+ * the name a screen reader hears ("Actions"), visually hidden so the head keeps its column. `sort`
+ * and `onSort` make the column sortable: the title becomes a button that fills the cell and asks for
+ * the next direction, the column says where it stands with `aria-sort`, and the table says the new
+ * sort aloud. The app sorts its rows; the table never does. In a body or foot row it is the row's
+ * header, `<th scope="row">`: the cell that names the row (a name, a date), drawn like a `strong`
+ * cell, so a screen reader reads it before each of the row's values.
  */
 export function TableHeaderCell({
   numeric = false,
@@ -66,17 +77,27 @@ export function TableHeaderCell({
     | (SortProps & { children: ReactNode; label?: undefined })
   ) &
   Rest<"th", "align" | "scope" | "aria-sort">): ReactElement {
-  const { size } = useContext(TableContext);
-  const sorted = sort === "ascending" || sort === "descending";
+  const { size, stack } = useContext(TableContext);
+  const section = useContext(SectionContext);
+  const inHead = section !== "body" && section !== "foot";
+  const sortable = inHead && sort !== undefined && onSort !== undefined;
+  if (!inHead) {
+    return (
+      <RowHeader {...rest} align={align} label={label}>
+        {children}
+      </RowHeader>
+    );
+  }
   return (
     <th
       {...rest}
       scope="col"
-      {...(sorted ? { "aria-sort": sort } : {})}
-      className={cx("whitespace-nowrap font-medium", PAD[size].head, ALIGN[align])}
+      {...stackRole(stack, "columnheader")}
+      {...ariaSort(sort)}
+      className={cx("whitespace-nowrap font-medium", !sortable && PAD[size].head, ALIGN[align])}
     >
-      {sort !== undefined && onSort !== undefined ? (
-        <SortButton sort={sort} onSort={onSort} align={align}>
+      {sortable ? (
+        <SortButton sort={sort} onSort={onSort} align={align} pad={PAD[size].head}>
           {children}
         </SortButton>
       ) : (
@@ -86,12 +107,65 @@ export function TableHeaderCell({
   );
 }
 
+/** A sorted column's `aria-sort`; a column sorted by another one says nothing. */
+function ariaSort(sort: SortProps["sort"] | undefined): {
+  "aria-sort"?: "ascending" | "descending";
+} {
+  return sort === "ascending" || sort === "descending" ? { "aria-sort": sort } : {};
+}
+
+/** A body or foot row's header cell, `<th scope="row">`, drawn like a `strong` cell. */
+function RowHeader({
+  align,
+  label,
+  children,
+  ...rest
+}: {
+  align: CellAlign;
+  label: string | undefined;
+  children: ReactNode;
+} & Rest<"th", "align" | "scope" | "aria-sort">): ReactElement {
+  const { size, stack } = useContext(TableContext);
+  const stackLabel = useStackLabel(false);
+  return (
+    <th
+      {...rest}
+      scope="row"
+      {...stackRole(stack, "rowheader")}
+      className={cx(
+        PAD[size].cell,
+        ALIGN[align],
+        TONE.strong,
+        figureClass(false, false, isProse(children)),
+        stackClass(stack, stackLabel),
+      )}
+    >
+      <Stacked label={stackLabel}>
+        <HeadTitle label={label}>{children}</HeadTitle>
+      </Stacked>
+    </th>
+  );
+}
+
+/** A stacking table's cell: a labelled line, or a block when it has no column title. */
+function stackClass(stack: boolean, label: ReactNode): string | false {
+  return stack && (label === undefined ? STACK.block : STACK.cell);
+}
+
+/** Whether a cell spans more than one column (it then takes no column title when stacked). */
+function spansColumns(span: "full" | undefined, colSpan: number | undefined): boolean {
+  return span === "full" || (colSpan !== undefined && colSpan > 1);
+}
+
 /**
- * The wrapping rule: a figure or code never breaks; prose wraps, down to `min-w-48`. A cell that
- * holds an element (a link, a `Pill`, a `Switch`, a `Button`) takes its content's width.
+ * The wrapping rule, one for every cell: prose (plain text and nothing else) wraps, down to
+ * `min-w-48`; everything else stays on one line at its content's width: a figure, a code, and a cell
+ * that holds an element (a link, a `Pill`, a `Switch`, a `Button`). So a column of short controls is
+ * only as wide as they are, and a link's words never break one per line on a phone: the table
+ * scrolls instead.
  */
 function figureClass(numeric: boolean, mono: boolean, prose: boolean): string {
-  if (!numeric && !mono) return prose ? "min-w-48" : "";
+  if (!numeric && !mono) return prose ? "min-w-48" : "whitespace-nowrap";
   return cx("whitespace-nowrap", numeric && "tabular-nums", mono && "font-mono text-xs");
 }
 
@@ -119,9 +193,9 @@ const INDENT: Record<Size, Record<Indent, string>> = {
  * `strong`); `numeric` sets end alignment and tabular figures (a cell under a `numeric` head cell is
  * numeric already), `mono` a small mono face. `secondary` is a second,
  * muted line under the content. One rule for wrapping: prose (a cell of plain text) wraps onto more
- * lines (never narrower than `min-w-48`, so it scrolls the table before it becomes a sliver), a cell
- * that holds a control or a link takes that content's width, and a `numeric` or `mono` cell (a
- * figure, a code, a type) never breaks. `lines={1}` caps a long value's width, cuts it with
+ * lines (never narrower than `min-w-48`, so it scrolls the table before it becomes a sliver); any
+ * other cell stays on one line at its content's width: one that holds a control or a link, and a
+ * `numeric` or `mono` cell (a figure, a code, a type). `lines={1}` caps a long value's width, cuts it with
  * an ellipsis on one line and puts the full text in a `title`; the content is then plain text (strings and
  * numbers), since that is what the title shows. `colSpan` passes through: a cell that
  * spans the row is a full-width panel (a note under a group), and `align="center"` centres it. A
@@ -164,9 +238,9 @@ export function TableCell({
    * `1` caps the width and cuts a long value with an ellipsis on one line, the full text in a
    * `title`, as `lines={1}` does on `Text`. Plain text content only.
    *
-   * Without it, a prose cell wraps down to a floor so it never becomes a sliver, a cell that holds
-   * a control or a link (a `Pill`, a `Switch`, a `Button`, a `TextLink`) takes its content's width,
-   * and a `numeric` or `mono` cell never breaks.
+   * Without it, a prose cell wraps down to a floor so it never becomes a sliver, and any other cell
+   * (a `Pill`, a `Switch`, a `Button`, a `TextLink`, a `numeric` or `mono` value) stays on one line
+   * at its content's width.
    */
   lines?: 1 | undefined;
   /** A second, muted line under the content. */
@@ -189,29 +263,36 @@ export function TableCell({
   const { loading: waiting, owner } = useLoading(loading);
   const bone = waiting && isEmptySlot(children);
   const foot = useContext(SectionContext) === "foot";
-  const { size, columns } = useContext(TableContext);
+  const { size, columns, stack } = useContext(TableContext);
+  const stackLabel = useStackLabel(spansColumns(span, colSpan));
   const column = useNumericColumn();
   const figure = numeric ?? column;
   const side = align ?? (figure ? "end" : "start");
   return (
     <td
       {...rest}
+      {...stackRole(stack, "cell")}
       {...busy(owner, waiting)}
       colSpan={span === "full" ? columns : colSpan}
-      className={cellClass({
-        align: side,
-        size,
-        indent,
-        tone,
-        foot,
-        numeric: figure,
-        mono,
-        prose: isProse(children),
-      })}
+      className={cx(
+        cellClass({
+          align: side,
+          size,
+          indent,
+          tone,
+          foot,
+          numeric: figure,
+          mono,
+          prose: isProse(children),
+        }),
+        stackClass(stack, stackLabel),
+      )}
     >
-      <CellBody align={side} truncate={lines === 1} secondary={secondary}>
-        {bone ? <Bone shape={CELL_BONE} /> : children}
-      </CellBody>
+      <Stacked label={stackLabel}>
+        <CellBody align={side} truncate={lines === 1} secondary={secondary}>
+          {bone ? <Bone shape={CELL_BONE} /> : children}
+        </CellBody>
+      </Stacked>
       <BusyLabel owner={owner} loading={waiting} label={loadingLabel} />
     </td>
   );
@@ -245,6 +326,23 @@ function cellClass({
     TONE[resolved],
     foot && resolved !== "strong" && "font-medium",
     figureClass(numeric, mono, prose),
+  );
+}
+
+/**
+ * A cell's content in a stacking table: its column's title (hidden from assistive tech, which has
+ * the head) at the start of the line, shown only while stacked, and the value at the end. Outside
+ * a stacking table, or with no title, the content as it is.
+ */
+function Stacked({ label, children }: { label: ReactNode; children: ReactNode }): ReactNode {
+  if (label === undefined || label === null) return children;
+  return (
+    <>
+      <span aria-hidden="true" className={STACK.label}>
+        {label}
+      </span>
+      <div className={STACK.value}>{children}</div>
+    </>
   );
 }
 

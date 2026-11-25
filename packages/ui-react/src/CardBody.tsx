@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { CardBar, CardHeader, CardHeading, CardIcon, CardInset } from "./CardParts.js";
 import { cx } from "./cx.js";
+import { ScrollBody } from "./scrollBody.js";
 import type { HeadingLevel } from "./headingLevel.js";
 import type { IconName } from "./icons.js";
 import type { Size } from "./size.js";
@@ -42,6 +43,12 @@ function insetBand(form: BodyForm, inset: ReactNode): ReactNode {
 /** With `fill` the body takes the room the header (and a footer) leave, and only it scrolls. */
 const SCROLL = "min-h-0 flex-1 overflow-y-auto";
 
+/** What names a filled body when it takes a tab stop: the card's heading, or its title where the heading has no id. */
+function scrollName(parts: BodyParts): { label?: string; labelledBy?: string } {
+  if (!parts.title) return {};
+  return parts.headingId ? { labelledBy: parts.headingId } : { label: parts.title };
+}
+
 /** The padding the body takes itself, when the root has none: never on a flush card. */
 const pad = (form: BodyForm) => !form.flush && BODY_PAD[form.size];
 
@@ -52,7 +59,13 @@ function plainBody(form: BodyForm, heading: ReactNode, parts: BodyParts): ReactN
       {form.icon && <CardIcon name={form.icon} size={form.size} />}
       <CardHeader heading={heading} actions={parts.actions} size={form.size} />
       {insetBand(form, parts.inset)}
-      {form.fill ? <div className={SCROLL}>{parts.children}</div> : parts.children}
+      {form.fill ? (
+        <ScrollBody {...scrollName(parts)} className={SCROLL}>
+          {parts.children}
+        </ScrollBody>
+      ) : (
+        parts.children
+      )}
     </>
   );
   if (form.fill) {
@@ -77,14 +90,22 @@ export function cardBody(form: BodyForm, parts: BodyParts): ReactNode {
     />
   );
   if (!form.bar) return plainBody(form, heading, parts);
-  const grow = form.fill ? SCROLL : form.footer && "flex-1";
+  const body = (
+    <>
+      {insetBand(form, parts.inset)}
+      {parts.children}
+    </>
+  );
   return (
     <>
       <CardBar heading={heading} actions={parts.actions} size={form.size} />
-      <div className={cx(grow, pad(form)) || undefined}>
-        {insetBand(form, parts.inset)}
-        {parts.children}
-      </div>
+      {form.fill ? (
+        <ScrollBody {...scrollName(parts)} className={cx(SCROLL, pad(form))}>
+          {body}
+        </ScrollBody>
+      ) : (
+        <div className={cx(form.footer && "flex-1", pad(form)) || undefined}>{body}</div>
+      )}
     </>
   );
 }

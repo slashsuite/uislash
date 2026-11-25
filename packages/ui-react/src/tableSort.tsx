@@ -1,5 +1,6 @@
-import type { ReactElement, ReactNode } from "react";
-import { cx, focusRing } from "./cx.js";
+import { type ReactElement, type ReactNode, useContext } from "react";
+import { cx, insetFocusRing } from "./cx.js";
+import { TableContext } from "./tableColumns.js";
 import type { CellAlign } from "./tableRow.js";
 
 /** Where a sortable column stands: ARIA's own words. `none` is a column the table is not sorted by. */
@@ -45,21 +46,32 @@ function SortArrow({ sort }: { sort: TableSort }): ReactElement {
   );
 }
 
-/** A sortable column's title: a native button that fills the cell, named by the title. */
+/**
+ * A sortable column's title: a native button that fills the cell, padding and all, so the whole
+ * cell is its target (never under 24px tall), named by the title. A click asks for the next
+ * direction and has the table say the new sort aloud.
+ */
 export function SortButton({
   sort,
   onSort,
   align,
+  pad,
   children,
-}: SortProps & { align: CellAlign; children: ReactNode }): ReactElement {
+}: SortProps & { align: CellAlign; pad: string; children: ReactNode }): ReactElement {
+  const { announce } = useContext(TableContext);
   return (
     <button
       type="button"
-      onClick={() => onSort(nextSort(sort))}
+      onClick={(event) => {
+        const next = nextSort(sort);
+        onSort(next);
+        announce(event.currentTarget.textContent.trim(), next);
+      }}
       className={cx(
-        "inline-flex w-full cursor-pointer items-center gap-1 rounded-sm uppercase tracking-wide hover:text-violet-700",
+        "flex min-h-6 w-full cursor-pointer items-center gap-1 uppercase tracking-wide hover:text-violet-700",
+        pad,
         JUSTIFY[align],
-        focusRing,
+        insetFocusRing,
       )}
     >
       {children}

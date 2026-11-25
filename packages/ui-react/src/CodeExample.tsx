@@ -2,6 +2,7 @@ import type { ReactElement, ReactNode } from "react";
 import { CodeBody } from "./CodeBody.js";
 import { themedScrollbar } from "./cx.js";
 import type { Passthrough } from "./props.js";
+import { ScrollBody } from "./scrollBody.js";
 import { AppScale } from "./typography.js";
 
 /**
@@ -35,11 +36,15 @@ export function CodeExample({
 } & Passthrough): ReactElement {
   return (
     <figure {...rest} className="overflow-hidden rounded-lg border border-slate-200 bg-white">
-      <div className={`min-h-24 overflow-x-auto p-5 ${themedScrollbar}`}>
+      <ScrollBody
+        axis="x"
+        label="Preview"
+        className={`min-h-24 overflow-x-auto p-5 ${themedScrollbar}`}
+      >
         <div className="text-slate-900">
           <AppScale>{children}</AppScale>
         </div>
-      </div>
+      </ScrollBody>
       <div className="border-t border-slate-200 bg-slate-50">
         <CodeBody code={code} language="tsx" wrap={false} copy={copy} />
       </div>

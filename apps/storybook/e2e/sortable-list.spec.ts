@@ -29,6 +29,24 @@ const count = (grid: Locator, section: string) =>
 
 const row = (grid: Locator, title: string) => grid.getByRole("row", { name: title, exact: true });
 
+/**
+ * Drags a row by its grip handle, the only place a pointer drag starts. react-aria leaves the
+ * handle's button to the keyboard (it takes no pointer events, and a box over it takes the press),
+ * so the pointer goes to the button's spot without the hit check, then presses and moves as
+ * `dragTo` does.
+ */
+async function dragByGrip(
+  grid: Locator,
+  title: string,
+  target: Locator,
+  targetPosition?: { x: number; y: number },
+) {
+  await grid.getByRole("button", { name: `Reorder ${title}`, exact: true }).hover({ force: true });
+  await grid.page().mouse.down();
+  await target.hover(targetPosition ? { position: targetPosition } : {});
+  await grid.page().mouse.up();
+}
+
 const URGENT = [
   "Restore the nightly backup",
   "Renew the TLS certificate",
@@ -89,7 +107,7 @@ test("SortableList: dragging the third row above the first reports one move and 
 }) => {
   await open(page);
   const grid = list(page);
-  await row(grid, URGENT[2]).dragTo(row(grid, URGENT[0]), { targetPosition: { x: 200, y: 4 } });
+  await dragByGrip(grid, URGENT[2], row(grid, URGENT[0]), { x: 200, y: 4 });
   await expect
     .poll(() => moves(page))
     .toEqual([{ id: "t3", section: "urgent", target: { id: "t1", position: "before" } }]);
@@ -102,8 +120,9 @@ test("SortableList: a drag into another section reports that section and raises 
   await open(page);
   const grid = list(page);
   await expect(count(grid, "High")).toHaveText("High5");
-  await row(grid, URGENT[0]).dragTo(row(grid, "Answer the landlord about the lease"), {
-    targetPosition: { x: 200, y: 4 },
+  await dragByGrip(grid, URGENT[0], row(grid, "Answer the landlord about the lease"), {
+    x: 200,
+    y: 4,
   });
   await expect
     .poll(() => moves(page))
@@ -113,12 +132,27 @@ test("SortableList: a drag into another section reports that section and raises 
   expect((await sectionTitles(grid, "High"))[1]).toBe(URGENT[0]);
 });
 
+test("SortableList: a drag that starts on the row, not its handle, moves nothing", async ({
+  page,
+}) => {
+  await open(page);
+  const grid = list(page);
+  await row(grid, URGENT[2]).dragTo(row(grid, URGENT[0]), { targetPosition: { x: 200, y: 4 } });
+  // A refused drag fires nothing, so there is no event to wait for: a handle drag after it lands,
+  // and must be the only move reported.
+  await dragByGrip(grid, URGENT[1], row(grid, URGENT[0]), { x: 200, y: 4 });
+  await expect
+    .poll(() => moves(page))
+    .toEqual([{ id: "t2", section: "urgent", target: { id: "t1", position: "before" } }]);
+  expect(await sectionTitles(grid, "Urgent")).toEqual([URGENT[1], URGENT[0], URGENT[2]]);
+});
+
 test("SortableList: a drop on the empty section's Drop here row reports the section and no target", async ({
   page,
 }) => {
   await open(page);
   const grid = list(page);
-  await row(grid, URGENT[1]).dragTo(row(grid, "Drop here"));
+  await dragByGrip(grid, URGENT[1], row(grid, "Drop here"));
   await expect.poll(() => moves(page)).toEqual([{ id: "t2", section: "low" }]);
   expect(await sectionTitles(grid, "Low")).toEqual([URGENT[1]]);
   await expect(row(grid, "Drop here")).toHaveCount(0);
@@ -128,17 +162,11 @@ test("SortableList: two lists on one page never take each other's items", async 
   await open(page, "data-sortablelist--two-lists");
   const home = list(page, "Home queue");
   const work = list(page, "Work queue");
-  await row(work, "Plan the sprint").dragTo(row(home, URGENT[0]), {
-    targetPosition: { x: 100, y: 4 },
-  });
-  await row(home, URGENT[1]).dragTo(row(work, "Plan the sprint"), {
-    targetPosition: { x: 100, y: 4 },
-  });
+  await dragByGrip(work, "Plan the sprint", row(home, URGENT[0]), { x: 100, y: 4 });
+  await dragByGrip(home, URGENT[1], row(work, "Plan the sprint"), { x: 100, y: 4 });
   // A drop that is refused fires nothing, so there is no event to wait for: the next in-list drag
   // proves the page settled, and the earlier ones must still have reported nothing.
-  await row(work, "Write the release notes").dragTo(row(work, "Plan the sprint"), {
-    targetPosition: { x: 100, y: 4 },
-  });
+  await dragByGrip(work, "Write the release notes", row(work, "Plan the sprint"), { x: 100, y: 4 });
   await expect
     .poll(() => moves(page, 1))
     .toEqual([{ id: "w2", section: "work", target: { id: "w1", position: "before" } }]);

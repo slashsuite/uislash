@@ -19,6 +19,12 @@ type TableSetting = {
   numeric: readonly boolean[];
   /** How many columns the head declares, or `undefined` with no `TableHead`. */
   columns: number | undefined;
+  /** Says a new sort aloud, through the table's status region: the column's title and its direction. */
+  announce: (column: string, sort: "ascending" | "descending") => void;
+  /** Whether the table stacks its rows into cards in a narrow box (`narrow="stack"`). */
+  stack: boolean;
+  /** Each column's visible title from the head, for a stacked cell's label; `undefined` for a column with none. */
+  titles: readonly ReactNode[];
 };
 
 export const TableContext = createContext<TableSetting>({
@@ -26,12 +32,15 @@ export const TableContext = createContext<TableSetting>({
   size: "sm",
   numeric: [],
   columns: undefined,
+  announce: () => undefined,
+  stack: false,
+  titles: [],
 });
 
 /** The column a cell starts at, set by its `TableRow`. */
 const ColumnContext = createContext<number | undefined>(undefined);
 
-type CellProps = { children?: ReactNode; colSpan?: unknown; numeric?: unknown };
+type CellProps = { children?: ReactNode; colSpan?: unknown; numeric?: unknown; label?: unknown };
 
 /** The children as one flat list: arrays and fragments are opened, so a mapped or grouped list counts as its items. */
 function flat(children: ReactNode): ReactNode[] {
@@ -58,13 +67,33 @@ function first(children: ReactNode, type: unknown) {
  * own component is not seen; its body cells then say `numeric` themselves.
  */
 export function numericColumns(children: ReactNode, head: unknown, row: unknown): boolean[] {
+  return headCells(children, head, row).flatMap((cell) =>
+    isValidElement<CellProps>(cell)
+      ? Array.from({ length: span(cell.props) }, () => cell.props.numeric === true)
+      : [],
+  );
+}
+
+/** The cells of the table's first head row, read from their element props, or none. */
+function headCells(children: ReactNode, head: unknown, row: unknown): ReactNode[] {
   const headElement = first(children, head);
   if (!isValidElement<CellProps>(headElement)) return [];
   const rowElement = first(headElement.props.children, row);
   if (!isValidElement<CellProps>(rowElement)) return [];
-  return flat(rowElement.props.children).flatMap((cell) =>
+  return flat(rowElement.props.children);
+}
+
+/**
+ * Each column's visible title, read from the first head row like `numericColumns`: the head cell's
+ * children, or `undefined` for a column whose title is a hidden `label` (a row's actions) and for
+ * the later columns a spanning title covers.
+ */
+export function columnTitles(children: ReactNode, head: unknown, row: unknown): ReactNode[] {
+  return headCells(children, head, row).flatMap((cell) =>
     isValidElement<CellProps>(cell)
-      ? Array.from({ length: span(cell.props) }, () => cell.props.numeric === true)
+      ? Array.from({ length: span(cell.props) }, (_, i) =>
+          i === 0 && cell.props.label === undefined ? cell.props.children : undefined,
+        )
       : [],
   );
 }
@@ -106,4 +135,15 @@ export function useNumericColumn(): boolean {
   const at = useContext(ColumnContext);
   const { numeric } = useContext(TableContext);
   return at !== undefined && numeric[at] === true;
+}
+
+/**
+ * A stacked cell's label: its column's title from the head. None for the first column (the card's
+ * title), for a cell that spans columns, and outside a stacking table.
+ */
+export function useStackLabel(spans: boolean): ReactNode {
+  const at = useContext(ColumnContext);
+  const { stack, titles } = useContext(TableContext);
+  if (!stack || spans || at === undefined || at === 0) return undefined;
+  return titles[at];
 }

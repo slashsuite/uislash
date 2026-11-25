@@ -618,6 +618,14 @@ state, and `DocsLayout` takes `loading` and `loadingLabel`. `Drawer` takes `onSu
 exported: `HeadingLevel`, `SelectItem`, `EmptySize`, `CellAlign` (a table cell's `align`),
 `CategoryTone`, `KeyValueAlign`, `SwitchButton` and `SwitchLink`.
 
+### SortableList drags by its handle
+
+A pointer now drags a `SortableItem` by its grip handle only; a drag that starts anywhere else on
+the row starts nothing, so text in a row can be selected and a scroll on a phone is not taken for a
+drag. The keyboard is unchanged. TypeScript flags nothing. A test that drags a row by its body
+drags it by the button named "Reorder " and its title. A moved row now slides to its new place,
+and does not under `prefers-reduced-motion`.
+
 ### Running the codemod for 0.13
 
 A third codemod step makes the renames 0.13 ships. It runs alone, on 0.12 code, never with
