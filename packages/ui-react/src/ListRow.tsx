@@ -7,7 +7,8 @@ import type { Size } from "./size.js";
 import { GapProvider } from "./stackGap.js";
 import { LoadingScope, useLoading } from "./skeleton.js";
 import { waitingRow } from "./listRowWait.js";
-import { SELECTED } from "./tableRow.js";
+import { SELECTED, STRIPE } from "./tableRow.js";
+import { TEXT_TONE, type TextTone } from "./typography.js";
 import { hasReason, useBlocked } from "./blocked.js";
 import type {
   ListRowButtonProps,
@@ -55,8 +56,16 @@ const HIGHLIGHTED = "bg-slate-100";
 /** The keyboard cursor: the focus ring, drawn inside the row, on a row that does not hold DOM focus. */
 const FOCUSED = "outline-2 -outline-offset-2 outline-violet-600";
 
-/** A thumbnail's width. A direct-child image fills it. */
-const THUMBNAIL = "block w-32 [&>img]:block [&>img]:h-auto [&>img]:w-full";
+/**
+ * A thumbnail's width, a step narrower on a screen narrower than `sm` (a phone), so the label keeps
+ * its room. A direct-child image fills it. A viewport query, not a container query: a container has
+ * no width of its own, so a row in a box that sizes to its content would collapse to nothing.
+ */
+const THUMBNAIL = "block w-32 max-sm:w-24 [&>img]:block [&>img]:h-auto [&>img]:w-full";
+
+/** A thumbnail row's label and `trailing`: side by side, and `trailing` under the label on a phone. */
+const THUMBNAIL_LINES =
+  "flex min-w-0 flex-1 items-center gap-3 max-sm:flex-col max-sm:items-start max-sm:gap-1";
 
 const PAD: Record<Size, string> = { sm: "px-3 py-2", md: "px-4 py-3", lg: "px-5 py-4" };
 
@@ -81,6 +90,17 @@ function isDisabled(props: ListRowProps): boolean {
   return !isStatic(props) && "disabled" in props && props.disabled === true;
 }
 
+/** The row's status stripe on its leading edge, in the tone's ink: drawn, so read by no one. */
+function StripeMark({ tone }: { tone: Exclude<TextTone, "neutral"> | undefined }): ReactNode {
+  if (tone === undefined) return null;
+  return (
+    <span
+      aria-hidden="true"
+      className={cx("pointer-events-none absolute inset-y-0 left-0 w-1", TEXT_TONE[tone], STRIPE)}
+    />
+  );
+}
+
 /** `panel={open && <Panel />}` is a common way to write it, so `false` is as empty as `null`. */
 function hasPanel(panel: ReactNode): boolean {
   return panel != null && panel !== false;
@@ -95,6 +115,7 @@ function look(props: ListRowProps): string {
   const { size = "md", focused = false } = props;
   return cx(
     rowBase(props),
+    props.stripe !== undefined && "relative",
     PAD[size],
     fillOf(props),
     isDisabled(props) && DISABLED,
@@ -107,6 +128,7 @@ function StaticRow(props: ListRowStaticProps & Pieces): ReactElement {
     leading: _l,
     secondary: _sec,
     leadingWidth: _lw,
+    stripe,
     trailing: _t,
     focused: _f,
     highlighted: _hl,
@@ -132,6 +154,7 @@ function StaticRow(props: ListRowStaticProps & Pieces): ReactElement {
       {...(selected ? { "aria-current": "true" as const } : {})}
       className={cx(look(props), withPanel && PANEL_COLUMNS[start ? "withLeading" : "alone"])}
     >
+      <StripeMark tone={stripe} />
       {withPanel ? (
         <PanelLines start={start} panel={panel}>
           {label}
@@ -174,6 +197,7 @@ function LinkRow(props: ListRowLinkProps & Pieces): ReactElement {
     leading: _l,
     secondary: _sec,
     leadingWidth: _lw,
+    stripe,
     trailing: _t,
     focused: _f,
     highlighted: _hl,
@@ -197,6 +221,7 @@ function LinkRow(props: ListRowLinkProps & Pieces): ReactElement {
       onPointerLeave={onPointerLeave}
       className={look(props)}
     >
+      <StripeMark tone={stripe} />
       {renderLink({
         ...(rest["aria-label"] === undefined ? { "aria-labelledby": rowId } : {}),
         ...rest,
@@ -216,6 +241,7 @@ function ButtonRow(props: ListRowButtonProps & Pieces & { labelId: string }): Re
     leading: _l,
     secondary: _sec,
     leadingWidth: _lw,
+    stripe,
     trailing: _t,
     focused: _f,
     highlighted: _hl,
@@ -238,6 +264,7 @@ function ButtonRow(props: ListRowButtonProps & Pieces & { labelId: string }): Re
   const { props: guard, tooltip, blocked } = useBlocked(disabledReason, rest);
   return (
     <div onPointerEnter={onPointerEnter} onPointerLeave={onPointerLeave} className={look(props)}>
+      <StripeMark tone={stripe} />
       <button
         type="button"
         {...(rest["aria-label"] === undefined ? { "aria-labelledby": labelId } : {})}
@@ -301,20 +328,32 @@ function rowOf(props: ListRowProps, labelId: string): ReactElement {
 /** The row's cells. `labelId` names the label, for a button row's button to be labelled by it. */
 function piecesOf(props: ListRowProps, labelId?: string): Pieces {
   const { leading, leadingWidth, trailing, secondary, children } = props;
+  const label = (
+    <div id={labelId} className="min-w-0 flex-1">
+      {children}
+      {secondary != null && secondary !== false && (
+        <div className="text-xs font-normal text-slate-500">{secondary}</div>
+      )}
+    </div>
+  );
+  const end = trailing != null && (
+    <span className="shrink-0 tabular-nums text-slate-500">{trailing}</span>
+  );
+  const thumbnail = leadingWidth === "thumbnail";
   return {
     start: leading != null && (
-      <span className={cx("shrink-0", leadingWidth === "thumbnail" && THUMBNAIL)}>{leading}</span>
+      <span className={cx("shrink-0", thumbnail && THUMBNAIL)}>{leading}</span>
     ),
-    label: (
-      <div id={labelId} className="min-w-0 flex-1">
-        {children}
-        {secondary != null && secondary !== false && (
-          <div className="text-xs font-normal text-slate-500">{secondary}</div>
-        )}
-      </div>
-    ),
-    end: trailing != null && (
-      <span className="shrink-0 tabular-nums text-slate-500">{trailing}</span>
-    ),
+    // Beside a thumbnail, a narrow row puts `trailing` under the label, or the label is squeezed to a word.
+    label:
+      thumbnail && end ? (
+        <div className={THUMBNAIL_LINES}>
+          {label}
+          {end}
+        </div>
+      ) : (
+        label
+      ),
+    end: thumbnail ? null : end,
   };
 }

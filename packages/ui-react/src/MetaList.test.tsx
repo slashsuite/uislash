@@ -17,7 +17,7 @@ describe("MetaList", () => {
     expect(within(screen.getByRole("list")).getAllByRole("listitem")).toHaveLength(3);
   });
 
-  it("trails every item but the last with a dot hidden from assistive tech", () => {
+  it("leads every item with a dot that is hidden from assistive tech", () => {
     render(
       <MetaList>
         <span>a</span>
@@ -25,12 +25,14 @@ describe("MetaList", () => {
         <span>c</span>
       </MetaList>,
     );
-    const dots = screen.getAllByRole("listitem").map((item) =>
-      within(item)
-        .queryAllByText("·")
-        .map((dot) => dot.getAttribute("aria-hidden")),
-    );
-    expect(dots).toEqual([["true"], ["true"], []]);
+    expect(screen.getAllByRole("listitem").map((item) => item.textContent)).toEqual([
+      "·a",
+      "·b",
+      "·c",
+    ]);
+    // The dots are drawn but not read: none of them is in the accessibility tree.
+    expect(screen.queryAllByText("·")).toHaveLength(3);
+    expect(screen.queryAllByText("·", { ignore: "[aria-hidden] *" })).toHaveLength(0);
   });
 
   it("takes text, Code and TextLink items", () => {
@@ -44,15 +46,6 @@ describe("MetaList", () => {
     expect(screen.getByText("plain text")).not.toBeNull();
     expect(screen.getByRole("code").textContent).toBe("abc123");
     expect(screen.getByRole("link", { name: "main" }).getAttribute("href")).toBe("/b/main");
-  });
-
-  it("puts no dot by a single item", () => {
-    render(
-      <MetaList>
-        <span>only</span>
-      </MetaList>,
-    );
-    expect(screen.queryByText("·")).toBeNull();
   });
 });
 
@@ -69,16 +62,15 @@ const links = [
 ];
 
 describe("MetaList separator", () => {
-  it("sits in the same item as the link before it, so no item starts with one", () => {
+  it("sits in the same item as the link after it, so no item ends with one", () => {
     render(<MetaList separator="•">{links}</MetaList>);
     const items = screen.getAllByRole("listitem");
-    expect(items.map((item) => item.textContent)).toEqual(["Privacy•", "Terms•", "Email"]);
-    expect(items.filter((item) => item.textContent?.startsWith("•"))).toHaveLength(0);
+    expect(items.map((item) => item.textContent)).toEqual(["•Privacy", "•Terms", "•Email"]);
   });
 
   it("takes a bullet in place of the dot", () => {
     render(<MetaList separator="•">{links}</MetaList>);
-    expect(screen.getAllByText("•")).toHaveLength(2);
+    expect(screen.getAllByText("•")).toHaveLength(3);
     expect(screen.queryByText("·")).toBeNull();
   });
 

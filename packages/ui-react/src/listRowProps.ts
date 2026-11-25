@@ -7,6 +7,7 @@ import type {
 import type { Passthrough, Unstyled } from "./props.js";
 import type { Size } from "./size.js";
 import type { LoadingProps } from "./skeleton.js";
+import type { TextTone } from "./typography.js";
 
 // The props of `ListRow`, one type per form: a button row, a link row and a static row.
 
@@ -49,6 +50,11 @@ type Shared = LoadingProps & {
    * For a row that shows a screenshot.
    */
   leadingWidth?: "thumbnail" | undefined;
+  /**
+   * The row's status, as a stripe on its leading edge in this tone, as a `Table` row's `stripe`. The
+   * colour says it to the eye only, so the row's words say it too (a `Pill`, a status in `trailing`).
+   */
+  stripe?: Exclude<TextTone, "neutral"> | undefined;
   children: ReactNode;
 };
 

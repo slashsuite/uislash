@@ -6,34 +6,32 @@ import {
   type ReactNode,
   useId,
   useMemo,
+  useRef,
 } from "react";
 import {
   Button,
   DropIndicator,
-  type DropTarget,
   GridList,
   GridListHeader,
   GridListItem,
   GridListSection,
-  type Key,
   useDragAndDrop,
 } from "react-aria-components";
+import {
+  dropOperation,
+  moveOf,
+  type Place,
+  ROW_MARK,
+  type SortableMove,
+  sectionDelegate,
+  tailKey,
+} from "./sortableDrop.js";
+import { useSlide } from "./sortableSlide.js";
 import { cx, focusRing } from "./cx.js";
 import { dataAttributes } from "./link.js";
 import type { Passthrough } from "./props.js";
 
-/** A move the user made: which item, the section it lands in, and the item it lands next to. */
-export type SortableMove = {
-  /** The `id` of the item that moved. */
-  id: string;
-  /** The `id` of the `SortableSection` the item lands in. Set whenever the list has sections. */
-  section?: string;
-  /**
-   * The item it was dropped before or after. Absent only for a drop into an empty section, where
-   * there is no item to land next to.
-   */
-  target?: { id: string; position: "before" | "after" };
-};
+export type { SortableMove };
 
 /** The list's box: the Card's border, fill and shadow, clipped to its radius. */
 const FRAME =
@@ -52,7 +50,7 @@ const HEADING =
   "flex items-center justify-between gap-3 bg-slate-50 px-4 py-2 text-xs font-medium tracking-wide text-slate-600 uppercase";
 
 const ITEM =
-  "flex w-full cursor-grab items-center gap-3 px-4 py-3 text-left text-sm text-slate-900 outline-none hover:bg-slate-50";
+  "flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-slate-900 outline-none hover:bg-slate-50";
 
 /** The keyboard cursor: the focus ring, drawn inside the row. */
 const ITEM_FOCUSED = "outline-2 -outline-offset-2 outline-violet-600";
@@ -63,8 +61,8 @@ const PLACEHOLDER = "px-4 py-3 text-sm text-slate-500 outline-none";
 /** The tail row of a section with items: takes no room and shows nothing but the drop line. */
 const TAIL = "h-0 overflow-hidden outline-none";
 
-/** A marker on every row a pointer can drop next to: the items and each section's tail row. */
-const ROW_MARK = "data-sortable-row";
+/** The handle a pointer drags a row by (the grip and the box over it): only a press that starts on it starts a drag. */
+const GRIP_MARK = "data-sortable-grip";
 
 /** What a part takes through to its element: `id`, `data-*` and `aria-*`, as every component does. */
 type Through = Passthrough;
@@ -97,17 +95,6 @@ function describedBy(
   };
 }
 
-/**
- * The key of a section's tail row. Every section ends with one: in an empty section it is the "Drop
- * here" row, in one with items it is an empty row of no height. A drop before it is a drop at the
- * end of the section. react-aria's keyboard drop moves cannot step from "after the last item" of a
- * section into the next one (it wraps to the top), but they do step from "before" a row to "before"
- * the next row across sections, so with a tail row the end of each section is a "before" target.
- */
-function tailKey(section: string): string {
-  return `hackcove-sortable-end:${section}`;
-}
-
 /** The `SortableItem` children of a section, the ones its count counts. */
 function itemsOf(children: ReactNode): ReactElement<SortableItemProps>[] {
   return Children.toArray(children).filter(
@@ -115,9 +102,6 @@ function itemsOf(children: ReactNode): ReactElement<SortableItemProps>[] {
       isValidElement(child) && child.type === SortableItem,
   );
 }
-
-/** A row's section and title; a tail row also lists its section's items, in order. */
-type Place = { section?: string; title: string; tail?: string[] };
 
 /** Every row's key mapped to its section (and, for a tail row, the section's items), read from the children. */
 function placesOf(children: ReactNode): Map<string, Place> {
@@ -134,75 +118,6 @@ function placesOf(children: ReactNode): Map<string, Place> {
     }
   }
   return places;
-}
-
-/**
- * Where a pointer drops: before or after the row it is over, by which half it is in. Over a section
- * heading, or in a gap, it is before the next row below (the first item of that section, or its
- * "Drop here" row), and below every row it is after the last. Never "on" a row.
- */
-function dropTargetAt(list: HTMLElement | null, y: number): DropTarget | null {
-  if (!list) return null;
-  const top = y + list.getBoundingClientRect().top;
-  const rows = [...list.querySelectorAll<HTMLElement>(`[${ROW_MARK}]`)];
-  for (const row of rows) {
-    const key = row.dataset.key;
-    if (key == null) continue;
-    const box = row.getBoundingClientRect();
-    if (top < box.top) return { type: "item", key, dropPosition: "before" };
-    if (top <= box.bottom) {
-      return {
-        type: "item",
-        key,
-        dropPosition: top < box.top + box.height / 2 ? "before" : "after",
-      };
-    }
-  }
-  const last = rows.at(-1)?.dataset.key;
-  return last == null ? null : { type: "item", key: last, dropPosition: "after" };
-}
-
-/** react-aria's pointer drop delegate, aware of sections (the stock one sees only top-level items). */
-function sectionDelegate(listId: string) {
-  return {
-    getDropTargetFromPoint: (_x: number, y: number) =>
-      dropTargetAt(document.getElementById(listId), y),
-  };
-}
-
-/** Only a drop between two rows is a move; a drop on a row's centre, or on the list itself, is not. */
-export function dropOperation(target: DropTarget): "move" | "cancel" {
-  return target.type === "item" && target.dropPosition !== "on" ? "move" : "cancel";
-}
-
-/**
- * The move react-aria reported, as the app's `SortableMove`, or nothing when it is not one (a drop
- * on a row's centre, or next to the item itself). A drop at a section's tail lands after the
- * section's last other item, or with no target when it has none.
- */
-export function moveOf(
-  places: Map<string, Place>,
-  keys: Iterable<Key>,
-  target: DropTarget,
-): SortableMove | null {
-  const [key] = keys;
-  if (key == null || target.type !== "item" || target.dropPosition === "on") return null;
-  const place = places.get(String(target.key));
-  if (!place) return null;
-  const id = String(key);
-  if (String(target.key) === id) return null;
-  const section = place.section === undefined ? {} : { section: place.section };
-  if (place.tail) {
-    const last = place.tail.filter((item) => item !== id).at(-1);
-    return last === undefined
-      ? { id, ...section }
-      : { id, ...section, target: { id: last, position: "after" } };
-  }
-  return {
-    id,
-    ...section,
-    target: { id: String(target.key), position: target.dropPosition },
-  };
 }
 
 /**
@@ -237,6 +152,7 @@ export function SortableList({
     .toLowerCase()}`;
   const places = placesOf(children);
   const delegate = useMemo(() => sectionDelegate(listId), [listId]);
+  useSlide(listId, ROW_MARK);
   const { dragAndDropHooks } = useDragAndDrop({
     getItems: (keys) =>
       [...keys].map((key) => ({
@@ -367,8 +283,9 @@ const GRIP = (
 
 /**
  * One row of a `SortableList`: a grip handle, the title, and an optional meta line under it. A
- * pointer drags the row itself; the handle (`reorderLabel` and the title, "Reorder <title>") is how a keyboard or screen reader
- * starts a move.
+ * pointer drags the row by its handle only (a drag that starts anywhere else on the row is no
+ * drag); the handle (`reorderLabel` and the title, "Reorder <title>") is also how a keyboard or
+ * screen reader starts a move.
  */
 export function SortableItem({
   id,
@@ -377,9 +294,30 @@ export function SortableItem({
   reorderLabel = "Reorder",
   ...rest
 }: SortableItemProps & Through): ReactElement {
+  const { render, ...data } = describedBy(rest);
+  // Where the last press on the row started: a native drag starts from the row, so only this says whether it began on the handle.
+  const onGrip = useRef(false);
   return (
     <GridListItem
-      {...describedBy(rest)}
+      {...data}
+      render={(props) =>
+        render({
+          ...props,
+          onPointerDownCapture: (event) => {
+            onGrip.current =
+              event.target instanceof Element && event.target.closest(`[${GRIP_MARK}]`) !== null;
+            props.onPointerDownCapture?.(event);
+          },
+          onDragStartCapture: (event) => {
+            if (!onGrip.current) {
+              event.preventDefault();
+              event.stopPropagation();
+              return;
+            }
+            props.onDragStartCapture?.(event);
+          },
+        })
+      }
       id={id}
       textValue={title}
       {...{ [ROW_MARK]: "" }}
@@ -387,13 +325,17 @@ export function SortableItem({
         cx(ITEM, AFTER_ROW, isFocusVisible && ITEM_FOCUSED, isDragging && "opacity-50")
       }
     >
-      <Button
-        slot="drag"
-        aria-label={`${reorderLabel} ${title}`}
-        className={cx("shrink-0 rounded p-0.5 text-slate-400", focusRing)}
-      >
-        {GRIP}
-      </Button>
+      <span {...{ [GRIP_MARK]: "" }} className="relative flex shrink-0">
+        <Button
+          slot="drag"
+          aria-label={`${reorderLabel} ${title}`}
+          className={cx("rounded p-0.5 text-slate-400", focusRing)}
+        >
+          {GRIP}
+        </Button>
+        {/* react-aria leaves its drag button to the keyboard (no pointer events), so this takes the press and shows the grab cursor. */}
+        <span aria-hidden="true" className="absolute inset-0 cursor-grab" />
+      </span>
       <div className="min-w-0 flex-1">
         <div className="truncate">{title}</div>
         {children != null && (

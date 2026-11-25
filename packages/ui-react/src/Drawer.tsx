@@ -13,6 +13,7 @@ import { BodyContext, FormColumn, FormError, ModalScope } from "./Dialog.js";
 import { IconButton } from "./IconButton.js";
 import { useBackdropClose, useModal } from "./modal.js";
 import type { Passthrough } from "./props.js";
+import { ScrollBody } from "./scrollBody.js";
 import { FLING, releaseVelocity, type SheetSample } from "./sheetSnap.js";
 import type { Size } from "./size.js";
 import { HeaderText, SectionHeading } from "./typography.js";
@@ -195,9 +196,12 @@ export function Drawer({
           <IconButton label={closeLabel} onClick={() => dialog.current?.close()} icon="close" />
         </header>
         <FormColumn onSubmit={onSubmit}>
-          <div className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain px-5.5 py-4">
+          <ScrollBody
+            labelledBy={titleId}
+            className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain px-5.5 py-4"
+          >
             <BodyContext>{children}</BodyContext>
-          </div>
+          </ScrollBody>
           <FormError error={error} space="px-5.5 pb-4" />
           {footer && (
             <footer className="flex shrink-0 justify-end gap-2 border-t border-slate-200 px-5.5 py-3.5">

@@ -12,6 +12,7 @@ import {
 } from "react";
 import { cx, focusRing } from "./cx.js";
 import type { Passthrough } from "./props.js";
+import { ScrollBody } from "./scrollBody.js";
 import { GapProvider } from "./stackGap.js";
 import {
   type BottomSheetSnap,
@@ -318,9 +319,13 @@ export function BottomSheet({
           {header}
         </div>
       )}
-      <div id={bodyId} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5.5 py-4">
+      <ScrollBody
+        id={bodyId}
+        label={label}
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5.5 py-4"
+      >
         <GapProvider gap="xs">{children}</GapProvider>
-      </div>
+      </ScrollBody>
       {footer != null && (
         <footer className="flex shrink-0 justify-end gap-2 border-t border-slate-200 px-5.5 py-3.5">
           {footer}

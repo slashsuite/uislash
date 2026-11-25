@@ -1,17 +1,9 @@
 import type { ReactElement } from "react";
 import { CodeText } from "./CodeText.js";
 import { CopyButton } from "./CopyButton.js";
-import { cx, themedScrollbar } from "./cx.js";
+import { cx, insetFocusRing, themedScrollbar } from "./cx.js";
 import { consoleCommands, type CodeLanguage } from "./highlight.js";
 import { scrollStopProps, useScrollStop } from "./scrollStop.js";
-
-/**
- * The strip's focus ring, drawn inside it: the frame around the code clips anything outside the
- * strip. `focusRing` with `-outline-offset-2` added would not do, since `outline-offset-2` comes
- * later in the CSS and wins.
- */
-const INSET_RING =
-  "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-violet-600";
 
 /** Whether a strip that scrolls sideways takes its tab stop: always, until it has been measured. */
 function takesStop(measured: boolean, stop: boolean): boolean {
@@ -48,7 +40,7 @@ export function CodeBody({
   // hydrated is never measured and still needs the stop. Once measured, a strip that fits drops it.
   const { attach, stop, measured } = useScrollStop("x");
   const tabStop = !wrap && takesStop(measured, stop);
-  // The ring stays INSET_RING: scrollStopProps' own ring is drawn outside the box, which the strip's
+  // The ring is insetFocusRing: scrollStopProps' own ring is drawn outside the box, which the strip's
   // overflow-hidden frame would clip.
   const { props: stopProps } = scrollStopProps(
     tabStop,
@@ -62,7 +54,7 @@ export function CodeBody({
         className={cx(
           "min-w-0 flex-1",
           !wrap && `overflow-x-auto ${themedScrollbar}`,
-          tabStop && INSET_RING,
+          tabStop && insetFocusRing,
         )}
       >
         <pre

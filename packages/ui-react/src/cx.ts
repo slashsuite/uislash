@@ -8,6 +8,14 @@ export const focusRing =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600";
 
 /**
+ * The same ring drawn inside the control, for one that fills a box which clips anything outside
+ * it (a table's sortable title, a scroller). `focusRing` with `-outline-offset-2` added would not
+ * do, since `outline-offset-2` comes later in the CSS and wins.
+ */
+export const insetFocusRing =
+  "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-violet-600";
+
+/**
  * On a row or card that holds a stretched link (`link-stretch`): every interactive descendant sits
  * above that link and is clickable on its own. `z-10` needs a position, so each gets `relative`,
  * except one that is already `absolute` and the stretched link itself. The row or card is `isolate`,

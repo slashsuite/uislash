@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
-import { describe, expect, it } from "vitest";
+import type { ReactElement } from "react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { SortableItem, SortableList, SortableSection } from "./index.js";
-import { render, screen, within } from "./render.harness.js";
-import { dropOperation, moveOf } from "./SortableList.js";
+import { act, render, screen, within } from "./render.harness.js";
+import { dropOperation, moveOf } from "./sortableDrop.js";
 
 const noop = () => undefined;
 
@@ -142,5 +143,96 @@ describe("SortableList words", () => {
     expect(screen.getByRole("button", { name: "Déplacer Alpha" })).not.toBeNull();
     expect(screen.getByRole("row", { name: "Fin de À faire" })).not.toBeNull();
     expect(screen.queryByRole("row", { name: "End of À faire" })).toBeNull();
+  });
+});
+
+/** Press on `target`, then start a native drag from the row, as a browser does. */
+function dragFrom(row: HTMLElement, target: Element): Event {
+  target.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+  const start = new Event("dragstart", { bubbles: true, cancelable: true });
+  // jsdom has no DataTransfer: enough of one for react-aria to fill.
+  Object.defineProperty(start, "dataTransfer", {
+    value: {
+      items: { add: noop },
+      clearData: noop,
+      setData: noop,
+      setDragImage: noop,
+      effectAllowed: "all",
+    },
+  });
+  row.dispatchEvent(start);
+  return start;
+}
+
+describe("a pointer drag", () => {
+  it("starts from the grip handle only; a press anywhere else on the row starts none", () => {
+    queue();
+    const row = screen.getByRole("row", { name: "Alpha" });
+    expect(dragFrom(row, within(row).getByText("Alpha")).defaultPrevented).toBe(true);
+    const grip = within(row).getByRole("button", { name: "Reorder Alpha" });
+    expect(dragFrom(row, grip).defaultPrevented).toBe(false);
+  });
+});
+
+type Slide = { row: string | null; from: unknown };
+
+/** jsdom has no layout: place each row by its order in the list, and record each slide. */
+function layout(reduced: boolean): Slide[] {
+  const slides: Slide[] = [];
+  vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (
+    this: HTMLElement,
+  ) {
+    const top = Math.max(screen.queryAllByRole("row").indexOf(this), 0) * 40;
+    return DOMRect.fromRect({ x: 0, y: top, width: 0, height: 40 });
+  });
+  Object.defineProperty(HTMLElement.prototype, "animate", {
+    configurable: true,
+    value(this: HTMLElement, frames: Keyframe[]) {
+      slides.push({ row: this.getAttribute("aria-label"), from: frames[0]?.translate });
+    },
+  });
+  vi.stubGlobal("matchMedia", (query: string) => ({
+    matches: reduced && query.includes("reduce"),
+  }));
+  return slides;
+}
+
+const ordered = (order: string[]) => (
+  <SortableList label="Queue" onReorder={noop}>
+    {order.map((id) => (
+      <SortableItem key={id} id={id} title={id} />
+    ))}
+  </SortableList>
+);
+
+/** Render the new order and let the list's observer see react-aria's rows land. */
+async function reorder(rerender: (ui: ReactElement) => void, order: string[]) {
+  await act(async () => rerender(ordered(order)));
+}
+
+describe("a move", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+    Reflect.deleteProperty(HTMLElement.prototype, "animate");
+  });
+
+  it("slides every row that changed place from where it was; the first render slides nothing", async () => {
+    const slides = layout(false);
+    const { rerender } = render(ordered(["a", "b", "c"]));
+    await act(async () => undefined);
+    expect(slides).toEqual([]);
+    await reorder(rerender, ["b", "a", "c"]);
+    expect(slides).toEqual([
+      { row: "b", from: "0 40px" },
+      { row: "a", from: "0 -40px" },
+    ]);
+  });
+
+  it("slides nothing under prefers-reduced-motion", async () => {
+    const slides = layout(true);
+    const { rerender } = render(ordered(["a", "b", "c"]));
+    await reorder(rerender, ["b", "a", "c"]);
+    expect(slides).toEqual([]);
   });
 });
