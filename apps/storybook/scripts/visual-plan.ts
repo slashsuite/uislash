@@ -318,7 +318,7 @@ export function planCapture({ repo, grouping, changed, everything }: PlanInput):
  * a build as removed, so a group it is sent is never partial; a group it is sent nothing for has no
  * build on the commit, and the project's status counts only the groups that have one.
  */
-export function wholeGroups(plan: Plan, themes: string[]): Plan {
+function wholeGroups(plan: Plan, themes: string[]): Plan {
   if (plan.all) return plan;
   const reference = referenceOf(themes);
   return {
@@ -335,17 +335,19 @@ export function wholeGroups(plan: Plan, themes: string[]): Plan {
  * (a group main skipped for long would leave its branches with no baseline in reach). A branch sends
  * each group the change reaches, whole, and nothing for the rest: the server reads a story missing
  * from a build as removed, but a subproject with no build on the commit as not run, and the
- * project's status counts only the subprojects that have one. A local compare takes `plan` as it is.
+ * project's status counts only the subprojects that have one. A local compare (`mode` null) takes
+ * what `planCapture` picks.
  */
-export function uploadPlan(mode: UploadMode | null, plan: Plan, themes: string[]): Plan {
+export function uploadPlan(mode: UploadMode | null, input: PlanInput): Plan {
   if (mode === "main")
     return {
-      ...plan,
+      ...planCapture({ ...input, everything: true }),
       notes: [
         "main uploads every group: it is the baseline each group's next branch diffs against",
       ],
     };
-  return mode === "branch" ? wholeGroups(plan, themes) : plan;
+  const plan = planCapture(input);
+  return mode === "branch" ? wholeGroups(plan, input.repo.themes) : plan;
 }
 
 /* ---------------------------------------------------------------------------

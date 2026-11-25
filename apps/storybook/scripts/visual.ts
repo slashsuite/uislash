@@ -176,16 +176,8 @@ async function planMode(): Promise<SavedPlan> {
   const grouping = checked(groupStories(repo.sections, repo.storyFiles));
   const base = await resolveBase();
   const mode = upload ? await uploadMode() : null;
-  const plan = uploadPlan(
-    mode,
-    planCapture({
-      repo,
-      grouping,
-      changed: await changedSince(base.sha),
-      everything: everything || mode === "main",
-    }),
-    repo.themes,
-  );
+  const changed = await changedSince(base.sha);
+  const plan = uploadPlan(mode, { repo, grouping, changed, everything });
   if (mode !== null)
     await checkSubprojects(
       mode,

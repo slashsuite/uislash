@@ -2,14 +2,7 @@ import { globSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { themeFiles } from "@slashsuite/themes-shared/files";
 import { describe, expect, it } from "vitest";
-import {
-  GALLERY_TITLE,
-  groupStories,
-  planCapture,
-  readRepo,
-  uploadPlan,
-  wholeGroups,
-} from "./visual-plan.js";
+import { GALLERY_TITLE, groupStories, planCapture, readRepo, uploadPlan } from "./visual-plan.js";
 import { referenceOf } from "./theme-reach.js";
 import { grouping, repo, storyFiles } from "./visual-plan.fixture.js";
 import { sidebarOrder, titleOf } from "./sidebar-order.js";
@@ -215,14 +208,15 @@ describe("planCapture", () => {
   });
 });
 
-const whole = (changed: string[]) => wholeGroups(plan(changed), repo.themes);
+const branch = (changed: string[]) =>
+  uploadPlan("branch", { repo, grouping, changed, everything: false });
 
-describe("wholeGroups", () => {
-  it("takes each group the change reaches whole, and skips the rest", () => {
+describe("uploadPlan", () => {
+  it("on a branch takes each group the change reaches whole, and skips the rest", () => {
     expect(capturesOf(plan(["apps/storybook/src/sample.ts"])).content).toEqual([
       [["Card"], [reference]],
     ]);
-    const result = whole(["apps/storybook/src/sample.ts"]);
+    const result = branch(["apps/storybook/src/sample.ts"]);
     expect(capturesOf(result)).toEqual({
       content: [[["Card", "CardBadge"], [reference]]],
       overview: overviewEverywhere,
@@ -231,33 +225,27 @@ describe("wholeGroups", () => {
     expect(result.picked[0]?.why).toEqual(["apps/storybook/src/sample.ts → Card"]);
   });
 
-  it("takes the Gallery sections in every theme when one theme changed", () => {
-    expect(capturesOf(whole(["themes/theme-c.css"]))).toEqual({ overview: overviewEverywhere });
+  it("on a branch takes the Gallery sections in every theme when one theme changed", () => {
+    expect(capturesOf(branch(["themes/theme-c.css"]))).toEqual({ overview: overviewEverywhere });
   });
 
-  it("leaves a plan of everything as it is", () => {
-    const all = plan(["bun.lock"]);
-    expect(wholeGroups(all, repo.themes)).toBe(all);
-  });
-});
-
-describe("uploadPlan", () => {
-  const changed = ["apps/storybook/src/sample.ts"];
-
-  it("on a branch takes the reached groups whole", () => {
-    expect(uploadPlan("branch", plan(changed), repo.themes)).toEqual(whole(changed));
+  it("on a branch whose change reaches everything takes every group", () => {
+    expect(branch(["bun.lock"])).toEqual(plan(["bun.lock"]));
   });
 
-  it("on main takes the plan of everything, and says why", () => {
-    const result = uploadPlan("main", plan(changed, true), repo.themes);
+  it("on main takes every group whole, whatever the change, and says why", () => {
+    const result = uploadPlan("main", {
+      repo,
+      grouping,
+      changed: ["apps/storybook/src/sample.ts"],
+      everything: false,
+    });
     expect(result.all).toBe(true);
     expect(result.skipped).toEqual([]);
-    expect(result.notes.join(" ")).toContain("main uploads every group");
-  });
-
-  it("leaves a local compare's plan as it is", () => {
-    const local = plan(changed);
-    expect(uploadPlan(null, local, repo.themes)).toBe(local);
+    expect(capturesOf(result)).toEqual(capturesOf(plan([], true)));
+    expect(result.notes).toEqual([
+      "main uploads every group: it is the baseline each group's next branch diffs against",
+    ]);
   });
 });
 
