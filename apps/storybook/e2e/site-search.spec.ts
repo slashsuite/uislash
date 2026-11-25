@@ -99,3 +99,22 @@ test('"zzz" says there are no results, and the live region reads the count', asy
   await expect(status).toHaveText("No results");
   await expect(dialog.getByRole("link")).toHaveCount(0);
 });
+
+/** A control's rendered height, in CSS pixels. */
+const heightOf = (page: Page, name: string | RegExp, index: number) =>
+  page
+    .getByRole("button", { name, exact: true })
+    .nth(index)
+    .evaluate((button) => button.getBoundingClientRect().height);
+
+test("at each size the trigger is as tall as a Button and a ColourSchemeToggle of that size", async ({
+  page,
+}) => {
+  await page.goto("/iframe.html?id=navigation-sitesearch--sizes&viewMode=story");
+  await expect(page.getByRole("button", { name: "Search", exact: true })).toHaveCount(3);
+  for (const index of [0, 1, 2]) {
+    const search = await heightOf(page, "Search", index);
+    expect(search).toBeCloseTo(await heightOf(page, "Sign in", index), 0);
+    expect(search).toBeCloseTo(await heightOf(page, /^Switch to (light|dark) theme$/, index), 0);
+  }
+});

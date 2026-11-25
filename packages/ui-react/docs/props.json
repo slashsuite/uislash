@@ -6282,8 +6282,16 @@
   },
   "SiteSearch": {
     "name": "SiteSearch",
-    "description": "The site's search: a header button that opens a dialog with a search field over a list of links\nto the pages that match. Put it in `AppShell`'s `controls` and pass every page as `items`. Ctrl+K\n(⌘ K on a Mac) opens it from anywhere on the page, and the button shows that key. Typing filters\nby name, then by `keywords`, then by description; Enter opens the first result, the arrow keys\nmove through them, and Esc closes it and puts focus back where it was. Render it once per page.",
+    "description": "The site's search: a header button that opens a dialog with a search field over a list of links\nto the pages that match. Put it in `AppShell`'s `controls` and pass every page as `items`. Ctrl+K\n(⌘ K on a Mac) opens it from anywhere on the page, and the button shows that key. Typing filters\nby name, then by `keywords`, then by description; Enter opens the first result (or, with\n`resultsHref`, the full results page), the arrow keys move through them, and Esc closes it and\nputs focus back where it was. The field is a `<search>` landmark. Render it once per page.",
     "props": [
+      {
+        "name": "allResultsLabel",
+        "type": "string",
+        "required": false,
+        "default": "See all results for",
+        "description": "The full results link's text; the typed text follows it: \"See all results for tabel\".",
+        "native": false
+      },
       {
         "name": "buttonLabel",
         "type": "string",
@@ -6346,11 +6354,26 @@
         "native": false
       },
       {
+        "name": "resultsHref",
+        "type": "((query: string) => string)",
+        "required": false,
+        "description": "The site's full results page for a query, built from the typed text (trimmed):\n`(query) => \"/search?q=\" + encodeURIComponent(query)`. Given, a link to it is the last row\nonce something is typed, matches or not, and Enter in the field goes there.",
+        "native": false
+      },
+      {
         "name": "resultsLabel",
         "type": "string",
         "required": false,
         "default": "Results",
         "description": "The name of the list of matches, for an app in another language.",
+        "native": false
+      },
+      {
+        "name": "size",
+        "type": "\"sm\" | \"md\" | \"lg\"",
+        "required": false,
+        "default": "sm",
+        "description": "The trigger's height and text, on the scale of a `Button` and an `IconButton`, so it lines up\nwith the other controls in a header row.",
         "native": false
       }
     ]

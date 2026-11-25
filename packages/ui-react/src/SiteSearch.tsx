@@ -1,5 +1,4 @@
 import {
-  type KeyboardEvent,
   type MouseEvent,
   type ReactElement,
   useLayoutEffect,
@@ -11,61 +10,12 @@ import { Button } from "./Button.js";
 import { Dialog } from "./Dialog.js";
 import { Icon } from "./Icon.js";
 import { IconButton } from "./IconButton.js";
-import { Input } from "./Input.js";
 import { Kbd } from "./Kbd.js";
-import { ListRow } from "./ListRow.js";
 import type { Passthrough } from "./props.js";
-import { Text } from "./typography.js";
+import { type BodyWords, englishCount, SearchBody, type SiteSearchItem } from "./siteSearchBody.js";
+import type { Size } from "./size.js";
 
-/** One page the search can find. */
-export type SiteSearchItem = {
-  /** The page's name: the row's label and the first thing matched. */
-  label: string;
-  /** A muted line under the label, matched last. */
-  description?: string | undefined;
-  /** Where the row goes. */
-  href: string;
-  /** Other names the page answers to (the exports it documents), matched like the label but not shown. */
-  keywords?: string[] | undefined;
-};
-
-/**
- * The items that match `text`, best first: the label starts with it, then the label contains it,
- * then a keyword contains it, then the description does. Case is ignored, and items of the same
- * rank keep their order in `items`. Empty text matches nothing.
- */
-export function rankSiteSearch(items: readonly SiteSearchItem[], text: string): SiteSearchItem[] {
-  const query = text.trim().toLowerCase();
-  if (query === "") return [];
-  const rankOf = (item: SiteSearchItem): number => {
-    const label = item.label.toLowerCase();
-    if (label.startsWith(query)) return 0;
-    if (label.includes(query)) return 1;
-    if (item.keywords?.some((keyword) => keyword.toLowerCase().includes(query))) return 2;
-    if (item.description?.toLowerCase().includes(query)) return 3;
-    return -1;
-  };
-  return items
-    .map((item, index) => ({ item, index, rank: rankOf(item) }))
-    .filter((entry) => entry.rank >= 0)
-    .toSorted((a, b) => a.rank - b.rank || a.index - b.index)
-    .map((entry) => entry.item);
-}
-
-/** What the live region says for a result count, in English. */
-function englishCount(count: number): string {
-  if (count === 0) return "No results";
-  return count === 1 ? "1 result" : `${count} results`;
-}
-
-/** The words `SearchBody` renders, each a `SiteSearch` prop with its English default. */
-type BodyWords = {
-  resultsLabel: string;
-  placeholder: string;
-  hintLabel: string;
-  noResultsLabel: string;
-  countLabel: (count: number) => string;
-};
+export { rankSiteSearch, type SiteSearchItem } from "./siteSearchBody.js";
 
 // The shortcut's key reads ⌘ K on Apple platforms. The server cannot know, so it renders Ctrl K and
 // the client swaps after hydration.
@@ -80,121 +30,6 @@ function isShortcut(event: globalThis.KeyboardEvent): boolean {
     !event.altKey &&
     !event.shiftKey &&
     event.key.toLowerCase() === "k"
-  );
-}
-
-// A link that stays on the page (a hash, an app's router) still closes the search; one opened in a
-// new tab or window leaves it open.
-function onListClick(event: MouseEvent<HTMLUListElement>): void {
-  if (event.ctrlKey || event.metaKey || event.shiftKey) return;
-  if (event.target instanceof Element && event.target.closest("a[href]")) {
-    event.currentTarget.closest("dialog")?.close();
-  }
-}
-
-/** The result links in the list, in order. */
-function linksIn(list: HTMLElement | null): HTMLAnchorElement[] {
-  return list ? [...list.querySelectorAll<HTMLAnchorElement>("a[href]")] : [];
-}
-
-/** The muted line under the field: the prompt before anything is typed, the no-match line after. */
-function SearchNote({
-  query,
-  found,
-  words: { hintLabel, noResultsLabel },
-}: {
-  query: string;
-  found: boolean;
-  words: Pick<BodyWords, "hintLabel" | "noResultsLabel">;
-}): ReactElement | null {
-  if (query.trim() === "") return <Text tone="muted">{hintLabel}</Text>;
-  if (found) return null;
-  return (
-    <Text tone="muted">
-      {noResultsLabel} {query.trim()}
-    </Text>
-  );
-}
-
-function SearchBody({
-  items,
-  label,
-  words: { resultsLabel, placeholder, hintLabel, noResultsLabel, countLabel },
-}: {
-  items: readonly SiteSearchItem[];
-  label: string;
-  words: BodyWords;
-}) {
-  const [query, setQuery] = useState("");
-  const box = useRef<HTMLDivElement>(null);
-  const list = useRef<HTMLUListElement>(null);
-  const results = rankSiteSearch(items, query);
-  const typed = query.trim() !== "";
-
-  const onFieldKey = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Escape") {
-      // Close here, so no engine spends the first Esc clearing the search field.
-      event.preventDefault();
-      event.currentTarget.closest("dialog")?.close();
-    } else if (event.key === "Enter") {
-      event.preventDefault();
-      linksIn(list.current)[0]?.click();
-    } else if (event.key === "ArrowDown") {
-      const first = linksIn(list.current)[0];
-      if (first) {
-        event.preventDefault();
-        first.focus();
-      }
-    }
-  };
-
-  const onListKey = (event: KeyboardEvent<HTMLUListElement>) => {
-    if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
-    const links = linksIn(list.current);
-    const at = links.findIndex((link) => link === document.activeElement);
-    if (at < 0) return;
-    event.preventDefault();
-    const next = at + (event.key === "ArrowDown" ? 1 : -1);
-    if (next < 0) box.current?.querySelector("input")?.focus();
-    else links[Math.min(next, links.length - 1)]?.focus();
-  };
-
-  return (
-    <div ref={box} className="flex flex-col gap-3">
-      <Input
-        type="search"
-        icon="search"
-        aria-label={label}
-        placeholder={placeholder}
-        autoComplete="off"
-        spellCheck={false}
-        value={query}
-        onChange={(event) => setQuery(event.target.value)}
-        onKeyDown={onFieldKey}
-      />
-      <div role="status" aria-live="polite" className="sr-only">
-        {typed ? countLabel(results.length) : ""}
-      </div>
-      <SearchNote query={query} found={results.length > 0} words={{ hintLabel, noResultsLabel }} />
-      {results.length > 0 && (
-        // The keys only move focus between the links inside it; the list itself takes none.
-        <ul
-          ref={list}
-          aria-label={resultsLabel}
-          onKeyDown={onListKey}
-          onClick={onListClick}
-          className="border-slate-200/70 *:not-first:border-t *:not-first:border-inherit"
-        >
-          {results.map((item) => (
-            <li key={item.href}>
-              <ListRow href={item.href} size="sm" secondary={item.description}>
-                {item.label}
-              </ListRow>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
   );
 }
 
@@ -236,26 +71,60 @@ type SiteSearchProps = {
    * @default `No results`, `1 result`, `4 results`
    */
   countLabel?: ((count: number) => string) | undefined;
+  /**
+   * The site's full results page for a query, built from the typed text (trimmed):
+   * `(query) => "/search?q=" + encodeURIComponent(query)`. Given, a link to it is the last row
+   * once something is typed, matches or not, and Enter in the field goes there.
+   */
+  resultsHref?: ((query: string) => string) | undefined;
+  /**
+   * The full results link's text; the typed text follows it: "See all results for tabel".
+   * @default See all results for
+   */
+  allResultsLabel?: string | undefined;
+  /**
+   * The trigger's height and text, on the scale of a `Button` and an `IconButton`, so it lines up
+   * with the other controls in a header row.
+   * @default sm
+   */
+  size?: Size | undefined;
 } & Passthrough;
+
+type WordProps = Omit<SiteSearchProps, "items" | "label" | "buttonLabel" | "resultsHref" | "size">;
+
+/** The dialog's words, each with its English default, apart from the props the root span takes. */
+function splitWords({
+  resultsLabel = "Results",
+  placeholder = "Search",
+  hintLabel = "Type a name",
+  noResultsLabel = "No results for",
+  countLabel = englishCount,
+  allResultsLabel = "See all results for",
+  ...rest
+}: WordProps): { words: BodyWords; rest: Passthrough } {
+  return {
+    words: { resultsLabel, placeholder, hintLabel, noResultsLabel, countLabel, allResultsLabel },
+    rest,
+  };
+}
 
 /**
  * The site's search: a header button that opens a dialog with a search field over a list of links
  * to the pages that match. Put it in `AppShell`'s `controls` and pass every page as `items`. Ctrl+K
  * (⌘ K on a Mac) opens it from anywhere on the page, and the button shows that key. Typing filters
- * by name, then by `keywords`, then by description; Enter opens the first result, the arrow keys
- * move through them, and Esc closes it and puts focus back where it was. Render it once per page.
+ * by name, then by `keywords`, then by description; Enter opens the first result (or, with
+ * `resultsHref`, the full results page), the arrow keys move through them, and Esc closes it and
+ * puts focus back where it was. The field is a `<search>` landmark. Render it once per page.
  */
 export function SiteSearch({
   items,
   label,
-  resultsLabel = "Results",
   buttonLabel = "Search",
-  placeholder = "Search",
-  hintLabel = "Type a name",
-  noResultsLabel = "No results for",
-  countLabel = englishCount,
-  ...rest
+  resultsHref,
+  size = "sm",
+  ...props
 }: SiteSearchProps): ReactElement {
+  const { words, rest } = splitWords(props);
   const [open, setOpen] = useState(false);
   const opener = useRef<HTMLElement | null>(null);
   const apple = useSyncExternalStore(noSubscribe, isApple, () => false);
@@ -294,20 +163,23 @@ export function SiteSearch({
       <span className="hidden sm:inline-flex">
         <Button
           variant="outline"
-          size="sm"
+          size={size}
           aria-haspopup="dialog"
           aria-keyshortcuts="Control+K Meta+K"
           onClick={openFrom}
         >
           <Icon name="search" size="sm" />
           {buttonLabel}
-          <Kbd aria-hidden="true">{keys}</Kbd>
+          {/* The chip's box does not count toward the line, so the button is a Button's height. */}
+          <span className="-my-1 inline-flex">
+            <Kbd aria-hidden="true">{keys}</Kbd>
+          </span>
         </Button>
       </span>
       <span className="inline-flex sm:hidden">
         <IconButton
           label={label}
-          size="sm"
+          size={size}
           aria-haspopup="dialog"
           aria-keyshortcuts="Control+K Meta+K"
           onClick={openFrom}
@@ -316,11 +188,7 @@ export function SiteSearch({
       </span>
       {open && (
         <Dialog title={label} width="md" onClose={close}>
-          <SearchBody
-            items={items}
-            label={label}
-            words={{ resultsLabel, placeholder, hintLabel, noResultsLabel, countLabel }}
-          />
+          <SearchBody items={items} label={label} resultsHref={resultsHref} words={words} />
         </Dialog>
       )}
     </span>

@@ -107,18 +107,19 @@ export const navigation: ComponentSection = {
       usage: {
         do: [
           "Put one `SiteSearch` in `AppShell`'s `controls`, on every page, and pass every page as `items`: `{ label, description, href, keywords }`.",
-          '`label` names the phone\'s icon button and titles the dialog: say what is searched ("Search components"). For an app in another language: `resultsLabel` names the list of matches ("Results"), `buttonLabel` is the wide button\'s text ("Search"), `placeholder` the field\'s ("Search"), `hintLabel` the line before typing ("Type a name"), `noResultsLabel` the words before the typed text when nothing matches ("No results for") and `countLabel` turns the count into what a screen reader hears ("3 results").',
+          '`label` names the phone\'s icon button and titles the dialog: say what is searched ("Search components"). For an app in another language: `resultsLabel` names the list of matches ("Results"), `buttonLabel` is the wide button\'s text ("Search"), `placeholder` the field\'s ("Search"), `hintLabel` the line before typing ("Type a name"), `noResultsLabel` the words before the typed text when nothing matches ("No results for"), `allResultsLabel` the words before it on the full results link ("See all results for") and `countLabel` turns the count into what a screen reader hears ("3 results").',
           "Give `items` in the nav's order: results of the same rank keep it.",
           "`keywords` are other names a page answers to (the exports it documents); they match but are not shown.",
           "A result ranks by the name starting with the text, then the name containing it, then a keyword, then the description.",
           "From `sm` up the button reads `buttonLabel` (Search) with its key (Ctrl K, or ⌘ K on a Mac); below `sm` it is the search icon alone.",
-          "It searches names, not page text, and needs no service.",
+          "It searches names, not page text, and needs no service. A site that also has a full text search page passes `resultsHref`, the page's address for a query (`(query) => '/search?q=' + encodeURIComponent(query)`): its link is the last row once something is typed, matches or not, and Enter in the field goes there.",
+          "`size` sets the button's height on a `Button`'s scale (default `sm`), so it lines up with the header's other controls of the same size.",
         ],
       },
       accessibility: [
         "Ctrl+K or Cmd+K opens it from anywhere on the page; the button carries `aria-keyshortcuts`.",
         "It opens a `Dialog` titled by `label` with focus in the search field; Esc closes it and focus goes back to where it was.",
-        "Enter opens the first result. ArrowDown moves from the field to the results and ArrowUp and ArrowDown move between them; they are links, so Tab reaches them too.",
+        "The field is a `search` landmark. Enter opens the first result, or with `resultsHref` the full results page; an Enter that commits an input method's composition does nothing. ArrowDown moves from the field to the results and ArrowUp and ArrowDown move between them; they are links, so Tab reaches them too.",
         'A polite live region reads the result count as you type ("3 results").',
       ],
       api: ["SiteSearch"],

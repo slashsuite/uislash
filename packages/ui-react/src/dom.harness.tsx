@@ -190,3 +190,19 @@ export function stubBeforeMatch(): void {
 export function unstubBeforeMatch(): void {
   Reflect.deleteProperty(HTMLElement.prototype, "onbeforematch");
 }
+
+/**
+ * Record the `href` of each link a click lands on, stopping its navigation (jsdom does not
+ * navigate). Returns the list, which fills as links are followed, and `stop` to remove the listener.
+ */
+export function recordFollowed(): { followed: string[]; stop: () => void } {
+  const followed: string[] = [];
+  const record = (event: MouseEvent) => {
+    const link = event.target instanceof Element ? event.target.closest("a[href]") : null;
+    if (!link) return;
+    event.preventDefault();
+    followed.push(link.getAttribute("href") ?? "");
+  };
+  document.addEventListener("click", record);
+  return { followed, stop: () => document.removeEventListener("click", record) };
+}

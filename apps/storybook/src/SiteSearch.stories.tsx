@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { SiteSearch, type SiteSearchItem } from "@slashsuite/ui-react";
+import { Button, ColourSchemeToggle, SiteSearch, type SiteSearchItem } from "@slashsuite/ui-react";
 import * as examples from "../../../packages/ui-react/docs/examples/SiteSearch.examples.js";
 
 const meta: Meta = { title: "Navigation/SiteSearch" };
@@ -54,6 +54,31 @@ function until<T>(find: () => T | null | undefined): Promise<T> {
   });
 }
 
+/** Click the trigger on screen, wait for the open dialog to focus its field, then type `text`. */
+async function openAndType(canvasElement: HTMLElement, text: string): Promise<HTMLDialogElement> {
+  const trigger = [...canvasElement.querySelectorAll("button")].find(
+    (button) => button.offsetParent !== null,
+  );
+  trigger?.click();
+  // The field is in the page while closed; type only once the open dialog has focused it.
+  const field = await until(() =>
+    document.activeElement instanceof HTMLInputElement &&
+    document.activeElement.matches("dialog[open] input")
+      ? document.activeElement
+      : null,
+  );
+  Reflect.set(HTMLInputElement.prototype, "value", text, field);
+  field.dispatchEvent(new Event("input", { bubbles: true }));
+  return until(() => document.querySelector("dialog"));
+}
+
+/** Waits for `links` rows and the open's fade, so every capture is the same. */
+async function settled(dialog: HTMLDialogElement, links: number): Promise<void> {
+  await until(() => dialog.querySelectorAll("a[href]").length === links || null);
+  // getAnimations flushes style, so it sees the fade the open started.
+  await Promise.all(dialog.getAnimations({ subtree: true }).map((animation) => animation.finished));
+}
+
 /** Open, with "dia" typed: Dialog first (its name starts with it), then FieldDialog. */
 export const Open: S = {
   render: () => (
@@ -61,31 +86,45 @@ export const Open: S = {
       <SiteSearch items={pages} label="Search components" />
     </div>
   ),
-  // Waits for the settled state (both rows rendered, the fade done), so every capture is the same.
   play: async ({ canvasElement }) => {
-    const trigger = [...canvasElement.querySelectorAll("button")].find(
-      (button) => button.offsetParent !== null,
-    );
-    trigger?.click();
-    // The field is in the page while closed; type only once the open dialog has focused it.
-    const field = await until(() =>
-      document.activeElement instanceof HTMLInputElement &&
-      document.activeElement.matches("dialog[open] input")
-        ? document.activeElement
-        : null,
-    );
-    Reflect.set(HTMLInputElement.prototype, "value", "dia", field);
-    field.dispatchEvent(new Event("input", { bubbles: true }));
-    const dialog = await until(() =>
-      document.querySelectorAll("dialog a[href]").length === 2
-        ? document.querySelector("dialog")
-        : null,
-    );
-    // getAnimations flushes style, so it sees the fade the open started.
-    await Promise.all(
-      dialog.getAnimations({ subtree: true }).map((animation) => animation.finished),
-    );
+    await settled(await openAndType(canvasElement, "dia"), 2);
   },
+};
+
+/**
+ * A site with a full text search page passes `resultsHref`: its link is the last row once anything
+ * is typed, and Enter goes there.
+ */
+export const FullResults: S = {
+  render: () => (
+    <div className="p-6">
+      <SiteSearch
+        items={pages}
+        label="Search components"
+        resultsHref={(query) => `#search?q=${encodeURIComponent(query)}`}
+      />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    await settled(await openAndType(canvasElement, "dia"), 3);
+  },
+};
+
+/** At each `size`, the same height as a `Button` and a `ColourSchemeToggle` of that size. */
+export const Sizes: S = {
+  render: () => (
+    <div className="flex flex-col gap-4 p-6">
+      {(["sm", "md", "lg"] as const).map((size) => (
+        <div key={size} className="flex items-center gap-2">
+          <SiteSearch items={pages} label="Search components" size={size} />
+          <Button variant="outline" size={size}>
+            Sign in
+          </Button>
+          <ColourSchemeToggle size={size} store={false} />
+        </div>
+      ))}
+    </div>
+  ),
 };
 
 export const DoHeader: S = {
