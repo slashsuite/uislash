@@ -1,21 +1,18 @@
 import { Markdown } from "@slashsuite/ui-react";
 
-/** `Markdown` renders `##` and `###` headings, `-` bullets, `**bold**` and plain paragraphs, as text nodes and never as HTML. */
+/** `Markdown` renders headings, bullets and numbered lists, `**bold**`, links, pictures and tables, as React nodes and never as HTML. */
 export const DoSummary = () => (
   <Markdown
     md={
       "## What I did\n- **HC-142** shipped the EmptyState\n- Fixed the Pill label wrap\n\n" +
-      "### Next\nReview the Steps copy."
+      "### Next\n1. Review the Steps copy\n2. Read [the ticket](https://example.com)"
     }
   />
 );
 
-/** A `#` title, a numbered list, a link or a code span is not supported: each shows as literal text. */
+/** A `#` title, a code span, a quote or HTML is not supported: each shows as literal text. */
 export const DontSummary = () => (
   <Markdown
-    md={
-      "# What I did\n1. Shipped the EmptyState\n2. Fixed the Pill\n\n" +
-      "See [the ticket](https://example.com) and `bun install`."
-    }
+    md={"# What I did\n> Shipped the EmptyState\n\nRun `bun install`, then <b>restart</b>."}
   />
 );

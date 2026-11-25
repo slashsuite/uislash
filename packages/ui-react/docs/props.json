@@ -4686,7 +4686,7 @@
   },
   "Markdown": {
     "name": "Markdown",
-    "description": "A small, safe Markdown renderer for short notes: `## ` and `### ` headings, `- ` or `* ` bullets,\n`**bold**` and paragraphs. Text is rendered as React nodes, never as HTML. While `loading` with\nno `md` yet it draws a paragraph of bones.\n\nA `## ` heading is one level below the heading that holds the Markdown (an `h2` on the page, an\n`h3` in a `Section`, an `h4` in a titled `Card` there) and a `### ` one below that, never past\n`h6`, so the notes keep the page's outline.",
+    "description": "A small, safe Markdown renderer for notes and for rich text from a CMS: `## ` and `### `\nheadings, `- ` or `* ` bullets, `1. ` numbered lists, `**bold**`, `[links](href)`, a picture on a\nline of its own (`![alt](src)`), GFM tables and paragraphs. Text is rendered as React nodes, never\nas HTML. A link is a `TextLink` (an in-app path goes through `LinkProvider`) and is kept only if\nits address is a web, mail or phone address or a path on this site; any other (`javascript:`)\nkeeps its words and drops the link. A picture is an `Image` in its own shape, and a table a\n`Table` named by the heading above it, or `tableLabel`. While `loading` with no `md` yet it\ndraws a paragraph of bones.\n\nA `## ` heading is one level below the heading that holds the Markdown (an `h2` on the page, an\n`h3` in a `Section`, an `h4` in a titled `Card` there) and a `### ` one below that, never past\n`h6`, so the notes keep the page's outline.",
     "props": [
       {
         "name": "id",
@@ -4715,6 +4715,14 @@
         "type": "string | undefined",
         "required": true,
         "description": "The Markdown source; while `loading`, none yet is a paragraph of bones.",
+        "native": false
+      },
+      {
+        "name": "tableLabel",
+        "type": "string",
+        "required": false,
+        "default": "Table",
+        "description": "The name a table takes when no heading comes before it, for an app in another language.",
         "native": false
       }
     ]

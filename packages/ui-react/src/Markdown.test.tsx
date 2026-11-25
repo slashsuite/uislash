@@ -49,4 +49,57 @@ describe("Markdown", () => {
     expect(screen.getByRole("heading", { level: 6, name: "Done" })).not.toBeNull();
     expect(screen.getByRole("heading", { level: 6, name: "Next" })).not.toBeNull();
   });
+
+  it("renders a link as a link, and keeps only the words of an unsafe one", () => {
+    render(
+      <Markdown
+        md={"See [the data sheet](https://example.com/sheet.pdf) and [this](javascript:alert`1`)."}
+      />,
+    );
+    expect(screen.getByRole("link", { name: "the data sheet" }).getAttribute("href")).toBe(
+      "https://example.com/sheet.pdf",
+    );
+    expect(screen.queryByRole("link", { name: "this" })).toBeNull();
+    expect(screen.getByRole("paragraph").textContent).toBe("See the data sheet and this.");
+  });
+
+  it("renders a picture on its own line as an image named by its alt", () => {
+    render(<Markdown md={"Mash in.\n![The mash tun at 66 degrees](/mash.jpg)"} />);
+    expect(screen.getByRole("img", { name: "The mash tun at 66 degrees" })).toBeInstanceOf(
+      HTMLElement,
+    );
+  });
+
+  it("renders a numbered list as an ordered list, from the first item's number", () => {
+    render(<Markdown md={"3. Boil\n4. Chill\n- dry hop"} />);
+    const lists = screen.getAllByRole("list");
+    expect(lists.map((list) => list.tagName)).toEqual(["OL", "UL"]);
+    expect(lists[0]).toHaveProperty("start", 3);
+    expect(lists.map((list) => list.textContent)).toEqual(["BoilChill", "dry hop"]);
+  });
+
+  it("renders a table named by the heading above it, with its head and body rows", () => {
+    render(
+      <Markdown
+        md={"## Grain bill\n| Malt | kg |\n| --- | --: |\n| Pale | 4.5 |\n| Crystal | 0.3 |"}
+      />,
+    );
+    const table = screen.getByRole("table", { name: "Grain bill" });
+    expect(
+      within(table)
+        .getAllByRole("columnheader")
+        .map((th) => th.textContent),
+    ).toEqual(["Malt", "kg"]);
+    expect(within(table).getAllByRole("row")).toHaveLength(3);
+    expect(
+      within(table)
+        .getAllByRole("cell")
+        .map((td) => td.textContent),
+    ).toEqual(["Pale", "4.5", "Crystal", "0.3"]);
+  });
+
+  it("names a table with no heading above it by tableLabel", () => {
+    render(<Markdown md={"| a | b |\n|---|---|\n| 1 | 2 |"} tableLabel="Tabel" />);
+    expect(screen.getByRole("table", { name: "Tabel" })).toBeInstanceOf(HTMLElement);
+  });
 });
