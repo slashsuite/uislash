@@ -7,6 +7,25 @@ import "./tailwind.css";
 // Storybook opens in the dark theme, as it always has. The first theme by id is now a light one.
 const initialTheme = themeNames.find((name) => declaresDark(THEMES[name] ?? "")) ?? themeNames[0];
 
+/**
+ * Under automation (the visual capture, the e2e) every lazy image loads at once. A full-page shot
+ * holds every image, and the capture the Visual workflow pins waits for each to load, which a lazy
+ * one below the fold never does; newer captures make them eager themselves. A person browsing
+ * Storybook still gets lazy loading.
+ */
+function loadLazyImagesAtOnce() {
+  for (const img of document.querySelectorAll<HTMLImageElement>('img[loading="lazy"]')) {
+    img.loading = "eager";
+  }
+}
+if (navigator.webdriver) {
+  new MutationObserver(loadLazyImagesAtOnce).observe(document.documentElement, {
+    subtree: true,
+    childList: true,
+    attributeFilter: ["loading"],
+  });
+}
+
 /** Stands in for an app's router Link: an in-app href stays on the story instead of leaving Storybook. */
 const StoryLink: LinkAdapter = ({ href, ...rest }) => <a {...rest} href={`#${href}`} />;
 
