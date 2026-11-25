@@ -172,10 +172,13 @@ jobs:
           LLMS_URL: ${{ inputs.llms-url }}
         run: |
           if [ "$BUILD_RUBRIC" = "true" ]; then
-            # moon builds it where the pinned hackcove-ref has moved to moon, Nx where it has not.
-            if [ -f "$HACKCOVE_DIR/.moon/workspace.yml" ]; then build="bunx moon run hack-cove-site:build"; else build="bunx nx run hack-cove-site:build"; fi
+            # tools/docs writes it where the pinned hackcove-ref has it; an older ref builds the site
+            # that used to publish it, with moon where that ref has moved to moon and Nx where not.
+            if [ -d "$HACKCOVE_DIR/tools/docs" ]; then build="bunx moon run docs:llms"; out="tools/docs/dist/llms.txt"
+            elif [ -f "$HACKCOVE_DIR/.moon/workspace.yml" ]; then build="bunx moon run hack-cove-site:build"; out="apps/hack-cove-site/dist/ui/llms.txt"
+            else build="bunx nx run hack-cove-site:build"; out="apps/hack-cove-site/dist/ui/llms.txt"; fi
             (cd "$HACKCOVE_DIR" && bun install --frozen-lockfile && $build) \
-              && echo "path=$HACKCOVE_DIR/apps/hack-cove-site/dist/ui/llms.txt" >> "$GITHUB_OUTPUT" \
+              && echo "path=$HACKCOVE_DIR/$out" >> "$GITHUB_OUTPUT" \
               || {
                 echo "::error title=UISlash review::could not build the component reference; the model review did not run."
                 printf '## UISlash review\n\n**The model review did not run**: could not build the component reference.\n' >> "$GITHUB_STEP_SUMMARY"

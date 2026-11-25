@@ -1,0 +1,31 @@
+{
+  "name": "@slashsuite/docs",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The component docs' tooling: generates props.json and types.json from ui-react's source, and renders llms.txt and the agent docs @slashsuite/ui-react ships. Dev tooling, not published.",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "oxlint -c .oxlintrc.json --type-aware --deny-warnings && bun ../../scripts/check-slop.ts",
+    "test": "vitest run",
+    "props": "bun scripts/props.ts",
+    "llms": "bun scripts/llms.ts"
+  },
+  "dependencies": {
+    "@slashsuite/themes-shared": "workspace:*",
+    "@slashsuite/ui-react": "workspace:*",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/bun": "1.4.4",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "react-docgen-typescript": "^2.4.0",
+    "typescript": "5.9.3",
+    "vitest": "5.1.0"
+  },
+  "nx": {
+    "name": "docs"
+  }
+}

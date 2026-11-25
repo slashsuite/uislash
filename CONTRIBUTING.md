@@ -43,7 +43,7 @@ themes** shows every component in every theme on one page.
 | `packages/oxlint-testing` | `@slashsuite/oxlint-testing` | The shared oxlint config and plugin for UI tests. Its fixture suite is its `test`; `bun run lint:testing` reports what it finds in this repo. |
 | `apps/storybook` | (private) | Storybook and the Playwright e2e. |
 | `packages/themes-shared` | (private) | How Storybook and the docs find the themes: the `themes/*.css` glob, the theme ids and each theme's scope class. |
-| `apps/hack-cove-site` | (private) | The hack-cove.com Astro site, including the `/ui/` component docs; run it with `bunx moon run hack-cove-site:dev` (http://localhost:4321). Its e2e is `bunx moon run hack-cove-site:e2e`. |
+| `tools/docs` | (private) | The component docs' tooling: `bunx moon run docs:props` regenerates `packages/ui-react/docs/props.json` and `types.json`, `docs:llms` writes `tools/docs/dist/llms.txt`, and its tests check the docs data. The docs site is built outside this repo. |
 | `tools/ui-review` | (private) | Dev tooling for the `ui-review.yml` reusable workflow: a deterministic check of a pull request's added lines and an advisory model review. Not published; no package depends on it. |
 
 ## The gate
@@ -56,14 +56,13 @@ bunx moon run :typecheck :lint :test :build      # tsc strict · oxlint + check-
 bun run format:check                             # oxfmt --check (`bun run format` fixes)
 bunx moon run :pack-check                        # npm pack --dry-run for every package; ui-react also typechecks its tarball in a consumer app
 bunx moon run storybook:e2e                      # Playwright, in Chromium: builds Storybook, flips every theme
-bunx moon run hack-cove-site:e2e                 # Playwright: builds the site, flips every theme on the /ui/ pages
 ```
 
 moon runs every task through the cache, so an unchanged project is a cache hit; `--force` reruns
 one anyway. Lint rules are all errors: fix the code, do not disable a rule.
 
 The shared testing lint (`@slashsuite/oxlint-testing`) is part of `ui-react`'s, `storybook`'s and
-`hack-cove-site`'s `lint`, so a ui-react test that walks the DOM, or a Storybook or site spec that
+`docs`'s `lint`, so a ui-react test that walks the DOM, or a Storybook spec that
 finds an element by CSS, branches or waits on a style, fails the gate. For every other project, `bun run lint:testing` reports, per
 project and per rule, what it finds in the tests, and always exits 0. Each project moves into its own
 `lint` once its count is 0 (`packages/oxlint-testing/README.md`).
@@ -110,7 +109,7 @@ classic compiler API for it to parse them with.
    in `apps/storybook/src/Gallery.tsx`. Its docs page names Do/Don't topics, the stories
    `Do<Topic>` and `Dont<Topic>`. A topic shows both halves when a counter-example teaches
    something; one shown on its own (a feature, or a wrong way the types already refuse) is listed
-   with its reason in `ONE_HALF` in `apps/hack-cove-site/test/docs.test.tsx`.
+   with its reason in `ONE_HALF` in `tools/docs/test/docs.test.ts`.
    Its story title is `<Section>/<Page name>`, read from the docs' `componentSections`
    (`packages/ui-react/docs/components/`): add the component to a page there first, then
    title the story file with that page's section and name. Storybook's sidebar takes its order from
@@ -130,7 +129,7 @@ classic compiler API for it to parse them with.
    platform has no element for (the date picker, the combobox, the number field), and its popup
    is portalled into the open dialog, so it is never under the dialog's top layer.
 8. **A new part lands with its first consumer.** A component added for a need ships in the same
-   change as the swap on `apps/hack-cove-site` (or a consumer app) that uses it, so the library
+   change as the swap on a consumer app that uses it, so the library
    grows only from a need that is real and a part nobody uses does not wait in the package.
 9. **A card is not a choice.** `Card` and `MediaTile` have no selected state. A pick among cards is an
    option card (`RadioGroup` or `Checkbox` with `variant="card"`), so the choice is a form value with its

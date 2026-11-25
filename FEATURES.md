@@ -56,9 +56,9 @@ Checked against main at 2ab470f on 2026-11-20.
 - `ui-review-review-by-hand`: run the model review on a local diff, or print the prompt it would send. How to reach it: `bun tools/ui-review/src/review.ts --base <sha> --llms <llms.txt>` with `--dry-run` (print, send nothing), `--pr` and `--repo` (comment on that pull request), and the rule check's `--head`, `--hackcove` and `--paths`. Source: `tools/ui-review/src/review.ts` `tools/ui-review/src/args.ts`
 
 ## Docs site
-- `docs-site`: read the getting started page for the components and themes. How to reach it: https://hack-cove.com/ui/. Source: `apps/hack-cove-site/src/pages/ui/index.astro`
-- `component-docs`: read 92 docs pages, one per page of the component docs, each covering one component or a family of related exports, with its examples, do and don't, exports, types and functions. How to reach it: `/ui/<slug>/` on https://hack-cove.com/ui/, built by `[slug].astro`. Source: `apps/hack-cove-site/src/pages/ui/[slug].astro` `apps/hack-cove-site/src/components/ComponentPage.tsx` `packages/ui-react/docs/components/index.ts`
-- `llms-txt`: give an agent the whole component reference as one text file. How to reach it: `/ui/llms.txt` on https://hack-cove.com/ui/. Source: `apps/hack-cove-site/src/pages/ui/llms.txt.ts`
+- `docs-site`: read the getting started page for the components and themes. How to reach it: https://hack-cove.com/ui/. Source: built outside this repo from `packages/ui-react/docs/ui.ts`
+- `component-docs`: read 92 docs pages, one per page of the component docs, each covering one component or a family of related exports, with its examples, do and don't, exports, types and functions. How to reach it: `/ui/<slug>/` on https://hack-cove.com/ui/, built outside this repo from the docs data. Source: `packages/ui-react/docs/components/index.ts` `packages/ui-react/docs/examples`
+- `llms-txt`: give an agent the whole component reference as one text file. How to reach it: `/ui/llms.txt` on https://hack-cove.com/ui/, or `bunx moon run docs:llms` for `tools/docs/dist/llms.txt`. Source: `tools/docs/src/llms.ts`
 
 ## Internal packages
 - `internal-themes-shared`: `@slashsuite/themes-shared` is internal and not installed by users; it is how the repo's own apps find the themes and their scope classes. How to reach it: inside this repo only. Source: `packages/themes-shared/package.json`
@@ -66,7 +66,7 @@ Checked against main at 2ab470f on 2026-11-20.
 - `internal-ui-review`: `@slashsuite/ui-review` is internal and not installed by users; it is the code the UI review workflow runs. How to reach it: through `ui-review.yml`. Source: `tools/ui-review/package.json`
 - `internal-storybook`: `@slashsuite/storybook` is internal and not installed by users; it is the repo's Storybook for the components, with a theme switcher. How to reach it: `bunx moon run storybook:storybook` in this repo. Source: `apps/storybook/package.json`
 - `internal-scripts`: `@slashsuite/scripts` is internal and not installed by users; it holds the repo's own scripts. How to reach it: inside this repo only. Source: `scripts/package.json`
-- `internal-hack-cove-site`: `apps/hack-cove-site` is internal and not installed by users; it is the hack-cove.com website, of which only the `/ui/` pages are UISlash. How to reach it: https://hack-cove.com/ui/. Source: `apps/hack-cove-site/package.json`
+- `internal-docs`: `@slashsuite/docs` is internal and not installed by users; it generates the props reference and renders `llms.txt` and the agent docs `@slashsuite/ui-react` ships. How to reach it: `bunx moon run docs:props` and `bunx moon run docs:llms` in this repo. Source: `tools/docs/package.json`
 
 ## Planned
 - `react-native`: a React Native package, `@slashsuite/ui-react-native`, built natively; not built yet.
