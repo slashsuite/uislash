@@ -58,9 +58,11 @@ export function PageFade({
  * the top of the page. Focus on a tab or a radio (Tabs, SegmentedControl) stays: those switch a
  * view in place and keep their own arrow keys.
  */
-function focusView(): void {
+function focusView(before: Element | null): void {
   const active = document.activeElement;
   if (active instanceof Element && active.closest('[role="tab"],[role="radio"]')) return;
+  // The new view put the focus somewhere itself (an `autoFocus` field): leave it there.
+  if (active !== before && active !== document.body && active !== null) return;
   const views = [...document.querySelectorAll<HTMLElement>("[data-page-view]")];
   const view = views.find((el) => !el.hasAttribute("data-page-fade")) ?? views[0];
   if (!view) return;
@@ -70,8 +72,9 @@ function focusView(): void {
 
 /** Run `update` now, so the DOM is the new view's, then move the focus to it. */
 function swap(update: () => void): void {
+  const before = document.activeElement;
   flushSync(update);
-  focusView();
+  focusView(before);
 }
 
 /**

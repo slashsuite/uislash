@@ -448,6 +448,11 @@ delete the hand-drawn `tabpanel`:
 <Tabs items={[{ value: "a", label: "A", panel: <ViewA /> }]} value={v} onChange={setV} label="Views" />
 ```
 
+Every tab's panel is now mounted, the hidden ones too, so find in page can reach them. A view that
+fetches or subscribes as it mounts now does so on page load, for every tab. To mount only the
+current view, give the others `null`: `panel: v === "a" ? <ViewA /> : null`. Its tab is still wired
+to its panel, but find in page no longer reaches that view's text.
+
 ### ListRow's `revealOnHover` is gone
 
 A static row's `actions` are always shown. An action that appears only on hover is one a touch or

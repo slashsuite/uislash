@@ -31,6 +31,7 @@ export const navigation: ComponentSection = {
       usage: {
         do: [
           "`Tabs` switches a view in place: each tab carries its `panel`, which Tabs draws under the row (beside the rail); the caller owns `value` and `onChange`.",
+          'Every panel is mounted, the hidden ones too, so find in page reaches them. A view too heavy to mount before it is chosen is `null` until its tab is current (`panel: value === "a" ? <ViewA /> : null`), and find in page then skips it.',
           "Going to another page is link items (`href`, and `selected` on the current one): links, so the URL, the back button and a new tab all work.",
           "A `count` sits muted after the label and is read as part of the tab's name.",
           'Across, tabs are always underline, under a `PageHeader` too: one line that scrolls sideways, with a fade, when it is too wide. `orientation="vertical"` is the pill rail, the current tab filled, for a `SidebarLayout` aside, and only the rail takes `size`.',

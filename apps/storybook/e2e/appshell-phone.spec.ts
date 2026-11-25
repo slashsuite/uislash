@@ -53,6 +53,12 @@ const isOpen = (menu: Locator) =>
 const noSidewaysScroll = (page: Page) =>
   page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
 
+/** How far the widest nav in the open Menu scrolls sideways (0: every link wraps into view). */
+const navOverflow = (menu: Locator) =>
+  menu
+    .getByRole("navigation")
+    .evaluateAll((navs) => Math.max(0, ...navs.map((nav) => nav.scrollWidth - nav.clientWidth)));
+
 /** A link a finger can reach: scrolled into view, inside the viewport, and nothing covering it. */
 async function reachable(link: Locator): Promise<boolean> {
   await link.scrollIntoViewIfNeeded();
@@ -95,6 +101,7 @@ for (const { id: theme } of themes) {
         await expect.poll(() => isOpen(menu)).toBe(true);
         const all = menuLinks(menu);
         await expect(all).toHaveCount(links);
+        expect(await navOverflow(menu), `${id}: a nav in the Menu scrolls sideways`).toBe(0);
         for (const link of await all.all()) {
           expect(await reachable(link), `${id}: ${await link.textContent()} is not reachable`).toBe(
             true,

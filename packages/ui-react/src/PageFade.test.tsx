@@ -119,6 +119,19 @@ function Site() {
   );
 }
 
+/** A page whose next view puts the focus in its own field as it mounts. */
+function FormSite() {
+  const [page, setPage] = useState("one");
+  return (
+    <>
+      <button type="button" onClick={() => startPageTransition(() => setPage("two"))}>
+        Go to the form
+      </button>
+      <PageFade>{page === "two" && <input aria-label="Name" autoFocus />}</PageFade>
+    </>
+  );
+}
+
 describe("startPageTransition focus", () => {
   it("moves the focus to the page's view, the unnamed PageFade, after the change", async () => {
     stubMotion(false);
@@ -145,6 +158,13 @@ describe("startPageTransition focus", () => {
     render(<Site />);
     await user().click(screen.getByRole("button", { name: "Go to page two" }));
     expect(document.activeElement).toBe(screen.getByText("page two"));
+  });
+
+  it("leaves the focus where the new view put it itself", async () => {
+    stubMotion(false);
+    render(<FormSite />);
+    await user().click(screen.getByRole("button", { name: "Go to the form" }));
+    expect(document.activeElement).toBe(screen.getByRole("textbox", { name: "Name" }));
   });
 
   it("leaves the focus on a radio or tab, which switches the view in place", async () => {

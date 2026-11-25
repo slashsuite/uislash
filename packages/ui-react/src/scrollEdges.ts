@@ -1,16 +1,26 @@
 import { useEffect } from "react";
 
+// What each observer already watches. Observing an element again restarts it, which reports its
+// size once more and, from inside the callback, would loop.
+const watched = new WeakMap<ResizeObserver, WeakSet<Element>>();
+
 /**
- * Observes each child of `box` that draws a box. A ResizeObserver never fires for a
- * `display: contents` element (it has no box), so such a child is looked through and its own
- * children are observed instead, down any depth. A hidden child is skipped.
+ * Observes each child of `box` that draws a box and is not watched yet. A ResizeObserver never
+ * fires for a `display: contents` element (it has no box), so such a child is looked through and
+ * its own children are observed instead, down any depth. A hidden child is skipped; call it again
+ * once it may show (from the observer's callback), and only the new ones are added.
  */
 export function observeItems(observer: ResizeObserver, box: Element): void {
+  const seen = watched.get(observer) ?? new WeakSet<Element>();
+  watched.set(observer, seen);
   for (const child of box.children) {
     const display = getComputedStyle(child).display;
     if (display === "none") continue;
     if (display === "contents") observeItems(observer, child);
-    else observer.observe(child);
+    else if (!seen.has(child)) {
+      seen.add(child);
+      observer.observe(child);
+    }
   }
 }
 
@@ -44,7 +54,15 @@ export function useScrollEdges(element: HTMLElement | null, axis: "x" | "y"): vo
     update();
     el.addEventListener("scroll", update, { passive: true });
     // jsdom (a consumer's own tests) has no ResizeObserver.
-    const resize = typeof ResizeObserver === "undefined" ? undefined : new ResizeObserver(update);
+    // Each resize looks for items again: one hidden when the effect ran (`display: none` below a
+    // breakpoint) is observed once it shows. Observing an item twice is a no-op.
+    const resize: ResizeObserver | undefined =
+      typeof ResizeObserver === "undefined"
+        ? undefined
+        : new ResizeObserver(() => {
+            if (resize) observeItems(resize, el);
+            update();
+          });
     if (resize) {
       resize.observe(el);
       observeItems(resize, el);

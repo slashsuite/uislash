@@ -70,6 +70,11 @@ export function AppShellMenuButton({
 const PANEL_MENU =
   "fixed inset-x-0 top-(--app-header) bottom-auto m-0 h-auto max-h-[calc(100dvh-var(--app-header))] w-auto max-w-none overflow-y-auto overscroll-contain border-x-0 border-y border-slate-200 bg-white p-0 text-inherit shadow-lg";
 
+// In the Menu a tab row (`Tabs` of links is a `nav`, of buttons a `tablist`) wraps rather than
+// scrolling sideways, so every link shows in the panel.
+const WRAP =
+  "[&_nav]:flex-wrap [&_nav]:gap-y-1 [&_[role=tablist]]:flex-wrap [&_[role=tablist]]:gap-y-1";
+
 /** Close the panel if it is open; one that is not shown, or a browser with no popover API, does nothing. */
 function hide(panel: HTMLElement | null): void {
   if (panel && "hidePopover" in panel) panel.hidePopover();
@@ -149,15 +154,18 @@ export function AppShellMenuPanel({
           <div
             // From `md` the nav is a row item of its own (the row's `*:shrink-0` does not reach through
             // `contents`): it keeps its full width, so a nav too wide overflows the row and folds.
+            // In the Menu its tab rows wrap, so no link is left past the panel's edge.
             className={cx(
               "flex flex-col gap-3",
-              rowMode && "md:shrink-0 md:flex-row md:items-center md:gap-4 md:*:shrink-0",
+              WRAP,
+              rowMode &&
+                "md:shrink-0 md:flex-row md:items-center md:gap-4 md:*:shrink-0 md:[&_nav]:flex-nowrap md:[&_[role=tablist]]:flex-nowrap",
             )}
           >
             {nav}
           </div>
         )}
-        {subnav && <div className="flex flex-col gap-3 md:hidden">{subnav}</div>}
+        {subnav && <div className={cx("flex flex-col gap-3 md:hidden", WRAP)}>{subnav}</div>}
         {controls && (
           <div
             className={cx(
