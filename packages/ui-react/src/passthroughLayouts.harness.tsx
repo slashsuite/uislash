@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
 import * as ui from "./index.js";
 
-/** The side-column layouts' and the article's cases of `CASES` (`passthrough.harness.tsx`), each given the probe attributes `a`. */
+/** The side-column layouts', the article's and the closing band's cases of `CASES` (`passthrough.harness.tsx`), each given the probe attributes `a`. */
 export function layoutCases(a: Record<string, string>): Record<string, () => ReactElement> {
   return {
     SideColumn: () => (
@@ -24,5 +24,6 @@ export function layoutCases(a: Record<string, string>): Record<string, () => Rea
         x
       </ui.ArticleLayout>
     ),
+    CallToAction: () => <ui.CallToAction title="T" actions="a" {...a} />,
   };
 }

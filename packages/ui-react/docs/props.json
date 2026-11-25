@@ -798,6 +798,55 @@
       }
     ]
   },
+  "CallToAction": {
+    "name": "CallToAction",
+    "description": "The closing ask of a landing page: a rounded band on the subtle surface with a hairline edge, its\noverline, title, one sentence and one or two actions centred in it. It is a `<section>` named by\nits title. One per page, as the last block before the footer; a section's own actions stay in its\n`Section`.",
+    "props": [
+      {
+        "name": "actions",
+        "type": "ReactNode",
+        "required": true,
+        "description": "One or two actions: a primary `Button` and, if it has one, an `outline` or `ghost` one.",
+        "native": false
+      },
+      {
+        "name": "description",
+        "type": "ReactNode",
+        "required": false,
+        "description": "One sentence under the title, as a `Lead`.",
+        "native": false
+      },
+      {
+        "name": "id",
+        "type": "string",
+        "required": false,
+        "description": "The root element's `id`: an anchor, or the target of a `for` or an `aria-describedby`.",
+        "native": false
+      },
+      {
+        "name": "level",
+        "type": "2 | 3 | 4 | 5 | 6",
+        "required": false,
+        "default": "one below the heading that holds the band: 2 on the page",
+        "description": "The title's heading level, 2 to 6. It does not change how the title looks.",
+        "native": false
+      },
+      {
+        "name": "overline",
+        "type": "ReactNode",
+        "required": false,
+        "description": "A small label above the title, set in the monospace face.",
+        "native": false
+      },
+      {
+        "name": "title",
+        "type": "ReactNode",
+        "required": true,
+        "description": "The ask, one line: \"Start your first review today\". Its heading names the band.",
+        "native": false
+      }
+    ]
+  },
   "Caption": {
     "name": "Caption",
     "description": "Fine print / metadata. A paragraph (`p`; `as=\"span\"` inline), text-sm/5 normal, tertiary\n(text-xs/4 under an `AppShell density=\"compact\"`). Takes `tone`,\n`numeric`, `mono`, `lines` and `align` like `Text`, and `italic` for a muted hint and `breakWords`\nfor a long unbroken string such as a URL.",

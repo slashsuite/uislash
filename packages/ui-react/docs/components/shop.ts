@@ -81,6 +81,31 @@ export const shopPages: ComponentPage[] = [
     api: ["CartButton"],
   },
   {
+    slug: "call-to-action",
+    name: "CallToAction",
+    summary:
+      "A landing page's closing ask: a rounded band with a title, a sentence and one or two actions.",
+    whenToUse:
+      "The last block of a landing or product page, before the footer: the one place the page asks the reader to act.",
+    pairs: ["CallToAction/Close"],
+    usage: {
+      do: [
+        "`title` is the ask, one line; `description` one sentence under it; `actions` a primary `Button` and, if it has one, an `outline` or `ghost` one.",
+        "One per page, as the last block of the page's `Stack`, before the `SiteFooter`. Its surface, edge and text are the theme's, held to AA in every theme.",
+      ],
+      dont: [
+        "Do not make the closing ask from a `Card` and a `Button`: it reads as one more feature card, not the page's ask.",
+        "Do not put one after every section: a section's own actions go in its `Section`'s `actions`.",
+      ],
+    },
+    accessibility: [
+      "It is a `<section>` named by its title (`aria-labelledby`), so it is a region.",
+      "Its title is an `h2` on the page, one below the heading that holds it; `level` sets it by hand.",
+      "`id`, `data-*` and `aria-*` go on the band.",
+    ],
+    api: ["CallToAction"],
+  },
+  {
     slug: "promo-banner",
     name: "PromoBanner",
     summary: "A slim strip in the accent colour with one offer and one action.",

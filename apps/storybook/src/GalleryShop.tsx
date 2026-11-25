@@ -1,4 +1,6 @@
 import {
+  Button,
+  CallToAction,
   CardGrid,
   CartButton,
   Cluster,
@@ -11,7 +13,7 @@ import {
 } from "@slashsuite/ui-react";
 import { sampleScenes } from "../../../packages/ui-react/docs/examples/sampleScene.js";
 
-/** The marketing and shop set: a PromoBanner, a Hero with a picture, a CartButton empty and with a total, Prices plain and on sale, and ProductTiles at full price, on sale and sold out. */
+/** The marketing and shop set: a PromoBanner, a Hero with a picture, a CartButton empty and with a total, Prices plain and on sale, and ProductTiles at full price, on sale and sold out, and a CallToAction. */
 export function GalleryShop() {
   const first = sampleScenes[0]?.src;
   const second = sampleScenes[1]?.src;
@@ -52,6 +54,12 @@ export function GalleryShop() {
           status="sold-out"
         />
       </CardGrid>
+      <CallToAction
+        overline="Ready when you are"
+        title="Frame the bay"
+        description="Every print ships framed this week."
+        actions={<Button href="#prints">Shop prints</Button>}
+      />
     </div>
   );
 }

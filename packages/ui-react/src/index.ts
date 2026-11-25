@@ -191,6 +191,7 @@ export { Price } from "./Price.js";
 export { ProductTile, type ProductTileStatus } from "./ProductTile.js";
 export { CartButton } from "./CartButton.js";
 export { PromoBanner } from "./PromoBanner.js";
+export { CallToAction } from "./CallToAction.js";
 export { ScrollStrip } from "./ScrollStrip.js";
 export { TextLink, type TextLinkSize, type TextLinkTone } from "./TextLink.js";
 export { TableOfContents, type TableOfContentsItem } from "./TableOfContents.js";
