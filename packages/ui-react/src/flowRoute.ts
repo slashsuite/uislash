@@ -209,13 +209,19 @@ export function routeEdges(
   const gaps = gapsBetween([...boxes.values(), ...labels]);
   const ends = placePorts(boxes, edges);
   const runs: Run[] = [];
+  /**
+   * Whether one of dagre's points lies beside a box or a label rather than in a gap. A point in a
+   * gap (a group's border rank) has nothing to clear, and passing through it would make the arrow
+   * turn on a track elsewhere in that gap and double back.
+   */
+  const inRank = (p: Point): boolean => !gaps.some((g) => p.y > g.top && p.y < g.bottom);
   /** Each arrow's corners, with a run's index in place of the y it turns at. */
   const drafts = edges.map((e, i): Draft[] => {
     const box = boxes.get(e.from);
     if (e.from === e.to) return box ? loop(box, e.points) : [];
     const [start, end] = ends[i] ?? [];
     if (!start || !end) return [...e.points];
-    return draftSteps([start, ...e.points.slice(1, -1), end], gaps, runs);
+    return draftSteps([start, ...e.points.slice(1, -1).filter(inRank), end], gaps, runs);
   });
 
   const tracks = assignTracks(runs, gaps.length);

@@ -203,6 +203,21 @@ function sharedRuns(out: FlowLayout): string[] {
     .map((r) => `${r.e.from}->${r.e.to} at y ${r.y}`);
 }
 
+/** Every arrow, bar a self loop, whose runs along the rank direction do not all head one way. */
+function doublesBack(out: FlowLayout, along: "x" | "y"): string[] {
+  return out.edges
+    .filter((e) => e.from !== e.to)
+    .filter((e) => {
+      const ways = new Set(
+        segments(e)
+          .map(({ a, b }) => Math.sign(b[along] - a[along]))
+          .filter((way) => way !== 0),
+      );
+      return ways.size > 1;
+    })
+    .map((e) => `${e.from}->${e.to}`);
+}
+
 describe("routed arrows", () => {
   for (const direction of ["down", "right"] as const) {
     it(`keep off every box and label in a large machine, ranked ${direction}`, () => {
@@ -236,6 +251,12 @@ describe("routed arrows", () => {
       ).toEqual([]);
     });
   }
+
+  it("never double back along the ranks, grouped or not", () => {
+    expect(doublesBack(layoutFlow(machine, moves, "down"), "y")).toEqual([]);
+    expect(doublesBack(layoutFlow(grouped, ring, "down"), "y")).toEqual([]);
+    expect(doublesBack(layoutFlow(grouped, ring, "right"), "x")).toEqual([]);
+  });
 
   it("leave and enter a box through its ends, never its sides, ranked down", () => {
     expect(sideEnds(layoutFlow(machine, moves, "down"))).toEqual([]);
