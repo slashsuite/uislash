@@ -151,6 +151,11 @@ export const CASES: Record<string, () => ReactElement> = {
   Price: () => <ui.Price value="R1" {...A} />,
   ProductTile: () => <ui.ProductTile href="/x" name="X" price="R1" {...A} />,
   CartButton: () => <ui.CartButton count={1} onClick={noop} {...A} />,
+  PromoBanner: () => (
+    <ui.PromoBanner action="Shop" href="#" {...A}>
+      Sale
+    </ui.PromoBanner>
+  ),
   Menu: () => <ui.Menu label="L" items={[{ label: "a", onClick: noop }]} {...A} />,
   MetaList: () => <ui.MetaList {...A}>{ITEMS}</ui.MetaList>,
   Morph: () => (

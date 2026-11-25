@@ -80,4 +80,28 @@ export const shopPages: ComponentPage[] = [
     ],
     api: ["CartButton"],
   },
+  {
+    slug: "promo-banner",
+    name: "PromoBanner",
+    summary: "A slim strip in the accent colour with one offer and one action.",
+    whenToUse:
+      "A shop's offer of the week, above the header or as the page's first block: one line and one action.",
+    pairs: ["PromoBanner/Offer"],
+    usage: {
+      do: [
+        '`children` is the offer, one short line ("Refills from R390 this week"); `action` is the action\'s words ("Shop refills").',
+        "`href` makes the action a link (an in-app path goes through `LinkProvider`); `onClick` a button, to open a dialog.",
+        "Put it above the `AppShell`'s header or as the first block of the page, one per page. The fill and the action's colours are the theme's, held to AA in every theme.",
+      ],
+      dont: [
+        "Do not make a strip from a `Callout` and a `Button`: a toned callout is a message about the page, and an outline button on its tint is not held to the offer's contrast.",
+      ],
+    },
+    accessibility: [
+      "The offer is a paragraph and the action a link or a button named by its words, so the action says what it does without the offer.",
+      "The action's focus ring is drawn inside it, so it shows on the accent fill.",
+      "`id`, `data-*` and `aria-*` go on the strip.",
+    ],
+    api: ["PromoBanner"],
+  },
 ];

@@ -7,16 +7,20 @@ import {
   Lead,
   Price,
   ProductTile,
+  PromoBanner,
 } from "@slashsuite/ui-react";
 import { sampleScenes } from "../../../packages/ui-react/docs/examples/sampleScene.js";
 
-/** The marketing and shop set: a Hero with a picture, a CartButton empty and with a total, Prices plain and on sale, and ProductTiles at full price, on sale and sold out. */
+/** The marketing and shop set: a PromoBanner, a Hero with a picture, a CartButton empty and with a total, Prices plain and on sale, and ProductTiles at full price, on sale and sold out. */
 export function GalleryShop() {
   const first = sampleScenes[0]?.src;
   const second = sampleScenes[1]?.src;
   const third = sampleScenes[2]?.src;
   return (
     <div className="flex max-w-xl flex-col gap-4">
+      <PromoBanner action="Shop prints" href="#prints">
+        Free framing on every print this week
+      </PromoBanner>
       <Hero
         overline="New prints"
         title="The bay, framed."

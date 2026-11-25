@@ -5968,6 +5968,47 @@
       }
     ]
   },
+  "PromoBanner": {
+    "name": "PromoBanner",
+    "description": "A slim full-width strip that carries one offer and one action: \"Refills from R390 this week\",\nthen \"Shop refills\". It is the theme's accent fill with its label colour, and the action is a\nsmall surface pill on it, so both hold AA contrast in every theme. Put it above the `AppShell`'s\nheader or as the first block of the page; one per page. The words wrap and stay centred on a\nphone. With `href` the action is a link (an in-app path goes through `LinkProvider`), with\n`onClick` a button.",
+    "props": [
+      {
+        "name": "action",
+        "type": "string",
+        "required": true,
+        "description": "The action's words: \"Shop refills\".",
+        "native": false
+      },
+      {
+        "name": "children",
+        "type": "ReactNode",
+        "required": true,
+        "description": "The offer, one short line: \"Refills from R390 this week\".",
+        "native": false
+      },
+      {
+        "name": "href",
+        "type": "string",
+        "required": false,
+        "description": "Where the action goes; an in-app path goes through `LinkProvider`.",
+        "native": false
+      },
+      {
+        "name": "id",
+        "type": "string",
+        "required": false,
+        "description": "The root element's `id`: an anchor, or the target of a `for` or an `aria-describedby`.",
+        "native": false
+      },
+      {
+        "name": "onClick",
+        "type": "MouseEventHandler<HTMLButtonElement>",
+        "required": false,
+        "description": "The action as a button instead of a link: it opens a dialog, say.",
+        "native": false
+      }
+    ]
+  },
   "Prose": {
     "name": "Prose",
     "description": "Long-form content, for a docs page or an article. A block (`div`) that sets the long line height\n(leading-7) on itself and puts the text roles inside it on the prose scale: `Text` text-base/7\n(the size it is outside, on a longer line), `SectionHeading` text-2xl/8, `SubsectionHeading` `lg` text-2xl/8,\n`md` text-xl/7 and `sm` text-base/7 (a semibold line at body size), and the box of a `Callout`\ntext-base/7. Every other role keeps its size. Nothing outside a `Prose` changes, and a `Dialog`,\n`Drawer` or `EmptyState` inside one is back on the app scale. An app screen never uses it: wrap the\nbody of a docs page or an article, inside a `ProseLayout`, a `SidebarLayout` or anywhere else.\nIts blocks (`Section`s, paragraphs) are a `Stack`'s gap apart, as they would be in a `Stack`.",
