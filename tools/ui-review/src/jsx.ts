@@ -103,3 +103,123 @@ export function stylingProps(source: string): StylingProp[] {
       .map((attribute) => ({ component, prop: attribute.name, line: lineAt(attribute.at) }));
   });
 }
+
+const blank = (text: string) => text.replace(/[^\n]/g, " ");
+
+/** Index just past a `"` or `'` string at `from`; it ends at its quote or at the line's end. */
+function skipLineString(source: string, from: number): number {
+  const quote = source[from];
+  for (let i = from + 1; i < source.length; i += 1) {
+    if (source[i] === "\\") i += 1;
+    else if (source[i] === quote || source[i] === "\n") return i + 1;
+  }
+  return source.length;
+}
+
+/** Where the comment that starts at `i` ends, or -1 when no comment starts there. */
+function commentEnd(source: string, i: number): number {
+  const two = source.slice(i, i + 2);
+  const close = (marker: string, from: number) => {
+    const at = source.indexOf(marker, from);
+    return at === -1 ? source.length : at + marker.length;
+  };
+  if (two === "//") {
+    const at = source.indexOf("\n", i);
+    return at === -1 ? source.length : at;
+  }
+  if (two === "/*") return close("*/", i + 2);
+  if (source.startsWith("<!--", i)) return close("-->", i + 4);
+  return -1;
+}
+
+/**
+ * `source` with every comment (`//`, `/* … *\/`, `<!-- … -->`, so JSX's `{/* … *\/}` too) blanked
+ * to spaces, newlines kept, so an index or a line number means what it did. Strings and template
+ * literals are skipped, so a `//` in a URL stays. A `"` or `'` string ends at its line, so an
+ * apostrophe in JSX text (`<p>Don't</p>`) hides at most the rest of its line.
+ */
+export function blankComments(source: string): string {
+  let out = "";
+  let i = 0;
+  while (i < source.length) {
+    const char = source[i];
+    const end = commentEnd(source, i);
+    let next = i + 1;
+    if (end !== -1) next = end;
+    else if (isQuote(char)) next = skipLineString(source, i);
+    else if (char === "`") next = skipValue(source, i);
+    const text = source.slice(i, next);
+    out += end === -1 ? text : blank(text);
+    i = next;
+  }
+  return out;
+}
+
+/** An opening tag of any element or component: `<div`, `<Button`, `<svg:g`. */
+const ANY_OPEN_TAG = /<([A-Za-z][\w$.:-]*)(?=[\s/>])/g;
+
+/** An attribute's value as written (`"text"`, `{…}`), or `undefined` for a bare attribute. */
+export function attributeValue(
+  source: string,
+  attribute: Attribute,
+): { at: number; text: string } | undefined {
+  const equals = /^\s*=\s*/.exec(source.slice(attribute.end, attribute.end + 64));
+  if (equals === null) return undefined;
+  const at = attribute.end + equals[0].length;
+  return { at, text: source.slice(at, skipValue(source, at)) };
+}
+
+export type Tag = { name: string; at: number; attributes: Attribute[] };
+
+/** Every opening tag in `source` (comments blanked first by the caller), with its attributes. */
+export function openTags(source: string): Tag[] {
+  return [...source.matchAll(ANY_OPEN_TAG)].map((tag) => {
+    const at = tag.index ?? 0;
+    return { name: tag[1] ?? "", at, attributes: attributesOf(source, at + tag[0].length) };
+  });
+}
+
+type Part = { at: number; text: string };
+
+/** A template literal's text runs, and the strings inside each `${ … }`, from the `` ` `` at `from` to `end`. */
+function templateParts(value: string, from: number, end: number): Part[] {
+  const found: Part[] = [];
+  let start = from + 1;
+  let i = start;
+  while (i < end - 1) {
+    if (value[i] === "\\") i += 2;
+    else if (value[i] === "$" && value[i + 1] === "{") {
+      found.push({ at: start, text: value.slice(start, i) });
+      const close = skipValue(value, i + 1);
+      const code = value.slice(i + 2, close - 1);
+      found.push(...stringsIn(code).map((part) => ({ at: i + 2 + part.at, text: part.text })));
+      i = close;
+      start = i;
+    } else i += 1;
+  }
+  found.push({ at: start, text: value.slice(start, end - 1) });
+  return found;
+}
+
+/**
+ * The string parts of a JSX value (`"…"`, `'…'`, a template literal's text, and the strings in its
+ * `${ … }`, never its code), each with its index in the value. Object keys come too: a CSS property
+ * name is never a colour.
+ */
+export function stringsIn(value: string): Part[] {
+  const found: Part[] = [];
+  let i = 0;
+  while (i < value.length) {
+    const char = value[i];
+    if (char === "`") {
+      const end = skipValue(value, i);
+      found.push(...templateParts(value, i, end));
+      i = end;
+    } else if (isQuote(char)) {
+      const end = skipString(value, i);
+      found.push({ at: i + 1, text: value.slice(i + 1, end - 1) });
+      i = end;
+    } else i += 1;
+  }
+  return found;
+}

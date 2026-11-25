@@ -30,6 +30,7 @@
   "files": [
     ".oxlintrc.json",
     "plugin.js",
+    "rules/",
     "LICENSE"
   ],
   "type": "module",
@@ -51,7 +52,7 @@
   "peerDependencies": {
     "eslint-plugin-playwright": "2.12.2",
     "eslint-plugin-testing-library": "7.16.2",
-    "oxlint": "1.89.0"
+    "oxlint": "1.94.0"
   },
   "nx": {
     "name": "oxlint-testing"

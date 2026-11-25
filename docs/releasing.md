@@ -54,11 +54,16 @@ follows `cli.packageManager`, which must stay `npm` for the publish step, and wo
 Nx pushes the release commit, the tags and the GitHub release before it runs `npm publish`. If the
 publish then fails, a re-run finds nothing new to release. Fix the cause and land a releasable
 commit: the next run publishes the next version. A stranded version is never published by hand.
-The exception is a first publish: its tag exists from the moment Nx pushes, so a failed staging
-(wrong token scope, expired token) leaves a project with a tag and nothing on npm. The workflow
-files it as *staged* and skips it with a notice, as if it waited for approval. If Staged Packages
-on npmjs.com does not list it, delete the tag (`git push origin :refs/tags/<project>@<version>`)
-and the GitHub release, revert the release commit, and start the first-release steps again. A dry
+The exception is a staging: its tag exists from the moment Nx pushes, so a failed staging (wrong
+token scope, expired token) leaves a project with a tag and nothing on npm. The next run files it
+as *staged*, and its "Retry a failed staging" step asks npm (`npm stage list <package> --json`)
+whether that version has a staging. If npm has none (a package that is not on npm yet counts as
+none), the step stages the tagged version again from the folder, so fixing the token and
+dispatching again is the whole recovery. A staging npm holds, waiting or rejected, is left alone:
+a rejection is the maintainer's call. The folder is packed as it is on `main`, so the step stages
+only while the folder still matches the tag; if it changed since, the project is skipped with a
+warning and the maintainer decides. The step needs `NPM_TOKEN` to read the list; without it the
+project is skipped with a notice, as before. A dry
 run does not exercise the token, so it cannot catch this.
 
 Locally, the same dry run of the tagged projects is:
@@ -90,8 +95,9 @@ placeholder, which npm publishes when a brand-new package is staged, does not co
   "Renaming a package". Released by conventional commits and staged with `NPM_TOKEN` like a first
   publish.
 - **Staged** (a tag exists, cut under this package name, and nothing is approved on npm): an earlier
-  run staged its first version and it waits for the maintainer. The run skips it with a notice, so
-  a dispatch while it waits neither fails nor bumps it again. Once approved, it is *tagged*.
+  run staged its first version and it waits for the maintainer. The run does not version it, so a
+  dispatch while it waits neither fails nor bumps it again; if npm has nothing waiting for that
+  version, the run stages it again (above). Once approved, it is *tagged*.
 
 Nx's `git-tag` version resolver refuses a project with no tag, which is why *new* is a separate Nx
 invocation. The first-release step runs `nx release <version-on-disk> --first-release --projects
@@ -110,7 +116,8 @@ publisher to a package that does not exist yet. So the workflow **stages** the f
 not bypass 2FA: it may stage, but a plain `npm publish` with it stops at npm's OTP prompt. Nothing
 is public until the maintainer approves the staged version with 2FA on npmjs.com. Nx's publish
 executor can only run `npm publish`, so the two NPM_TOKEN steps run `nx release --skip-publish` (the
-version, changelog, tag, push and GitHub release) and then stage the package folder themselves. The
+version, changelog, tag, push and GitHub release) and then stage the package folder themselves. A staged
+version carries provenance (`--provenance`, signed with the job's OIDC token), as an OIDC publish does. The
 token is written to a private `.npmrc` outside the checkout that the step removes on exit, and no
 other step sees it. If a project needs staging and `NPM_TOKEN` is unset, the workflow fails before
 it versions, tags or pushes anything, and names the project.
@@ -120,7 +127,7 @@ it versions, tags or pushes anything, and names the project.
    stop publishing directly around January 2027; staging needs no bypass.)
 2. `gh secret set NPM_TOKEN --env npm-publish` (paste the token when prompted).
 3. Run the workflow with `dry_run` on and read the log: the version (`0.1.0`), the tag
-   (`oxlint-testing@0.1.0`), the changelog, the GitHub release it would create, and
+   (`oxlint-ui@0.1.0` for `@slashsuite/oxlint-ui`), the changelog, the GitHub release it would create, and
    `npm stage publish`'s tarball listing. Then run it again with `dry_run` off. npm publishes a
    `0.0.0-stage` placeholder version of a brand-new package alongside the staged one.
 4. **Approve it**: on npmjs.com, open the package's **Staged Packages** tab, review the staged

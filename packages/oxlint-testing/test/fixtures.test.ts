@@ -27,6 +27,14 @@ function marked(file: string): string[] {
     });
 }
 
+// The numbered rules the README defines, `1: Find elements the way a user does`, from its table rows
+// (`| 1 | Find elements the way a user does | ... |`).
+const readmeRules = new Set(
+  [...readFileSync(join(root, "README.md"), "utf8").matchAll(/^\| (\d) \| ([^|]+?) \|/gm)].map(
+    ([, number, title]) => `${number}: ${title}`,
+  ),
+);
+
 const badFiles = globSync("fixtures/bad/**/*.{ts,tsx}", { cwd: root }).toSorted();
 const hits = lint(["fixtures"], root);
 const reported = (prefix: string): string[] =>
@@ -56,11 +64,13 @@ describe("fixtures/bad", () => {
     expect([...ownedRules()].filter((rule) => !planted.has(rule))).toEqual([]);
   });
 
-  test("each message names the ob-ui-testing rule it enforces", () => {
+  test("each message names a UI testing rule the README defines, by number and title", () => {
     const ours = hits.filter((hit) =>
       /^(ui-testing\/|no-restricted-|\w+\/no-restricted-)/.test(hit.rule),
     );
-    expect(ours.filter((hit) => !/ob-ui-testing rule \d: /.test(hit.message))).toEqual([]);
+    const named = (hit: (typeof hits)[number]): string | undefined =>
+      /\(UI testing rule (\d: [^)]+)\)/.exec(hit.message)?.[1];
+    expect(ours.filter((hit) => !readmeRules.has(named(hit) ?? ""))).toEqual([]);
   });
 });
 

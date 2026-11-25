@@ -120,8 +120,8 @@ function noticeStaged(projects: { project: string; facts: Facts }[], staged: str
     const { name } = projects.find((p) => p.project === project)?.facts ?? { name: project };
     console.log(
       `::notice::${project} (${name}) has a release tag but no version approved on npm: it waits ` +
-        "for the maintainer under Staged Packages on npmjs.com, so this run skips it. If it is not " +
-        'listed there, its staging failed (docs/releasing.md, "First publish of a new package").',
+        "for the maintainer under Staged Packages on npmjs.com, so this run does not version it. The " +
+        '"Retry a failed staging" step stages it again if npm has nothing waiting for it.',
     );
   }
 }

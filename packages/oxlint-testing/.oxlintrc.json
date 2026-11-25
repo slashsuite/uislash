@@ -11,15 +11,16 @@
         "vitest/no-restricted-matchers": [
           "error",
           {
-            "toHaveClass": "toHaveClass checks look: assert the state the user sees, the look is the visual check's (ob-ui-testing rule 7: Behaviour in tests, look in PixelSlash)",
-            "toHaveStyle": "toHaveStyle checks look: assert the state the user sees, the look is the visual check's (ob-ui-testing rule 7: Behaviour in tests, look in PixelSlash)",
-            "toHaveCSS": "toHaveCSS checks look: assert the state the user sees, the look is the visual check's (ob-ui-testing rule 7: Behaviour in tests, look in PixelSlash)",
-            "toHaveScreenshot": "toHaveScreenshot checks look: assert the state the user sees, the look is the visual check's (ob-ui-testing rule 7: Behaviour in tests, look in PixelSlash)",
-            "toMatchScreenshot": "toMatchScreenshot checks look: assert the state the user sees, the look is the visual check's (ob-ui-testing rule 7: Behaviour in tests, look in PixelSlash)"
+            "toHaveClass": "toHaveClass checks look: assert the state the user sees, the look is the visual check's (UI testing rule 7: Behaviour in tests, look in PixelSlash)",
+            "toHaveStyle": "toHaveStyle checks look: assert the state the user sees, the look is the visual check's (UI testing rule 7: Behaviour in tests, look in PixelSlash)",
+            "toHaveCSS": "toHaveCSS checks look: assert the state the user sees, the look is the visual check's (UI testing rule 7: Behaviour in tests, look in PixelSlash)",
+            "toHaveScreenshot": "toHaveScreenshot checks look: assert the state the user sees, the look is the visual check's (UI testing rule 7: Behaviour in tests, look in PixelSlash)",
+            "toMatchScreenshot": "toMatchScreenshot checks look: assert the state the user sees, the look is the visual check's (UI testing rule 7: Behaviour in tests, look in PixelSlash)"
           }
         ],
         "vitest/require-mock-type-parameters": "off",
         "ui-testing/no-node-access": "error",
+        "ui-testing/testid-needs-reason": "warn",
         "testing-library/no-container": "error",
         "testing-library/prefer-screen-queries": "error",
         "testing-library/no-wait-for-side-effects": "error",
@@ -28,36 +29,36 @@
           "error",
           {
             "name": "setTimeout",
-            "message": "setTimeout is a fixed sleep, not a wait: wait on what the user sees, the ready marker or a response (ob-ui-testing rule 2: Wait on a state, never on a clock)"
+            "message": "setTimeout is a fixed sleep, not a wait: wait on what the user sees, the ready marker or a response (UI testing rule 2: Wait on a state, never on a clock)"
           },
           {
             "name": "setInterval",
-            "message": "setInterval is a fixed sleep, not a wait: wait on what the user sees, the ready marker or a response (ob-ui-testing rule 2: Wait on a state, never on a clock)"
+            "message": "setInterval is a fixed sleep, not a wait: wait on what the user sees, the ready marker or a response (UI testing rule 2: Wait on a state, never on a clock)"
           },
           {
             "name": "getComputedStyle",
-            "message": "getComputedStyle checks look: assert the state the user sees, the look is the visual check's (ob-ui-testing rule 7: Behaviour in tests, look in PixelSlash)"
+            "message": "getComputedStyle checks look: assert the state the user sees, the look is the visual check's (UI testing rule 7: Behaviour in tests, look in PixelSlash)"
           }
         ],
         "no-restricted-properties": [
           "error",
           {
             "property": "sleep",
-            "message": "Bun.sleep is a fixed sleep, not a wait: wait on what the user sees, the ready marker or a response (ob-ui-testing rule 2: Wait on a state, never on a clock)",
+            "message": "Bun.sleep is a fixed sleep, not a wait: wait on what the user sees, the ready marker or a response (UI testing rule 2: Wait on a state, never on a clock)",
             "object": "Bun"
           },
           {
             "property": "getComputedStyle",
-            "message": "getComputedStyle checks look: assert the state the user sees, the look is the visual check's (ob-ui-testing rule 7: Behaviour in tests, look in PixelSlash)",
+            "message": "getComputedStyle checks look: assert the state the user sees, the look is the visual check's (UI testing rule 7: Behaviour in tests, look in PixelSlash)",
             "object": "window"
           },
           {
             "property": "className",
-            "message": "className checks look: assert the state the user sees, the look is the visual check's (ob-ui-testing rule 7: Behaviour in tests, look in PixelSlash)"
+            "message": "className checks look: assert the state the user sees, the look is the visual check's (UI testing rule 7: Behaviour in tests, look in PixelSlash)"
           },
           {
             "property": "classList",
-            "message": "classList checks look: assert the state the user sees, the look is the visual check's (ob-ui-testing rule 7: Behaviour in tests, look in PixelSlash)"
+            "message": "classList checks look: assert the state the user sees, the look is the visual check's (UI testing rule 7: Behaviour in tests, look in PixelSlash)"
           }
         ]
       }
@@ -101,54 +102,86 @@
         "playwright/no-restricted-matchers": [
           "error",
           {
-            "toHaveClass": "toHaveClass checks look: assert the state the user sees, the look is the visual check's (ob-ui-testing rule 7: Behaviour in tests, look in PixelSlash)",
-            "toHaveStyle": "toHaveStyle checks look: assert the state the user sees, the look is the visual check's (ob-ui-testing rule 7: Behaviour in tests, look in PixelSlash)",
-            "toHaveCSS": "toHaveCSS checks look: assert the state the user sees, the look is the visual check's (ob-ui-testing rule 7: Behaviour in tests, look in PixelSlash)",
-            "toHaveScreenshot": "toHaveScreenshot checks look: assert the state the user sees, the look is the visual check's (ob-ui-testing rule 7: Behaviour in tests, look in PixelSlash)",
-            "toMatchScreenshot": "toMatchScreenshot checks look: assert the state the user sees, the look is the visual check's (ob-ui-testing rule 7: Behaviour in tests, look in PixelSlash)"
+            "toHaveClass": "toHaveClass checks look: assert the state the user sees, the look is the visual check's (UI testing rule 7: Behaviour in tests, look in PixelSlash)",
+            "toHaveStyle": "toHaveStyle checks look: assert the state the user sees, the look is the visual check's (UI testing rule 7: Behaviour in tests, look in PixelSlash)",
+            "toHaveCSS": "toHaveCSS checks look: assert the state the user sees, the look is the visual check's (UI testing rule 7: Behaviour in tests, look in PixelSlash)",
+            "toHaveScreenshot": "toHaveScreenshot checks look: assert the state the user sees, the look is the visual check's (UI testing rule 7: Behaviour in tests, look in PixelSlash)",
+            "toMatchScreenshot": "toMatchScreenshot checks look: assert the state the user sees, the look is the visual check's (UI testing rule 7: Behaviour in tests, look in PixelSlash)"
           }
         ],
         "ui-testing/no-selector-actions": "error",
         "ui-testing/no-style-assertions": "error",
         "ui-testing/skip-names-ticket": "error",
+        "ui-testing/no-node-access": "error",
+        "ui-testing/no-adhoc-screenshot": "error",
+        "ui-testing/no-raised-timeout": "error",
+        "ui-testing/testid-needs-reason": "warn",
         "no-restricted-globals": [
           "error",
           {
             "name": "setTimeout",
-            "message": "setTimeout is a fixed sleep, not a wait: wait on what the user sees, the ready marker or a response (ob-ui-testing rule 2: Wait on a state, never on a clock)"
+            "message": "setTimeout is a fixed sleep, not a wait: wait on what the user sees, the ready marker or a response (UI testing rule 2: Wait on a state, never on a clock)"
           },
           {
             "name": "setInterval",
-            "message": "setInterval is a fixed sleep, not a wait: wait on what the user sees, the ready marker or a response (ob-ui-testing rule 2: Wait on a state, never on a clock)"
+            "message": "setInterval is a fixed sleep, not a wait: wait on what the user sees, the ready marker or a response (UI testing rule 2: Wait on a state, never on a clock)"
           },
           {
             "name": "getComputedStyle",
-            "message": "getComputedStyle checks look: assert the state the user sees, the look is the visual check's (ob-ui-testing rule 7: Behaviour in tests, look in PixelSlash)"
+            "message": "getComputedStyle checks look: assert the state the user sees, the look is the visual check's (UI testing rule 7: Behaviour in tests, look in PixelSlash)"
           }
         ],
         "no-restricted-properties": [
           "error",
           {
             "property": "sleep",
-            "message": "Bun.sleep is a fixed sleep, not a wait: wait on what the user sees, the ready marker or a response (ob-ui-testing rule 2: Wait on a state, never on a clock)",
+            "message": "Bun.sleep is a fixed sleep, not a wait: wait on what the user sees, the ready marker or a response (UI testing rule 2: Wait on a state, never on a clock)",
             "object": "Bun"
           },
           {
             "property": "getComputedStyle",
-            "message": "getComputedStyle checks look: assert the state the user sees, the look is the visual check's (ob-ui-testing rule 7: Behaviour in tests, look in PixelSlash)",
+            "message": "getComputedStyle checks look: assert the state the user sees, the look is the visual check's (UI testing rule 7: Behaviour in tests, look in PixelSlash)",
             "object": "window"
           },
           {
             "property": "className",
-            "message": "className checks look: assert the state the user sees, the look is the visual check's (ob-ui-testing rule 7: Behaviour in tests, look in PixelSlash)"
+            "message": "className checks look: assert the state the user sees, the look is the visual check's (UI testing rule 7: Behaviour in tests, look in PixelSlash)"
           },
           {
             "property": "classList",
-            "message": "classList checks look: assert the state the user sees, the look is the visual check's (ob-ui-testing rule 7: Behaviour in tests, look in PixelSlash)"
+            "message": "classList checks look: assert the state the user sees, the look is the visual check's (UI testing rule 7: Behaviour in tests, look in PixelSlash)"
           },
           {
             "property": "boundingBox",
-            "message": "boundingBox measures layout, which is look: assert the state the user sees (ob-ui-testing rule 7: Behaviour in tests, look in PixelSlash)"
+            "message": "boundingBox measures layout, which is look: assert the state the user sees (UI testing rule 7: Behaviour in tests, look in PixelSlash)"
+          },
+          {
+            "property": "getBoundingClientRect",
+            "message": "getBoundingClientRect measures layout, which is look: assert the state the user sees, geometry and pixels are the visual check's (UI testing rule 7: Behaviour in tests, look in PixelSlash)"
+          },
+          {
+            "property": "offsetWidth",
+            "message": "offsetWidth measures layout, which is look: assert the state the user sees, geometry and pixels are the visual check's (UI testing rule 7: Behaviour in tests, look in PixelSlash)"
+          },
+          {
+            "property": "offsetHeight",
+            "message": "offsetHeight measures layout, which is look: assert the state the user sees, geometry and pixels are the visual check's (UI testing rule 7: Behaviour in tests, look in PixelSlash)"
+          },
+          {
+            "property": "offsetTop",
+            "message": "offsetTop measures layout, which is look: assert the state the user sees, geometry and pixels are the visual check's (UI testing rule 7: Behaviour in tests, look in PixelSlash)"
+          },
+          {
+            "property": "offsetLeft",
+            "message": "offsetLeft measures layout, which is look: assert the state the user sees, geometry and pixels are the visual check's (UI testing rule 7: Behaviour in tests, look in PixelSlash)"
+          },
+          {
+            "property": "measureText",
+            "message": "measureText measures drawn text, which is look: assert the state the user sees, geometry and pixels are the visual check's (UI testing rule 7: Behaviour in tests, look in PixelSlash)"
+          },
+          {
+            "property": "getImageData",
+            "message": "getImageData samples pixels, which is look: assert the state the user sees, geometry and pixels are the visual check's (UI testing rule 7: Behaviour in tests, look in PixelSlash)"
           }
         ]
       }

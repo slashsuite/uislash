@@ -1,6 +1,7 @@
 import type { Context } from "./context.js";
 import type { AddedLine } from "./diff.js";
 import { importedFromUi, stylingProps } from "./jsx.js";
+import { inlineColours, rawElements, styleBlocks, uncommentedLines } from "./markup.js";
 
 export type RuleId =
   | "new-css"
@@ -8,7 +9,9 @@ export type RuleId =
   | "raw-colour"
   | "dark-variant"
   | "styling-prop"
-  | "duplicate-component";
+  | "duplicate-component"
+  | "inline-colour"
+  | "raw-element";
 
 export type Finding = { rule: RuleId; path: string; line: number; message: string };
 
@@ -33,7 +36,6 @@ const COLOUR =
 const ARBITRARY_COLOUR =
   /(?<![\w-])(?:[a-z-]+:)*(?:bg|text|border|outline|ring|accent|fill|stroke|decoration|divide)-\[(?:#[0-9a-fA-F]{3,8}|(?:rgb|hsl|oklch|oklab|color)\([^\]]*\))\]/g;
 const DARK = /(?<![\w-])dark:[\w[\]-]/;
-const STYLE_BLOCK = /<style[\s>]/i;
 const STYLESHEET_SETUP = /^\s*(?:$|@(?:import|source|plugin|config)\b|\/\/)/;
 const CSS_COMMENT = /\/\*[\s\S]*?(?:\*\/|$)/g;
 const FUNCTION_DECLARATION =
@@ -67,24 +69,19 @@ export function newCss(file: ReviewFile): Finding[] {
   ];
 }
 
-export function styleBlocks(file: ReviewFile): Finding[] {
-  if (!isCode(file.path)) return [];
-  return file.added
-    .filter((added) => STYLE_BLOCK.test(added.text))
-    .map((added) =>
-      found(
-        "style-block",
-        file,
-        added.line,
-        "<style> block. UISlash apps write no CSS of their own: compose @slashsuite/ui-react parts, and ask uislash for what is missing.",
-      ),
-    );
+/** The text a colour rule reads on each added line: in code, comments blanked; a stylesheet as written. */
+function textsOf(file: ReviewFile): (added: AddedLine) => string {
+  if (!isCode(file.path)) return (added) => added.text;
+  const lines = uncommentedLines(file);
+  return (added) => lines.get(added.line) ?? added.text;
 }
 
 export function rawColours(file: ReviewFile, ctx: Context): Finding[] {
   if (!isCode(file.path) && !isStylesheet(file.path)) return [];
+  const textOf = textsOf(file);
   return file.added.flatMap((added) => {
-    const used = [...added.text.matchAll(COLOUR), ...added.text.matchAll(ARBITRARY_COLOUR)].map(
+    const text = textOf(added);
+    const used = [...text.matchAll(COLOUR), ...text.matchAll(ARBITRARY_COLOUR)].map(
       (match) => match[0],
     );
     if (used.length === 0) return [];
@@ -103,8 +100,9 @@ export function rawColours(file: ReviewFile, ctx: Context): Finding[] {
 
 export function darkVariants(file: ReviewFile): Finding[] {
   if (!isCode(file.path) && !isStylesheet(file.path)) return [];
+  const textOf = textsOf(file);
   return file.added
-    .filter((added) => DARK.test(added.text))
+    .filter((added) => DARK.test(textOf(added)))
     .map((added) =>
       found(
         "dark-variant",
@@ -156,10 +154,12 @@ export function duplicateComponents(file: ReviewFile, ctx: Context): Finding[] {
 export function reviewFile(file: ReviewFile, ctx: Context): Finding[] {
   return [
     ...newCss(file),
-    ...styleBlocks(file),
+    ...styleBlocks(file, isCode(file.path)),
     ...rawColours(file, ctx),
     ...darkVariants(file),
     ...stylingPropsRule(file),
     ...duplicateComponents(file, ctx),
+    ...inlineColours(file, isCode(file.path)),
+    ...rawElements(file, isCode(file.path)),
   ];
 }

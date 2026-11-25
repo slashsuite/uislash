@@ -1,0 +1,32 @@
+$schema: "../../.moon/cache/schemas/project.json"
+
+# @slashsuite/oxlint-ui: the oxlint config and plugin that hold an app to @slashsuite/ui-react.
+# Each task runs the package.json script of its name. scripts/data.ts writes ui-react.json from
+# ui-react's exports and palette through tools/ui-review's own code, and the parity test runs
+# ui-review's shared cases through both, so those files are inputs. The root manifest (and its
+# pinned oxlint) is already an input of every task (.moon/tasks/all.yml).
+tasks:
+  typecheck:
+    command: "bun run typecheck"
+    inputs:
+      - "**/*"
+      - "/tools/ui-review/src/**/*"
+      - "/tools/ui-review/test/**/*"
+  lint:
+    command: "bun run lint"
+    inputs: ["**/*"]
+  test:
+    command: "bun run test"
+    inputs:
+      - "**/*"
+      - "/tools/ui-review/src/**/*"
+      - "/tools/ui-review/test/**/*"
+      - "/packages/ui-react/src/index.ts"
+      - "/packages/ui-react/palette.json"
+  pack-check:
+    command: "bun run pack-check"
+    inputs:
+      - "**/*"
+      - "/tools/ui-review/src/**/*"
+      - "/packages/ui-react/src/index.ts"
+      - "/packages/ui-react/palette.json"

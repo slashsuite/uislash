@@ -36,6 +36,7 @@ tasks:
         "@group(deps)",
         "/packages/oxlint-testing/.oxlintrc.json",
         "/packages/oxlint-testing/plugin.js",
+        "/packages/oxlint-testing/rules/**/*",
       ]
   # scripts/visual-plan.test.ts and visual-shots.test.ts read the theme files (themeFiles, readRepo).
   test:

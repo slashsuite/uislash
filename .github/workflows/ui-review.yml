@@ -21,9 +21,8 @@ name: UI review
 #       with: { runs-on: proxmox }
 #       secrets: inherit
 #
-# `runs-on` is for private repos only: a public repo must never use the proxmox runner (Jacobus,
-# 2026-11-11). Whatever runner a caller picks, the jobs below skip a fork's pull request on any
-# runner but `ubuntu-latest`.
+# `runs-on` is for private repos only: a public repo must never use the proxmox runner. Whatever
+# runner a caller picks, the jobs below skip a fork's pull request on any runner but `ubuntu-latest`.
 #
 # Layer 1 (`rules`) is deterministic and has no model: it reads the lines the pull request adds
 # and fails with file:line annotations. Layer 2 (`review`) is a model review through OpenCode Zen.
@@ -55,7 +54,9 @@ on:
         type: string
         default: slashsuite/uislash
       hackcove-ref:
-        description: The branch, tag or sha of hackcove to read the rules and the rubric from.
+        description: >-
+          The branch, tag or sha of hackcove to read the rules and the rubric from. Pin no ref older
+          than the commit that adds `.bun-version`.
         type: string
         default: main
       self:
@@ -101,13 +102,13 @@ jobs:
     if: inputs.runs-on == 'ubuntu-latest' || github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     steps:
       # The pull request's head, not the merge commit, so line numbers match what the diff shows.
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
           persist-credentials: false
 
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         if: ${{ !inputs.self }}
         with:
           repository: ${{ inputs.hackcove-repo }}
@@ -118,36 +119,46 @@ jobs:
 
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
-          bun-version: 1.4.2
+          bun-version-file: ${{ inputs.self && '.bun-version' || '.hackcove/.bun-version' }}
 
       - name: Check the added lines
         run: bun "$HACKCOVE_DIR/tools/ui-review/src/check.ts" --base "$BASE_SHA" --head "$HEAD_SHA" --hackcove "$HACKCOVE_DIR"
 
-  review:
-    name: Hack Cove model review (advisory)
+  # Whether the model review can run. A secret cannot be read in a job's `if`, so this job reads it
+  # and says; `review` then shows as skipped, not as a green check that did nothing.
+  key:
+    name: Hack Cove model review key
     runs-on: ${{ inputs.runs-on }}
     if: inputs.runs-on == 'ubuntu-latest' || github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    outputs:
+      set: ${{ steps.key.outputs.set }}
+    steps:
+      - id: key
+        env:
+          KEY_SET: ${{ secrets.OPENCODE_API_KEY != '' }}
+        run: |
+          echo "set=$KEY_SET" >> "$GITHUB_OUTPUT"
+          if [ "$KEY_SET" != "true" ]; then echo "::notice title=UISlash review::OPENCODE_API_KEY is not set; the model review is skipped."; fi
+
+  review:
+    name: Hack Cove model review (advisory)
+    needs: key
+    runs-on: ${{ inputs.runs-on }}
+    if: needs.key.outputs.set == 'true'
     # No `continue-on-error`: it would report a crash as green. The findings are advisory (the step
     # exits 0 with them); only "the review did not run" turns this red.
     permissions:
       contents: read
       pull-requests: write
-    env:
-      KEY_SET: ${{ secrets.OPENCODE_API_KEY != '' }}
     steps:
-      - name: Say when the review is skipped
-        if: ${{ env.KEY_SET != 'true' }}
-        run: echo "::notice title=UISlash review::OPENCODE_API_KEY is not set; the model review is skipped."
-
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-        if: ${{ env.KEY_SET == 'true' }}
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
           persist-credentials: false
 
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-        if: ${{ env.KEY_SET == 'true' && !inputs.self }}
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: ${{ !inputs.self }}
         with:
           repository: ${{ inputs.hackcove-repo }}
           ref: ${{ inputs.hackcove-ref }}
@@ -156,14 +167,12 @@ jobs:
           persist-credentials: false
 
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-        if: ${{ env.KEY_SET == 'true' }}
         with:
-          bun-version: 1.4.2
+          bun-version-file: ${{ inputs.self && '.bun-version' || '.hackcove/.bun-version' }}
 
       # The rubric: the same generated component reference the docs publish, never a copy.
       - name: Get the component reference
         id: rubric
-        if: ${{ env.KEY_SET == 'true' }}
         env:
           NX_NO_CLOUD: "true" # a hackcove-ref from before the move to moon builds with nx; keep it off Nx Cloud
           MOON_BASE: HEAD # the hackcove checkout is shallow; see ci.yml's gate job
@@ -193,7 +202,7 @@ jobs:
           fi
 
       - name: Review the pull request
-        if: ${{ env.KEY_SET == 'true' && steps.rubric.outputs.path != '' }}
+        if: ${{ steps.rubric.outputs.path != '' }}
         env:
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
           GITHUB_TOKEN: ${{ github.token }}

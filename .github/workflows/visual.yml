@@ -37,7 +37,7 @@ jobs:
       # history, since the upload finds the merge-base with origin/main and walks main's builds.
       - name: Check out hackcove
         if: env.PIXELSLASH_TOKEN != ''
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: hackcove
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -50,7 +50,7 @@ jobs:
       # it, because the upload refuses a dirty tree.
       - name: Check out pixelslash
         if: env.PIXELSLASH_TOKEN != ''
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: madangryscientist/pixelslash
           ref: a191bd0490168e0906367273a895d20dd0bc5e89
@@ -75,7 +75,7 @@ jobs:
         if: env.PIXELSLASH_TOKEN != ''
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
-          bun-version: 1.4.2
+          bun-version-file: hackcove/.bun-version
 
       - name: Install hackcove
         if: env.PIXELSLASH_TOKEN != ''

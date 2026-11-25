@@ -23,7 +23,7 @@
     "@moonrepo/cli": "2.6.5",
     "@nx/js": "24.0.6",
     "@playwright/test": "1.65.1",
-    "@types/bun": "1.4.4",
+    "@types/bun": "catalog:",
     "eslint-plugin-playwright": "2.12.2",
     "eslint-plugin-testing-library": "7.16.2",
     "nx": "24.0.6",
@@ -31,7 +31,7 @@
     "oxlint": "1.94.0",
     "oxlint-tsgolint": "7.0.2007",
     "typescript": "7.0.2",
-    "vitest": "5.1.0"
+    "vitest": "catalog:"
   },
   "browserslist": [
     "chrome >= 131",
@@ -39,5 +39,22 @@
     "firefox >= 143",
     "safari >= 18.4",
     "ios_saf >= 18.4"
-  ]
+  ],
+  "catalog": {
+    "@types/bun": "1.4.4",
+    "tailwindcss": "^4.3.5",
+    "vite": "^8.3.4",
+    "vitest": "5.1.0"
+  },
+  "catalogs": {
+    "react": {
+      "@types/react": "^19.3.0",
+      "@types/react-dom": "^19.3.0",
+      "react": "^19.3.1",
+      "react-dom": "^19.3.1"
+    },
+    "typescript-api": {
+      "typescript": "5.9.3"
+    }
+  }
 }

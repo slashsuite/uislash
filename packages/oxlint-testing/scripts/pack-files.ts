@@ -1,5 +1,5 @@
 /**
- * Pack check: the published tarball holds the plugin, the config, the README, the licence and the
+ * Pack check: the published tarball holds the plugin and its rules, the config, the README, the licence and the
  * manifest, and nothing else (no fixtures, tests or scripts). Reads the JSON report
  * `npm pack --dry-run --json --ignore-scripts` writes, on stdin, as `themes/scripts/pack-files.ts`
  * does. A path that would ship and should not, or one that should ship and would not, fails here
@@ -17,7 +17,17 @@ if (!report?.files) {
 }
 
 const packed = report.files.map((file) => file.path).toSorted();
-const expected = [".oxlintrc.json", "LICENSE", "README.md", "package.json", "plugin.js"];
+const expected = [
+  ".oxlintrc.json",
+  "LICENSE",
+  "README.md",
+  "package.json",
+  "plugin.js",
+  "rules/config-shape.js",
+  "rules/no-node-access.js",
+  "rules/shared.js",
+  "rules/specs.js",
+];
 
 const listed = new Set(packed);
 const expectedSet = new Set(expected);

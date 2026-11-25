@@ -1,6 +1,6 @@
 name: Publish
 
-# Manual only: Jacobus decides when a release goes out. The default is a dry run.
+# Manual only: a maintainer decides when a release goes out. The default is a dry run.
 # `nx release` versions only the projects that changed since their last tag (conventional commits),
 # writes their changelogs, refreshes bun.lock (scripts/release-version-actions.cjs), commits and tags the release, pushes, creates a GitHub release and publishes.
 # Publishing authenticates with npm trusted publishing (OIDC): no token, no OTP. Each package needs a
@@ -14,7 +14,7 @@ name: Publish
 # renamed package is the same case with a tag: it carries its predecessor's tag but is not on npm yet, so
 # it is released by conventional commits and staged the same way ("Release (renamed projects)";
 # docs/releasing.md, "Renaming a package"). A version staged and not yet approved is skipped by later
-# dispatches (scripts/releasePick.ts, "staged").
+# dispatches (scripts/releasePick.ts, "staged"), and one whose staging failed is staged again.
 on:
   workflow_dispatch:
     inputs:
@@ -48,19 +48,19 @@ jobs:
       contents: write # the release commit and tags, pushed with GITHUB_TOKEN, and the GitHub release
       id-token: write # the OIDC token npm exchanges for a short-lived publish credential
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0 # nx release reads the history since each project's last tag
           fetch-tags: true
 
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
-          bun-version: 1.4.2
+          bun-version-file: .bun-version
 
       # Trusted publishing needs npm 11.5.1 or newer and `npm stage publish` 11.15.0 or newer (with
       # Node 22.14 or newer); nx.json sets cli.packageManager to npm so `nx release` shells out to
       # `npm publish`, which is the client that speaks OIDC.
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
 
@@ -75,7 +75,8 @@ jobs:
       #   renamed  tagged under another package name, nothing approved on npm: a rename whose
       #            predecessor's last tag was copied to the new name. Bumped by conventional commits, staged.
       #   staged   tagged under this name, nothing approved on npm: staged by an earlier dispatch and
-      #            waiting for the maintainer's approval. Skipped with a notice: no failure, no second bump.
+      #            waiting for the maintainer's approval. Never bumped again; staged again only when npm
+      #            has no staging of that version and the folder still matches its tag ("Retry a failed staging").
       #   tagged   on npm with an approved version: released by conventional commits through OIDC.
       # npm's `0.0.0-stage` placeholder does not count as approved. The token check (needed by new and
       # renamed only) runs before anything is versioned, tagged or pushed. No token is in this step.
@@ -94,6 +95,62 @@ jobs:
         run: |
           bun run format:check
           bunx moon run --concurrency 3 :typecheck :lint :test :build :pack-check
+
+      # A staged project: tagged, and nothing approved on npm. Usually its version waits for the
+      # maintainer's approval, and the run leaves it. But Nx pushes the tag before the staging, so a
+      # staging that failed (a token without the scope, an expired token) leaves the same tag with
+      # nothing waiting. This asks npm which versions are staged: a tagged version that is not, or
+      # was rejected, is staged again, from the folder at that version. Needs NPM_TOKEN to read the
+      # staged list; without it the project is skipped with the Pick step's notice, as before. The
+      # same token handling as the first release.
+      - name: Retry a failed staging (staged projects, NPM_TOKEN)
+        if: steps.projects.outputs.staged != ''
+        env:
+          STAGED: ${{ steps.projects.outputs.staged }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "$NPM_TOKEN" ]; then
+            echo "::notice::NPM_TOKEN is not set, so the staged versions of $STAGED were not checked."
+            exit 0
+          fi
+          export NPM_CONFIG_USERCONFIG="$RUNNER_TEMP/retry-stage.npmrc"
+          trap 'rm -f "$NPM_CONFIG_USERCONFIG"' EXIT
+          (umask 077 && printf '//registry.npmjs.org/:_authToken=%s\n' "$NPM_TOKEN" > "$NPM_CONFIG_USERCONFIG")
+          stage=(--access public --provenance)
+          if [ "$DRY_RUN" = "true" ]; then stage+=(--dry-run); fi
+          for project in ${STAGED//,/ }; do
+            root=$(bunx nx show project "$project" --json | jq -r .root)
+            name=$(jq -r .name "$root/package.json")
+            version=$(jq -r .version "$root/package.json")
+            tag=$(git tag -l "$project@*" --sort=-v:refname | head -n 1)
+            if [ "$tag" != "$project@$version" ]; then
+              echo "::error::$project's last tag is $tag but its package.json says $version, so the version to stage is unclear."
+              exit 1
+            fi
+            # A package whose first staging failed does not exist on npm yet: E404 means nothing is staged.
+            if ! waiting=$(npm stage list "$name" --json 2>/dev/null); then
+              if [ "$(jq -r '.error.code // ""' <<<"$waiting" 2>/dev/null)" != "E404" ]; then
+                echo "::error::Could not read the staged versions of $name: $waiting"
+                exit 1
+              fi
+              waiting='[]'
+            fi
+            # Any entry for this version, waiting or rejected, is left alone: a rejection is the
+            # maintainer's decision, and only a staging that never reached npm is retried.
+            if jq -e --arg v "$version" 'any(.[]; .version == $v)' <<<"$waiting" >/dev/null; then
+              echo "$name@$version has a staging on npmjs.com; skipped"
+              continue
+            fi
+            # npm packs the folder as it is now, so it stages the tag's version only while the folder
+            # still matches the tag; otherwise the tarball would carry later code under the old version.
+            if ! git diff --quiet "$tag" HEAD -- "$root"; then
+              echo "::warning::$root changed since $tag, so staging it now would ship that later code as $version; skipped. The maintainer decides how $name@$version goes out."
+              continue
+            fi
+            echo "::warning::$name@$version is tagged but not staged on npm (an earlier staging failed); staging it again."
+            npm stage publish "./$root" "${stage[@]}"
+          done
 
       # A new project's first publish, at the version already in its package.json. Each one gets its
       # own `nx release <that version> --first-release --skip-publish`: the explicit specifier is the
@@ -118,7 +175,7 @@ jobs:
           export NPM_CONFIG_USERCONFIG="$RUNNER_TEMP/first-release.npmrc"
           trap 'rm -f "$NPM_CONFIG_USERCONFIG"' EXIT
           (umask 077 && printf '//registry.npmjs.org/:_authToken=%s\n' "$NPM_TOKEN" > "$NPM_CONFIG_USERCONFIG")
-          stage=(--access public)
+          stage=(--access public --provenance)
           if [ "$DRY_RUN" = "true" ]; then stage+=(--dry-run); fi
           for project in ${NEW//,/ }; do
             root=$(bunx nx show project "$project" --json | jq -r .root)
@@ -154,7 +211,7 @@ jobs:
             before[$project]=$(jq -r .version "${root[$project]}/package.json")
           done
           args=(--projects "$RENAMED" --skip-publish)
-          stage=(--access public)
+          stage=(--access public --provenance)
           if [ "$DRY_RUN" = "true" ]; then args+=(--dry-run); stage+=(--dry-run); fi
           bunx nx release "${args[@]}"
           for project in ${RENAMED//,/ }; do
