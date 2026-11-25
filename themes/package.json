@@ -1,6 +1,6 @@
 {
   "name": "@slashsuite/themes",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "The UISlash themes: one CSS file per theme, each remapping the Tailwind utilities @slashsuite/ui-react is written against.",
   "keywords": [
     "dark-mode",
