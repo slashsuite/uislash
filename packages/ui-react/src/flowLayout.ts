@@ -1,9 +1,11 @@
 /**
- * The layout behind `FlowDiagram`: dagre places the boxes and routes the arrows, then this file
- * turns its output into what the component draws. Internal: only the geometry types are exported
+ * The layout behind `FlowDiagram`: dagre places the boxes and gives each arrow a route,
+ * `flowRoute` draws the arrows round the boxes along it, and this file turns the result into what
+ * the component draws. Internal: only the geometry types are exported
  * from the package, for `FlowDiagram`'s `overlay`.
  */
 import { Graph, layout } from "@dagrejs/dagre";
+import { routeEdges, squarePath } from "./flowRoute.js";
 
 /** A point in the diagram's own space, in CSS pixels from its top left corner. */
 export type FlowPoint = { x: number; y: number };
@@ -17,9 +19,10 @@ export type FlowBox = { x: number; y: number; width: number; height: number };
 export type FlowNodeBox = FlowBox & { id: string };
 
 /**
- * An arrow as laid out: the `from` and `to` ids, its place in `edges` (`index`), the points dagre
- * routed it through, the SVG path drawn through them (it ends on the target's edge, at the
- * arrowhead's tip) and its label's centre when it has one.
+ * An arrow as laid out: the `from` and `to` ids, its place in `edges` (`index`), the corners of its
+ * square route (it leaves the source's side facing the way it goes, turns only between ranks, and
+ * ends on the target's edge, at the arrowhead's tip), the SVG path through them and its label's
+ * centre when it has one.
  */
 export type FlowEdgePath = {
   from: string;
@@ -129,67 +132,88 @@ export function layoutFlow(
     );
   }
   layout(g);
+  return routeLayout(g, { ids, groups, kept }, direction === "right");
+}
 
-  const box = (key: string): FlowBox => {
+type FlowGraph = Graph<GraphMeta, NodeMeta, EdgeMeta>;
+type Laid = { ids: Set<string>; groups: string[]; kept: { e: LayoutEdge; index: number }[] };
+
+/**
+ * Routes dagre's laid-out graph round its boxes and labels (`flowRoute`) and reads it back in the
+ * diagram's own space, rounded. `across` is true when the diagram is ranked right.
+ */
+function routeLayout(g: FlowGraph, { ids, groups, kept }: Laid, across: boolean): FlowLayout {
+  /** Turns a point or box into rank-down space, and back: ranked right, x and y swap. */
+  const turn = (p: FlowPoint): FlowPoint => (across ? { x: p.y, y: p.x } : p);
+  const turnBox = (b: FlowBox): FlowBox =>
+    across ? { x: b.y, y: b.x, width: b.height, height: b.width } : b;
+  const raw = (key: string): FlowBox => {
     const { x = 0, y = 0, width = 0, height = 0 } = g.node(key);
-    return {
-      x: round(x - width / 2),
-      y: round(y - height / 2),
-      width: round(width),
-      height: round(height),
-    };
+    return turnBox({ x: x - width / 2, y: y - height / 2, width, height });
+  };
+  const routes = kept.map(({ e, index }) => ({
+    e,
+    index,
+    routed: g.edge(e.from, e.to, String(index)),
+  }));
+  const labelAt = routes.map(({ e, routed }) =>
+    e.label && routed.x !== undefined && routed.y !== undefined
+      ? turn({ x: routed.x, y: routed.y })
+      : null,
+  );
+  const labels = routes.flatMap(({ e }, i) => {
+    const at = labelAt[i];
+    if (!e.label || !at) return [];
+    const size = turnBox({ x: 0, y: 0, width: e.label.width, height: e.label.height });
+    return [
+      {
+        x: at.x - size.width / 2,
+        y: at.y - size.height / 2,
+        width: size.width,
+        height: size.height,
+      },
+    ];
+  });
+  const { lines, shift, grow } = routeEdges(
+    new Map([...ids].map((id) => [id, raw(id)])),
+    labels,
+    routes.map(({ e, routed }) => ({
+      from: e.from,
+      to: e.to,
+      points: (routed.points ?? []).map(turn),
+    })),
+  );
+  /** A box from rank-down space, moved past any widened gap, back in the diagram's space. */
+  const place = (b: FlowBox): FlowBox => {
+    const top = shift(b.y);
+    const bottom = shift(b.y + b.height);
+    const out = turnBox({ x: b.x, y: top, width: b.width, height: bottom - top });
+    return { x: round(out.x), y: round(out.y), width: round(out.width), height: round(out.height) };
   };
   const graph = g.graph();
+  const size = turn({ x: graph.width ?? 0, y: graph.height ?? 0 });
+  const grown = turn({ x: size.x, y: size.y + grow });
   return {
-    width: Math.ceil(graph.width ?? 0),
-    height: Math.ceil(graph.height ?? 0),
-    nodes: [...ids].map((id) => ({ id, ...box(id) })),
-    groups: groups.map((name) => ({ name, ...box(groupKey(name)) })),
-    edges: kept.map(({ e, index }) => {
-      const routed = g.edge(e.from, e.to, String(index));
-      const points = (routed.points ?? []).map((p) => ({ x: round(p.x), y: round(p.y) }));
+    width: Math.ceil(grown.x),
+    height: Math.ceil(grown.y),
+    nodes: [...ids].map((id) => ({ id, ...place(raw(id)) })),
+    groups: groups.map((name) => ({ name, ...place(raw(groupKey(name))) })),
+    edges: routes.map(({ e, index }, i) => {
+      const points = (lines[i] ?? []).map((p) => {
+        const out = turn(p);
+        return { x: round(out.x), y: round(out.y) };
+      });
+      const at = labelAt[i];
       return {
         from: e.from,
         to: e.to,
         index,
         points,
-        path: stepPath(points, direction, LANES[index % LANES.length]),
-        labelAt:
-          e.label && routed.x !== undefined && routed.y !== undefined
-            ? { x: round(routed.x), y: round(routed.y) }
-            : null,
+        path: squarePath(points),
+        labelAt: at
+          ? (({ x, y }) => ({ x: round(x), y: round(y) }))(turn({ x: at.x, y: shift(at.y) }))
+          : null,
       };
     }),
   };
-}
-
-/**
- * A square path through dagre's route points: each step leaves along the rank `direction`, turns
- * once at `lane` of the way across (0.5 is halfway), and arrives along it again, so every arrow is
- * made of straight runs at right angles and ends exactly on the last point, where its arrowhead
- * sits. Arrows between the same two ranks take different lanes, so their cross runs do not overlap.
- */
-/** Where each arrow turns between two ranks, by its index: spread so parallel runs stay apart. */
-const LANES = [0.5, 0.3, 0.7, 0.4, 0.6] as const;
-
-export function stepPath(
-  points: readonly FlowPoint[],
-  direction: FlowDirection,
-  lane = 0.5,
-): string {
-  const [first, ...rest] = points;
-  if (!first) return "";
-  let d = `M${first.x},${first.y}`;
-  let from = first;
-  for (const to of rest) {
-    if (direction === "right") {
-      const mid = round(from.x + (to.x - from.x) * lane);
-      d += `H${mid}V${to.y}H${to.x}`;
-    } else {
-      const mid = round(from.y + (to.y - from.y) * lane);
-      d += `V${mid}H${to.x}V${to.y}`;
-    }
-    from = to;
-  }
-  return d;
 }

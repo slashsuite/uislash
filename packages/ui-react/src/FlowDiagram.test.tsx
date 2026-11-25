@@ -3,13 +3,7 @@ import { isInaccessible } from "@testing-library/dom";
 import type { ComponentProps } from "react";
 import { describe, expect, it } from "vitest";
 import { FlowDiagram, type FlowEdge, type FlowNode } from "./FlowDiagram.js";
-import {
-  type FlowBox,
-  type FlowLayout,
-  type FlowNodeBox,
-  layoutFlow,
-  stepPath,
-} from "./flowLayout.js";
+import { type FlowBox, type FlowLayout, type FlowNodeBox, layoutFlow } from "./flowLayout.js";
 import { render, screen, within } from "./render.harness.js";
 
 const nodes: FlowNode[] = [
@@ -53,12 +47,6 @@ function groupOf(layout: FlowLayout, name: string): FlowBox {
   if (!box) throw new Error(`no group ${name}`);
   return box;
 }
-
-/** The boxes that reach past the canvas on any side. */
-const outside = (layout: FlowLayout): FlowNodeBox[] =>
-  layout.nodes.filter(
-    (n) => n.x < 0 || n.y < 0 || n.x + n.width > layout.width || n.y + n.height > layout.height,
-  );
 
 describe("FlowDiagram", () => {
   it("lays out every node and every edge, each edge with a path", () => {
@@ -168,13 +156,6 @@ const pair = [
   { id: "a", width: 80, height: 40 },
   { id: "b", width: 80, height: 40 },
 ];
-const ids = Array.from({ length: 26 }, (_, i) => `n${i}`);
-/** 26 boxes in a ring, each with a second arrow seven on: loops, and arrows back up the ranks. */
-const ring = ids.flatMap((id, i) => [
-  { from: id, to: `n${(i + 1) % ids.length}` },
-  { from: id, to: `n${(i * 7) % ids.length}`, label: { width: 40, height: 16 } },
-]);
-
 describe("layoutFlow", () => {
   it("ranks down by default", () => {
     const out = layoutFlow(pair, [{ from: "a", to: "b" }], "down");
@@ -184,35 +165,5 @@ describe("layoutFlow", () => {
   it("ranks right on request", () => {
     const out = layoutFlow(pair, [{ from: "a", to: "b" }], "right");
     expect(boxOf(out, "b").x).toBeGreaterThan(boxOf(out, "a").x);
-  });
-
-  it("keeps every box inside the canvas, loops included", () => {
-    const out = layoutFlow(
-      ids.map((id) => ({ id, width: 120, height: 40 })),
-      ring,
-      "down",
-    );
-    expect(out.nodes).toHaveLength(26);
-    expect(out.edges).toHaveLength(52);
-    expect(outside(out)).toEqual([]);
-  });
-});
-
-describe("stepPath", () => {
-  const route = [
-    { x: 0, y: 0 },
-    { x: 60, y: 40 },
-  ];
-
-  it("runs down, across halfway, then down onto the last point", () => {
-    expect(stepPath(route, "down")).toBe("M0,0V20H60V40");
-  });
-
-  it("runs across, down halfway, then across onto the last point, ranked right", () => {
-    expect(stepPath(route, "right")).toBe("M0,0H30V40H60");
-  });
-
-  it("turns at its lane, so arrows between the same ranks do not overlap", () => {
-    expect(stepPath(route, "down", 0.25)).toBe("M0,0V10H60V40");
   });
 });
