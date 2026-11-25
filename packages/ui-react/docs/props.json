@@ -3729,8 +3729,16 @@
   },
   "Hero": {
     "name": "Hero",
-    "description": "A landing page's top block: an overline, the display title (the page's `h1`) and the lede under\nit, over a soft glow of three tilted ribbons that drift slowly behind the text. The glow is always\nthere and its colours and strength are the theme's (the palette's `glow` role), so a paper theme\nkeeps it faint. It is anchored to the text's own column (`max-w-3xl`, at the parent's start edge),\nnever the viewport, and clipped to it, so nothing scrolls sideways on a phone. It is\n`aria-hidden`, and the text sits above it. Under `prefers-reduced-motion: reduce` it stands still.\nPure markup and one inline stylesheet: it works rendered on the server with no script.\nOne per page, on a landing page; every other page opens with a `PageHeader`.",
+    "description": "A landing page's top block: an overline, the display title (the page's `h1`) and the lede under\nit, over a soft glow of three tilted ribbons that drift slowly behind the text. The glow is always\nthere and its colours and strength are the theme's (the palette's `glow` role), so a paper theme\nkeeps it faint. It is anchored to the text's own column (`max-w-3xl`, at the parent's start edge,\nor in its middle with `align=\"center\"`), never the viewport, and clipped to it, so nothing scrolls\nsideways on a phone. It is `aria-hidden`, and the text sits above it. `media` puts a picture\nbeside the words from `md` up. A small checkbox in the top corner holds the drift still, since it\nnever ends on its own; under `prefers-reduced-motion: reduce` the glow stands still and the\ncheckbox is not drawn. Pure markup and one inline stylesheet: it works rendered on the server with\nno script. One per page, on a landing page; every other page opens with a `PageHeader`.",
     "props": [
+      {
+        "name": "align",
+        "type": "\"center\" | \"start\"",
+        "required": false,
+        "default": "start",
+        "description": "`center` sets the words in the middle of the page, under a centred glow: a landing page\nwith no picture whose actions are one or two buttons. Pass the actions' `Cluster`\n`justify=\"center\"` too.",
+        "native": false
+      },
       {
         "name": "children",
         "type": "ReactNode",
@@ -3746,10 +3754,25 @@
         "native": false
       },
       {
+        "name": "media",
+        "type": "ReactNode",
+        "required": false,
+        "description": "A picture beside the words from `md` up, and under them on a phone: an `Image` of the\nproduct, at `width=\"full\"`. The words keep the glow; the picture sits clear of it.",
+        "native": false
+      },
+      {
         "name": "overline",
         "type": "ReactNode",
         "required": false,
         "description": "The small label above the title, set in the monospace face.",
+        "native": false
+      },
+      {
+        "name": "pauseLabel",
+        "type": "string",
+        "required": false,
+        "default": "Pause the background motion",
+        "description": "The name of the control that holds the glow still, for an app in another language.",
         "native": false
       },
       {

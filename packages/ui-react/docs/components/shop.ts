@@ -7,14 +7,12 @@ export const shopPages: ComponentPage[] = [
     name: "Price",
     summary: "A price as the app formatted it, with the old price struck through on a sale.",
     whenToUse: "Showing what something costs: on a product tile, a product's page or a cart line.",
-    siblings: [
-      { slug: "product-tile", when: "The price is one thing for sale in a shop's grid." },
-    ],
+    siblings: [{ slug: "product-tile", when: "The price is one thing for sale in a shop's grid." }],
     pairs: ["Price/Sale"],
     usage: {
       do: [
         '`value` is the price already formatted for the reader ("R52", "€12.50"): the app owns the currency and the locale, and `Price` formats nothing.',
-        "`was` is the price before a sale. It follows `value` struck through and a step smaller, and a screen reader hears \"R52, was R65\".",
+        '`was` is the price before a sale. It follows `value` struck through and a step smaller, and a screen reader hears "R52, was R65".',
         "`size` is `sm` for a dense row, `md` (the default) for a tile and `lg` for a product's own page.",
         "Figures are tabular, so a column of prices lines up.",
       ],
@@ -43,9 +41,9 @@ export const shopPages: ComponentPage[] = [
       do: [
         "`href` is the product's page; the whole tile is one link, and an in-app path goes through `LinkProvider`.",
         "`name` and `price` are the tile's words; `was` adds the old price on a sale, as `Price` does.",
-        '`status` puts a word on the picture\'s top-left corner: `sale` in the danger tone, `sold-out` on the media scrim. `statusLabel` is that word in the app\'s own language.',
+        "`status` puts a word on the picture's top-left corner: `sale` in the danger tone, `sold-out` on the media scrim. `statusLabel` is that word in the app's own language.",
         "`src` is the picture, cropped `square` (the default) or `3:4` for clothes on a person. It is decoration: the name says what it is.",
-        "Put a set of them in a `CardGrid` with `as=\"ul\"`, and `minColumns={2}` to keep two to a row on a phone.",
+        'Put a set of them in a `CardGrid` with `as="ul"`, and `minColumns={2}` to keep two to a row on a phone.',
       ],
       dont: [
         "Do not link the picture and the name apart: that is two stops for a keyboard, and the picture's link has no name.",

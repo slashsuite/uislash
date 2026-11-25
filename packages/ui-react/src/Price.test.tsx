@@ -5,6 +5,7 @@ import { render, screen } from "./render.harness.js";
 
 describe("Price", () => {
   it("shows the price as given, formatting nothing", () => {
+    // A price is plain text with no role or name of its own, so the test finds it by a test id.
     render(<Price value="€12.50" data-testid="price" />);
     expect(screen.getByTestId("price").textContent).toBe("€12.50");
   });
@@ -17,11 +18,13 @@ describe("Price", () => {
   });
 
   it("draws nothing for no price when nothing is loading", () => {
+    // A price is plain text with no role or name of its own, so the test finds it by a test id.
     render(<Price value={undefined} data-testid="price" />);
     expect(screen.getByTestId("price").textContent).toBe("");
   });
 
   it("is a busy bone while loading with no price yet", () => {
+    // A price is plain text with no role or name of its own, so the test finds it by a test id.
     render(<Price value={undefined} loading data-testid="price" />);
     expect(screen.getByTestId("price").getAttribute("aria-busy")).toBe("true");
   });

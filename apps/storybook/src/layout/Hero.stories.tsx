@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Button, Cluster, Hero, Lead, Stack, Text } from "@slashsuite/ui-react";
+import { Button, Cluster, Hero, Image, Lead, Stack, Text } from "@slashsuite/ui-react";
 import { DemoShell, layoutPage } from "../../../../packages/ui-react/docs/examples/DemoShell.js";
 
 const meta: Meta = {
@@ -34,6 +34,39 @@ export const WithActions: S = {
       <Hero overline="UISlash" title="Build the page with props, not CSS.">
         <Lead>Components and themes designed together, so a site looks right from the start.</Lead>
         <Cluster gap="sm">
+          <Button>Get started</Button>
+          <Button variant="outline">Browse components</Button>
+        </Cluster>
+      </Hero>
+    </DemoShell>
+  ),
+};
+
+/** A product page's hero: the picture beside the words from `md` up, under them on a phone. */
+export const WithMedia: S = {
+  render: () => (
+    <DemoShell>
+      <Hero
+        overline="New"
+        title="A linen shirt for the hottest days."
+        media={<Image alt="A linen shirt on a hanger" aspect="4:3" width="full" />}
+      >
+        <Lead>Cut loose, washed soft, and made to last a dozen summers.</Lead>
+        <Cluster gap="sm">
+          <Button>Shop the shirt</Button>
+        </Cluster>
+      </Hero>
+    </DemoShell>
+  ),
+};
+
+/** A landing page with no picture: the words and the glow in the middle of the page. */
+export const Centered: S = {
+  render: () => (
+    <DemoShell>
+      <Hero align="center" overline="UISlash" title="Build the page with props, not CSS.">
+        <Lead>Components and themes designed together, so a site looks right from the start.</Lead>
+        <Cluster gap="sm" justify="center">
           <Button>Get started</Button>
           <Button variant="outline">Browse components</Button>
         </Cluster>

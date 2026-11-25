@@ -18,9 +18,15 @@ describe("ProductTile", () => {
 
   it("says sold out, in the app's own word when given one", () => {
     render(<ProductTile href="/a" name="Mug" price="R80" status="sold-out" />);
-    expect(screen.getByRole("link", { name: spoken("Mug, R80, Sold out") })).toBeInstanceOf(HTMLElement);
-    render(<ProductTile href="/b" name="Bowl" price="R90" status="sold-out" statusLabel="Uitverkoop" />);
-    expect(screen.getByRole("link", { name: spoken("Bowl, R90, Uitverkoop") })).toBeInstanceOf(HTMLElement);
+    expect(screen.getByRole("link", { name: spoken("Mug, R80, Sold out") })).toBeInstanceOf(
+      HTMLElement,
+    );
+    render(
+      <ProductTile href="/b" name="Bowl" price="R90" status="sold-out" statusLabel="Uitverkoop" />,
+    );
+    expect(screen.getByRole("link", { name: spoken("Bowl, R90, Uitverkoop") })).toBeInstanceOf(
+      HTMLElement,
+    );
   });
 
   it("keeps the picture out of the name", () => {
