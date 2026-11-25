@@ -20,6 +20,7 @@ It is a moon + Bun-workspaces monorepo. Every package here is published on its o
 | `packages/oxlint-testing` | `@slashsuite/oxlint-testing` | A shared oxlint config and plugin for UI tests (Playwright, Testing Library, Vitest): elements found the way a user does, waits on a state, behaviour asserted rather than look, one Playwright config shape. |
 | `packages/oxlint-ui` | `@slashsuite/oxlint-ui` | An oxlint config and plugin for apps built on UISlash: no `<style>`, raw colour utility, `dark:` variant, styling prop, look-alike component, inline colour or raw element that has a part. |
 | `packages/core` | `@slashsuite/core` | What the renderers share: each component's token tables, prop types and story fixtures, the parity manifest and the native theme generator. `@slashsuite/ui-react` vendors it, so an app never installs it. |
+| `packages/ui-react-native` | (private, not yet published) | The components for React Native, drawn from core's tables and each theme's `<id>.native.json`. Button so far. |
 | `apps/storybook` | (private) | Storybook for the components, with a toolbar theme switcher that lists every CSS file in `themes/`. |
 | `tools/docs` | (private) | The component docs' tooling: the generated props reference, `llms.txt` and the agent docs `@slashsuite/ui-react` ships. The docs site, hack-cove.com/ui/, is built outside this repo from `packages/ui-react/docs`. |
 
