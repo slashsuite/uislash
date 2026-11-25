@@ -3,13 +3,7 @@ import { isInaccessible } from "@testing-library/dom";
 import type { ComponentProps } from "react";
 import { describe, expect, it } from "vitest";
 import { FlowDiagram, type FlowEdge, type FlowNode } from "./FlowDiagram.js";
-import {
-  type FlowBox,
-  type FlowLayout,
-  type FlowNodeBox,
-  layoutFlow,
-  stepPath,
-} from "./flowLayout.js";
+import { type FlowBox, type FlowLayout, type FlowNodeBox, layoutFlow } from "./flowLayout.js";
 import { render, screen, within } from "./render.harness.js";
 
 const nodes: FlowNode[] = [
@@ -195,24 +189,5 @@ describe("layoutFlow", () => {
     expect(out.nodes).toHaveLength(26);
     expect(out.edges).toHaveLength(52);
     expect(outside(out)).toEqual([]);
-  });
-});
-
-describe("stepPath", () => {
-  const route = [
-    { x: 0, y: 0 },
-    { x: 60, y: 40 },
-  ];
-
-  it("runs down, across halfway, then down onto the last point", () => {
-    expect(stepPath(route, "down")).toBe("M0,0V20H60V40");
-  });
-
-  it("runs across, down halfway, then across onto the last point, ranked right", () => {
-    expect(stepPath(route, "right")).toBe("M0,0H30V40H60");
-  });
-
-  it("turns at its lane, so arrows between the same ranks do not overlap", () => {
-    expect(stepPath(route, "down", 0.25)).toBe("M0,0V10H60V40");
   });
 });

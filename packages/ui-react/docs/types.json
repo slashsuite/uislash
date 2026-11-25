@@ -171,7 +171,7 @@
   },
   "FlowEdgePath": {
     "name": "FlowEdgePath",
-    "description": "An arrow as laid out: the `from` and `to` ids, its place in `edges` (`index`), the points dagre\nrouted it through, the SVG path drawn through them (it ends on the target's edge, at the\narrowhead's tip) and its label's centre when it has one.",
+    "description": "An arrow as laid out: the `from` and `to` ids, its place in `edges` (`index`), the corners of its\nsquare route (it leaves the source's side facing the way it goes, turns only between ranks, and\nends on the target's edge, at the arrowhead's tip), the SVG path through them and its label's\ncentre when it has one.",
     "definition": "{ from: string; to: string; index: number; points: readonly FlowPoint[]; path: string; labelAt: FlowPoint | null }"
   },
   "FlowLayout": {
