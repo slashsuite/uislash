@@ -1,9 +1,17 @@
-import { Code, MetaList, TextLink, type LinkAdapter, LinkProvider } from "@slashsuite/ui-react";
+import {
+  Cluster,
+  Code,
+  MetaList,
+  TableOfContents,
+  TextLink,
+  type LinkAdapter,
+  LinkProvider,
+} from "@slashsuite/ui-react";
 
 /** Stands in for a router's <Link>: the app's adapter, set once on a `LinkProvider`. */
 const FakeLink: LinkAdapter = ({ href, ...rest }) => <a {...rest} href={`#${href}`} />;
 
-/** The links block of the Gallery: a TextLink in a sentence, toned TextLinks, MetaList rows (a row of links (then a mixed one and a mono one), a TextLink drawn by the LinkProvider adapter and a row with a stretched link. */
+/** The links block of the Gallery: a TextLink in a sentence, toned TextLinks, MetaList rows (a row of links (then a mixed one and a mono one), a TextLink drawn by the LinkProvider adapter and a row with a stretched link, a TextLink with an icon and a quiet one, a Cluster as a nav and a TableOfContents. */
 export function GalleryLinks() {
   return (
     <LinkProvider link={FakeLink}>
@@ -28,7 +36,26 @@ export function GalleryLinks() {
           <TextLink href="#failed" tone="danger">
             TextLink danger
           </TextLink>
+          <TextLink href="#all" icon="chevron-right">
+            TextLink icon
+          </TextLink>
+          <TextLink href="#quiet" tone="quiet">
+            TextLink quiet
+          </TextLink>
         </p>
+        <Cluster as="nav" aria-label="Footer" gap="md">
+          <TextLink href="#docs">Docs</TextLink>
+          <TextLink href="#pricing">Pricing</TextLink>
+          <TextLink href="#blog">Blog</TextLink>
+        </Cluster>
+        <TableOfContents
+          current="install"
+          items={[
+            { id: "install", label: "Install", level: 2 },
+            { id: "usage", label: "Usage", level: 2 },
+            { id: "themes", label: "Themes", level: 3 },
+          ]}
+        />
         <MetaList>
           <TextLink href="#privacy">Privacy</TextLink>
           <TextLink href="#terms">Terms</TextLink>

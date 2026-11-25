@@ -65,6 +65,30 @@ export const WithActions: S = {
     </div>
   ),
 };
+
+/** On a phone the action sits under the text, as wide as the callout, so it is easy to press. */
+export const PhoneActions: S = {
+  globals: { viewport: { value: "phone", isRotated: false } },
+  render: () => (
+    <Stack gap="sm">
+      <Callout
+        tone="warn"
+        title="3 uncategorised."
+        actions={
+          <Button size="sm" variant="outline">
+            Review
+          </Button>
+        }
+      >
+        Sort them before the month closes.
+      </Callout>
+      <Callout tone="info" actions={<Button size="sm">Retry</Button>}>
+        The last import did not finish.
+      </Callout>
+    </Stack>
+  ),
+};
+
 export const Banner: S = {
   parameters: { layout: "padded" },
   render: () => (

@@ -3,6 +3,7 @@ import {
   Button,
   Card,
   CardGrid,
+  CardGridRow,
   CenteredLayout,
   DocsLayout,
   ErrorPage,
@@ -123,6 +124,7 @@ function SideColumnBoxes() {
             </Card>
           }
           asideLabel="Ask the reply agent"
+          fold
         >
           <Card title="Thread">
             <Text>The main area takes the room left.</Text>
@@ -144,6 +146,30 @@ function SideColumnBoxes() {
         </SideColumn>
       </PageBox>
     </>
+  );
+}
+
+/** CardGrid's `align="regions"`, `CardGridRow` and `minColumns`, in a shell box. */
+function GridRegions() {
+  return (
+    <PageBox label="CardGrid align regions, a full row, two on a phone">
+      <CardGrid columns={3} align="regions" minColumns={2}>
+        <CardGridRow>
+          <Card title="Plans" dashed>
+            <Text>CardGridRow: one card across the row.</Text>
+          </Card>
+        </CardGridRow>
+        <Card title="Free" footer={<Text>Footer</Text>}>
+          <Text>One line.</Text>
+        </Card>
+        <Card title="Studio, for small teams who ship every week" footer={<Text>Footer</Text>}>
+          <Text>Its body starts level with the others.</Text>
+        </Card>
+        <Card title="Agency" footer={<Text>Footer</Text>}>
+          <Text>One line.</Text>
+        </Card>
+      </CardGrid>
+    </PageBox>
   );
 }
 
@@ -169,6 +195,7 @@ export function GalleryGridPages() {
           </Card>
         </CardGrid>
       </PageBox>
+      <GridRegions />
       <PageBox label="SidebarLayout">
         <SidebarLayout
           aside={

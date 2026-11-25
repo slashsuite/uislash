@@ -119,6 +119,70 @@ describe("Morph", () => {
   });
 });
 
+describe("Morph, as and active", () => {
+  it("renders as a list item inside a list", () => {
+    render(
+      <ul>
+        <Morph name="shop" item="abc" as="li">
+          x
+        </Morph>
+      </ul>,
+    );
+    const item = screen.getByRole("listitem");
+    expect(item).toBe(screen.getByText("x"));
+    expect(item.getAttribute("data-morph")).toBe("hc-morph-shop-abc");
+  });
+
+  it("carries no transition name while it is not active", () => {
+    const { rerender } = render(
+      <Morph name="shop" item="abc" active={false}>
+        x
+      </Morph>,
+    );
+    const el = screen.getByText("x");
+    expect(el.hasAttribute("data-morph-near")).toBe(false);
+    rerender(
+      <Morph name="shop" item="abc">
+        x
+      </Morph>,
+    );
+    expect(el.hasAttribute("data-morph-near")).toBe(true);
+  });
+
+  it("warns once when two active Morphs share a name and item", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const { unmount } = render(
+      <>
+        <Morph name="shop" item="abc">
+          a
+        </Morph>
+        <Morph name="shop" item="abc">
+          b
+        </Morph>
+      </>,
+    );
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn.mock.calls[0]?.[0]).toContain('name "shop" and item "abc"');
+    unmount();
+    warn.mockClear();
+    render(
+      <>
+        <Morph name="shop" item="abc">
+          a
+        </Morph>
+        <Morph name="shop" item="abc" active={false}>
+          b
+        </Morph>
+        <Morph name="shop" item="other">
+          c
+        </Morph>
+      </>,
+    );
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
+  });
+});
+
 describe("refreshMorphs", () => {
   it("measures every mounted Morph again at once", () => {
     const seen = stubObserver();

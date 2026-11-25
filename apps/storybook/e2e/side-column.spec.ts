@@ -13,7 +13,7 @@ const open = async (page: Page, width: number) => {
 };
 
 for (const width of [375, 768]) {
-  test(`at ${width}px a SideColumn with asideLabel folds the aside below lg, and its summary opens it`, async ({
+  test(`at ${width}px a SideColumn with fold folds the aside below lg, and its summary opens it`, async ({
     page,
   }) => {
     const { summary, button } = await open(page, width);
@@ -24,7 +24,7 @@ for (const width of [375, 768]) {
   });
 }
 
-test("at 1280px a SideColumn with asideLabel shows the aside from lg, with no summary", async ({
+test("at 1280px a SideColumn with fold shows the aside from lg, with no summary", async ({
   page,
 }) => {
   const { summary, button } = await open(page, 1280);

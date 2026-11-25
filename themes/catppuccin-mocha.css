@@ -106,7 +106,7 @@
   outline-color: #cdd6f4; /* text */
 }
 
-/* The media matte (Image framed): the white mat a QR code is scanned off. It stays white in every
+/* The media matte (Image `mat="white"`): the white mat a QR code is scanned off. It stays white in every
    theme, dark ones included, as the scrim above stays black. */
 .dark .bg-white\/100 {
   background-color: #ffffff;
@@ -301,13 +301,11 @@
 
 /* Coloured callouts / chips: tint backgrounds, lighten text & borders */
 .dark .bg-emerald-50,
-.dark .bg-emerald-50\/60,
-.dark .bg-emerald-100 {
+.dark .bg-emerald-50\/60 {
   background-color: rgba(166, 227, 161, 0.13);
 }
 .dark .bg-amber-50,
-.dark .bg-amber-50\/60,
-.dark .bg-amber-100 {
+.dark .bg-amber-50\/60 {
   background-color: rgba(249, 226, 175, 0.13);
 }
 .dark .bg-red-50 {
@@ -389,12 +387,10 @@
 .dark .text-yellow-600 {
   color: #ffebb9; /* cat8: yellow */
 }
-.dark .border-emerald-200,
-.dark .border-emerald-300 {
+.dark .border-emerald-200 {
   border-color: rgba(166, 227, 161, 0.4);
 }
-.dark .border-amber-200,
-.dark .border-amber-300 {
+.dark .border-amber-200 {
   border-color: rgba(249, 226, 175, 0.4);
 }
 .dark .border-amber-600 {
@@ -413,8 +409,7 @@
 .dark .border-red-400 {
   border-color: rgba(243, 139, 168, 0.45);
 }
-.dark .border-blue-200,
-.dark .border-blue-300 {
+.dark .border-blue-200 {
   border-color: rgba(137, 180, 250, 0.4);
 }
 
@@ -449,4 +444,53 @@
 .dark .bg-amber-50 .text-red-700,
 .dark .bg-red-50 .text-red-700 {
   color: #f7b5c7;
+}
+
+/* Peer hues (Card hue): a set of peer cards, one hue each, told apart by hue, not status.
+   Each hue is this theme's own remap of the family's identity fill (bg-orange-600, bg-violet-600,
+   bg-sky-600, bg-emerald-600, bg-amber-600; blue is text-blue-700). The fill is 30% of it over
+   the card (bg-white); the edge is it mixed 50% with the line (border-slate-200). sRGB mix.
+   A fill is lowered in 5% steps where the card's ink would miss 4.5:1 on it, and says so. The edge
+   is decoration (the contrast contract exempts it): the title and the fill carry the card. */
+.dark .bg-orange-100 {
+  background-color: #4a3c40; /* orange: bg-orange-600 #fab387 at 20%, lowered from 30% so the ink keeps 4.5:1 */
+}
+.dark .bg-violet-100 {
+  background-color: #413956; /* violet: bg-violet-600 #cba6f7 at 20%, lowered from 30% so the ink keeps 4.5:1 */
+}
+.dark .bg-sky-100 {
+  background-color: #3c3e58; /* sky: bg-sky-600 #b4befe at 20%, lowered from 30% so the ink keeps 4.5:1 */
+}
+.dark .bg-emerald-100 {
+  background-color: #323c3f; /* green: bg-emerald-600 #a6e3a1 at 15%, lowered from 30% so the ink keeps 4.5:1 */
+}
+.dark .bg-amber-100 {
+  background-color: #3f3b41; /* yellow: bg-amber-600 #f9e2af at 15%, lowered from 30% so the ink keeps 4.5:1 */
+}
+.dark .bg-blue-100 {
+  background-color: #333c57; /* blue: text-blue-700 #89b4fa at 20%, lowered from 30% so the ink keeps 4.5:1 */
+}
+.dark .border-orange-300 {
+  border-color: #a07d71; /* orange */
+}
+.dark .border-violet-300 {
+  border-color: #8877a9; /* violet */
+}
+.dark .border-sky-300 {
+  border-color: #7d83ac; /* sky */
+}
+.dark .border-emerald-300 {
+  border-color: #76957e; /* green */
+}
+.dark .border-amber-300 {
+  border-color: #9f9585; /* yellow */
+}
+.dark .border-blue-300 {
+  border-color: #677eaa; /* blue */
+}
+
+/* The page mat (the media-mat role): the mat under a screenshot on a page, the theme's own ground.
+   The white media matte above stays white for a code. */
+.dark .bg-zinc-50 {
+  background-color: #11111b; /* crust, a step below the mantle canvas */
 }

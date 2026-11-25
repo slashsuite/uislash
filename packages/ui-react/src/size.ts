@@ -9,8 +9,8 @@
  * - `Cluster` and `ScrollStrip` `gap`: `xs`, `sm` and `md`, the first steps of the gap scale.
  * - `Icon` `size`: also `feature`, the mark of a feature card.
  * - `Dialog` `width`: also `full`, the whole screen. `ChatThread` `height`: also `fill`, its parent's.
- * - `ImageWidth` (`Image`, `RegionFrame` and `MediaTile` `width`): also `full`, the parent's width;
- *   `sm`, `md` and `lg` are 96, 160 and 256px.
+ * - `ImageWidth` (`Image`, `RegionFrame` and `MediaTile` `width`): also `xl` and `full`, the
+ *   parent's width; `sm`, `md`, `lg` and `xl` are 96, 160, 256 and 448px.
  *
  * Defaults that are not `md`:
  * - `Table` `size` is `sm`, its row padding, and the buttons and pills in a table take that size;

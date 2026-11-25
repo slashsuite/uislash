@@ -7,8 +7,8 @@ import { STACK_GAP, type StackGap } from "./Stack.js";
 export type ClusterGap = Extract<StackGap, "xs" | "sm" | "md">;
 /** Where a `Cluster`'s items sit across the row: `center`, `baseline` for mixed text sizes, `start` or `end`. */
 export type ClusterAlign = "center" | "baseline" | "start" | "end";
-/** Where a `Cluster`'s items sit along the row: `start`, `end`, or `between` to spread them to both ends. */
-export type ClusterJustify = "start" | "between" | "end";
+/** Where a `Cluster`'s items sit along the row: `start`, `center`, `end`, or `between` to spread them to both ends. */
+export type ClusterJustify = "start" | "center" | "between" | "end";
 
 const ALIGN: Record<ClusterAlign, string> = {
   center: "items-center",
@@ -19,13 +19,14 @@ const ALIGN: Record<ClusterAlign, string> = {
 
 const JUSTIFY: Record<ClusterJustify, string> = {
   start: "justify-start",
+  center: "justify-center",
   between: "justify-between",
   end: "justify-end",
 };
 
-/** A Cluster that is a `ul` or `ol` is a list: its role, and each child in its own `<li>`. */
+/** A Cluster that is a `ul`, `ol` or `nav` is a list: its role, and each child in its own `<li>`. */
 function listOf(tag: string, children: ReactNode): { role?: "list"; items: ReactNode } {
-  if (tag !== "ul" && tag !== "ol") return { items: children };
+  if (tag !== "ul" && tag !== "ol" && tag !== "nav") return { items: children };
   const items = Children.toArray(children).map((child, index) => (
     <li key={isValidElement(child) ? child.key : index} className="flex">
       {child}
@@ -47,25 +48,19 @@ function listOf(tag: string, children: ReactNode): { role?: "list"; items: React
  * inside phrasing content, such as a `PageHeader` description (a `<p>`): its items must be phrasing
  * content too, so no `ClusterGrow`. `as="ul"` or `as="ol"` is a wrapping list with no markers
  * (tags, chips), as in `CardGrid`: the Cluster wraps each child in its own `<li>`, so the caller
- * writes the items (`Pill`s) and never an `<li>`.
+ * writes the items (`Pill`s) and never an `<li>`. `as="nav"` is a row of links (a footer's or a
+ * section's): a `<nav>` named by its required `aria-label`, holding a list with each link in its
+ * own `<li>`.
  */
 export function Cluster({
-  as: Tag = "div",
+  as = "div",
   gap = "sm",
   align = "center",
   justify = "start",
   wrap = true,
   children,
   ...rest
-}: {
-  /**
-   * The element: `div`, `span` for a row inside a `<p>` or other phrasing content, or `ul` or `ol`
-   * for a list (no markers; the Cluster wraps each child in an `<li>`).
-   *
-   * In a `span` the items must be phrasing content, so no `ClusterGrow`.
-   * @default div
-   */
-  as?: "div" | "span" | "ul" | "ol" | undefined;
+}: ClusterElement & {
   /**
    * The space between items: the first steps of the gap scale. Its default is one of those the
    * `Size` type lists as not `md`.
@@ -78,7 +73,7 @@ export function Cluster({
    */
   align?: ClusterAlign | undefined;
   /**
-   * The main axis: `start`, `between` (the first and last items at the two ends) or `end`.
+   * The main axis: `start`, `center`, `between` (the first and last items at the two ends) or `end`.
    * @default start
    */
   justify?: ClusterJustify | undefined;
@@ -89,25 +84,54 @@ export function Cluster({
   wrap?: boolean | undefined;
   children?: ReactNode;
 } & Passthrough): ReactElement {
-  const { role, items } = listOf(Tag, children);
+  const { role, items } = listOf(as, children);
+  const className = cx(
+    "flex",
+    role && "list-none",
+    STACK_GAP[gap],
+    ALIGN[align],
+    JUSTIFY[justify],
+    wrap && "flex-wrap",
+  );
+  if (as === "nav") {
+    return (
+      <nav {...rest}>
+        {/* `list-none` drops the list role in Safari; the role puts it back. */}
+        <ul role="list" className={className}>
+          {items}
+        </ul>
+      </nav>
+    );
+  }
+  const Tag = as;
   return (
-    <Tag
-      // `list-none` drops the list role in Safari; the role puts it back.
-      role={role}
-      {...rest}
-      className={cx(
-        "flex",
-        role && "list-none",
-        STACK_GAP[gap],
-        ALIGN[align],
-        JUSTIFY[justify],
-        wrap && "flex-wrap",
-      )}
-    >
+    // `list-none` drops the list role in Safari; the role puts it back.
+    <Tag role={role} {...rest} className={className}>
       {items}
     </Tag>
   );
 }
+
+/** A `Cluster`'s element, and the name a `nav` needs. */
+type ClusterElement =
+  | {
+      /**
+       * The element: `div`, `span` for a row inside a `<p>` or other phrasing content, `ul` or `ol`
+       * for a list (no markers; the Cluster wraps each child in an `<li>`), or `nav` for a row of
+       * links (a `<nav>` named by `aria-label`, around such a list).
+       *
+       * In a `span` the items must be phrasing content, so no `ClusterGrow`.
+       * @default div
+       */
+      as?: "div" | "span" | "ul" | "ol" | undefined;
+      /** The accessible name; required with `as="nav"`, where it names the landmark, such as "Footer". */
+      "aria-label"?: string | undefined;
+    }
+  | {
+      as: "nav";
+      /** The accessible name; required with `as="nav"`, where it names the landmark, such as "Footer". */
+      "aria-label": string;
+    };
 
 /** The narrowest a `ClusterGrow` gets before the row wraps: `sm` or `md`. */
 export type ClusterGrowMinWidth = "sm" | "md";

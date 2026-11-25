@@ -8,6 +8,7 @@ import type { LoadingProps } from "./skeleton.js";
 import { useScrollEdges } from "./scrollEdges.js";
 import { SidebarLayout } from "./SidebarLayout.js";
 import { Stack } from "./Stack.js";
+import { ContentsList } from "./TableOfContents.js";
 import { STICKY_ASIDE_XL, STICKY_FADE_XL, STICKY_SCROLL_XL } from "./stickyColumn.js";
 import type { SwitchLink } from "./switcher.js";
 import { Tabs } from "./Tabs.js";
@@ -36,10 +37,6 @@ function DocsNav({ nav, label }: { nav: DocsNavGroup[]; label: string }): ReactE
   );
 }
 
-const ENTRY = `rounded text-sm/6 transition ${focusRing}`;
-const ENTRY_ON = "font-medium text-violet-700";
-const ENTRY_OFF = "text-slate-600 hover:text-violet-700";
-
 /**
  * "On this page": one `<nav>` at every width. From `xl` a 12rem column right of the article that
  * sticks under the header and scrolls itself when it is taller than the screen; below `xl` the same
@@ -66,19 +63,7 @@ function DocsContents({
           <div className="hidden pb-2 xl:block">
             <Overline>{label}</Overline>
           </div>
-          <ul className="flex flex-col gap-1">
-            {contents.map((entry) => (
-              <li key={entry.id} className={entry.level === 3 ? "pl-3" : undefined}>
-                <a
-                  href={`#${entry.id}`}
-                  aria-current={entry.id === current ? "location" : undefined}
-                  className={cx(ENTRY, entry.id === current ? ENTRY_ON : ENTRY_OFF)}
-                >
-                  {entry.label}
-                </a>
-              </li>
-            ))}
-          </ul>
+          <ContentsList items={contents} current={current} />
         </FoldedColumn>
       </div>
     </nav>

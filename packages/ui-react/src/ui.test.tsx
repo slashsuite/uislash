@@ -56,7 +56,7 @@ describe("Card", () => {
         body
       </Card>,
     );
-    const card = screen.getByRole("region", { name: "Open" });
+    const card = screen.getByRole("article", { name: "Open" });
     expect(within(card).getByText("3")).toBeTruthy();
     expect(within(card).getByRole("link", { name: "All" })).toBeTruthy();
     expect(within(card).getByText("body")).toBeTruthy();
@@ -87,7 +87,7 @@ describe("Card", () => {
         body
       </Card>,
     );
-    expect(within(screen.getByRole("region", { name: "Bills" })).getByText("x")).toBeTruthy();
+    expect(within(screen.getByRole("article", { name: "Bills" })).getByText("x")).toBeTruthy();
   });
 });
 
@@ -98,7 +98,7 @@ describe("Card footer", () => {
         body
       </Card>,
     );
-    const total = within(screen.getByRole("region", { name: "T" })).getByText("Total");
+    const total = within(screen.getByRole("article", { name: "T" })).getByText("Total");
     expect(follows(screen.getByText("body"), total)).toBe(true);
   });
 });

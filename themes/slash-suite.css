@@ -121,7 +121,7 @@
   outline-color: #eef2f9; /* base */
 }
 
-/* The media matte (Image framed): the white mat a QR code is scanned off. It stays white in every
+/* The media matte (Image `mat="white"`): the white mat a QR code is scanned off. It stays white in every
    theme, dark ones included, as the scrim above stays black. */
 .slash-suite .bg-white\/100 {
   background-color: #ffffff;
@@ -315,13 +315,11 @@
    (0.06) so the tone text on them clears 4.5:1; the text tones are darkened from their Latte token
    for the same bar on white, mantle and the tint. The peach tint is the pastel at 0.2. */
 .slash-suite .bg-emerald-50,
-.slash-suite .bg-emerald-50\/60,
-.slash-suite .bg-emerald-100 {
+.slash-suite .bg-emerald-50\/60 {
   background-color: rgba(64, 160, 43, 0.06); /* green tint */
 }
 .slash-suite .bg-amber-50,
-.slash-suite .bg-amber-50\/60,
-.slash-suite .bg-amber-100 {
+.slash-suite .bg-amber-50\/60 {
   background-color: rgba(223, 142, 29, 0.06); /* yellow tint */
 }
 .slash-suite .bg-red-50 {
@@ -398,12 +396,10 @@
 .slash-suite .text-yellow-600 {
   color: #b07704; /* cat8: yellow */
 }
-.slash-suite .border-emerald-200,
-.slash-suite .border-emerald-300 {
+.slash-suite .border-emerald-200 {
   border-color: rgba(64, 160, 43, 0.4);
 }
-.slash-suite .border-amber-200,
-.slash-suite .border-amber-300 {
+.slash-suite .border-amber-200 {
   border-color: rgba(223, 142, 29, 0.4);
 }
 .slash-suite .border-amber-600 {
@@ -425,8 +421,7 @@
 .slash-suite .border-red-400 {
   border-color: rgba(210, 15, 57, 0.45);
 }
-.slash-suite .border-blue-200,
-.slash-suite .border-blue-300 {
+.slash-suite .border-blue-200 {
   border-color: rgba(30, 102, 245, 0.4);
 }
 
@@ -461,4 +456,53 @@
 .slash-suite .bg-amber-50 .text-red-700,
 .slash-suite .bg-red-50 .text-red-700 {
   color: #b60f39;
+}
+
+/* Peer hues (Card hue): a set of peer cards, one hue each, told apart by hue, not status.
+   Slash Day, as the Slash suite's tool cards: each hue is its Catppuccin Mocha pastel. The fill is 40% of
+   it in the card white (bg-white); the edge is it mixed 30% toward the ink (text-slate-900). Mixed
+   in OKLab, as the suite's own cards are.
+   A fill is lowered in 5% steps where the card's ink would miss 4.5:1 on it, and says so. The edge
+   is decoration (the contrast contract exempts it): the title and the fill carry the card. */
+.slash-suite .bg-orange-100 {
+  background-color: #ffe1cf; /* orange: peach #fab387 at 40% */
+}
+.slash-suite .bg-violet-100 {
+  background-color: #eadcfd; /* violet: mauve #cba6f7 at 40% */
+}
+.slash-suite .bg-sky-100 {
+  background-color: #d2f1f7; /* sky: sky #89dceb at 40% */
+}
+.slash-suite .bg-emerald-100 {
+  background-color: #dcf4da; /* green: green #a6e3a1 at 40% */
+}
+.slash-suite .bg-amber-100 {
+  background-color: #fdf4e0; /* yellow: yellow #f9e2af at 40% */
+}
+.slash-suite .bg-blue-100 {
+  background-color: #cfe1ff; /* blue: blue #89b4fa at 40% */
+}
+.slash-suite .border-orange-300 {
+  border-color: #b48671; /* orange */
+}
+.slash-suite .border-violet-300 {
+  border-color: #957dba; /* violet */
+}
+.slash-suite .border-sky-300 {
+  border-color: #69a1b2; /* sky */
+}
+.slash-suite .border-emerald-300 {
+  border-color: #7ca682; /* green */
+}
+.slash-suite .border-amber-300 {
+  border-color: #b3a58c; /* yellow */
+}
+.slash-suite .border-blue-300 {
+  border-color: #6986bc; /* blue */
+}
+
+/* The page mat (the media-mat role): the mat under a screenshot on a page, the theme's own ground.
+   The white media matte above stays white for a code. */
+.slash-suite .bg-zinc-50 {
+  background-color: #ffffff; /* the card white, so it looks as the mat always has */
 }

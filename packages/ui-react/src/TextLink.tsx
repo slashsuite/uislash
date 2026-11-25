@@ -1,5 +1,6 @@
 import type { ComponentPropsWithoutRef, ReactElement } from "react";
 import { cx, focusRing } from "./cx.js";
+import { type IconName, iconGlyph } from "./icons.js";
 import { renderLink } from "./link.js";
 import type { Unstyled } from "./props.js";
 import type { Size } from "./size.js";
@@ -23,9 +24,26 @@ const toneClass = (tone: Exclude<TextTone, "neutral">): string =>
  */
 export const linkStretchClass = "link-stretch after:absolute after:inset-0";
 
-// The tone's colour, or the accent with its hover shade.
-const colourClass = (tone: TextTone | undefined): string =>
-  tone && tone !== "neutral" ? toneClass(tone) : linkClass;
+/**
+ * A TextLink's colour: a text tone, as on the inline roles, or `quiet`, the primary ink at rest and
+ * the accent on hover, for a link in a row or list of links (a footer row, a table of contents),
+ * never inside a sentence, where with no colour or underline at rest it reads as plain text. This
+ * extends `TextTone` outward with `quiet`, a look only a link has.
+ */
+export type TextLinkTone = TextTone | "quiet";
+
+// The ink at rest, the accent on hover; focus draws the accent ring, as on every link.
+const QUIET = cx(LINK, "text-slate-900 hover:text-violet-700", focusRing);
+
+// The tone's colour, the quiet ink, or the accent with its hover shade.
+function colourClass(tone: TextLinkTone | undefined): string {
+  if (tone === "quiet") return QUIET;
+  if (tone === undefined || tone === "neutral") return linkClass;
+  return toneClass(tone);
+}
+
+// The trailing icon: one size, a touch under the text's, sitting on the baseline.
+const ICON = "ms-1 inline-block size-[0.875em] align-[-0.125em] [&>svg]:size-full";
 
 /** A TextLink's pinned type size, on the `Size` scale; left out, it takes the size of the text around it. */
 export type TextLinkSize = Size;
@@ -44,9 +62,13 @@ type TextLinkProps = {
   size?: TextLinkSize | undefined;
   /**
    * A meaning's colour, as on the inline roles: `warn` for a warning link, `danger`, `positive`,
-   * `info` or `muted`. Left out, the link is the accent colour.
+   * `info` or `muted`; or `quiet`, the primary ink at rest and the accent on hover, for a row or list
+   * of links and never inside a sentence. Left out, the
+   * link is the accent colour.
    */
-  tone?: TextTone | undefined;
+  tone?: TextLinkTone | undefined;
+  /** An icon after the words (`chevron-right`, say), at one size on the baseline; it is decorative and hidden from assistive tech. */
+  icon?: IconName | undefined;
   /** The monospace face, for a path, an id or a command. */
   mono?: boolean | undefined;
   /** Opens in a new tab: adds `target="_blank"` and `rel="noreferrer"`. */
@@ -68,8 +90,9 @@ type TextLinkProps = {
 /**
  * An inline text link in the accent colour. Every anchor prop goes on the `<a>`; an in-app `href`
  * is drawn by the app's router link through `LinkProvider`.
- * `size` pins the type size (`sm`, `md` or `lg`), `tone` gives it a meaning's colour and `mono` sets the
- * monospace face.
+ * `size` pins the type size (`sm`, `md` or `lg`), `tone` gives it a meaning's colour (or `quiet`,
+ * ink that turns the accent on hover) and `mono` sets the monospace face. `icon` puts one of the
+ * library's icons after the words, hidden from assistive tech: the words name the link.
  */
 export function TextLink({
   size,
@@ -79,6 +102,7 @@ export function TextLink({
   stretch = false,
   underline = false,
   href,
+  icon,
   children,
   ...rest
 }: TextLinkProps): ReactElement {
@@ -93,6 +117,16 @@ export function TextLink({
       stretch && linkStretchClass,
       underline && "underline",
     ),
-    children,
+    children:
+      icon === undefined ? (
+        children
+      ) : (
+        <>
+          {children}
+          <span aria-hidden="true" className={ICON}>
+            {iconGlyph(icon)}
+          </span>
+        </>
+      ),
   });
 }

@@ -44,4 +44,16 @@ describe("TextLink", () => {
     );
     expect(link("PDF").getAttribute("download")).toBe("cv.pdf");
   });
+
+  it("keeps its name to its words with a trailing icon, which is hidden", () => {
+    render(
+      <TextLink href="/pricing" icon="chevron-right">
+        See pricing
+      </TextLink>,
+    );
+    const a = link("See pricing");
+    expect(a.textContent).toBe("See pricing");
+    expect(a.innerHTML).toContain('<span aria-hidden="true"');
+    expect(a.innerHTML).toContain("<svg");
+  });
 });

@@ -27,7 +27,7 @@ const CLAMP: Record<Exclude<TextLines, 1>, string> = {
 export function layoutClass(align: TextAlign | undefined, lines: TextLines | undefined): string {
   const box =
     lines === 1
-      ? cx("min-w-0 truncate align-bottom", align ? "block" : "inline-block")
+      ? cx("min-w-0 max-w-full truncate align-bottom", align ? "block" : "inline-block")
       : (lines && CLAMP[lines]) || (align && "block");
   return cx(align && ALIGN[align], box);
 }

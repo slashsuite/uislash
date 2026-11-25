@@ -98,7 +98,7 @@ test("a Card's own link and button stay clickable, and the rest of the card foll
   };
 
   // Plain body text is not interactive, so a click on it reaches the card's stretched link.
-  await clickAt(page.getByRole("link", { name: /^Build 41 / }));
+  await clickAt(page.getByRole("link", { name: "Build 41", exact: true }));
   await expect(page).toHaveURL(/#build-41$/);
 
   await page.goto(story);
@@ -114,7 +114,7 @@ test("a calendar opened from a date field in a Card is a popover over the card b
   await expect(page.getByRole("grid")).toBeVisible();
 
   const popover = page.getByRole("dialog", { name: /^Calendar/ });
-  const below = page.getByRole("region", { name: "Below" });
+  const below = page.getByRole("article", { name: "Below" });
   const popBox = await rect(popover);
   const belowBox = await rect(below);
   const left = Math.max(popBox.x, belowBox.x);

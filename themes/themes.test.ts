@@ -246,7 +246,7 @@ describe.each(files)("%s", (file) => {
   });
 
   it("keeps the media matte white", () => {
-    // Image `framed` paints `bg-white/100` under a QR code, which is scanned off a dark page: it must
+    // Image `mat="white"` paints `bg-white/100` under a QR code, which is scanned off a dark page: it must
     // stay white on a dark theme too, unlike `bg-white`, the surface.
     expect(luminance(painted("bg-white/100", "background-color", canvas))).toBeGreaterThan(0.99);
   });

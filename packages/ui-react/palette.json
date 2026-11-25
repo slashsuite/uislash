@@ -13,6 +13,7 @@
     "focus-visible:outline-white"
   ],
   "media-matte": ["bg-white/100"],
+  "media-mat": ["bg-zinc-50"],
   "header": ["bg-white/95"],
   "line": ["border-slate-200", "border-slate-200/70", "border-slate-300"],
   "ink": [
@@ -49,6 +50,20 @@
     "bg-sky-600",
     "bg-pink-600",
     "bg-amber-600"
+  ],
+  "peer": [
+    "bg-orange-100",
+    "bg-violet-100",
+    "bg-sky-100",
+    "bg-emerald-100",
+    "bg-amber-100",
+    "bg-blue-100",
+    "border-orange-300",
+    "border-violet-300",
+    "border-sky-300",
+    "border-emerald-300",
+    "border-amber-300",
+    "border-blue-300"
   ],
   "positive": [
     "bg-emerald-50",

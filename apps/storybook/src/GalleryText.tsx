@@ -9,6 +9,7 @@ import {
   CodeExample,
   Divider,
   EmptyState,
+  Mark,
   OutlineRegion,
   Prose,
   RegionFrame,
@@ -25,12 +26,15 @@ import { samplePhoto } from "./samplePhoto";
 import { sampleShot, sampleShotSize } from "../../../packages/ui-react/docs/examples/sampleShot.js";
 import { sampleVideo } from "./sampleVideo";
 
-/** The options a text run takes: italic, a long string, alignment and a fixed amount width. */
+/** The options a text run takes: italic, a Mark, a long string, alignment and a fixed amount width. */
 function GalleryTextOptions() {
   return (
     <div className="flex flex-col gap-1">
       <Text italic tone="muted">
         An italic muted hint.
+      </Text>
+      <Text>
+        A <Mark>marked</Mark> phrase.
       </Text>
       <div className="w-40">
         <Caption breakWords>Caption breakWords: 0f3a9c1d7b2e4f60a8c5d9e1b3f7a2c4d6e8</Caption>

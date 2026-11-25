@@ -7,12 +7,28 @@ import { Video } from "./Video.js";
 /** A video has no role; the test names it, as a page would when it has no caption beside it. */
 const video = () => screen.getByLabelText<HTMLVideoElement>("Intro");
 
+/** A video's markup at `aspect`; the shape is CSS, which jsdom does not lay out, so it is read as data. */
+const shape = (aspect: "16:9" | "4:3") =>
+  renderToStaticMarkup(<Video src="/intro.mp4" aspect={aspect} />); // markup read as data
+
 describe("Video", () => {
   it("shows the browser's controls and loads metadata only", () => {
     render(<Video src="/intro.mp4" aria-label="Intro" />);
     expect(video().controls).toBe(true);
     expect(video().preload).toBe("metadata");
     expect(video().getAttribute("src")).toBe("/intro.mp4");
+  });
+
+  it("asks the browser to load it lazily", () => {
+    render(<Video src="/intro.mp4" aria-label="Intro" />);
+    expect(video().getAttribute("loading")).toBe("lazy");
+  });
+
+  // The shape is reserved in CSS, which jsdom does not lay out, so the markup is read as data.
+  it("reserves a 16:9 shape by default, and another for another aspect", () => {
+    const unset = renderToStaticMarkup(<Video src="/intro.mp4" />); // markup read as data
+    expect(unset).toBe(shape("16:9"));
+    expect(shape("4:3")).not.toBe(shape("16:9"));
   });
 
   it("adds the poster and the fallback children", () => {

@@ -14,27 +14,28 @@ describe("Card badge", () => {
     expect(follows(screen.getByText("body"), screen.getByText("Flaky"))).toBeTruthy();
   });
 
-  it("on a link card is part of the link's accessible name", () => {
+  it("on a link card is read with the card, not in the link's name", () => {
     render(
       <Card href="/shots/1" title="Home page" badge={<Pill tone="warn">Flaky</Pill>}>
         Desktop
       </Card>,
     );
-    const link = screen.getByRole("link", { name: /Home page.*Flaky/ });
+    const link = screen.getByRole("link", { name: "Home page" });
     expect(link.getAttribute("href")).toBe("/shots/1");
+    expect(screen.getByText("Flaky")).not.toBeNull();
   });
 });
 
-describe("Card title names its section", () => {
-  it("makes the section a region named by its level-2 heading", () => {
+describe("Card title names its article", () => {
+  it("makes the card an article named by its level-2 heading", () => {
     render(<Card title="Billing">body</Card>);
-    const region = screen.getByRole("region", { name: "Billing" });
-    expect(within(region).getByRole("heading", { level: 2, name: "Billing" })).not.toBeNull();
+    const article = screen.getByRole("article", { name: "Billing" });
+    expect(within(article).getByRole("heading", { level: 2, name: "Billing" })).not.toBeNull();
   });
 
   it("names an article too, with a bar or actions", () => {
     render(
-      <Card as="article" bar title="Billing" actions={<button type="button">Edit</button>}>
+      <Card bar title="Billing" actions={<button type="button">Edit</button>}>
         body
       </Card>,
     );
@@ -49,20 +50,20 @@ describe("Card title names its section", () => {
         <Card title="Two">b</Card>
       </>,
     );
-    expect(within(screen.getByRole("region", { name: "One" })).getByText("a")).not.toBeNull();
-    expect(within(screen.getByRole("region", { name: "Two" })).getByText("b")).not.toBeNull();
+    expect(within(screen.getByRole("article", { name: "One" })).getByText("a")).not.toBeNull();
+    expect(within(screen.getByRole("article", { name: "Two" })).getByText("b")).not.toBeNull();
   });
 
-  it("is a region named by an aria-label with no title, and a plain div with neither", () => {
+  it("is an article named by an aria-label with no title, and a plain div with neither", () => {
     render(
       <>
         <Card aria-label="Usage">a</Card>
         <Card>b</Card>
       </>,
     );
-    expect(within(screen.getByRole("region", { name: "Usage" })).getByText("a")).not.toBeNull();
+    expect(within(screen.getByRole("article", { name: "Usage" })).getByText("a")).not.toBeNull();
     expect(screen.getByText("b").tagName).toBe("DIV");
-    expect(screen.getAllByRole("region")).toHaveLength(1);
+    expect(screen.getAllByRole("article")).toHaveLength(1);
   });
 
   it("lets a caller's aria-label win", () => {
@@ -71,8 +72,8 @@ describe("Card title names its section", () => {
         body
       </Card>,
     );
-    expect(screen.getByRole("region", { name: "Invoices" })).not.toBeNull();
-    expect(screen.queryByRole("region", { name: "Billing" })).toBeNull();
+    expect(screen.getByRole("article", { name: "Invoices" })).not.toBeNull();
+    expect(screen.queryByRole("article", { name: "Billing" })).toBeNull();
   });
 
   it("lets a caller's aria-labelledby win", () => {
@@ -84,18 +85,18 @@ describe("Card title names its section", () => {
         </Card>
       </>,
     );
-    expect(screen.getByRole("region", { name: "Elsewhere" })).not.toBeNull();
-    expect(screen.queryByRole("region", { name: "Billing" })).toBeNull();
+    expect(screen.getByRole("article", { name: "Elsewhere" })).not.toBeNull();
+    expect(screen.queryByRole("article", { name: "Billing" })).toBeNull();
   });
 
-  it("leaves a card with no title unnamed, so it is no region", () => {
+  it("leaves a card with no title unnamed, so it is no article", () => {
     render(<Card>body</Card>);
-    expect(screen.queryByRole("region")).toBeNull();
+    expect(screen.queryByRole("article")).toBeNull();
   });
 
-  it("is an article named by its title with as=article", () => {
+  it("is an article with a footer too", () => {
     render(
-      <Card as="article" title="Billing">
+      <Card title="Billing" footer={<span>Total</span>}>
         body
       </Card>,
     );
@@ -115,23 +116,33 @@ describe("Card that is a link: root attributes", () => {
     expect(screen.getByRole("link", { name: /Home/ }).hasAttribute("id")).toBe(false);
   });
 
-  it("is still named by the card's text, the badge included, under the caller's id", () => {
+  it("is named by its heading, not the whole card, under the caller's id", () => {
     render(
       <Card href="/x" title="Home" id="home" badge={<Pill tone="warn">Flaky</Pill>}>
         body
       </Card>,
     );
-    const link = screen.getByRole("link", { name: /Home.*Flaky/ });
-    expect(link.getAttribute("aria-labelledby")).toBe("home");
+    const link = screen.getByRole("link", { name: "Home" });
+    const heading = screen.getByRole("heading", { name: "Home" });
+    expect(link.getAttribute("aria-labelledby")).toBe(heading.id);
   });
 
-  it("is named by the card's text when the caller gives no id", () => {
+  it("is named by its heading when the caller gives no id", () => {
     render(
       <Card href="/x" title="Home">
         body
       </Card>,
     );
-    expect(screen.getByRole("link", { name: /Home.*body/ }).getAttribute("href")).toBe("/x");
+    expect(screen.getByRole("link", { name: "Home" }).getAttribute("href")).toBe("/x");
+  });
+
+  it("with no title is named by the card's text, the only name it has", () => {
+    render(
+      <Card href="/x">
+        <p>Spring sale</p>
+      </Card>,
+    );
+    expect(screen.getByRole("link", { name: "Spring sale" }).getAttribute("href")).toBe("/x");
   });
 
   it("keeps aria-label and aria-current, which name and mark the link, on the link", () => {
@@ -155,17 +166,17 @@ describe("Card icon", () => {
         body
       </Card>,
     );
-    expect(screen.getByRole("region", { name: "Diff" })).not.toBeNull();
+    expect(screen.getByRole("article", { name: "Diff" })).not.toBeNull();
     expect(screen.queryByRole("img")).toBeNull();
   });
 
-  it("hides the icon on a link card too: the link is named by the card's text", () => {
+  it("hides the icon on a link card too: the link is named by the title", () => {
     render(
       <Card href="/x" title="Diff" icon="diff">
         body
       </Card>,
     );
-    expect(screen.getByRole("link", { name: /^Diff\s*body$/ })).not.toBeNull();
+    expect(screen.getByRole("link", { name: "Diff" })).not.toBeNull();
     expect(screen.queryByRole("img")).toBeNull();
   });
 });

@@ -111,7 +111,7 @@
   outline-color: #eff1f5; /* base */
 }
 
-/* The media matte (Image framed): the white mat a QR code is scanned off. It stays white in every
+/* The media matte (Image `mat="white"`): the white mat a QR code is scanned off. It stays white in every
    theme, dark ones included, as the scrim above stays black. */
 .latte .bg-white\/100 {
   background-color: #ffffff;
@@ -309,13 +309,11 @@
    (0.06) so the accent text on them clears 4.5:1; the text tones are darkened from their Latte token
    for the same bar on white, mantle and the tint. */
 .latte .bg-emerald-50,
-.latte .bg-emerald-50\/60,
-.latte .bg-emerald-100 {
+.latte .bg-emerald-50\/60 {
   background-color: rgba(64, 160, 43, 0.06); /* green tint */
 }
 .latte .bg-amber-50,
-.latte .bg-amber-50\/60,
-.latte .bg-amber-100 {
+.latte .bg-amber-50\/60 {
   background-color: rgba(223, 142, 29, 0.06); /* yellow tint */
 }
 .latte .bg-red-50 {
@@ -392,12 +390,10 @@
 .latte .text-yellow-600 {
   color: #b07704; /* cat8: yellow */
 }
-.latte .border-emerald-200,
-.latte .border-emerald-300 {
+.latte .border-emerald-200 {
   border-color: rgba(64, 160, 43, 0.4);
 }
-.latte .border-amber-200,
-.latte .border-amber-300 {
+.latte .border-amber-200 {
   border-color: rgba(223, 142, 29, 0.4);
 }
 .latte .border-amber-600 {
@@ -419,8 +415,7 @@
 .latte .border-red-400 {
   border-color: rgba(210, 15, 57, 0.45);
 }
-.latte .border-blue-200,
-.latte .border-blue-300 {
+.latte .border-blue-200 {
   border-color: rgba(30, 102, 245, 0.4);
 }
 
@@ -455,4 +450,53 @@
 .latte .bg-amber-50 .text-red-700,
 .latte .bg-red-50 .text-red-700 {
   color: #b90e31;
+}
+
+/* Peer hues (Card hue): a set of peer cards, one hue each, told apart by hue, not status.
+   Each hue is this theme's own remap of the family's identity fill (bg-orange-600, bg-violet-600,
+   bg-sky-600, bg-emerald-600, bg-amber-600; blue is text-blue-700). The fill is 25% of it over
+   the card white (bg-white); the edge is it mixed 30% toward the ink (text-slate-900). sRGB mix.
+   A fill is lowered in 5% steps where the card's ink would miss 4.5:1 on it, and says so. The edge
+   is decoration (the contrast contract exempts it): the title and the fill carry the card. */
+.latte .bg-orange-100 {
+  background-color: #f3ddce; /* orange: bg-orange-600 #c5530b at 20%, lowered from 25% so the ink keeps 4.5:1 */
+}
+.latte .bg-violet-100 {
+  background-color: #ede1fd; /* violet: bg-violet-600 #8839ef at 15%, lowered from 25% so the ink keeps 4.5:1 */
+}
+.latte .bg-sky-100 {
+  background-color: #dfe2f6; /* sky: bg-sky-600 #5e6dd1 at 20%, lowered from 25% so the ink keeps 4.5:1 */
+}
+.latte .bg-emerald-100 {
+  background-color: #d6e7d3; /* green: bg-emerald-600 #338621 at 20%, lowered from 25% so the ink keeps 4.5:1 */
+}
+.latte .bg-amber-100 {
+  background-color: #ede1d2; /* yellow: bg-amber-600 #a6681d at 20%, lowered from 25% so the ink keeps 4.5:1 */
+}
+.latte .bg-blue-100 {
+  background-color: #dde6f9; /* blue: text-blue-700 #1e5bd4 at 15%, lowered from 25% so the ink keeps 4.5:1 */
+}
+.latte .border-orange-300 {
+  border-color: #a15227; /* orange */
+}
+.latte .border-violet-300 {
+  border-color: #7640c7; /* violet */
+}
+.latte .border-sky-300 {
+  border-color: #5964b2; /* sky */
+}
+.latte .border-emerald-300 {
+  border-color: #3b7637; /* green */
+}
+.latte .border-amber-300 {
+  border-color: #8b6134; /* yellow */
+}
+.latte .border-blue-300 {
+  border-color: #2c57b4; /* blue */
+}
+
+/* The page mat (the media-mat role): the mat under a screenshot on a page, the theme's own ground.
+   The white media matte above stays white for a code. */
+.latte .bg-zinc-50 {
+  background-color: #ffffff; /* the card white, so it looks as the mat always has */
 }

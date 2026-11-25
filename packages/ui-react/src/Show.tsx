@@ -39,7 +39,7 @@ type ShowWhen =
  * Content that only fits a wide screen is in a `Show from`; its narrow-screen form is in a
  * `Show below` at the same breakpoint. Hidden content stays mounted, so two `Show`s of the same
  * content mount it twice: a stateful panel shown at every width with a fold is a
- * `SideColumn asideLabel`. `as="span"` is for phrasing content (inside a `<p>` or a button row).
+ * `SideColumn fold`. `as="span"` is for phrasing content (inside a `<p>` or a button row).
  */
 export function Show({
   from,

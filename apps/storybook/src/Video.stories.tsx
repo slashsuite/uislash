@@ -18,6 +18,17 @@ export const WithPoster: S = {
   ),
 };
 
+/** `aspect` fixes the player's shape, 16:9 unless set; a clip of another shape fits inside it, letterboxed. */
+export const Aspects: S = {
+  render: () => (
+    <div className="grid max-w-3xl grid-cols-2 items-start gap-4">
+      <Video src={sampleVideo} aria-label="Clip at 16:9" />
+      <Video src={sampleVideo} aria-label="Clip at 4:3" aspect="4:3" />
+      <Video src={sampleVideo} aria-label="Clip, square" aspect="square" />
+    </div>
+  ),
+};
+
 export const DoCaptions: S = {
   render: examples.DoCaptions,
 };

@@ -35,17 +35,19 @@ export const Default: S = {
   ),
 };
 
-/** `asideWidth` is `sm` (18rem) or `md` (24rem, the default). */
+const WIDTHS = { xs: "12rem", sm: "18rem", md: "24rem" } as const;
+
+/** `asideWidth` is `xs` (12rem), `sm` (18rem) or `md` (24rem, the default). */
 export const Widths: S = {
   render: () => (
     <Stack>
-      {(["sm", "md"] as const).map((width) => (
+      {(["xs", "sm", "md"] as const).map((width) => (
         <SideColumn
           key={width}
           asideWidth={width}
           aside={
             <Card title={`asideWidth ${width}`}>
-              <Text>{width === "sm" ? "18rem" : "24rem"}</Text>
+              <Text>{WIDTHS[width]}</Text>
             </Card>
           }
         >
@@ -59,14 +61,31 @@ export const Widths: S = {
 };
 
 /**
- * `asideLabel` folds the aside behind a disclosure of that name, closed, below `lg`, so the main
+ * `fold` folds the aside behind a disclosure named by `asideLabel`, closed, below `lg`, so the main
  * area comes first on a phone. From `lg` it is the same column, always shown, with no toggle. The
  * aside stays mounted while folded.
  */
 export const FoldedAside: S = {
   render: () => (
-    <SideColumn aside={agent} asideLabel="Ask the reply agent">
+    <SideColumn aside={agent} asideLabel="Ask the reply agent" fold>
       <Stack gap="sm">{thread}</Stack>
+    </SideColumn>
+  ),
+};
+
+/** `side="start"`: from `lg` the aside is on the left, and first in reading order, so below `lg` it stacks above the main area. */
+export const Start: S = {
+  render: () => (
+    <SideColumn
+      side="start"
+      asideWidth="xs"
+      aside={
+        <Card title="Filters">
+          <Text>A 12rem column on the left from lg.</Text>
+        </Card>
+      }
+    >
+      {thread}
     </SideColumn>
   ),
 };

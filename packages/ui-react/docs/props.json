@@ -162,6 +162,33 @@
     "signature": "appShellRootClassFor(scheme: ColourScheme, schemes?: ColourSchemeClasses): string",
     "props": []
   },
+  "Audio": {
+    "name": "Audio",
+    "description": "An `<audio>` with the browser's own controls, at one fixed size: 20rem wide, narrower only when its column is. It loads\nmetadata only, and lazily where the browser can, so the page does not pull the file until it is\nplayed. A voice note or a clip has no visible title, so `label` names the player. `src` is the\napp's own file; `children` is the fallback for a browser that cannot play it.",
+    "props": [
+      {
+        "name": "children",
+        "type": "ReactNode",
+        "required": false,
+        "description": "The text for a browser that cannot play it.",
+        "native": false
+      },
+      {
+        "name": "label",
+        "type": "string",
+        "required": true,
+        "description": "Names the player for a screen reader, as \"Voice note from Anna\": audio has no visible title.",
+        "native": false
+      },
+      {
+        "name": "src",
+        "type": "string",
+        "required": true,
+        "description": "The audio file, the app's own.",
+        "native": false
+      }
+    ]
+  },
   "Avatar": {
     "name": "Avatar",
     "description": "A person as a round badge of initials, or as their photo when `src` is given; `shape=\"square\"`\nmarks an org or a team instead. It never loads a remote image on its own: that is a request to\nanother server for decoration, and it makes a screenshot depend on the network. `src` is the\napp's own local path. With `onClick` the whole Avatar is one button, with `href` one link. A row of overlapping avatars\nis an `AvatarStack`. While `loading` with an empty `name` it is a bone of its size and shape.",
@@ -301,7 +328,7 @@
   },
   "Badge": {
     "name": "Badge",
-    "description": "A small red count, 10px, for sitting on an icon. An icon with a count is an `IconButton` with\nits `count`, which pins the Badge to its corner and puts the count in the button's name. A\ncount above 99 reads `99+`. While `loading` it is\na bone of its size: a count is a number, so 0 is a value and not a gap.",
+    "description": "A small red count, 10px, for sitting on an icon. Its size is in rem and its height grows with\nits line, so it scales with the reader's text size instead of clipping. An icon with a count is an `IconButton` with\nits `count`, which pins the Badge to its corner and puts the count in the button's name. A\ncount above 99 reads `99+`. While `loading` it is\na bone of its size: a count is a number, so 0 is a value and not a gap.",
     "props": [
       {
         "name": "corner",
@@ -420,7 +447,7 @@
   },
   "Breadcrumbs": {
     "name": "Breadcrumbs",
-    "description": "`org / project / build / snapshot`: the last crumb is the current page. A crumb is a node, or a\n`Crumb` object when it links. A trail too long for its row wraps onto the next line; a long parent\ntruncates, and the current page is never cut: its words wrap instead.",
+    "description": "`org / project / build / snapshot`: the last crumb is the current page. A crumb is a node, or a\n`Crumb` object when it links. A trail too long for its row wraps onto the next line; a long parent\ntruncates, showing its whole label in a tooltip on hover, focus and a tap, and the current page is\nnever cut: its words wrap instead.",
     "props": [
       {
         "name": "id",
@@ -528,7 +555,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"alert\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": false,
         "description": "An icon from the `Icon` set before the label, decorative, at the button's size.",
         "native": false
@@ -609,13 +636,13 @@
   },
   "Callout": {
     "name": "Callout",
-    "description": "A tinted notice box, with an optional bold title above its body. Its text is text-sm (text-base/7\ninside a `Prose`, boxed or `banner`). `actions` puts a button or link\nat the end of the row; `banner` makes it a flat strip (bottom border only, no radius) for the\ntop of a `Card flush` and nowhere else: a padded card or a padded `FullBleedLayout` column\nwould inset it. `align=\"center\"` centres the text. In a page's column the notice is a plain Callout, first in the column's `Stack`. With `actions` the box is `relative`, so a `TextLink\nstretch` there makes the whole callout its click target, like a link in a table row. `icon`\nsets one of the library's icons at the start of the box, in the tone's ink. `danger` is\n`role=\"alert\"` and `warn` is `role=\"status\"`, so a screen reader announces them when they\nappear; the other tones have no role.",
+    "description": "A tinted notice box, with an optional bold title above its body. Its text is text-sm (text-base/7\ninside a `Prose`, boxed or `banner`). `actions` puts a button or link\nat the end of the row, or under the text at full width below `sm`; `banner` makes it a flat strip (bottom border only, no radius) for the\ntop of a `Card flush` and nowhere else: a padded card or a padded `FullBleedLayout` column\nwould inset it. `align=\"center\"` centres the text. In a page's column the notice is a plain Callout, first in the column's `Stack`. With `actions` the box is `relative`, so a `TextLink\nstretch` there makes the whole callout its click target, like a link in a table row. `icon`\nsets one of the library's icons at the start of the box, in the tone's ink. `danger` is\n`role=\"alert\"` and `warn` is `role=\"status\"`, so a screen reader announces them when they\nappear; the other tones have no role.",
     "props": [
       {
         "name": "actions",
         "type": "ReactNode",
         "required": false,
-        "description": "A button or link at the end of the row, beside the title and body.",
+        "description": "A button or link at the end of the row, beside the title and body; on a phone, under them at full width.",
         "native": false
       },
       {
@@ -636,7 +663,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"alert\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": false,
         "description": "One of the library's icons, at the start of the box beside the text.",
         "native": false
@@ -749,7 +776,7 @@
       },
       {
         "name": "tone",
-        "type": "\"neutral\" | \"info\" | \"positive\" | \"warn\" | \"danger\" | \"muted\" | \"accent\"",
+        "type": "\"muted\" | \"neutral\" | \"info\" | \"positive\" | \"warn\" | \"danger\" | \"accent\"",
         "required": false,
         "description": "The ink: `neutral`, the default, is the role's own; `muted` and `accent` set the hierarchy of\nthe text; `positive`, `warn`, `danger` and `info` say what a run means (see `TextTone`).",
         "native": false
@@ -758,20 +785,13 @@
   },
   "Card": {
     "name": "Card",
-    "description": "A bordered panel with an optional title, count and status. A titled card is a `section` named by\nits title, one with only an `aria-label` a `section` too, any other a `div`, and `as=\"article\"` makes it an `article`. Two opt-in forms\nfor data views: `flush` drops the padding and clips the corners, for a table that runs edge to\nedge; `bar` puts the title, count and `actions` in a tinted strip across the top, over the body.\nA flush card has no padding for a `title`, so give it a `bar`. An empty state is an `EmptyState`,\nwhich draws its own dashed frame. Inside a card a `Stack` is `xs` apart, and the title's\nheading level is one below the heading that holds the card. `size=\"sm\"` is the dense padding and `size=\"lg\"` the\nroomy one, the same on a `ListRow` and a `FileDrop`. `tone` is the Callout's set, for a data panel that carries a status\n(a soft fill and border, no shadow); a message is still a `Callout`, and `bar` has no tone. A\ntitled panel is named by its title: the root gets\n`aria-labelledby` pointing at the heading, unless the caller passes its own `aria-label` or\n`aria-labelledby`, which wins. Other props (`id`, `data-*`, `aria-*`) go on the root. The root is `relative`, so a\n`TextLink stretch` inside it covers the card. A card with an `id` is an anchor target: `#id`\nscrolls it clear of the sticky header (and a `subnav`) and outlines it in the accent colour while\nit is the target.\n\n`icon` is one of the library's icons at feature size in the accent colour, above the title: the\nmark of a feature card. It sits in the padded body, so `bar` and `flush` have none.\n\n`footer` is a tinted strip across the bottom, under a hairline, for the card's own actions or a\ntotal; in a `CardGrid` it stays at the foot of a card that is stretched to the row's height. It\nsuits a panel, not a card that is a link.\n\n`fill` makes a panel take its parent's full height (the parent sets it): the title or bar stays\nput and the body scrolls. Not on a link card.\n\n`href` makes the whole card one link: a hover border and the focus ring, with the link stretched\nover the card, so it takes no `actions`, `footer` or `as`. A `TextLink`, `Button` or `Checkbox` in\nthe body sits above the link and is clickable on its own. An in-app `href` is drawn by the app's\nrouter link through `LinkProvider`. `external` opens it in a new tab. On a link card\n`id`, `data-*` and the describing `aria-*` (`aria-describedby`, `aria-details`, …) go on the card\nroot, not the link; the link's own `aria-label`, `aria-labelledby` and `aria-current` stay on the\nlink. The link is named by the card's text (title, body, `badge`) through the root's id, which is\ngenerated when the caller gives none.\n\nWhile `loading` a card with no children draws three lines of text bones, a `flush` one three\n`ListRow` bones; what it has (its title, its children) draws as usual.",
+    "description": "A bordered panel with an optional title, count and status. A titled card is an `article` named by\nits title, one with only an `aria-label` an `article` too, and any other a `div`. Two opt-in forms\nfor data views: `flush` drops the padding and clips the corners, for a table that runs edge to\nedge; `bar` puts the title, count and `actions` in a tinted strip across the top, over the body.\nA flush card has no padding for a `title`, so give it a `bar`. An empty state is an `EmptyState`,\nwhich draws its own dashed frame. Inside a card a `Stack` is `xs` apart, and the title's\nheading level is one below the heading that holds the card. `size=\"sm\"` is the dense padding and `size=\"lg\"` the\nroomy one, the same on a `ListRow` and a `FileDrop`. `tone` is the Callout's set, for a data panel that carries a status\n(a soft fill and border, no shadow); a message is still a `Callout`, and `bar` has no tone. `hue`\npaints one of a set of peer cards in its own hue, the theme's; it is not a status, and `tone`,\n`bar` and `dashed` win over it. `dashed` draws a dashed edge for a card that stands for something\nnot real yet, and with `bar` the strip's edge is dashed too. `width=\"sm\"` caps the card at 24rem. A\ntitled panel is named by its title: the root gets\n`aria-labelledby` pointing at the heading, unless the caller passes its own `aria-label` or\n`aria-labelledby`, which wins. Other props (`id`, `data-*`, `aria-*`) go on the root. The root is `relative`, so a\n`TextLink stretch` inside it covers the card. A card with an `id` is an anchor target: `#id`\nscrolls it clear of the sticky header (and a `subnav`) and outlines it in the accent colour while\nit is the target.\n\n`icon` is one of the library's icons at feature size in the accent colour, above the title: the\nmark of a feature card. It sits in the padded body, so `bar` and `flush` have none.\n\n`footer` is a tinted strip across the bottom, under a hairline, for the card's own actions or a\ntotal; in a `CardGrid` it stays at the foot of a card that is stretched to the row's height. It\nsuits a panel, not a card that is a link.\n\n`fill` makes a panel take its parent's full height (the parent sets it): the title or bar and the\n`inset` band stay put and the body scrolls, with room inside it for a focus ring at its edge. Not\non a link card.\n\n`href` makes the whole card one link: a hover border and the focus ring, with the link stretched\nover the card, so it takes no `actions` or `footer`. `onPress` makes it one button the same way. A\n`TextLink`, `Button` or `Checkbox` in the body sits above the link and is clickable on its own. An\nin-app `href` is drawn by the app's router link through `LinkProvider`. `external` opens it in a\nnew tab, and `more` draws a \"Read more\" line at its foot. On a link or button card `id`, `data-*`\nand the describing `aria-*` (`aria-describedby`, `aria-details`, …) go on the card root; the\ncontrol's own `aria-label`, `aria-labelledby`, `aria-current` and `aria-pressed` stay on it. The\nlink or button is named by the card's title; an untitled one by the card's text, through the root's\nid, which is generated when the caller gives none.\n\nIn a `CardGrid align=\"regions\"` the card's header, body and footer line up with its neighbours'\nacross the row.\n\nWhile `loading` a card with no children draws three lines of text bones, a `flush` one three\n`ListRow` bones; what it has (its title, its children) draws as usual.",
     "props": [
       {
         "name": "actions",
         "type": "ReactNode",
         "required": false,
         "description": "Buttons or links at the end of the header: in the strip with `bar`, else beside the title.",
-        "native": false
-      },
-      {
-        "name": "as",
-        "type": "\"article\"",
-        "required": false,
-        "description": "`article` for a card that stands alone as a piece of content (a post, a listing). Left out, a\ntitled card is a `section` named by its title, one with only an `aria-label` a `section` named\nby that, and any other a `div`. Not on a card that is a link.",
         "native": false
       },
       {
@@ -785,7 +805,7 @@
         "name": "badge",
         "type": "ReactNode",
         "required": false,
-        "description": "A `Pill` (or any small node) pinned in the top corner at the end edge, over the content and\ninside the radius, with no change to the layout. On a card that is a link it is part of the\nlink's name, and a link or button in it is clickable on its own.\n\nUse it for a category (`Pill tone=\"info\"`) or a flag on the thing itself.",
+        "description": "A `Pill` (or any small node) pinned in the top corner at the end edge, over the content and\ninside the radius, with no change to the layout. On a titled link card the link is named by the\ntitle alone; an untitled one is named by its whole content, badge included. A link or button in\nit is clickable on its own.\n\nUse it for a category (`Pill tone=\"info\"`) or a flag on the thing itself.",
         "native": false
       },
       {
@@ -800,6 +820,13 @@
         "type": "number",
         "required": false,
         "description": "A small number beside the title (how many rows the card holds). Needs a `title`.",
+        "native": false
+      },
+      {
+        "name": "dashed",
+        "type": "boolean",
+        "required": false,
+        "description": "A dashed edge, for a card that stands for something not real yet: a plan, a draft, an imagined\nresult beside a real one. With `bar` the strip's lower edge is dashed too.",
         "native": false
       },
       {
@@ -834,12 +861,19 @@
         "name": "href",
         "type": "string",
         "required": false,
-        "description": "Makes the whole card one link to this URL, with no `actions`, `footer` or `as`; an in-app path\ngoes through the app's `LinkProvider`.",
+        "description": "Makes the whole card one link to this URL, with no `actions` or `footer`; an in-app path goes\nthrough the app's `LinkProvider`. The link is named by the card's title.",
+        "native": false
+      },
+      {
+        "name": "hue",
+        "type": "\"orange\" | \"violet\" | \"sky\" | \"green\" | \"yellow\" | \"blue\"",
+        "required": false,
+        "description": "One hue of a set of peer cards, such as one card per product: a soft fill and edge the theme\npaints. It is not a status (that is `tone`), and the title still names the card. Ignored with\n`bar` and `dashed`.",
         "native": false
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"alert\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": false,
         "description": "One of the library's icons, drawn at feature size in the accent colour above the title: the\nmark of a feature card. Ignored with `bar` and `flush`.\n\nPick it by the idea it stands for.",
         "native": false
@@ -875,6 +909,28 @@
         "native": false
       },
       {
+        "name": "more",
+        "type": "boolean",
+        "required": false,
+        "description": "A \"Read more\" line with an arrow at the foot of the card, in the accent colour: the cue that the\ncard goes somewhere, for a post or an article. Draw it on every card of a set or on none.",
+        "native": false
+      },
+      {
+        "name": "moreLabel",
+        "type": "string",
+        "required": false,
+        "default": "\"Read more\"",
+        "description": "The words of the `more` line.",
+        "native": false
+      },
+      {
+        "name": "onPress",
+        "type": "(() => void)",
+        "required": false,
+        "description": "Makes the whole card one button that runs this, stretched over the card like a link card's link\nand named by its title: a card the user picks (a store, a plan). With no `actions`, `footer` or\n`href`. A picked card says so with `aria-pressed` and its own words (a `Pill` in `badge`).",
+        "native": false
+      },
+      {
         "name": "size",
         "type": "\"sm\" | \"md\" | \"lg\"",
         "required": false,
@@ -893,7 +949,7 @@
         "name": "title",
         "type": "string",
         "required": false,
-        "description": "The card's heading (a small uppercase label unless `titleStyle` says otherwise). It names the card, which is then a `section`.",
+        "description": "The card's heading (a small uppercase label unless `titleStyle` says otherwise). It names the card, which is then an `article`.",
         "native": false
       },
       {
@@ -910,19 +966,26 @@
         "required": false,
         "description": "A soft fill and border in the Callout's tones, for a data panel with a status. Ignored with `bar`.",
         "native": false
+      },
+      {
+        "name": "width",
+        "type": "\"sm\"",
+        "required": false,
+        "description": "`sm` caps the card at 24rem, for a card that stands alone in a wide column (a sign-in panel, a\nplan). Left out, the card takes the width it is given.",
+        "native": false
       }
     ]
   },
   "CardGrid": {
     "name": "CardGrid",
-    "description": "A responsive grid of tiles of one width: one column on a phone, two from `sm`, `columns` from `lg`.\nA main area beside a narrower one is not a grid of tiles: it is `SideColumn` (`asideWidth=\"third\"`\nfor two thirds and one). `columns=\"auto\"` instead fits as many per row as the width allows, each at least `minWidth` wide:\n`md` (17rem, the default) or `sm` (12rem). `align=\"start\"` keeps each card its own height\ninstead of stretching it to the tallest in its row. `as=\"ul\"` makes it a list of cards for a\nscreen reader: the grid is a `<ul>` and each child is wrapped in an `<li>`, still stretched.\nWith no children it draws `empty` (an `EmptyState`) in place of the grid. While `loading` with\nnone it draws one card of bones per column (three for `auto`), never `empty`.",
+    "description": "A responsive grid of tiles of one width: one column on a phone, two from `sm`, `columns` from `lg`.\nA main area beside a narrower one is not a grid of tiles: it is `SideColumn` (`asideWidth=\"third\"`\nfor two thirds and one). `columns=\"auto\"` instead fits as many per row as the width allows, each at least `minWidth` wide:\n`md` (17rem, the default) or `sm` (12rem). `align=\"start\"` keeps each card its own height\ninstead of stretching it to the tallest in its row; `align=\"regions\"` lines up each card's header,\nbody and footer across the row (CSS subgrid). `minColumns={2}` keeps two tiles to a row on a\nphone. Every cell has `min-w-0`, so a truncating name inside a card cuts instead of widening its\ncolumn. A `CardGridRow` spans every column. `as=\"ul\"` makes it a list of cards for a\nscreen reader: the grid is a `<ul>` and each child is wrapped in an `<li>`, still stretched.\nWith no children it draws `empty` (an `EmptyState`) in place of the grid. While `loading` with\nnone it draws one card of bones per column (three for `auto`), never `empty`.",
     "props": [
       {
         "name": "align",
-        "type": "\"start\" | \"stretch\"",
+        "type": "\"start\" | \"stretch\" | \"regions\"",
         "required": false,
         "default": "stretch",
-        "description": "`start` keeps each card its own height; the default stretches every card to the tallest in its row.",
+        "description": "`start` keeps each card its own height; the default stretches every card to the tallest in its\nrow. `regions` stretches them too and lines up each card's header, body and footer with its\nneighbours' across the row, so titles of different lengths do not push the bodies out of line.",
         "native": false
       },
       {
@@ -971,11 +1034,32 @@
         "native": false
       },
       {
+        "name": "minColumns",
+        "type": "2 | 1",
+        "required": false,
+        "default": "1",
+        "description": "The fewest cards in a row: `2` keeps two small tiles side by side on a phone (products in a\nshop), where the default is one.",
+        "native": false
+      },
+      {
         "name": "minWidth",
         "type": "\"sm\" | \"md\"",
         "required": false,
         "default": "md",
         "description": "With `columns=\"auto\"`, the narrowest a card gets: `md` 17rem or `sm` 12rem.",
+        "native": false
+      }
+    ]
+  },
+  "CardGridRow": {
+    "name": "CardGridRow",
+    "description": "One item that spans every column of a `CardGrid`: a heading over a group of cards, or one wide\ncard in the run (an announcement among products). In `as=\"ul\"` its `<li>` spans the row. It takes\nno `align=\"regions\"` rows: what it holds keeps its own layout.",
+    "props": [
+      {
+        "name": "id",
+        "type": "string",
+        "required": false,
+        "description": "The root element's `id`: an anchor, or the target of a `for` or an `aria-describedby`.",
         "native": false
       }
     ]
@@ -1297,7 +1381,7 @@
   },
   "Cluster": {
     "name": "Cluster",
-    "description": "A horizontal row of items a fixed `gap` apart (`sm` by default): the row counterpart of `Stack`. `align` is the\ncross axis (`center` default, `baseline` for mixed text sizes, `start`, `end`) and `justify` the\nmain one (`start` default, `between` to push the first and last items to the two ends, `end`).\nThe items flow onto further lines when the row runs out of room; `wrap={false}` keeps them on one\nline.\n\nPut one `ClusterGrow` around the item that takes the room left over, an input beside its\nbuttons, say. An empty `ClusterGrow` is a spacer that pushes what follows it to the end.\n`ButtonGroup` is the row for buttons; use `Cluster` for any other row. `as=\"span\"` is for a row\ninside phrasing content, such as a `PageHeader` description (a `<p>`): its items must be phrasing\ncontent too, so no `ClusterGrow`. `as=\"ul\"` or `as=\"ol\"` is a wrapping list with no markers\n(tags, chips), as in `CardGrid`: the Cluster wraps each child in its own `<li>`, so the caller\nwrites the items (`Pill`s) and never an `<li>`.",
+    "description": "A horizontal row of items a fixed `gap` apart (`sm` by default): the row counterpart of `Stack`. `align` is the\ncross axis (`center` default, `baseline` for mixed text sizes, `start`, `end`) and `justify` the\nmain one (`start` default, `between` to push the first and last items to the two ends, `end`).\nThe items flow onto further lines when the row runs out of room; `wrap={false}` keeps them on one\nline.\n\nPut one `ClusterGrow` around the item that takes the room left over, an input beside its\nbuttons, say. An empty `ClusterGrow` is a spacer that pushes what follows it to the end.\n`ButtonGroup` is the row for buttons; use `Cluster` for any other row. `as=\"span\"` is for a row\ninside phrasing content, such as a `PageHeader` description (a `<p>`): its items must be phrasing\ncontent too, so no `ClusterGrow`. `as=\"ul\"` or `as=\"ol\"` is a wrapping list with no markers\n(tags, chips), as in `CardGrid`: the Cluster wraps each child in its own `<li>`, so the caller\nwrites the items (`Pill`s) and never an `<li>`. `as=\"nav\"` is a row of links (a footer's or a\nsection's): a `<nav>` named by its required `aria-label`, holding a list with each link in its\nown `<li>`.",
     "props": [
       {
         "name": "align",
@@ -1309,10 +1393,10 @@
       },
       {
         "name": "as",
-        "type": "\"div\" | \"ol\" | \"span\" | \"ul\"",
+        "type": "\"nav\" | \"div\" | \"ol\" | \"span\" | \"ul\"",
         "required": false,
         "default": "div",
-        "description": "The element: `div`, `span` for a row inside a `<p>` or other phrasing content, or `ul` or `ol`\nfor a list (no markers; the Cluster wraps each child in an `<li>`).\n\nIn a `span` the items must be phrasing content, so no `ClusterGrow`.",
+        "description": "The element: `div`, `span` for a row inside a `<p>` or other phrasing content, `ul` or `ol`\nfor a list (no markers; the Cluster wraps each child in an `<li>`), or `nav` for a row of\nlinks (a `<nav>` named by `aria-label`, around such a list).\n\nIn a `span` the items must be phrasing content, so no `ClusterGrow`.",
         "native": false
       },
       {
@@ -1332,10 +1416,10 @@
       },
       {
         "name": "justify",
-        "type": "\"end\" | \"start\" | \"between\"",
+        "type": "\"center\" | \"end\" | \"start\" | \"between\"",
         "required": false,
         "default": "start",
-        "description": "The main axis: `start`, `between` (the first and last items at the two ends) or `end`.",
+        "description": "The main axis: `start`, `center`, `between` (the first and last items at the two ends) or `end`.",
         "native": false
       },
       {
@@ -1370,13 +1454,28 @@
   },
   "Code": {
     "name": "Code",
-    "description": "Inline code: mono, on a subtle inset background. It takes the surrounding text colour and size (a touch smaller, for the mono face).",
+    "description": "Inline code: mono, on a subtle inset background. It takes the surrounding text colour and size (a\ntouch smaller, for the mono face). `lines={1}` keeps a long value (a hash, a path) on one line,\ncut with an ellipsis, and shows its whole text in a tooltip while it is cut; `breakWords` instead breaks a long unbroken\nvalue at the edge of its box, as `Text` does.",
     "props": [
+      {
+        "name": "breakWords",
+        "type": "boolean",
+        "required": false,
+        "default": "false",
+        "description": "Breaks a long unbroken value (a URL, a hash) at the edge of its box.",
+        "native": false
+      },
       {
         "name": "id",
         "type": "string",
         "required": false,
         "description": "The root element's `id`: an anchor, or the target of a `for` or an `aria-describedby`.",
+        "native": false
+      },
+      {
+        "name": "lines",
+        "type": "1",
+        "required": false,
+        "description": "`1` keeps it on one line, cut with an ellipsis; while it is cut, its whole text shows in a tooltip.",
         "native": false
       }
     ]
@@ -1534,6 +1633,33 @@
       }
     ]
   },
+  "ColourSwatch": {
+    "name": "ColourSwatch",
+    "description": "A small square in a measured colour, with its `label` and its hex `value` beside it in mono: a\ncolour read off a page, a screenshot or a theme. The colour is the data on show, not a look, so\nit is painted from `value`; anything but a `#rrggbb` value draws an empty swatch and no value.\nA hairline edges the square, so a colour close to the page still shows. The square is\ndecorative: the label and the value say the colour.",
+    "props": [
+      {
+        "name": "id",
+        "type": "string",
+        "required": false,
+        "description": "The root element's `id`: an anchor, or the target of a `for` or an `aria-describedby`.",
+        "native": false
+      },
+      {
+        "name": "label",
+        "type": "string",
+        "required": true,
+        "description": "What the colour is, as \"Background\" or \"Accent\", shown before the value.",
+        "native": false
+      },
+      {
+        "name": "value",
+        "type": "string",
+        "required": true,
+        "description": "The colour, as `#rrggbb`. Anything else draws an empty swatch and leaves the value out.",
+        "native": false
+      }
+    ]
+  },
   "Combobox": {
     "name": "Combobox",
     "description": "A text field that filters a list of choices as the person types, for a choice from more items\nthan a `Select` reads well (a country, a time zone, a teammate): React Aria's `ComboBox`. Typing\nnarrows the list by label; arrow keys move through it, Enter picks, Escape closes it. The chevron\nopens the whole list. Its value is the chosen item's `value`, posted under `name`. `label`, `hint`,\n`error`, `required` and `disabled` are a `DateField`'s; `size` and `width` an `Input`'s. Inside a\nmodal `Dialog` the list draws in the dialog. While `loading` the label is drawn and the field is a\nbone of its height.",
@@ -1648,7 +1774,7 @@
       },
       {
         "name": "width",
-        "type": "\"sm\" | \"md\" | \"lg\" | \"xs\" | \"auto\" | \"fill\" | \"full\"",
+        "type": "\"sm\" | \"md\" | \"lg\" | \"auto\" | \"xs\" | \"fill\" | \"full\"",
         "required": false,
         "description": "`full` (default) fills the parent; `fill` grows to fill the room left in a row beside other items (it can shrink to nothing, so buttons stay on the line); `xs`, `sm`, `md`, `lg` are fixed; `auto` adds no width class, so the control is as wide as the browser makes it.",
         "native": false
@@ -1740,7 +1866,7 @@
     "props": [
       {
         "name": "as",
-        "type": "\"nav\" | \"header\" | \"footer\" | \"div\" | \"main\" | \"section\"",
+        "type": "\"nav\" | \"header\" | \"footer\" | \"main\" | \"div\" | \"section\"",
         "required": false,
         "default": "div",
         "description": "The element: `div`, `main`, `header`, `footer`, `section` or `nav`.",
@@ -2746,6 +2872,65 @@
       }
     ]
   },
+  "EmbedFrame": {
+    "name": "EmbedFrame",
+    "description": "A rounded, clipped frame with a hairline, at a fixed height, for a map or an `<iframe>`: the\nembed in `children` fills it. `status` lays a centred overlay over the embed while it loads or\nafter it failed; the embed stays mounted under it, so it can finish loading. The frame is a\nregion named by `label`.",
+    "props": [
+      {
+        "name": "children",
+        "type": "ReactNode",
+        "required": true,
+        "description": "The embed: an `<iframe>` or a map's container. It fills the frame.",
+        "native": false
+      },
+      {
+        "name": "errorLabel",
+        "type": "string",
+        "required": false,
+        "default": "Could not load.",
+        "description": "The words over the embed when `status` is `error`: say what failed and what to do.",
+        "native": false
+      },
+      {
+        "name": "height",
+        "type": "\"sm\" | \"md\" | \"viewport\"",
+        "required": false,
+        "default": "md",
+        "description": "`sm` 18rem, `md` 24rem, or `viewport`, 55% of the small viewport's height, for a map that is\nthe page's main content.",
+        "native": false
+      },
+      {
+        "name": "id",
+        "type": "string",
+        "required": false,
+        "description": "The root element's `id`: an anchor, or the target of a `for` or an `aria-describedby`.",
+        "native": false
+      },
+      {
+        "name": "label",
+        "type": "string",
+        "required": true,
+        "description": "Names the frame's region: what the embed shows, as \"Map of the shops\".",
+        "native": false
+      },
+      {
+        "name": "loadingLabel",
+        "type": "string",
+        "required": false,
+        "default": "Loading",
+        "description": "What a screen reader hears while `status` is `loading`.",
+        "native": false
+      },
+      {
+        "name": "status",
+        "type": "\"loading\" | \"error\" | \"ready\"",
+        "required": false,
+        "default": "ready",
+        "description": "`loading` lays a pulsing cover over the embed and marks the region busy; `error` lays\n`errorLabel` over it, announced. Set it from the embed's own load and error events.",
+        "native": false
+      }
+    ]
+  },
   "EmptyState": {
     "name": "EmptyState",
     "description": "The one empty look: what a list, a table or a page shows when there is nothing in it yet. Give it\nto the part's `empty` slot (`ListLayout`, `CardGrid`, `TableBody`, `Timeline`, `ChatThread`, a\n`Stack as=\"ul\"`), which shows it when the part has no children and picks its size.\n\n`md` is a centred `title`, the `children` as the explanation under it (a `Text`, then `Steps` for\na \"get started\" list), and `actions` (buttons, links) in a centred row at the bottom, with an\noptional `icon` above the title. A named `<section>`. On its own it draws a dashed frame round\nitself; inside a `Card` the card is the frame. `level` is the title's heading level, one below\nthe heading that holds it: a 2 on the page, a 3 in a `Section`.\n\n`sm` is the one-line form for inside a table, a timeline or a list: the title as one centred\nmuted line, the `children` under it in the same small text and the `actions` after. It is a plain\nblock with no heading and no landmark, so a table cell or a card does not grow a region.",
@@ -2759,7 +2944,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"alert\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": false,
         "description": "One of the library's icons, at feature size in the muted ink above the title.",
         "native": false
@@ -3546,7 +3731,7 @@
       },
       {
         "name": "name",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"alert\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": false,
         "description": "One of the library's icons, named for the idea it stands for.",
         "native": false
@@ -3561,7 +3746,7 @@
       },
       {
         "name": "tone",
-        "type": "\"neutral\" | \"info\" | \"positive\" | \"warn\" | \"danger\" | \"muted\" | \"accent\"",
+        "type": "\"muted\" | \"neutral\" | \"info\" | \"positive\" | \"warn\" | \"danger\" | \"accent\"",
         "required": false,
         "description": "A text tone. Left out, the icon takes the colour of the text around it.",
         "native": false
@@ -3602,7 +3787,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"alert\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": true,
         "description": "The one icon it holds, from the `Icon` set, at the button's size.",
         "native": false
@@ -3642,7 +3827,7 @@
   },
   "Image": {
     "name": "Image",
-    "description": "A picture in a fixed shape: `aspect` reserves the space before it loads, so the page does not\njump, and `fit` crops it to the shape or shows all of it. The corners are rounded and the frame\nhas a hairline. If the picture is missing or fails to load, a same-sized placeholder with a\npicture mark stands in, still named by `alt`. `framed` mats a code or a logo in white. A user's photo is an `Avatar`; a clickable\nthumbnail with a label is a `MediaTile`. While `loading` with no `src` yet it is a bone of the same\nshape, not the placeholder, which means there is no picture.",
+    "description": "A picture in a fixed shape: `aspect` reserves the space before it loads, so the page does not\njump, and `fit` crops it to the shape or shows all of it. The corners are rounded and the frame\nhas a hairline. If the picture is missing or fails to load, a same-sized placeholder with a\npicture mark stands in, still named by `alt`. `mat` sets it on a padded mat: `white` for a code\nor a logo, `page` for a screenshot. `href` links it to its full size in a new tab. It loads\nlazily unless it is the `priority` picture. A user's photo is an `Avatar`; a clickable\nthumbnail with a label is a `MediaTile`. While `loading` with no `src` yet it is a bone of the same\nshape, not the placeholder, which means there is no picture.",
     "props": [
       {
         "name": "alt",
@@ -3653,10 +3838,18 @@
       },
       {
         "name": "aspect",
-        "type": "\"square\" | \"4:3\" | \"3:2\" | \"16:9\" | \"3:4\" | \"9:16\" | \"natural\"",
+        "type": "\"square\" | \"4:3\" | \"3:2\" | \"16:10\" | \"16:9\" | \"3:4\" | \"9:16\" | \"natural\"",
         "required": false,
         "default": "4:3",
         "description": "The shape it is cropped to: `square`, `4:3`, `3:2`, `16:9`, or the portrait `3:4` and `9:16`.\n`natural` keeps the picture's own proportions instead, so nothing is cropped or letterboxed;\nthe space is not reserved before it loads.",
+        "native": false
+      },
+      {
+        "name": "crop",
+        "type": "\"center\" | \"top\"",
+        "required": false,
+        "default": "center",
+        "description": "Where `fit=\"cover\"` crops from: `center` keeps the middle of the picture, `top` keeps its top\nedge, for a screenshot whose header is the part to see.",
         "native": false
       },
       {
@@ -3668,11 +3861,10 @@
         "native": false
       },
       {
-        "name": "framed",
-        "type": "boolean",
+        "name": "href",
+        "type": "string",
         "required": false,
-        "default": "false",
-        "description": "Sets the picture on a white mat with padding, always white, in every theme: a QR code is\nscanned off a dark page. It shows the whole picture, as `fit=\"contain\"`, whatever `fit` says.",
+        "description": "Makes the picture a link to its full size, opened in a new tab (`target=\"_blank\"`,\n`rel=\"noreferrer\"`), named by `alt`.",
         "native": false
       },
       {
@@ -3698,6 +3890,21 @@
         "native": false
       },
       {
+        "name": "mat",
+        "type": "\"page\" | \"white\"",
+        "required": false,
+        "description": "Sets the picture on a padded mat and shows the whole of it, as `fit=\"contain\"`, whatever `fit`\nsays. `white` is white in every theme, dark ones included, so a QR code, a barcode or a logo\nreads off a dark page. `page` is a ground a step below the page in each theme, for a\nscreenshot. Left out, there is no mat.",
+        "native": false
+      },
+      {
+        "name": "priority",
+        "type": "boolean",
+        "required": false,
+        "default": "false",
+        "description": "Marks the picture that is the page's largest one in the first view (its LCP): it loads at once\nwith a high fetch priority. Every other picture loads lazily, when it nears the viewport.",
+        "native": false
+      },
+      {
         "name": "src",
         "type": "string",
         "required": false,
@@ -3706,10 +3913,10 @@
       },
       {
         "name": "width",
-        "type": "\"sm\" | \"md\" | \"lg\" | \"full\"",
+        "type": "\"sm\" | \"md\" | \"lg\" | \"xl\" | \"full\"",
         "required": false,
         "default": "full",
-        "description": "`sm` 96px, `md` 160px and `lg` 256px set the width, capped at the parent's; `full` fills the parent.",
+        "description": "`sm` 96px, `md` 160px, `lg` 256px and `xl` 448px set the width, capped at the parent's; `full`\nfills the parent.",
         "native": false
       }
     ]
@@ -3769,7 +3976,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"alert\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": false,
         "description": "A leading icon inside the field, by name (`search`). Not with `prefix`.",
         "native": false
@@ -3834,7 +4041,7 @@
       },
       {
         "name": "width",
-        "type": "\"sm\" | \"md\" | \"lg\" | \"xs\" | \"auto\" | \"fill\" | \"full\"",
+        "type": "\"sm\" | \"md\" | \"lg\" | \"auto\" | \"xs\" | \"fill\" | \"full\"",
         "required": false,
         "default": "full",
         "description": "`full` (default) fills the parent; `fill` grows to fill the room left in a row beside other items (it can shrink to nothing, so buttons stay on the line); `xs`, `sm`, `md`, `lg` are fixed; `auto` adds no width class, so the control is as wide as the browser makes it.",
@@ -3890,7 +4097,7 @@
       },
       {
         "name": "tone",
-        "type": "\"neutral\" | \"info\" | \"positive\" | \"warn\" | \"danger\" | \"muted\" | \"accent\"",
+        "type": "\"muted\" | \"neutral\" | \"info\" | \"positive\" | \"warn\" | \"danger\" | \"accent\"",
         "required": false,
         "description": "The meaning of the value, in the colours of a `Table` cell's `tone` (`TextTone`; `neutral`, the default, is the list's ink); the label keeps its ink. Colour alone does not say it, so the value or the label says it too: a sign, a word.",
         "native": false
@@ -4336,7 +4543,7 @@
       },
       {
         "name": "stripe",
-        "type": "\"info\" | \"positive\" | \"warn\" | \"danger\" | \"muted\" | \"accent\"",
+        "type": "\"muted\" | \"info\" | \"positive\" | \"warn\" | \"danger\" | \"accent\"",
         "required": false,
         "description": "The row's status, as a stripe on its leading edge in this tone, as a `Table` row's `stripe`. The\ncolour says it to the eye only, so the row's words say it too (a `Pill`, a status in `trailing`).",
         "native": false
@@ -4384,6 +4591,19 @@
       }
     ]
   },
+  "Mark": {
+    "name": "Mark",
+    "description": "A highlighted run inside text: a `<mark>`, on the warn tint, such as the words a search matched\nin a result. It takes the surrounding size and weight. Mark the words that matter to what the\nreader is doing, not emphasis: that is `Text strong`.",
+    "props": [
+      {
+        "name": "id",
+        "type": "string",
+        "required": false,
+        "description": "The root element's `id`: an anchor, or the target of a `for` or an `aria-describedby`.",
+        "native": false
+      }
+    ]
+  },
   "Markdown": {
     "name": "Markdown",
     "description": "A small, safe Markdown renderer for short notes: `## ` and `### ` headings, `- ` or `* ` bullets,\n`**bold**` and paragraphs. Text is rendered as React nodes, never as HTML. While `loading` with\nno `md` yet it draws a paragraph of bones.\n\nA `## ` heading is one level below the heading that holds the Markdown (an `h2` on the page, an\n`h3` in a `Section`, an `h4` in a titled `Card` there) and a `### ` one below that, never past\n`h6`, so the notes keep the page's outline.",
@@ -4421,7 +4641,7 @@
   },
   "MediaTile": {
     "name": "MediaTile",
-    "description": "A thumbnail tile: a picture in a fixed shape with an optional label on its bottom edge and a\ncaption under it. With `onClick` the whole tile is one button, which is how a grid or a\n`ScrollStrip` of media opens each item in a `Lightbox`. The label sits on the same near-black\nmedia scrim as the Lightbox, in every theme. The thumbnail is cropped to fill its shape, or with\n`aspect=\"natural\"` shown whole. With `href` the whole tile is one link instead. `onRemove` adds a\nremove button for a tile that can be taken back out.\nWhile `loading` with no `src` yet the picture is a bone of its shape.",
+    "description": "A thumbnail tile: a picture in a fixed shape with an optional label on its bottom edge and a\ncaption under it. With `onClick` the whole tile is one button, which is how a grid or a\n`ScrollStrip` of media opens each item in a `Lightbox`. The label sits on the same near-black\nmedia scrim as the Lightbox, in every theme. The thumbnail is cropped to fill its shape, or with\n`aspect=\"natural\"` shown whole. With `href` the whole tile is one link instead. `onRemove` adds a\nremove button for a tile that can be taken back out. `badge` pins a short word to a top corner.\nWhile `loading` with no `src` yet the picture is a bone of its shape.",
     "props": [
       {
         "name": "alt",
@@ -4432,10 +4652,17 @@
       },
       {
         "name": "aspect",
-        "type": "\"square\" | \"4:3\" | \"3:2\" | \"16:9\" | \"3:4\" | \"9:16\" | \"natural\"",
+        "type": "\"square\" | \"4:3\" | \"3:2\" | \"16:10\" | \"16:9\" | \"3:4\" | \"9:16\" | \"natural\"",
         "required": false,
         "default": "3:4",
         "description": "The shape of the thumbnail, as `Image`'s `aspect`; `natural` keeps the picture's own\nproportions (a chat image) and crops nothing.",
+        "native": false
+      },
+      {
+        "name": "badge",
+        "type": "string",
+        "required": false,
+        "description": "A short word pinned to the picture's top-right corner on the media scrim: a count, \"New\" or a\nsize. Text only; it is part of the tile's name. With `onRemove` the button takes that corner,\nso the badge sits top-left.",
         "native": false
       },
       {
@@ -4528,10 +4755,10 @@
       },
       {
         "name": "width",
-        "type": "\"sm\" | \"md\" | \"lg\" | \"full\"",
+        "type": "\"sm\" | \"md\" | \"lg\" | \"xl\" | \"full\"",
         "required": false,
         "default": "md",
-        "description": "`sm` 96px, `md` 160px or `lg` 256px wide; `full` fills the parent (a tile in a grid).",
+        "description": "`sm` 96px, `md` 160px, `lg` 256px or `xl` 448px wide; `full` fills the parent (a tile in a grid).",
         "native": false
       }
     ]
@@ -4647,8 +4874,24 @@
   },
   "Morph": {
     "name": "Morph",
-    "description": "An element that grows into its counterpart on the next page, and shrinks back on Back, through\nthe View Transitions API. Wrap the card in the list and the element on the detail page, each with\nthe same `name` and the record's id as `item`: the browser morphs one into the other over 450 ms. The same\n`name` and `item` may appear only once on a page; two on one page and the browser skips the\nmorph, so a list passes each record's own id. The morph runs only when the change is wrapped in a\nview transition: `startPageTransition`, or a router's own option (TanStack Router\n`defaultViewTransition: true` on `createRouter`, or `viewTransition` on a `Link`; React Router's\n`viewTransition`, Astro's `ClientRouter`). Otherwise, or where the browser has no View\nTransitions, it renders and behaves as a plain `<div>`. Inside a `PageFade` the page fades while\nthis element morphs. While it is named (near the screen) the div is a stacking context, so a\ndropdown inside it cannot rise above a sticky header outside it: portal overlays to the body. Under\n`prefers-reduced-motion: reduce` it swaps with no animation; a router's own transition of the\nrest of the page is the router's to quiet. A Morph more than a screen above or below the viewport\ncarries no transition name until it scrolls near, so a long list costs only what is on screen.",
+    "description": "An element that grows into its counterpart on the next page, and shrinks back on Back, through\nthe View Transitions API. Wrap the card in the list and the element on the detail page, each with\nthe same `name` and the record's id as `item`: the browser morphs one into the other over 450 ms. The same\n`name` and `item` may appear only once on a page; two on one page and the browser skips the\nmorph, so a list passes each record's own id. The morph runs only when the change is wrapped in a\nview transition: `startPageTransition`, or a router's own option (TanStack Router\n`defaultViewTransition: true` on `createRouter`, or `viewTransition` on a `Link`; React Router's\n`viewTransition`, Astro's `ClientRouter`). Otherwise, or where the browser has no View\nTransitions, it renders and behaves as a plain `<div>`. Inside a `PageFade` the page fades while\nthis element morphs. While it is named (near the screen) the div is a stacking context, so a\ndropdown inside it cannot rise above a sticky header outside it: portal overlays to the body. Under\n`prefers-reduced-motion: reduce` it swaps with no animation; a router's own transition of the\nrest of the page is the router's to quiet. A Morph more than a screen above or below the viewport\ncarries no transition name until it scrolls near, so a long list costs only what is on screen.\nIn a list, `as=\"li\"` makes it the list's item. When one record shows twice on a page, pass\n`active={false}` to the copy that should not morph; in development two active Morphs with the\nsame `name` and `item` log a console warning.",
     "props": [
+      {
+        "name": "active",
+        "type": "boolean",
+        "required": false,
+        "default": "true",
+        "description": "Whether it carries its transition name; `true` by default. Pass `false` to every copy but one\nwhen the same record shows twice on a page (a featured card and the same card in the list), so\nonly the one that should grow into the detail is named.",
+        "native": false
+      },
+      {
+        "name": "as",
+        "type": "\"div\" | \"li\"",
+        "required": false,
+        "default": "div",
+        "description": "The element it renders: `\"div\"` (the default), or `\"li\"` for a card that is an item of a list,\nso the list stays a `ul` of `li`.",
+        "native": false
+      },
       {
         "name": "id",
         "type": "string",
@@ -4894,7 +5137,7 @@
       },
       {
         "name": "width",
-        "type": "\"sm\" | \"md\" | \"lg\" | \"xs\" | \"auto\" | \"fill\" | \"full\"",
+        "type": "\"sm\" | \"md\" | \"lg\" | \"auto\" | \"xs\" | \"fill\" | \"full\"",
         "required": false,
         "description": "`full` (default) fills the parent; `fill` grows to fill the room left in a row beside other items (it can shrink to nothing, so buttons stay on the line); `xs`, `sm`, `md`, `lg` are fixed; `auto` adds no width class, so the control is as wide as the browser makes it.",
         "native": false
@@ -4960,8 +5203,24 @@
   },
   "OutlineRegion": {
     "name": "OutlineRegion",
-    "description": "An accent outline over one area of a picture, such as a screenshot's ignored or flagged region.\n`rect` is in the picture's own units and `within` is the picture's full size in the same units;\nthe box is placed in percent of them, so it sits right at any scale. Put it in a `RegionFrame`,\nover the picture. `label` is a small tag in its top-left\ncorner; `hatched` stripes the inside, for an area that is left out. It takes no pointer events,\nso it never blocks the picture or a layer drawn over it.",
+    "description": "An accent outline over one area of a picture, such as a screenshot's ignored or flagged region.\n`rect` is in the picture's own units and `within` is the picture's full size in the same units;\nthe box is placed in percent of them, so it sits right at any scale. Put it in a `RegionFrame`,\nover the picture. `label` is a small tag in its top-left\ncorner; `hatched` stripes the inside, for an area that is left out. It takes no pointer events,\nso it never blocks the picture or a layer drawn over it.\n\n`tone` colours it by what the area is (`positive`, `warn`, `danger`; `accent` by default),\n`dashed` draws the edge dashed, for an area that is proposed or approximate, and `active` draws a\nthicker edge, for the one region the app has picked (the one hovered in a list beside the\npicture, say). The app sets `active`; the region has no hover state of its own.",
     "props": [
+      {
+        "name": "active",
+        "type": "boolean",
+        "required": false,
+        "default": "false",
+        "description": "Draws a thicker edge, for the region the app has picked. The app sets it; there is no hover state.",
+        "native": false
+      },
+      {
+        "name": "dashed",
+        "type": "boolean",
+        "required": false,
+        "default": "false",
+        "description": "Draws the edge dashed, for an area that is proposed or approximate.",
+        "native": false
+      },
       {
         "name": "hatched",
         "type": "boolean",
@@ -4989,6 +5248,14 @@
         "type": "RegionRect",
         "required": true,
         "description": "The area, in the picture's own units.",
+        "native": false
+      },
+      {
+        "name": "tone",
+        "type": "\"positive\" | \"warn\" | \"danger\" | \"accent\"",
+        "required": false,
+        "default": "accent",
+        "description": "The colour: `accent`, `positive`, `warn` or `danger`.",
         "native": false
       },
       {
@@ -5056,7 +5323,7 @@
       },
       {
         "name": "tone",
-        "type": "\"neutral\" | \"info\" | \"positive\" | \"warn\" | \"danger\" | \"muted\" | \"accent\"",
+        "type": "\"muted\" | \"neutral\" | \"info\" | \"positive\" | \"warn\" | \"danger\" | \"accent\"",
         "required": false,
         "description": "The ink: `neutral`, the default, is the role's own; `muted` and `accent` set the hierarchy of\nthe text; `positive`, `warn`, `danger` and `info` say what a run means (see `TextTone`).",
         "native": false
@@ -5248,7 +5515,7 @@
   },
   "Pill": {
     "name": "Pill",
-    "description": "A small tinted label whose `tone` says what it means; `dot` adds a leading dot in the pill's own\ntext colour, `round` swaps the rounded-md corners for a full pill shape, and `size` steps the\ntext (with none, it takes its container's). `name` makes it two-tone, `name: value`: the name\nkeeps the tone's tint and the children, the value, sit on the surface beside it. `href` makes it\na link (the app's router link through `LinkProvider` for an in-app path, else a plain `<a>`;\n`external` opens a new tab) and `onClick` makes it\na button, each with a hover dim and the focus ring. `onRemove` adds an x button after the text\n(named by `removeLabel`, by default `Remove` and the pill's text), a separate button beside a link or button pill rather than nested in\nit. `title` is its tooltip and description; a plain pill with one takes a tab stop. While\n`loading` with no text yet it is a bone of its size.",
+    "description": "A small tinted label whose `tone` says what it means; `dot` adds a leading dot in the pill's own\ntext colour, `round` swaps the rounded-md corners for a full pill shape, and `size` steps the\ntext (with none, it takes its container's). `name` makes it two-tone, `name: value`: the name\nkeeps the tone's tint and the children, the value, sit on the surface beside it. `href` makes it\na link (the app's router link through `LinkProvider` for an in-app path, else a plain `<a>`;\n`external` opens a new tab) and `onClick` makes it\na button, each with a hover dim and the focus ring. `onRemove` adds an x button after the text\n(named by `removeLabel`, by default `Remove` and the pill's text), a separate button beside a link or button pill rather than nested in\nit. `title` is its tooltip and description; a plain pill with one takes a tab stop. While\n`loading` with no text yet it is a bone of its size. Its text never wraps: a pill is one unit,\nso keep it to a word or two.",
     "props": [
       {
         "name": "children",
@@ -5382,7 +5649,7 @@
       },
       {
         "name": "icon",
-        "type": "\"page\" | \"grid\" | \"search\" | \"table\" | \"type\" | \"alert\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "type": "\"page\" | \"grid\" | \"search\" | \"alert\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
         "required": false,
         "description": "Makes the trigger a ghost square button holding this glyph, named by `label` (shown as its\ntooltip). Without it the trigger is an outline `Button` reading `label`, with a chevron.",
         "native": false
@@ -5764,7 +6031,7 @@
       },
       {
         "name": "aspect",
-        "type": "\"square\" | \"4:3\" | \"3:2\" | \"16:9\" | \"3:4\" | \"9:16\" | \"natural\"",
+        "type": "\"square\" | \"4:3\" | \"3:2\" | \"16:10\" | \"16:9\" | \"3:4\" | \"9:16\" | \"natural\"",
         "required": false,
         "default": "natural",
         "description": "The box's shape: `natural` is the picture's own; any other letterboxes the picture inside it.",
@@ -5808,7 +6075,7 @@
       },
       {
         "name": "width",
-        "type": "\"sm\" | \"md\" | \"lg\" | \"full\"",
+        "type": "\"sm\" | \"md\" | \"lg\" | \"xl\" | \"full\"",
         "required": false,
         "default": "full",
         "description": "How wide the frame is: `full` fills its parent; `sm`, `md` and `lg` are 96, 160 and 256px, capped at the parent's width.",
@@ -6101,7 +6368,7 @@
       },
       {
         "name": "width",
-        "type": "\"sm\" | \"md\" | \"lg\" | \"xs\" | \"auto\" | \"fill\" | \"full\"",
+        "type": "\"sm\" | \"md\" | \"lg\" | \"auto\" | \"xs\" | \"fill\" | \"full\"",
         "required": false,
         "default": "full inside a `Field`, `auto` outside one",
         "description": "As an `Input`'s `width`.",
@@ -6111,7 +6378,7 @@
   },
   "Show": {
     "name": "Show",
-    "description": "Shows its children only from a width up (`from`) or only below it (`below`), by CSS alone: the\nsame markup on the server and the client, with no script. Hidden is `display: none`, so the\ncontent is out of the accessibility tree and the tab order too. Shown, the wrapper adds no box,\nso the children sit in the parent's row, grid or Stack and take its gap.\n\nContent that only fits a wide screen is in a `Show from`; its narrow-screen form is in a\n`Show below` at the same breakpoint. Hidden content stays mounted, so two `Show`s of the same\ncontent mount it twice: a stateful panel shown at every width with a fold is a\n`SideColumn asideLabel`. `as=\"span\"` is for phrasing content (inside a `<p>` or a button row).",
+    "description": "Shows its children only from a width up (`from`) or only below it (`below`), by CSS alone: the\nsame markup on the server and the client, with no script. Hidden is `display: none`, so the\ncontent is out of the accessibility tree and the tab order too. Shown, the wrapper adds no box,\nso the children sit in the parent's row, grid or Stack and take its gap.\n\nContent that only fits a wide screen is in a `Show from`; its narrow-screen form is in a\n`Show below` at the same breakpoint. Hidden content stays mounted, so two `Show`s of the same\ncontent mount it twice: a stateful panel shown at every width with a fold is a\n`SideColumn fold`. `as=\"span\"` is for phrasing content (inside a `<p>` or a button row).",
     "props": [
       {
         "name": "as",
@@ -6188,28 +6455,36 @@
   },
   "SideColumn": {
     "name": "SideColumn",
-    "description": "A main area beside a side column, in the Container the page already has: from `lg` the `aside`\nis `asideWidth` on the right and `children` take the room left; below `lg` the aside stacks under\n`children`. It sets no page width, padding or header of its own, so it sits inside a layout, a\n`Card` or a panel. `asideWidth` is `sm` (18rem), `md` (24rem) or `third` (one third of the row,\nthe main area two thirds: the split `DetailLayout` draws). A rail of links on the left is\n`SidebarLayout`.\n\n`asideLabel` is for an aside that should not take the phone's screen: below `lg` it folds,\nclosed, behind a native disclosure of that name, and from `lg` it is the same column, always\nshown. The aside stays mounted while folded, so a conversation or a draft inside it is kept.\n\n`sticky` keeps the aside in view from `lg` as a long page scrolls: it sticks under AppShell's\nheader and, if it is taller than the room left, scrolls itself (a tab stop named by `asideLabel`)\nso its end stays reachable.",
+    "description": "A main area beside a side column, in the Container the page already has: from `lg` the `aside`\nis `asideWidth` on the right and `children` take the room left; below `lg` the aside stacks under\n`children`. It sets no page width, padding or header of its own, so it sits inside a layout, a\n`Card` or a panel. `asideWidth` is `xs` (12rem), `sm` (18rem), `md` (24rem) or `third` (one\nthird of the row, the main area two thirds: the split `DetailLayout` draws). A rail of links on\nthe left is `SidebarLayout`.\n\n`side=\"start\"` puts the aside on the left from `lg`, and first in reading order, so below `lg`\nit stacks above `children`.\n\n`asideLabel` names the `<aside>` landmark. `fold` is for an aside that should not take the\nphone's screen: below `lg` it folds, closed, behind a native disclosure named by `asideLabel`,\nand from `lg` it is the same column, always shown. The aside stays mounted while folded, so a\nconversation or a draft inside it is kept.\n\n`sticky` keeps the aside in view from `lg` as a long page scrolls: it sticks under AppShell's\nheader and, if it is taller than the room left, scrolls itself (a tab stop named by `asideLabel`)\nso its end stays reachable.",
     "props": [
       {
         "name": "aside",
         "type": "ReactNode",
         "required": true,
-        "description": "The side column: `asideWidth` wide on the right from `lg`, under `children` below it.",
+        "description": "The side column: `asideWidth` wide on `side` from `lg`, stacked with `children` below it.",
         "native": false
       },
       {
         "name": "asideLabel",
         "type": "string",
         "required": false,
-        "description": "Folds the aside behind a disclosure with this name below `lg`, and names the `<aside>` landmark. Left out, the aside is always shown and unnamed.",
+        "description": "Names the `<aside>` landmark, and the disclosure when `fold` is set. Left out, the aside is unnamed.",
         "native": false
       },
       {
         "name": "asideWidth",
-        "type": "\"sm\" | \"md\" | \"third\"",
+        "type": "\"sm\" | \"md\" | \"xs\" | \"third\"",
         "required": false,
         "default": "md",
-        "description": "The aside's width from `lg`: `sm` 18rem, `md` 24rem, or `third`, one third of the row.",
+        "description": "The aside's width from `lg`: `xs` 12rem, `sm` 18rem, `md` 24rem, or `third`, one third of the row.",
+        "native": false
+      },
+      {
+        "name": "fold",
+        "type": "boolean",
+        "required": false,
+        "default": "false",
+        "description": "Folds the aside, closed, behind a disclosure named by `asideLabel` below `lg`.",
         "native": false
       },
       {
@@ -6217,6 +6492,14 @@
         "type": "string",
         "required": false,
         "description": "The root element's `id`: an anchor, or the target of a `for` or an `aria-describedby`.",
+        "native": false
+      },
+      {
+        "name": "side",
+        "type": "\"end\" | \"start\"",
+        "required": false,
+        "default": "end",
+        "description": "The aside's side from `lg`: `end` (the right) or `start` (the left, and first in reading order).",
         "native": false
       },
       {
@@ -6427,7 +6710,7 @@
       },
       {
         "name": "width",
-        "type": "\"sm\" | \"md\" | \"lg\" | \"xs\" | \"auto\" | \"fill\" | \"full\"",
+        "type": "\"sm\" | \"md\" | \"lg\" | \"auto\" | \"xs\" | \"fill\" | \"full\"",
         "required": false,
         "default": "full",
         "description": "`full` (default) fills the parent; `fill` grows to fill the room left in a row beside other items (it can shrink to nothing, so buttons stay on the line); `xs`, `sm`, `md`, `lg` are fixed; `auto` adds no width class, so the control is as wide as the browser makes it.",
@@ -6437,7 +6720,7 @@
   },
   "SortableItem": {
     "name": "SortableItem",
-    "description": "One row of a `SortableList`: a grip handle, the title, and an optional meta line under it. A\npointer drags the row by its handle only (a drag that starts anywhere else on the row is no\ndrag); the handle (`reorderLabel` and the title, \"Reorder <title>\") is also how a keyboard or\nscreen reader starts a move.",
+    "description": "One row of a `SortableList`: a grip handle, the title, and an optional meta line under it. A\npointer drags the row by its handle only (a drag that starts anywhere else on the row is no\ndrag); the handle (`reorderLabel` and the title, \"Reorder <title>\") is also how a keyboard or\nscreen reader starts a move. A title cut to one line shows in full in a tooltip on hover, on the\nrow's keyboard focus and on a tap.",
     "props": [
       {
         "name": "children",
@@ -6641,7 +6924,7 @@
       },
       {
         "name": "as",
-        "type": "\"div\" | \"form\" | \"ol\" | \"section\" | \"ul\"",
+        "type": "\"form\" | \"div\" | \"ol\" | \"section\" | \"ul\"",
         "required": false,
         "description": "The element: `div`, `section`, `form` (takes the form's props), `ul` or `ol` (no markers; each child is an `<li>`).",
         "native": false
@@ -7203,7 +7486,7 @@
   },
   "TableCell": {
     "name": "TableCell",
-    "description": "A `<td>`. `tone` is the text weight and colour (see `CellTone`; in a `TableFoot` it defaults to\n`strong`); `numeric` sets end alignment and tabular figures (a cell under a `numeric` head cell is\nnumeric already), `mono` a small mono face. `secondary` is a second,\nmuted line under the content. One rule for wrapping: prose (a cell of plain text) wraps onto more\nlines (never narrower than `min-w-48`, so it scrolls the table before it becomes a sliver); any\nother cell stays on one line at its content's width: one that holds a control or a link, and a\n`numeric` or `mono` cell (a figure, a code, a type). `lines={1}` caps a long value's width, cuts it with\nan ellipsis on one line and puts the full text in a `title`; the content is then plain text (strings and\nnumbers), since that is what the title shows. `colSpan` passes through: a cell that\nspans the row is a full-width panel (a note under a group), and `align=\"center\"` centres it. A\ntable with no rows takes `TableBody empty`, not a cell built by hand. `span=\"full\"` spans every\ncolumn the head declares, so a panel under a row needs no count. `indent` sets a start-aligned cell in by 1 to 3 levels, for a line under a parent row.\nWhile `loading` an empty cell draws one bone, the width of a short value.",
+    "description": "A `<td>`. `tone` is the text weight and colour (see `CellTone`; in a `TableFoot` it defaults to\n`strong`); `numeric` sets end alignment and tabular figures (a cell under a `numeric` head cell is\nnumeric already), `mono` a small mono face. `secondary` is a second,\nmuted line under the content. One rule for wrapping: prose (a cell of plain text) wraps onto more\nlines (never narrower than `min-w-48`, so it scrolls the table before it becomes a sliver); any\nother cell stays on one line at its content's width: one that holds a control or a link, and a\n`numeric` or `mono` cell (a figure, a code, a type). `lines={1}` caps a long value's width, cuts it with\nan ellipsis on one line and, while it is cut, shows the full text in a tooltip on hover, focus and a\ntap; the content is then plain text (strings and numbers), since that is what the tooltip shows. `colSpan` passes through: a cell that\nspans the row is a full-width panel (a note under a group), and `align=\"center\"` centres it. A\ntable with no rows takes `TableBody empty`, not a cell built by hand. `span=\"full\"` spans every\ncolumn the head declares, so a panel under a row needs no count. `indent` sets a start-aligned cell in by 1 to 3 levels, for a line under a parent row.\nWhile `loading` an empty cell draws one bone, the width of a short value.",
     "props": [
       {
         "name": "align",
@@ -7231,7 +7514,7 @@
         "name": "lines",
         "type": "1",
         "required": false,
-        "description": "`1` caps the width and cuts a long value with an ellipsis on one line, the full text in a\n`title`, as `lines={1}` does on `Text`. Plain text content only.\n\nWithout it, a prose cell wraps down to a floor so it never becomes a sliver, and any other cell\n(a `Pill`, a `Switch`, a `Button`, a `TextLink`, a `numeric` or `mono` value) stays on one line\nat its content's width.",
+        "description": "`1` caps the width and cuts a long value with an ellipsis on one line; while it is cut, the full\ntext shows in a tooltip on hover, keyboard focus and a tap. Plain text content only.\n\nWithout it, a prose cell wraps down to a floor so it never becomes a sliver, and any other cell\n(a `Pill`, a `Switch`, a `Button`, a `TextLink`, a `numeric` or `mono` value) stays on one line\nat its content's width.",
         "native": false
       },
       {
@@ -7281,7 +7564,7 @@
       },
       {
         "name": "tone",
-        "type": "\"strong\" | \"neutral\" | \"info\" | \"positive\" | \"warn\" | \"danger\" | \"muted\"",
+        "type": "\"muted\" | \"strong\" | \"neutral\" | \"info\" | \"positive\" | \"warn\" | \"danger\"",
         "required": false,
         "description": "The text weight and colour (see `CellTone`). In a `TableFoot` it defaults to `strong`.",
         "native": false
@@ -7381,7 +7664,7 @@
       },
       {
         "name": "tone",
-        "type": "\"strong\" | \"neutral\" | \"info\" | \"positive\" | \"warn\" | \"danger\" | \"muted\"",
+        "type": "\"muted\" | \"strong\" | \"neutral\" | \"info\" | \"positive\" | \"warn\" | \"danger\"",
         "required": false,
         "description": "The text weight and colour (see `CellTone`). In a `TableFoot` it defaults to `strong`.",
         "native": false
@@ -7510,6 +7793,41 @@
       }
     ]
   },
+  "TableOfContents": {
+    "name": "TableOfContents",
+    "description": "The headings of a long page, as links to their anchors: \"On this page\". `items` are the page's\n`h2`s and `h3`s in order, each `{ id, label, level }`; a level 3 entry is indented under the one\nbefore it. `current` is the id of the section being read, which the app tracks (from the scroll\nposition or the URL hash): its link is marked in the accent and has `aria-current=\"location\"`.\nThe rest are small and quiet. `label` names the list and the `<nav>` landmark.\n\nIt sets no width or position: put it in a `SideColumn`'s aside, sticky, beside the page.\n`DocsLayout` draws its own.",
+    "props": [
+      {
+        "name": "current",
+        "type": "string",
+        "required": false,
+        "description": "The id of the section being read; its link is marked as the current one.",
+        "native": false
+      },
+      {
+        "name": "id",
+        "type": "string",
+        "required": false,
+        "description": "The root element's `id`: an anchor, or the target of a `for` or an `aria-describedby`.",
+        "native": false
+      },
+      {
+        "name": "items",
+        "type": "TableOfContentsItem[]",
+        "required": true,
+        "description": "The page's headings in order: `{ id, label, level }`, `level` 2 or 3.",
+        "native": false
+      },
+      {
+        "name": "label",
+        "type": "string",
+        "required": false,
+        "default": "On this page",
+        "description": "The words over the list, and the name of the `<nav>` landmark.",
+        "native": false
+      }
+    ]
+  },
   "TableRow": {
     "name": "TableRow",
     "description": "A `<tr>`, `relative`: the anchor a `TextLink stretch` (with `href`) stretches to. Any other link, button or\ncontrol in the row (a `TextLink`, a `Button`, a `Checkbox`) sits above that link and is clickable\non its own, with no class from the caller. Use it in the head and the\nbody. In the body it also draws the line above the row and, unless the table is in a card, the hover\nfill. `selected` marks the current row (the one open beside the table, the one being edited): the\n`ListRow` selected fill and `aria-current`, the row whose detail is open, not a multi-select; it wins over `tone` and `stripe`. `tone` marks the row's status (see `RowTone`): a stripe on the leading edge and a soft fill,\nor `muted` to fade it. A toned row keeps its fill on hover (the status stays readable), so a\nlinked row's link, not a hover fill, says it is clickable. `stripe` is the stripe alone, in the\n`TextTone` colours (the first five names of a `StackedBar` segment's `VizTone`), with no fill: the row keeps its hover\nand its own look. Give `tone` or `stripe`, not both. Body rows only; colour alone does not say it,\nso name the status in a cell too (a `Pill`). A bold subtotal is not a tone: a total of the whole\ntable is a `TableFoot` row, and a subtotal among the body's rows is `emphasis`, the same look.",
@@ -7532,14 +7850,14 @@
       },
       {
         "name": "stripe",
-        "type": "\"info\" | \"positive\" | \"warn\" | \"danger\" | \"muted\" | \"accent\"",
+        "type": "\"muted\" | \"info\" | \"positive\" | \"warn\" | \"danger\" | \"accent\"",
         "required": false,
         "description": "A stripe on the leading edge in this tone, with no fill. Give only one of `tone`, `stripe` and `emphasis`.",
         "native": false
       },
       {
         "name": "tone",
-        "type": "\"neutral\" | \"info\" | \"positive\" | \"warn\" | \"danger\" | \"muted\"",
+        "type": "\"muted\" | \"neutral\" | \"info\" | \"positive\" | \"warn\" | \"danger\"",
         "required": false,
         "description": "The row's status: a stripe on the leading edge plus the tone's soft fill, or `muted` to fade the row. Give only one of `tone`, `stripe` and `emphasis`.",
         "native": false
@@ -7715,7 +8033,7 @@
       },
       {
         "name": "tone",
-        "type": "\"neutral\" | \"info\" | \"positive\" | \"warn\" | \"danger\" | \"muted\" | \"accent\"",
+        "type": "\"muted\" | \"neutral\" | \"info\" | \"positive\" | \"warn\" | \"danger\" | \"accent\"",
         "required": false,
         "description": "The ink: `neutral`, the default, is the role's own; `muted` and `accent` set the hierarchy of\nthe text; `positive`, `warn`, `danger` and `info` say what a run means (see `TextTone`).",
         "native": false
@@ -7779,7 +8097,7 @@
       },
       {
         "name": "width",
-        "type": "\"sm\" | \"md\" | \"lg\" | \"xs\" | \"auto\" | \"fill\" | \"full\"",
+        "type": "\"sm\" | \"md\" | \"lg\" | \"auto\" | \"xs\" | \"fill\" | \"full\"",
         "required": false,
         "default": "full",
         "description": "`full` (default) fills the parent; `fill` grows to fill the room left in a row beside other items (it can shrink to nothing, so buttons stay on the line); `xs`, `sm`, `md`, `lg` are fixed; `auto` adds no width class, so the control is as wide as the browser makes it.",
@@ -7789,7 +8107,7 @@
   },
   "TextLink": {
     "name": "TextLink",
-    "description": "An inline text link in the accent colour. Every anchor prop goes on the `<a>`; an in-app `href`\nis drawn by the app's router link through `LinkProvider`.\n`size` pins the type size (`sm`, `md` or `lg`), `tone` gives it a meaning's colour and `mono` sets the\nmonospace face.",
+    "description": "An inline text link in the accent colour. Every anchor prop goes on the `<a>`; an in-app `href`\nis drawn by the app's router link through `LinkProvider`.\n`size` pins the type size (`sm`, `md` or `lg`), `tone` gives it a meaning's colour (or `quiet`,\nink that turns the accent on hover) and `mono` sets the monospace face. `icon` puts one of the\nlibrary's icons after the words, hidden from assistive tech: the words name the link.",
     "props": [
       {
         "name": "external",
@@ -7804,6 +8122,13 @@
         "type": "string",
         "required": true,
         "description": "Where the link goes; an in-app path goes through the app's `LinkProvider`.",
+        "native": false
+      },
+      {
+        "name": "icon",
+        "type": "\"page\" | \"grid\" | \"search\" | \"alert\" | \"table\" | \"type\" | \"diff\" | \"baseline\" | \"review\" | \"ci\" | \"self-host\" | \"privacy\" | \"capture\" | \"branch\" | \"theme\" | \"speed\" | \"chevron-right\" | \"chevron-down\" | \"close\" | \"external-link\" | \"settings\" | \"bell\" | \"check\" | \"plus\" | \"minus\" | \"more\" | \"window\" | \"card\" | \"pointer\" | \"field\" | \"compass\" | \"briefcase\"",
+        "required": false,
+        "description": "An icon after the words (`chevron-right`, say), at one size on the baseline; it is decorative and hidden from assistive tech.",
         "native": false
       },
       {
@@ -7831,9 +8156,9 @@
       },
       {
         "name": "tone",
-        "type": "\"neutral\" | \"info\" | \"positive\" | \"warn\" | \"danger\" | \"muted\" | \"accent\"",
+        "type": "\"muted\" | \"neutral\" | \"info\" | \"positive\" | \"warn\" | \"danger\" | \"accent\" | \"quiet\"",
         "required": false,
-        "description": "A meaning's colour, as on the inline roles: `warn` for a warning link, `danger`, `positive`,\n`info` or `muted`. Left out, the link is the accent colour.",
+        "description": "A meaning's colour, as on the inline roles: `warn` for a warning link, `danger`, `positive`,\n`info` or `muted`; or `quiet`, the primary ink at rest and the accent on hover, for a row or list\nof links and never inside a sentence. Left out, the\nlink is the accent colour.",
         "native": false
       },
       {
@@ -8060,8 +8385,16 @@
   },
   "Video": {
     "name": "Video",
-    "description": "A `<video>` with controls, full width and rounded; it loads metadata only, so the page does not\npull the file until it is played. `src` is the app's own video; `captions` is a WebVTT file,\noffered as the default track. `children` is the fallback for a browser that cannot play it.",
+    "description": "A `<video>` with controls, full width and rounded, in a fixed shape: `aspect` reserves its space\nbefore it loads, so the page does not jump, and the video fits inside it whole. It loads metadata\nonly, and lazily where the browser can, so the page does not pull the file until it is played.\n`src` is the app's own video; `captions` is a WebVTT file, offered as the default track.\n`children` is the fallback for a browser that cannot play it.",
     "props": [
+      {
+        "name": "aspect",
+        "type": "\"square\" | \"4:3\" | \"3:2\" | \"16:10\" | \"16:9\" | \"3:4\" | \"9:16\"",
+        "required": false,
+        "default": "16:9",
+        "description": "The shape it reserves, as `Image`'s `aspect`: `16:9`, `16:10`, `4:3`, `3:2`, `square`, or the\nportrait `3:4` and `9:16`. A video of another shape fits inside it, letterboxed.",
+        "native": false
+      },
       {
         "name": "captions",
         "type": "string",

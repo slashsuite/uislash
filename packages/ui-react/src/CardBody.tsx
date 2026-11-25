@@ -13,6 +13,8 @@ export const BODY_PAD: Record<Size, string> = { sm: "p-3", md: "p-5", lg: "p-6" 
 type BodyForm = {
   flush: boolean;
   bar: boolean;
+  dashed: boolean;
+  regions: boolean;
   icon: IconName | undefined;
   fill: boolean;
   footer: boolean;
@@ -43,6 +45,12 @@ function insetBand(form: BodyForm, inset: ReactNode): ReactNode {
 /** With `fill` the body takes the room the header (and a footer) leave, and only it scrolls. */
 const SCROLL = "min-h-0 flex-1 overflow-y-auto";
 
+/**
+ * The room a scroller with no padding of its own gives a focus ring at its edge: `focusRing` draws
+ * 2px out past a 2px offset, so 4px inside the scroller, given back by the same margin outside it.
+ */
+const RING_ROOM = "-m-1 p-1";
+
 /** What names a filled body when it takes a tab stop: the card's heading, or its title where the heading has no id. */
 function scrollName(parts: BodyParts): { label?: string; labelledBy?: string } {
   if (!parts.title) return {};
@@ -60,7 +68,7 @@ function plainBody(form: BodyForm, heading: ReactNode, parts: BodyParts): ReactN
       <CardHeader heading={heading} actions={parts.actions} size={form.size} />
       {insetBand(form, parts.inset)}
       {form.fill ? (
-        <ScrollBody {...scrollName(parts)} className={SCROLL}>
+        <ScrollBody {...scrollName(parts)} className={cx(SCROLL, !form.flush && RING_ROOM)}>
           {parts.children}
         </ScrollBody>
       ) : (
@@ -73,6 +81,61 @@ function plainBody(form: BodyForm, heading: ReactNode, parts: BodyParts): ReactN
   }
   // With a footer the root has no padding, so the body pads itself and takes the room left over.
   return form.footer ? <div className={cx("flex-1", pad(form))}>{content}</div> : content;
+}
+
+/**
+ * A card in a `CardGrid align="regions"`: its header, body and footer are rows of the grid's
+ * subgrid, so each starts where its neighbours' do. The root has no padding; each row pads itself.
+ */
+function regionsBody(form: BodyForm, heading: ReactNode, parts: BodyParts): ReactNode {
+  if (form.bar) {
+    return (
+      <>
+        <CardBar heading={heading} actions={parts.actions} size={form.size} dashed={form.dashed} />
+        <div className={pad(form) || undefined}>
+          {insetBand(form, parts.inset)}
+          {parts.children}
+        </div>
+      </>
+    );
+  }
+  return (
+    <>
+      <div className={cx(pad(form), "pb-0")}>
+        {form.icon && <CardIcon name={form.icon} size={form.size} />}
+        <CardHeader heading={heading} actions={parts.actions} size={form.size} />
+        {insetBand(form, parts.inset)}
+      </div>
+      <div className={cx(pad(form), "pt-0")}>{parts.children}</div>
+    </>
+  );
+}
+
+/** A bar card's body. With `fill` the inset band stays put above the scroller, as it does without a bar. */
+function barBody(form: BodyForm, parts: BodyParts): ReactNode {
+  if (!form.fill) {
+    return (
+      <div className={cx(form.footer && "flex-1", pad(form)) || undefined}>
+        {insetBand(form, parts.inset)}
+        {parts.children}
+      </div>
+    );
+  }
+  return (
+    <>
+      {parts.inset && <div className={cx(pad(form), "pb-0")}>{insetBand(form, parts.inset)}</div>}
+      <ScrollBody
+        {...scrollName(parts)}
+        className={cx(
+          SCROLL,
+          pad(form),
+          Boolean(parts.inset) && (form.flush ? "pt-0" : "-mt-1 pt-1"),
+        )}
+      >
+        {parts.children}
+      </ScrollBody>
+    </>
+  );
 }
 
 export function cardBody(form: BodyForm, parts: BodyParts): ReactNode {
@@ -89,23 +152,12 @@ export function cardBody(form: BodyForm, parts: BodyParts): ReactNode {
       size={form.size}
     />
   );
+  if (form.regions) return regionsBody(form, heading, parts);
   if (!form.bar) return plainBody(form, heading, parts);
-  const body = (
-    <>
-      {insetBand(form, parts.inset)}
-      {parts.children}
-    </>
-  );
   return (
     <>
-      <CardBar heading={heading} actions={parts.actions} size={form.size} />
-      {form.fill ? (
-        <ScrollBody {...scrollName(parts)} className={cx(SCROLL, pad(form))}>
-          {body}
-        </ScrollBody>
-      ) : (
-        <div className={cx(form.footer && "flex-1", pad(form)) || undefined}>{body}</div>
-      )}
+      <CardBar heading={heading} actions={parts.actions} size={form.size} dashed={form.dashed} />
+      {barBody(form, parts)}
     </>
   );
 }

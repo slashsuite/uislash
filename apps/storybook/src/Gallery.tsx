@@ -26,6 +26,7 @@ import {
   Text,
 } from "@slashsuite/ui-react";
 import { GalleryBars } from "./GalleryBars";
+import { GalleryMedia } from "./GalleryMedia";
 import { GalleryControls } from "./GalleryControls";
 import { GalleryButtons } from "./GalleryButtons";
 import { GalleryBottomSheet } from "./GalleryBottomSheet";
@@ -51,7 +52,6 @@ import {
 
 import {
   GalleryAvatars,
-  GalleryMedia,
   GalleryChips,
   GalleryCopy,
   GalleryDialogs,

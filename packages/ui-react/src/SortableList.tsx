@@ -28,6 +28,7 @@ import {
 } from "./sortableDrop.js";
 import { useSlide } from "./sortableSlide.js";
 import { cx, focusRing } from "./cx.js";
+import { ItemTitle } from "./sortableTitle.js";
 import { dataAttributes } from "./link.js";
 import type { Passthrough } from "./props.js";
 
@@ -285,7 +286,8 @@ const GRIP = (
  * One row of a `SortableList`: a grip handle, the title, and an optional meta line under it. A
  * pointer drags the row by its handle only (a drag that starts anywhere else on the row is no
  * drag); the handle (`reorderLabel` and the title, "Reorder <title>") is also how a keyboard or
- * screen reader starts a move.
+ * screen reader starts a move. A title cut to one line shows in full in a tooltip on hover, on the
+ * row's keyboard focus and on a tap.
  */
 export function SortableItem({
   id,
@@ -337,7 +339,7 @@ export function SortableItem({
         <span aria-hidden="true" className="absolute inset-0 cursor-grab" />
       </span>
       <div className="min-w-0 flex-1">
-        <div className="truncate">{title}</div>
+        <ItemTitle title={title} />
         {children != null && (
           <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500">
             {children}

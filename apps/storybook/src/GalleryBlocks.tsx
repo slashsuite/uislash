@@ -13,17 +13,14 @@ import {
   FieldDialog,
   Fieldset,
   Hero,
-  Image,
   KeyValue,
   KeyValueList,
   Lead,
   Lightbox,
-  MediaTile,
   NavigationProgress,
   PageFade,
   PageHeader,
   Popover,
-  ScrollStrip,
   SegmentedControl,
   startPageTransition,
   Tabs,
@@ -33,11 +30,7 @@ import {
 } from "@slashsuite/ui-react";
 import { GalleryMarketing } from "./GalleryMarketing";
 import { samplePhoto } from "./samplePhoto";
-import { sampleCode } from "../../../packages/ui-react/docs/examples/sampleCode.js";
-import {
-  samplePortrait,
-  sampleScenes,
-} from "../../../packages/ui-react/docs/examples/sampleScene.js";
+import { sampleScenes } from "../../../packages/ui-react/docs/examples/sampleScene.js";
 
 /** The page header block of the Gallery: a Display title, a Hero, a PageHeader, a Section size lg, a SiteFooter and a Tabs row of links. */
 export function GalleryHeader() {
@@ -280,44 +273,6 @@ export function GalleryAvatars() {
         <Avatar name="Ada Lovelace" src={samplePhoto} size="3xl" />
         <Avatar name="Ada Lovelace" src={samplePhoto} size="2xl" onClick={() => undefined} />
       </div>
-    </div>
-  );
-}
-
-/** The media set: an Image in three shapes, a MediaTile with a label and caption, a natural-shaped tile and a removable one, a video tile and a placeholder tile in a ScrollStrip, then an Avatar strip. */
-export function GalleryMedia() {
-  const first = sampleScenes[0]?.src;
-  const second = sampleScenes[1]?.src;
-  return (
-    <div className="flex max-w-xl flex-col gap-4">
-      <div className="flex items-start gap-4">
-        <Image src={first} alt="Harbour at dusk" aspect="3:2" width="md" />
-        <Image src={first} alt="Harbour at dusk, whole" aspect="square" width="md" fit="contain" />
-        <Image alt="No preview yet" aspect="square" width="sm" />
-        <Image src={sampleCode} alt="Pairing code" aspect="square" width="sm" framed />
-      </div>
-      <div className="flex items-start gap-4">
-        <MediaTile src={samplePortrait.src} alt={samplePortrait.alt} aspect="natural" width="sm" />
-        <MediaTile
-          src={first}
-          alt="Slip from the shop"
-          aspect="square"
-          width="sm"
-          label="Slip"
-          onRemove={() => undefined}
-        />
-      </div>
-      <ScrollStrip label="Recent statuses">
-        <MediaTile src={first} alt="Harbour at dusk" label="Anna" caption="09:12" />
-        <MediaTile src={second} alt="Video from Ben" label="Ben" caption="0:14" video />
-        <MediaTile alt="Earlier statuses" label="Earlier" onClick={() => undefined} />
-        <MediaTile src={first} alt="Harbour at dusk" label="Cleo" caption="08:40" />
-      </ScrollStrip>
-      <ScrollStrip label="People" gap="xs">
-        {["ada", "grace", "linus", "margaret", "dennis", "ken", "barbara", "alan"].map((name) => (
-          <Avatar key={name} name={name} size="lg" />
-        ))}
-      </ScrollStrip>
     </div>
   );
 }

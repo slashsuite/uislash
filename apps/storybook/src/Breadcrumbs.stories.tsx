@@ -40,7 +40,7 @@ export const PlainParents: S = {
   render: () => <Breadcrumbs items={["Org", "Project", "Build", "Snapshot"]} />,
 };
 
-/** Too long for its row, the trail wraps: each long parent truncates, and the current page is never cut. */
+/** Too long for its row, the trail wraps: each long parent truncates and shows its whole name in a tooltip on hover or focus, and the current page is never cut. */
 export const LongTruncates: S = {
   render: () => (
     <div className="flex w-72">

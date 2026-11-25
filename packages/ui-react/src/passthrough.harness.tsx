@@ -32,6 +32,7 @@ export const CASES: Record<string, () => ReactElement> = {
   Caption: () => <ui.Caption {...A}>x</ui.Caption>,
   Card: () => <ui.Card {...A}>x</ui.Card>,
   CardGrid: () => <ui.CardGrid {...A}>x</ui.CardGrid>,
+  CardGridRow: () => <ui.CardGridRow {...A}>x</ui.CardGridRow>,
   CenteredLayout: () => <ui.CenteredLayout title="T" {...A} />,
   ChatComposer: () => <ui.ChatComposer label="Message" onSend={noop} {...A} />,
   ChatMessage: () => (
@@ -183,6 +184,8 @@ export const CASES: Record<string, () => ReactElement> = {
     <ui.Pagination label="L" page={1} pageCount={2} pageHref={(p) => `/${p}`} {...A} />
   ),
   Pill: () => <ui.Pill {...A}>x</ui.Pill>,
+  Mark: () => <ui.Mark {...A}>x</ui.Mark>,
+  TableOfContents: () => <ui.TableOfContents items={[{ id: "a", label: "A", level: 2 }]} {...A} />,
   ProgressBar: () => <ui.ProgressBar value={1} label="L" {...A} />,
   Prose: () => <ui.Prose {...A}>x</ui.Prose>,
   ProseLayout: () => (
@@ -279,4 +282,11 @@ export const CASES: Record<string, () => ReactElement> = {
   ),
   TimelineItem: () => <ui.TimelineItem title="T" {...A} />,
   Video: () => <ui.Video src="/x.mp4" {...A} />,
+  Audio: () => <ui.Audio src="/x.mp3" label="L" {...A} />,
+  EmbedFrame: () => (
+    <ui.EmbedFrame label="L" {...A}>
+      x
+    </ui.EmbedFrame>
+  ),
+  ColourSwatch: () => <ui.ColourSwatch value="#336699" label="L" {...A} />,
 };

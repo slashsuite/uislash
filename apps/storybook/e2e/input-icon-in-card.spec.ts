@@ -34,7 +34,7 @@ const fields = (page: Page) => [
  * images. The clear button's icon comes after them.
  */
 const icons = (page: Page) =>
-  page.getByRole("region", { name: "Filter stores" }).getByRole("img", { includeHidden: true });
+  page.getByRole("article", { name: "Filter stores" }).getByRole("img", { includeHidden: true });
 
 for (const { id: theme } of themes) {
   test(`${theme}: a click on an Input's icon in a Card focuses the field`, async ({ page }) => {

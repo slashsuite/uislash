@@ -10,6 +10,17 @@ const FRAME = "overflow-hidden rounded-xl border border-slate-200/70 bg-white sh
 /** The body's own box, not the panel's: a collapsed panel still draws its border and padding. */
 const PANEL = "border-t border-slate-200/70 p-4";
 
+/** The plain body's indent, inside the panel too, so a closed fold takes no room. */
+const PLAIN_BODY = "pt-1 pb-2 pl-6";
+
+/**
+ * The panel's height follows react-aria's measured `--disclosure-panel-height`, which runs from 0
+ * to the body's height and back as the fold opens and closes; react-aria hides the body once the
+ * transition ends. With reduced motion there is no transition and it opens at once.
+ */
+const SLIDE =
+  "h-(--disclosure-panel-height) overflow-clip motion-safe:transition-[height] motion-safe:duration-200 motion-safe:ease-out";
+
 /**
  * A summary line with a chevron over a body that opens and closes under it. The summary is a
  * button with `aria-expanded`, and Enter and Space toggle it; the body is hidden while closed.
@@ -67,10 +78,8 @@ export function Disclosure({
               <Chevron open={isExpanded} />
               {summary}
             </Button>
-            <DisclosurePanel
-              className={cx("text-sm text-slate-700", !bordered && "pt-1 pb-2 pl-6")}
-            >
-              {bordered ? <div className={PANEL}>{children}</div> : children}
+            <DisclosurePanel className={cx("text-sm text-slate-700", SLIDE)}>
+              <div className={bordered ? PANEL : PLAIN_BODY}>{children}</div>
             </DisclosurePanel>
           </>
         )}

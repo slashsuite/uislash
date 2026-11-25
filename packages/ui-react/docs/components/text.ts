@@ -79,7 +79,7 @@ export const text: ComponentSection = {
       usage: {
         do: [
           'Set a paragraph in `Text`, a `<p>`. Inside a row, a cell or a sentence it is `Text as="span"`. A block of it stops at a readable line length.',
-          'Emphasise a run with `Text strong` inside the `Text`: font-medium in the primary ink. Use `Caption` for fine print and metadata, `Caption as="span"` inside a row.',
+          'Emphasise a run with `Text strong` inside the `Text`: font-medium in the primary ink. `Mark` highlights a run on the warn tint, such as the words a search matched; it is not emphasis. Use `Caption` for fine print and metadata, `Caption as="span"` inside a row.',
           "Put a `Text` under a heading and `Lead` under a `Display`. `Overline` is the small all-caps label above a group, not a title.",
           "A Card, a table or a list with nothing in it yet takes an `EmptyState` in its `empty` slot, which draws it as one muted line there; a muted `Text` is not an empty state.",
           "`tone` is the one ink prop: `neutral`, the default, the role's own ink; `muted` and `accent` for the hierarchy of the text; and `positive`, `warn`, `danger` or `info` for what a run means. The words still say it, so colour is never the only signal.",
@@ -96,8 +96,9 @@ export const text: ComponentSection = {
         '`Overline` is a label, not a heading: it adds nothing to the page outline. A small section title is `Section size="sm"`, not `Overline as="h2"`.',
         "`lines` sets the full text as the `title` when the content is plain text, so a pointer user can read what was cut. Give a `title` of your own when the content is not.",
         "A `tone` changes only the colour. The wording has to carry the meaning.",
+        "`Mark` renders a `<mark>`. Most screen readers do not announce it, so the highlight is a help to the eye, never the only way to find the match.",
       ],
-      api: ["Text", "Caption", "Overline", "Lead"],
+      api: ["Text", "Caption", "Overline", "Lead", "Mark"],
       types: ["TextAlign", "TextLines", "TextMinWidth", "TextTone"],
     },
     {
@@ -116,7 +117,7 @@ export const text: ComponentSection = {
       pairs: ["Code/Inline", "CodeBlock/Snippet"],
       usage: {
         do: [
-          "Use `Code` for one short run inside a sentence. It takes the text colour and size around it, and keeps no line breaks.",
+          "Use `Code` for one short run inside a sentence. It takes the text colour and size around it, and keeps no line breaks. A long value (a hash, a path) takes `lines={1}`, cut with an ellipsis and showing its whole text in a tooltip while it is cut, or `breakWords`, which breaks it at the edge of its box.",
           "Use `CodeBlock` for several lines. Give the text as `children`, or as `lines` with one entry per line.",
           "`label` names the language or file (`bash`, `css`) in a caption above the code; `language` says what to colour, from `tsx`, `ts`, `js`, `json`, `bash`, `console`, `css`, `html` and `yaml`.",
           "A shell session is `console`: a line starting with `$ ` is a command, coloured as bash, and every other line is output. With `copy`, only the commands are copied, without the `$ `.",
@@ -208,14 +209,14 @@ export const text: ComponentSection = {
       pairs: ["TextLink/InSentence", "TextLink/External", "TextLink/Router", "TextLink/Stretch"],
       usage: {
         do: [
-          "Use `TextLink` for every link in running text.",
-          '`external` is for another site: it opens a new tab with `rel="noreferrer"`.',
+          'Use `TextLink` for every link in running text. `external` is for another site: it opens a new tab with `rel="noreferrer"`.',
           "In an app with a router, set the router's `<Link>` once on a `LinkProvider` and give each `TextLink` its `href`. The library has no router.",
           'Set the adapter once, at the router. TanStack Router: `InnerWrap: ({ children }) => <LinkProvider link={(p) => <Link to="." {...p} />}>{children}</LinkProvider>` on `createRouter` (`to="."` satisfies the typed `to`; the `href` wins). React Router: `<LinkProvider link={({ href, ...p }) => <Link to={href} {...p} />}>`. Astro: no provider.',
           '`home` on the same `LinkProvider` is where every status page\'s "Back to home" goes, `/` by default (`home="https://example.com"` with no `link` for a home on another site). A provider inside another keeps what it does not set.',
           "Only an in-app path (`/quotes?page=2#top`) reaches the adapter; `external`, `https:`, `mailto:`, `#hash` and a relative path are a plain `<a>`.",
           "`size` pins the type size to `sm`, `md` or `lg`; left out, the link takes the size of its text. `mono` sets the monospace face for a path or an id.",
           '`tone` gives the link a meaning\'s colour (`warn`, `danger`, `positive`, `info`, `muted`), underlined on hover. Use it for a link that is the message, like "3 failed". `underline` underlines it always: set it where the text around the link is as heavy as the link (a `Text strong`, a heading), since colour alone does not mark a link (WCAG 1.4.1); in plain `Text` its weight marks it.',
+          '`icon` draws a small glyph after the text (`chevron-right` for "See all"); it is hidden from assistive tech, so the text alone names the link. `tone="quiet"` is the primary ink and turns the accent on hover, for a row or list of links that should not shout, like a footer; never inside a sentence, where it would read as plain text.',
         ],
         dont: [
           "Never write a bare `<a>` for a link in running text.",
@@ -227,9 +228,10 @@ export const text: ComponentSection = {
         "It has a focus ring from the component, so the keyboard focus is always visible.",
         '`external` sets `target="_blank"` and `rel="noreferrer"`.',
         "Every anchor prop (`aria-*`, `download`, `title`, a handler) goes on the `<a>`; the app's `LinkProvider` adapter receives them as well.",
+        "The `icon` glyph is `aria-hidden`, so the link's name is its text alone.",
       ],
       api: ["TextLink", "LinkProvider"],
-      types: ["LinkAdapter", "LinkAdapterProps", "TextLinkSize"],
+      types: ["LinkAdapter", "LinkAdapterProps", "TextLinkSize", "TextLinkTone"],
     },
     {
       slug: "bullet-list",

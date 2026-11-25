@@ -1,4 +1,12 @@
-import { type ReactElement, type ReactNode, useLayoutEffect, useRef, useState } from "react";
+import {
+  type ReactElement,
+  type ReactNode,
+  type RefObject,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { flushSync } from "react-dom";
 import type { Passthrough } from "./props.js";
 
@@ -32,6 +40,37 @@ const css = (n: string): string =>
 // empty and refreshMorphs does nothing.
 const remeasures = new Set<() => void>();
 
+// How many mounted, active Morphs carry each transition name, so a second one with the same name
+// and item warns in development: the browser skips a morph whose name appears twice on a page.
+const mounted = new Map<string, number>();
+
+/** Whether this is a development build. Bundlers replace `process.env.NODE_ENV`; with no `process` at all, it is not. */
+declare const process: { env: { NODE_ENV?: string } };
+function isDev(): boolean {
+  try {
+    return process.env.NODE_ENV !== "production";
+  } catch {
+    return false;
+  }
+}
+
+/** Counts a mounted name, warning once when a second element takes it; returns the release. */
+function claim(n: string, name: string, item: string | number): () => void {
+  const count = (mounted.get(n) ?? 0) + 1;
+  mounted.set(n, count);
+  if (count === 2 && isDev()) {
+    // oxlint-disable-next-line no-console -- the one development warning the component gives
+    console.warn(
+      `Morph: two mounted Morphs share name "${name}" and item "${String(item)}", so the browser skips the morph. Give each its own item, or pass active={false} to all but one.`,
+    );
+  }
+  return () => {
+    const left = (mounted.get(n) ?? 1) - 1;
+    if (left === 0) mounted.delete(n);
+    else mounted.set(n, left);
+  };
+}
+
 /**
  * Measures every mounted Morph again, at once, so a card a router has just scrolled on screen
  * carries its transition name before the browser captures the new page. Call it right after the
@@ -54,36 +93,8 @@ export function refreshMorphs(): void {
   });
 }
 
-/**
- * An element that grows into its counterpart on the next page, and shrinks back on Back, through
- * the View Transitions API. Wrap the card in the list and the element on the detail page, each with
- * the same `name` and the record's id as `item`: the browser morphs one into the other over 450 ms. The same
- * `name` and `item` may appear only once on a page; two on one page and the browser skips the
- * morph, so a list passes each record's own id. The morph runs only when the change is wrapped in a
- * view transition: `startPageTransition`, or a router's own option (TanStack Router
- * `defaultViewTransition: true` on `createRouter`, or `viewTransition` on a `Link`; React Router's
- * `viewTransition`, Astro's `ClientRouter`). Otherwise, or where the browser has no View
- * Transitions, it renders and behaves as a plain `<div>`. Inside a `PageFade` the page fades while
- * this element morphs. While it is named (near the screen) the div is a stacking context, so a
- * dropdown inside it cannot rise above a sticky header outside it: portal overlays to the body. Under
- * `prefers-reduced-motion: reduce` it swaps with no animation; a router's own transition of the
- * rest of the page is the router's to quiet. A Morph more than a screen above or below the viewport
- * carries no transition name until it scrolls near, so a long list costs only what is on screen.
- */
-export function Morph({
-  name,
-  item,
-  children,
-  ...rest
-}: {
-  /** What the element is, shared by the card and its detail: `"shop"`, `"product"`. Any text. */
-  name: string;
-  /** Which one, usually the record's id. Any text or number; unique on the page for one `name`. */
-  item: string | number;
-  children: ReactNode;
-} & Passthrough): ReactElement {
-  const n = morphName(name, item);
-  const ref = useRef<HTMLDivElement>(null);
+/** Whether the element in `ref` is within a screen of the viewport, measured as it scrolls. */
+function useNear(ref: RefObject<HTMLElement | null>): boolean {
   // Named until measured, so the server render and an engine with no IntersectionObserver keep the
   // name. The layout effect's update is flushed with the render, so inside a view transition's
   // update the new page's far cards are already unnamed when the browser captures it. A parent's
@@ -122,16 +133,89 @@ export function Morph({
       remeasures.delete(remeasure);
       observer.disconnect();
     };
-  }, []);
+  }, [ref]);
+  return near;
+}
+
+/**
+ * An element that grows into its counterpart on the next page, and shrinks back on Back, through
+ * the View Transitions API. Wrap the card in the list and the element on the detail page, each with
+ * the same `name` and the record's id as `item`: the browser morphs one into the other over 450 ms. The same
+ * `name` and `item` may appear only once on a page; two on one page and the browser skips the
+ * morph, so a list passes each record's own id. The morph runs only when the change is wrapped in a
+ * view transition: `startPageTransition`, or a router's own option (TanStack Router
+ * `defaultViewTransition: true` on `createRouter`, or `viewTransition` on a `Link`; React Router's
+ * `viewTransition`, Astro's `ClientRouter`). Otherwise, or where the browser has no View
+ * Transitions, it renders and behaves as a plain `<div>`. Inside a `PageFade` the page fades while
+ * this element morphs. While it is named (near the screen) the div is a stacking context, so a
+ * dropdown inside it cannot rise above a sticky header outside it: portal overlays to the body. Under
+ * `prefers-reduced-motion: reduce` it swaps with no animation; a router's own transition of the
+ * rest of the page is the router's to quiet. A Morph more than a screen above or below the viewport
+ * carries no transition name until it scrolls near, so a long list costs only what is on screen.
+ * In a list, `as="li"` makes it the list's item. When one record shows twice on a page, pass
+ * `active={false}` to the copy that should not morph; in development two active Morphs with the
+ * same `name` and `item` log a console warning.
+ */
+export function Morph({
+  name,
+  item,
+  as = "div",
+  active = true,
+  children,
+  ...rest
+}: {
+  /** What the element is, shared by the card and its detail: `"shop"`, `"product"`. Any text. */
+  name: string;
+  /** Which one, usually the record's id. Any text or number; unique on the page for one `name`. */
+  item: string | number;
+  /**
+   * The element it renders: `"div"` (the default), or `"li"` for a card that is an item of a list,
+   * so the list stays a `ul` of `li`.
+   */
+  as?: "div" | "li" | undefined;
+  /**
+   * Whether it carries its transition name; `true` by default. Pass `false` to every copy but one
+   * when the same record shows twice on a page (a featured card and the same card in the list), so
+   * only the one that should grow into the detail is named.
+   */
+  active?: boolean | undefined;
+  children: ReactNode;
+} & Passthrough): ReactElement {
+  const n = morphName(name, item);
+  const ref = useRef<HTMLElement>(null);
+  // In development, two active Morphs with one name and item warn: the browser would skip the morph.
+  useEffect(() => (active ? claim(n, name, item) : undefined), [active, n, name, item]);
+  const near = useNear(ref);
+  const named = active && near;
+  const style = <style>{css(n)}</style>;
+  // A grid, so the one child (a Card in a CardGrid) still fills the row's height.
+  if (as === "li") {
+    // A list holds only `li`, so the stylesheet goes inside the item; a <style> is never a grid item.
+    return (
+      <li
+        {...rest}
+        ref={(el) => {
+          ref.current = el;
+        }}
+        data-morph={n}
+        data-morph-near={named ? "" : undefined}
+        className="grid"
+      >
+        {style}
+        {children}
+      </li>
+    );
+  }
   return (
     <>
-      <style>{css(n)}</style>
-      {/* A grid, so the one child (a Card in a CardGrid) still fills the row's height. */}
+      {style}
       <div
         {...rest}
-        ref={ref}
+        ref={(el) => {
+          ref.current = el;
+        }}
         data-morph={n}
-        data-morph-near={near ? "" : undefined}
+        data-morph-near={named ? "" : undefined}
         className="grid"
       >
         {children}

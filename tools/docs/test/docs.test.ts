@@ -180,18 +180,18 @@ describe("props.json", () => {
 
 describe("the usage rules", () => {
   // A do bullet that says what not to use without a don't word: it must read as a do.
-  const framed = componentPageOf("image").usage.do.find((rule) => rule.startsWith("`framed`"));
+  const mat = componentPageOf("image").usage.do.find((rule) => rule.startsWith("`mat`"));
   const dontWordedCases: [string, boolean][] = [
     ["Never nest a `Container` in a `Container`: the padding doubles.", true],
     ["Use `TextLink` for every link in running text. Never a bare `<a>`.", true],
     ["Draw it once: Avoid a second rule under it.", true],
     ["Don't type the numbers.", true],
-    [framed ?? "", false],
+    [mat ?? "", false],
     ["Fill the slots and write no wrapper.", false],
   ];
 
-  test("the framed bullet is still on the Image page", () => {
-    expect(framed).toBeDefined();
+  test("the mat bullet is still on the Image page", () => {
+    expect(mat).toBeDefined();
   });
 
   test.each(dontWordedCases)("dontWorded(%j) is %s", (rule, expected) => {

@@ -26,9 +26,9 @@ describe("SideColumn", () => {
     expect(screen.getByRole("complementary").hasAttribute("aria-label")).toBe(false);
   });
 
-  it("folds the aside behind a closed disclosure with asideLabel, summary first", () => {
+  it("folds the aside behind a closed disclosure named by asideLabel with fold, summary first", () => {
     render(
-      <SideColumn aside={<p>ASIDE</p>} asideLabel="Ask the reply agent">
+      <SideColumn aside={<p>ASIDE</p>} asideLabel="Ask the reply agent" fold>
         <p>MAIN</p>
       </SideColumn>,
     );
@@ -46,5 +46,35 @@ describe("SideColumn", () => {
       </SideColumn>,
     );
     expect(screen.getByRole("complementary", { name: "Ask the reply agent" })).not.toBeNull();
+  });
+
+  it("names the landmark with asideLabel alone and does not fold it", () => {
+    render(
+      <SideColumn aside={<p>ASIDE</p>} asideLabel="Filters">
+        <p>MAIN</p>
+      </SideColumn>,
+    );
+    const aside = screen.getByRole("complementary", { name: "Filters" });
+    expect(within(aside).queryByRole("group")).toBeNull();
+    expect(within(aside).getByText("ASIDE")).not.toBeNull();
+  });
+
+  it("reads the aside first with side start", () => {
+    render(
+      <SideColumn aside={<p>ASIDE</p>} side="start">
+        <p>MAIN</p>
+      </SideColumn>,
+    );
+    expect(follows(screen.getByText("ASIDE"), screen.getByText("MAIN"))).toBeTruthy();
+  });
+
+  it("asks for asideLabel when it folds", () => {
+    const view = (
+      // @ts-expect-error fold needs asideLabel to name the disclosure
+      <SideColumn aside="ASIDE" fold>
+        MAIN
+      </SideColumn>
+    );
+    expect(view).not.toBeNull();
   });
 });

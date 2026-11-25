@@ -54,6 +54,12 @@ type Options = {
   describes: boolean;
   /** A touch tap on the trigger shows the tooltip, and the next tap anywhere hides it. */
   tap?: boolean | undefined;
+  /**
+   * The keyboard's focus, for a trigger that cannot hear it: a run inside a grid row, where the row
+   * takes the focus. While `true` the tooltip shows as for a focus on the trigger; the caller sets
+   * it back to `false` on blur and on Escape.
+   */
+  focused?: boolean | undefined;
 };
 
 /** Whether this browser has the popover API and places a popover by its anchor. Read after mount. */
@@ -127,6 +133,12 @@ function useEscape(on: boolean, close: () => void): void {
   }, [on, close]);
 }
 
+/** Why the tooltip shows: its own reason, else a focus the trigger cannot hear (the caller hides it again on Escape). */
+function shownVia(via: Via | null, focused: boolean | undefined): Via | null {
+  if (via !== null) return via;
+  return focused ? "focus" : null;
+}
+
 type TipState = {
   via: Via | null;
   setVia: (next: Via | null | ((current: Via | null) => Via | null)) => void;
@@ -195,13 +207,14 @@ function handlers<E extends Element>(own: TriggerOwn<E>, tip: TipState): Trigger
  * Wires one internal tooltip to a trigger. Spread `props` on the trigger after the caller's own
  * props: it holds the same keys, merged (`aria-describedby` and the handlers keep the caller's), and
  * render `tooltip` right after the trigger. With no `text`, `props` is `own` unchanged and
- * `tooltip` is null. Internal: not exported from the package.
+ * `tooltip` is null. `enhanced` is false where the tooltip falls back to the native `title` (no
+ * anchor positioning, and the server markup), which a hover shows but focus never does. Internal: not exported from the package.
  */
 export function useTooltip<E extends Element>(
   text: string | undefined,
-  { describes, tap = false }: Options,
+  { describes, tap = false, focused }: Options,
   own: TriggerOwn<E>,
-): { props: TriggerProps<E>; tooltip: ReactNode } {
+): { props: TriggerProps<E>; tooltip: ReactNode; enhanced: boolean } {
   const id = useId();
   // False in the server markup and while the client hydrates, so both render the native `title`.
   const enhanced = useSyncExternalStore(never, anchorPositioning, () => false);
@@ -210,12 +223,16 @@ export function useTooltip<E extends Element>(
   const [layer, setLayer] = useState<HTMLSpanElement | null>(null);
   const [pressed, setPressed] = useState(false);
   const close = useCallback(() => setVia(null), []);
-  useLayer(layer, via !== null);
+  const shown = shownVia(via, focused);
+  useLayer(layer, shown !== null);
   useTapAway(via === "tap", trigger, close);
   useEscape(via !== null, close);
-
-  if (text === undefined || text === "") return { props: own, tooltip: null };
-  if (!enhanced) return { props: { ...own, title: text }, tooltip: null };
+  // A tip whose text went empty while open closes, so it does not come back open with new text.
+  if (!text) {
+    if (via !== null) setVia(null);
+    return { props: own, tooltip: null, enhanced };
+  }
+  if (!enhanced) return { props: { ...own, title: text }, tooltip: null, enhanced };
 
   const tip: TipState = { via, setVia, trigger, setTrigger, layer, pressed, setPressed, tap };
   const anchor = `--hc-tip${id.replaceAll(/[^a-zA-Z0-9_-]/g, "")}`;
@@ -239,7 +256,7 @@ export function useTooltip<E extends Element>(
         role="tooltip"
         popover="manual"
         data-hc-tooltip=""
-        data-via={via ?? undefined}
+        data-via={shown ?? undefined}
         aria-hidden={describes ? undefined : true}
         style={{ positionAnchor: anchor }}
         onPointerLeave={(event) => leave(tip, event.relatedTarget, "tooltip")}
@@ -248,7 +265,7 @@ export function useTooltip<E extends Element>(
       </span>
     </>
   );
-  return { props, tooltip };
+  return { props, tooltip, enhanced };
 }
 
 /**

@@ -29,6 +29,44 @@ export const Regions: S = {
   ),
 };
 
+/**
+ * `tone` colours a region by what it is (`accent`, the default, `positive`, `warn`, `danger`),
+ * `dashed` marks one that is proposed, and `active` thickens the one the app has picked.
+ */
+export const Tones: S = {
+  render: () => (
+    <div className="max-w-xl">
+      <RegionFrame src={sampleShot} alt="A screenshot of a dashboard">
+        <OutlineRegion
+          rect={{ x: 16, y: 40, width: 184, height: 22 }}
+          within={sampleShotSize}
+          label="kept"
+          tone="positive"
+        />
+        <OutlineRegion
+          rect={{ x: 168, y: 112, width: 136, height: 72 }}
+          within={sampleShotSize}
+          label="changed"
+          tone="warn"
+          active
+        />
+        <OutlineRegion
+          rect={{ x: 228, y: 4, width: 80, height: 20 }}
+          within={sampleShotSize}
+          label="broken"
+          tone="danger"
+        />
+        <OutlineRegion
+          rect={{ x: 16, y: 120, width: 120, height: 48 }}
+          within={sampleShotSize}
+          label="proposed"
+          dashed
+        />
+      </RegionFrame>
+    </div>
+  ),
+};
+
 /** `rect` and `within` are in the picture's own pixels, so the box stays on its area however wide the picture is drawn. */
 export const Scales: S = {
   render: () => (
@@ -49,11 +87,11 @@ export const Scales: S = {
   ),
 };
 
-/** `width`: the frame at 96, 160 and 256px, and `full`, the parent's width; the region keeps its spot at each. */
+/** `width`: the frame at 96, 160, 256 and 448px, and `full`, the parent's width; the region keeps its spot at each. */
 export const Widths: S = {
   render: () => (
     <div className="flex max-w-xl flex-col gap-4">
-      {(["sm", "md", "lg", "full"] as const).map((width) => (
+      {(["sm", "md", "lg", "xl", "full"] as const).map((width) => (
         <RegionFrame key={width} src={sampleShot} alt="" width={width}>
           <OutlineRegion
             rect={{ x: 168, y: 112, width: 136, height: 72 }}

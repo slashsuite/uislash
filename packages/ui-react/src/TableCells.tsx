@@ -15,6 +15,7 @@ import { SortButton, type SortProps } from "./tableSort.js";
 import { Bone, BusyLabel, busy, isEmptySlot, type LoadingProps, useLoading } from "./skeleton.js";
 import { CELL_BONE } from "./tableEmpty.js";
 import type { Tone } from "./tone.js";
+import { Truncated } from "./truncated.js";
 import { TEXT_TONE } from "./typography.js";
 
 /* The head and body cells of a `Table`, exported from `Table.tsx`. */
@@ -196,8 +197,8 @@ const INDENT: Record<Size, Record<Indent, string>> = {
  * lines (never narrower than `min-w-48`, so it scrolls the table before it becomes a sliver); any
  * other cell stays on one line at its content's width: one that holds a control or a link, and a
  * `numeric` or `mono` cell (a figure, a code, a type). `lines={1}` caps a long value's width, cuts it with
- * an ellipsis on one line and puts the full text in a `title`; the content is then plain text (strings and
- * numbers), since that is what the title shows. `colSpan` passes through: a cell that
+ * an ellipsis on one line and, while it is cut, shows the full text in a tooltip on hover, focus and a
+ * tap; the content is then plain text (strings and numbers), since that is what the tooltip shows. `colSpan` passes through: a cell that
  * spans the row is a full-width panel (a note under a group), and `align="center"` centres it. A
  * table with no rows takes `TableBody empty`, not a cell built by hand. `span="full"` spans every
  * column the head declares, so a panel under a row needs no count. `indent` sets a start-aligned cell in by 1 to 3 levels, for a line under a parent row.
@@ -235,8 +236,8 @@ export function TableCell({
   /** A small monospace face for a code or a type, and the cell never wraps. */
   mono?: boolean | undefined;
   /**
-   * `1` caps the width and cuts a long value with an ellipsis on one line, the full text in a
-   * `title`, as `lines={1}` does on `Text`. Plain text content only.
+   * `1` caps the width and cuts a long value with an ellipsis on one line; while it is cut, the full
+   * text shows in a tooltip on hover, keyboard focus and a tap. Plain text content only.
    *
    * Without it, a prose cell wraps down to a floor so it never becomes a sliver, and any other cell
    * (a `Pill`, a `Switch`, a `Button`, a `TextLink`, a `numeric` or `mono` value) stays on one line
@@ -355,7 +356,7 @@ function isProse(children: ReactNode): boolean {
   return parts.length > 0 && parts.every(isText);
 }
 
-/** What a cell holds: the content, cut to one line with its full text in a `title` when `truncate`, then the `secondary` line. */
+/** What a cell holds: the content, cut to one line when `truncate` (its full text in a tooltip while cut), then the `secondary` line. */
 function CellBody({
   align,
   truncate,
@@ -372,9 +373,9 @@ function CellBody({
   return (
     <>
       {truncate ? (
-        <div className={cx(TRUNCATE_WIDTH, "truncate", TRUNCATE_ALIGN[align])} title={text}>
+        <Truncated text={text} className={cx(TRUNCATE_WIDTH, TRUNCATE_ALIGN[align])}>
           {children}
-        </div>
+        </Truncated>
       ) : (
         children
       )}

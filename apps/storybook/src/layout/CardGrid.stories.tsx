@@ -1,5 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Card, CardGrid, EmptyState, PageHeader, StatTile } from "@slashsuite/ui-react";
+import {
+  Button,
+  Card,
+  CardGrid,
+  CardGridRow,
+  EmptyState,
+  PageHeader,
+  StatTile,
+  Text,
+} from "@slashsuite/ui-react";
 import { DemoShell, layoutPage } from "../../../../packages/ui-react/docs/examples/DemoShell.js";
 import { StatTiles } from "./pages";
 import * as examples from "../../../../packages/ui-react/docs/examples/CardGrid.examples.js";
@@ -87,6 +96,71 @@ export const AutoFillSmall: S = { render: () => <Shots minWidth="sm" /> };
 
 /** `align="start"` keeps each card its own height instead of stretching to the tallest in the row. */
 export const AlignStart: S = { render: () => <Shots align="start" /> };
+
+/** `align="regions"` lines up each card's title, body and footer across the row (subgrid), so a short title's body starts level with a long one's. */
+export const AlignRegions: S = {
+  render: () => (
+    <DemoShell>
+      <PageHeader title="Plans" description="Pick the one that fits." />
+      <CardGrid columns={3} align="regions">
+        <Card title="Free" footer={<Button>Start free</Button>}>
+          <Text tone="muted">One site, community help.</Text>
+        </Card>
+        <Card
+          title="Studio, for small teams who ship every week"
+          footer={<Button>Start a trial</Button>}
+        >
+          <Text tone="muted">Five sites, shared themes and email help on weekdays.</Text>
+        </Card>
+        <Card title="Agency" footer={<Button>Talk to us</Button>}>
+          <Text tone="muted">Every site you run.</Text>
+        </Card>
+      </CardGrid>
+    </DemoShell>
+  ),
+};
+
+/** `minColumns={2}` keeps two tiles to a row on a phone, for small tiles such as stats. */
+export const TwoOnAPhone: S = {
+  render: () => (
+    <DemoShell>
+      <PageHeader title="Business" description="This month at a glance." />
+      <CardGrid columns={4} minColumns={2}>
+        <StatTile label="Open" value="12" />
+        <StatTile label="Won" value="8" tone="positive" />
+        <StatTile label="Lost" value="3" tone="danger" />
+        <StatTile label="Stale" value="2" />
+      </CardGrid>
+    </DemoShell>
+  ),
+};
+
+/** `CardGridRow` holds one child across the whole row, such as a wide card above the tiles. In an `as="ul"` grid it is its own list item. */
+export const FullRow: S = {
+  render: () => (
+    <DemoShell>
+      <PageHeader title="Business" description="This month at a glance." />
+      <CardGrid columns={3}>
+        <CardGridRow>
+          <Card title="Revenue">
+            <Text tone="muted">Up 12% on last month.</Text>
+          </Card>
+        </CardGridRow>
+        <StatTile label="Open" value="12" />
+        <StatTile label="Won" value="8" tone="positive" />
+        <StatTile label="Lost" value="3" tone="danger" />
+      </CardGrid>
+      <CardGrid as="ul" columns={3} aria-label="Shops">
+        <CardGridRow>
+          <Card title="Cove Hardware">Harbour Road, open every day.</Card>
+        </CardGridRow>
+        <Card title="Long Street">Open until six.</Card>
+        <Card title="Kloof Street">Open until five.</Card>
+        <Card title="Bree Street">Closed on Sundays.</Card>
+      </CardGrid>
+    </DemoShell>
+  ),
+};
 
 /** `as="ul"` makes the grid a list and each child a list item, for tiles that are a set of like things a screen reader should count. The look is the same. */
 export const AsList: S = {

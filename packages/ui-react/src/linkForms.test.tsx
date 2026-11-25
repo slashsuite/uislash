@@ -9,16 +9,16 @@ import { render, screen, user } from "./render.harness.js";
 // `href` makes the whole part the link: Card, IconButton and Pill. Pill also has a button form.
 
 describe("Card href", () => {
-  it("is one link to its href, named by the card's text, and no region", () => {
+  it("is one link to its href, named by its title, and no article", () => {
     render(
       <Card href="/shots/1" title="Shot" count={3}>
         body
       </Card>,
     );
     expect(screen.getAllByRole("link")).toHaveLength(1);
-    expect(screen.getByRole("link", { name: /Shot.*body/ }).getAttribute("href")).toBe("/shots/1");
+    expect(screen.getByRole("link", { name: "Shot" }).getAttribute("href")).toBe("/shots/1");
     expect(screen.getByRole("heading", { level: 2, name: /Shot/ })).not.toBeNull();
-    expect(screen.queryByRole("region")).toBeNull();
+    expect(screen.queryByRole("article")).toBeNull();
   });
 
   it("opens a new tab when external", () => {
@@ -32,20 +32,20 @@ describe("Card href", () => {
     expect(link.getAttribute("rel")).toBe("noreferrer");
   });
 
-  it("takes no actions or as with href", () => {
+  it("takes no actions or onPress with href", () => {
     // @ts-expect-error a card that is a link has no actions
     const withActions: ComponentProps<typeof Card> = {
       href: "/x",
       actions: "a",
       children: "b",
     };
-    const withAs: ComponentProps<typeof Card> = {
+    // @ts-expect-error a card is a link or a button, not both
+    const withPress: ComponentProps<typeof Card> = {
       href: "/x",
-      // @ts-expect-error a card that is a link is not an `as` element
-      as: "article",
+      onPress: () => undefined,
       children: "b",
     };
-    expect([withActions, withAs]).toHaveLength(2);
+    expect([withActions, withPress]).toHaveLength(2);
   });
 });
 

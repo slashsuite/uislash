@@ -270,14 +270,12 @@
 }
 
 .thriftloop .bg-emerald-50,
-.thriftloop .bg-emerald-50\/60,
-.thriftloop .bg-emerald-100 {
+.thriftloop .bg-emerald-50\/60 {
   background-color: #ecfdf5;
 }
 
 .thriftloop .bg-amber-50,
-.thriftloop .bg-amber-50\/60,
-.thriftloop .bg-amber-100 {
+.thriftloop .bg-amber-50\/60 {
   background-color: #fffbeb;
 }
 
@@ -368,13 +366,11 @@
   color: #b31960;
 }
 
-.thriftloop .border-emerald-200,
-.thriftloop .border-emerald-300 {
+.thriftloop .border-emerald-200 {
   border-color: rgba(4, 120, 87, 0.3);
 }
 
-.thriftloop .border-amber-200,
-.thriftloop .border-amber-300 {
+.thriftloop .border-amber-200 {
   border-color: rgba(180, 83, 9, 0.3);
 }
 
@@ -390,8 +386,7 @@
   border-color: rgba(179, 25, 96, 0.7);
 }
 
-.thriftloop .border-blue-200,
-.thriftloop .border-blue-300 {
+.thriftloop .border-blue-200 {
   border-color: rgba(15, 118, 110, 0.3);
 }
 
@@ -417,4 +412,53 @@
 }
 .thriftloop .bg-rose-400\/25 {
   background-color: rgba(255, 223, 244, 0.45);
+}
+
+/* Peer hues (Card hue): a set of peer cards, one hue each, told apart by hue, not status.
+   Each hue is this theme's own remap of the family's identity fill (bg-orange-600, bg-violet-600,
+   bg-sky-600, bg-emerald-600, bg-amber-600; blue is text-blue-700). The fill is 25% of it over
+   the card white (bg-white); the edge is it mixed 30% toward the ink (text-slate-900). sRGB mix.
+   A fill is lowered in 5% steps where the card's ink would miss 4.5:1 on it, and says so. The edge
+   is decoration (the contrast contract exempts it): the title and the fill carry the card. */
+.thriftloop .bg-orange-100 {
+  background-color: #e8dac4; /* orange: bg-orange-600 #8c5a2b at 20%, lowered from 25% so the ink keeps 4.5:1 */
+}
+.thriftloop .bg-violet-100 {
+  background-color: #f3d5be; /* violet: bg-violet-600 #c2410c at 20%, lowered from 25% so the ink keeps 4.5:1 */
+}
+.thriftloop .bg-sky-100 {
+  background-color: #d2ddd8; /* sky: bg-sky-600 #1e6a8f at 20%, lowered from 25% so the ink keeps 4.5:1 */
+}
+.thriftloop .bg-emerald-100 {
+  background-color: #cde0cd; /* green: bg-emerald-600 #047857 at 20%, lowered from 25% so the ink keeps 4.5:1 */
+}
+.thriftloop .bg-amber-100 {
+  background-color: #e4ddc0; /* yellow: bg-amber-600 #7a6a1a at 20%, lowered from 25% so the ink keeps 4.5:1 */
+}
+.thriftloop .bg-blue-100 {
+  background-color: #cfe0d1; /* blue: text-blue-700 #0f766e at 20%, lowered from 25% so the ink keeps 4.5:1 */
+}
+.thriftloop .border-orange-300 {
+  border-color: #724d24; /* orange */
+}
+.thriftloop .border-violet-300 {
+  border-color: #983b0e; /* violet */
+}
+.thriftloop .border-sky-300 {
+  border-color: #25586a; /* sky */
+}
+.thriftloop .border-emerald-300 {
+  border-color: #136243; /* green */
+}
+.thriftloop .border-amber-300 {
+  border-color: #655818; /* yellow */
+}
+.thriftloop .border-blue-300 {
+  border-color: #1a6053; /* blue */
+}
+
+/* The page mat (the media-mat role): the mat under a screenshot on a page, the theme's own ground.
+   The white media matte above stays white for a code. */
+.thriftloop .bg-zinc-50 {
+  background-color: #fffaea; /* the card white, so it looks as the mat always has */
 }

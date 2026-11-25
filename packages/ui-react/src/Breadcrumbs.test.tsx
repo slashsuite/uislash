@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from "vitest";
 import { Breadcrumbs } from "./Breadcrumbs.js";
-import { render, screen, within } from "./render.harness.js";
+import { render, screen, user, within } from "./render.harness.js";
+import { everyRunCut } from "./truncated.harness.js";
 
 const trail = () => screen.getByRole("navigation", { name: "Breadcrumb" });
 
@@ -82,5 +83,34 @@ describe("Breadcrumbs link crumbs", () => {
       />,
     );
     expect(screen.getByRole("link", { name: "A" }).getAttribute("href")).toBe("/a");
+  });
+});
+
+describe("Breadcrumbs, a cut parent", () => {
+  everyRunCut();
+
+  // jsdom has no anchor positioning, so the tooltip falls back to the native title, which focus
+  // never shows: a plain parent is no focus stop there.
+  it("shows a cut parent's whole label in the title", async () => {
+    render(<Breadcrumbs items={["A very long organisation name", "Project"]} />);
+    expect(screen.getByTitle("A very long organisation name")).not.toBeNull();
+    await user().tab();
+    expect(document.activeElement).toBe(document.body);
+  });
+
+  it("takes the focus of a cut link crumb on the link, not a stop of its own", async () => {
+    render(
+      <Breadcrumbs items={[{ label: "A very long organisation name", href: "/org" }, "Project"]} />,
+    );
+    expect(screen.getByTitle("A very long organisation name")).not.toBeNull();
+    await user().tab();
+    expect(document.activeElement).toBe(
+      screen.getByRole("link", { name: "A very long organisation name" }),
+    );
+  });
+
+  it("never cuts the current page", () => {
+    render(<Breadcrumbs items={["Org", "A very long current page"]} />);
+    expect(screen.queryByTitle("A very long current page")).toBeNull();
   });
 });

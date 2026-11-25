@@ -111,6 +111,32 @@ export const AccentAndNeutral: S = {
   ),
 };
 
+/** `icon` draws a small glyph after the text, hidden from assistive tech: the link's text is its name. */
+export const Icon: S = {
+  render: () => (
+    <p className="max-w-xl text-sm text-slate-700">
+      <TextLink href="#all" icon="chevron-right">
+        See all quotes
+      </TextLink>
+    </p>
+  ),
+};
+
+/** `tone="quiet"`: the primary ink, the accent on hover. For a link in a row of links that should not shout, never inside a sentence. */
+export const Quiet: S = {
+  render: () => (
+    <p className="max-w-xl text-sm text-slate-700">
+      <TextLink href="#privacy" tone="quiet">
+        Privacy
+      </TextLink>
+      {" · "}
+      <TextLink href="#terms" tone="quiet">
+        Terms
+      </TextLink>
+    </p>
+  ),
+};
+
 /** Stands in for a router's <Link>: the app's adapter, set once on a `LinkProvider`. */
 const FakeLink: LinkAdapter = ({ href, ...rest }) => <a {...rest} href={`#${href}`} />;
 
