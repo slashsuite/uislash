@@ -177,6 +177,38 @@ describe("slopRules: a component uses only the palette's colour utilities", () =
   });
 });
 
+describe("slopRules: core holds the tokens", () => {
+  const palette = new Set(["bg-white", "text-slate-900"]);
+  const core = "@slashsuite/core";
+  const onCore = 'import { BUTTON_BOX } from "@slashsuite/core";';
+  const rule =
+    "a colour or spacing utility in a component on @slashsuite/core; put the token in core's tables";
+
+  it("fails a colour or spacing utility in a component that imports core", () => {
+    expect(slopRules("src/Button.tsx", `${onCore}\nconst c = "gap-2";`, ui, palette)).toEqual([
+      `src/Button.tsx:2: ${rule}`,
+    ]);
+    expect(slopRules("src/Button.tsx", `${onCore}\n"md:px-4"`, ui, palette)).toEqual([
+      `src/Button.tsx:2: ${rule}`,
+    ]);
+    expect(slopRules("src/Button.tsx", `${onCore}\n"bg-white"`, ui, palette)).toEqual([
+      `src/Button.tsx:2: ${rule}`,
+    ]);
+  });
+
+  it("passes the same utility in a component that does not import core, and other classes", () => {
+    expect(slopRules("src/Card.tsx", `"gap-2 bg-white"`, ui, palette)).toEqual([]);
+    expect(slopRules("src/Button.tsx", `${onCore}\n"cursor-pointer sr-only"`, ui)).toEqual([]);
+  });
+
+  it("holds core's token tables to the palette, and not its tests", () => {
+    expect(slopRules("src/button.ts", `"bg-white text-pink-500"`, core, palette)).toEqual([
+      "src/button.ts:1: text-pink-500 is not in palette.json; a new colour is a palette change",
+    ]);
+    expect(slopRules("src/button.test.ts", `"text-pink-500"`, core, palette)).toEqual([]);
+  });
+});
+
 describe("slopRules: a component's classes", () => {
   it("fails the content width or side padding outside Container, and passes it in Container", () => {
     expect(slopRules("src/Hero.tsx", `"mx-auto max-w-6xl"`, ui)).toEqual([

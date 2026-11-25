@@ -6,7 +6,7 @@ $schema: "../../.moon/cache/schemas/project.json"
 tasks:
   typecheck:
     command: "bun run typecheck"
-    inputs: ["**/*", "/packages/themes-shared/src/**/*"]
+    inputs: ["**/*", "/packages/themes-shared/src/**/*", "/packages/core/src/**/*"]
   lint:
     command: "bun run lint"
     inputs: ["**/*"]

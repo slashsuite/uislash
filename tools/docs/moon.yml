@@ -13,6 +13,7 @@ dependsOn:
 fileGroups:
   deps:
     - "/packages/ui-react/**/*"
+    - "/packages/core/src/**/*"
     - "/themes/**/*"
     - "/packages/themes-shared/**/*"
 
@@ -26,6 +27,7 @@ tasks:
       - "scripts/**/*"
       - "src/types.ts"
       - "/packages/ui-react/src/**/*"
+      - "/packages/core/src/**/*"
       - "/packages/ui-react/tsconfig*.json"
     outputs: ["/packages/ui-react/docs/props.json", "/packages/ui-react/docs/types.json"]
     options:

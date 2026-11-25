@@ -1,0 +1,23 @@
+$schema: "../../.moon/cache/schemas/project.json"
+
+# @slashsuite/core: what the renderers share (token tables, prop types, story fixtures, the parity
+# manifest and the native theme generator). Each task runs the package.json script of its name.
+# Its lint holds the token tables to ui-react's palette, so palette.json is an input of lint.
+tasks:
+  build:
+    command: "bun run build"
+    inputs: ["src/**/*", "tsconfig*.json", "package.json"]
+    outputs: ["dist"]
+  typecheck:
+    command: "bun run typecheck"
+    inputs: ["**/*"]
+  lint:
+    command: "bun run lint"
+    inputs: ["**/*", "/packages/ui-react/palette.json"]
+  test:
+    command: "bun run test"
+    inputs: ["**/*"]
+  pack-check:
+    command: "bun run pack-check"
+    inputs: ["**/*"]
+    deps: ["~:build"]

@@ -29,6 +29,7 @@
         "react-dom": "catalog:react",
       },
       "devDependencies": {
+        "@slashsuite/core": "workspace:*",
         "@storybook/react-vite": "^10.6.7",
         "@tailwindcss/vite": "^4.3.5",
         "@types/bun": "catalog:",
@@ -37,6 +38,14 @@
         "storybook": "^10.6.7",
         "tailwindcss": "catalog:",
         "vite": "catalog:",
+        "vitest": "catalog:",
+      },
+    },
+    "packages/core": {
+      "name": "@slashsuite/core",
+      "version": "0.0.0",
+      "devDependencies": {
+        "@types/bun": "catalog:",
         "vitest": "catalog:",
       },
     },
@@ -82,6 +91,7 @@
         "react-aria-components": "^1.22.1",
       },
       "devDependencies": {
+        "@slashsuite/core": "0.0.0",
         "@testing-library/dom": "10.4.2",
         "@testing-library/react": "16.3.3",
         "@testing-library/user-event": "14.6.12",
@@ -754,6 +764,8 @@
     "@rollup/pluginutils": ["@rollup/pluginutils@5.4.0", "", { "dependencies": { "@types/estree": "^1.0.0", "estree-walker": "^2.0.2", "picomatch": "^4.0.2" }, "peerDependencies": { "rollup": "^1.20.0||^2.0.0||^3.0.0||^4.0.0" }, "optionalPeers": ["rollup"] }, "sha512-MfPp06CjRLfXQ3wY0R8vJDYBy/MvVcc9OulEfR0B8Iv9ko+GCNaRZ+EpJYFl27LhKsZK0o420sYCRHCjfCgeUg=="],
 
     "@slashsuite/codemod": ["@slashsuite/codemod@workspace:tools/codemod"],
+
+    "@slashsuite/core": ["@slashsuite/core@workspace:packages/core"],
 
     "@slashsuite/docs": ["@slashsuite/docs@workspace:tools/docs"],
 

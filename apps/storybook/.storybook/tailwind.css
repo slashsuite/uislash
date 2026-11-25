@@ -4,6 +4,8 @@
    here: preview.tsx injects the selected theme, so switching themes swaps the whole palette. */
 @source "../../../packages/ui-react/src";
 @source "../../../packages/ui-react/palette.json";
+/* The token tables the components draw from (ui-react's published dist carries a copy). */
+@source "../../../packages/core/src";
 /* The stories render the docs' examples, whose own layout classes live there. */
 @source "../../../packages/ui-react/docs/examples";
 

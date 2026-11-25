@@ -17,6 +17,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noUncheckedSideEffectImports": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "customConditions": ["development"]
   }
 }

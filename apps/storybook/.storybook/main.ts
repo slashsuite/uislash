@@ -4,6 +4,9 @@ import type { StorybookConfig } from "@storybook/react-vite";
 import tailwindcss from "@tailwindcss/vite";
 
 const storybookDir = fileURLToPath(new URL("..", import.meta.url));
+/** A package's source entry, so an edit shows without a build. */
+const source = (path: string): string =>
+  fileURLToPath(new URL(`../../../packages/${path}`, import.meta.url));
 
 const config: StorybookConfig = {
   // One entry per story file, in the order of the site's component docs. With no `storySort` in
@@ -17,17 +20,18 @@ const config: StorybookConfig = {
   framework: { name: "@storybook/react-vite", options: {} },
   viteFinal: async (cfg) => {
     cfg.plugins = [...(cfg.plugins ?? []), tailwindcss()];
-    // Stories import the package by name; read its source so a component edit shows without a build.
+    // Stories import the packages by name; read their source so an edit shows without a build.
     const existing = cfg.resolve?.alias;
     const aliases = Array.isArray(existing)
       ? existing
       : Object.entries(existing ?? {}).map(([find, replacement]) => ({ find, replacement }));
-    const source = fileURLToPath(
-      new URL("../../../packages/ui-react/src/index.ts", import.meta.url),
-    );
     cfg.resolve = {
       ...cfg.resolve,
-      alias: [...aliases, { find: "@slashsuite/ui-react", replacement: source }],
+      alias: [
+        ...aliases,
+        { find: "@slashsuite/ui-react", replacement: source("ui-react/src/index.ts") },
+        { find: "@slashsuite/core", replacement: source("core/src/index.ts") },
+      ],
     };
     return cfg;
   },

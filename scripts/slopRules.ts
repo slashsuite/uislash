@@ -5,7 +5,10 @@
  * prose (the site's component pages, a README) calls the palette's purple the accent. In a
  * `@slashsuite/ui-react` component it also holds the palette: a stock colour utility the themes do not
  * remap (one outside `palette.json`), or one behind an arbitrary `[&...]` variant, which no theme can
- * reach; and the content width and side padding outside `Container`. `check-slop.ts` globs the files and prints what this returns.
+ * reach; and the content width and side padding outside `Container`. `@slashsuite/core`'s token tables
+ * are held to the same palette, and a component that draws from them writes no colour or spacing
+ * utility of its own, so a token lives in one place for every renderer. `check-slop.ts` globs the
+ * files and prints what this returns.
  */
 
 const TODO_WITHOUT_REF = /\b(TODO|FIXME|XXX|HACK)\b(?!\s*\((?:ob\s*)?#?[\w-]*\d+\))/;
@@ -48,6 +51,16 @@ function paletteHits(line: string, palette: ReadonlySet<string>): string[] {
   return [...outside, ...arbitrary];
 }
 
+// A component that imports `@slashsuite/core` draws its tokens from there, the tables every renderer
+// reads, so a colour or spacing utility written into it is a token the native renderer never sees.
+const SPACING =
+  /(?<![\w-])(?:[a-z-]+:)*-?(?:p[xytblrse]?|m[xytblrse]?|gap(?:-[xy])?|space-[xy])-(?:\d+(?:\.\d+)?|px)(?![\w-])/;
+const IMPORTS_CORE = /from\s+["']@slashsuite\/core["']/;
+const CORE_TOKEN_RULE =
+  "a colour or spacing utility in a component on @slashsuite/core; put the token in core's tables";
+const hasToken = (line: string): boolean =>
+  SPACING.test(line) || new RegExp(COLOUR.source).test(line);
+
 // The content width and side padding belong to `Container` alone; a component that wants them
 // renders one instead of copying its classes.
 const CONTENT_EDGE = /max-w-6xl|px-4 sm:px-6/;
@@ -63,6 +76,7 @@ const THIN_SCROLLBAR = /scrollbar-width:\s*thin/;
 // that calls it violet is wrong in all but one. A value in backticks (`violet`) is code and passes.
 // Both names while consumers move to @slashsuite: a package still named @hackcove/ui-react is the same library.
 const UI_REACT = new Set(["@slashsuite/ui-react", "@hackcove/ui-react"]);
+const CORE = "@slashsuite/core";
 
 const VIOLET = /(?<![\w-])violet(?![\w-])/i;
 const VIOLET_RULE = '"violet" in prose; the palette calls it accent';
@@ -89,6 +103,8 @@ type FileKind = {
   component: boolean;
   /** The palette to hold a component's `.tsx` to; undefined when the palette rule does not apply. */
   palette: ReadonlySet<string> | undefined;
+  /** A component that imports `@slashsuite/core`, which takes every token from there. */
+  onCore: boolean;
   prose: boolean;
 };
 
@@ -100,9 +116,16 @@ function anyFileHits(line: string, file: FileKind): string[] {
   return hits;
 }
 
-/** A component's palette and content edge. */
-function componentHits(line: string, file: FileKind): string[] {
+/** The palette, and a token written in a component that takes its tokens from core. */
+function tokenHits(line: string, file: FileKind): string[] {
   const hits = file.palette === undefined ? [] : paletteHits(line, file.palette);
+  if (file.onCore && hasToken(line)) hits.push(CORE_TOKEN_RULE);
+  return hits;
+}
+
+/** A component's tokens and content edge. */
+function componentHits(line: string, file: FileKind): string[] {
+  const hits = tokenHits(line, file);
   if (file.component && file.path !== "src/Container.tsx" && CONTENT_EDGE.test(line))
     hits.push("the content width and side padding are Container's; render a Container");
   if (file.component && PX_TEXT.test(line))
@@ -141,7 +164,8 @@ function lineHits(line: string, previous: string, file: FileKind): string[] {
 
 /**
  * Each hit as `path:line: message`. `path` is relative to the package; `pkg` is its `name`.
- * `palette` is every utility `packages/ui-react/palette.json` lists, for `@slashsuite/ui-react`.
+ * `palette` is every utility `packages/ui-react/palette.json` lists, for `@slashsuite/ui-react` and
+ * `@slashsuite/core`.
  */
 export function slopRules(
   path: string,
@@ -151,12 +175,14 @@ export function slopRules(
 ): string[] {
   const test = isTest(path);
   const component = UI_REACT.has(pkg) && path.startsWith("src/") && !test;
+  const tables = pkg === CORE && path.startsWith("src/") && !test && path.endsWith(".ts");
   const file: FileKind = {
     path,
     code: /\.tsx?$/.test(path),
     test,
     component,
-    palette: component && path.endsWith(".tsx") ? palette : undefined,
+    palette: (component && path.endsWith(".tsx")) || tables ? palette : undefined,
+    onCore: component && IMPORTS_CORE.test(text),
     prose: isDocsProse(path, pkg),
   };
   const lines = text.split("\n");

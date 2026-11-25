@@ -4,6 +4,7 @@ $schema: "../../.moon/cache/schemas/project.json"
 # name (`e2e` runs `test:e2e`, `visual-upload` runs `visual:upload`).
 dependsOn:
   - "ui-react"
+  - "core"
   - "themes-shared"
 
 # moon does not hash a dependency's files, so they are listed here (node_modules, dist and the
@@ -13,6 +14,7 @@ dependsOn:
 fileGroups:
   deps:
     - "/packages/ui-react/**/*"
+    - "/packages/core/**/*"
     - "/packages/themes-shared/**/*"
 
 tasks:

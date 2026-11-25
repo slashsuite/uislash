@@ -1,3 +1,16 @@
+import {
+  BUTTON_BLOCKED,
+  BUTTON_BLOCKED_BY_VARIANT,
+  BUTTON_BOX,
+  BUTTON_BOX_MD,
+  BUTTON_BUSY,
+  BUTTON_COUNT,
+  BUTTON_DASHED_BOX,
+  BUTTON_DISABLED_PLAIN,
+  BUTTON_LINK_GAP,
+  BUTTON_SHAPE,
+  buttonLook,
+} from "@slashsuite/core";
 import type { ComponentPropsWithoutRef, ReactElement, ReactNode, Ref } from "react";
 import { cx, focusRing } from "./cx.js";
 import { controlText, type TypeStep, useResponsiveDensity, useTypeStep } from "./density.js";
@@ -16,81 +29,11 @@ export type ButtonSize = Size;
 /** A Button's tones: `neutral` (the accent fill, the default), `positive` and `danger`. */
 export type ButtonTone = Extract<Tone, "neutral" | "positive" | "danger">;
 
-const SHAPE = "inline-flex items-center justify-center rounded-lg border font-medium transition";
-// Size sets the padding; the text is `controlText`'s, from the size and the type step. The link
-// variant has no box, so it takes the text size only.
-const BOX: Record<ButtonSize, string> = {
-  sm: "gap-1.5 px-2.5 py-1",
-  md: "gap-2 px-4 py-2",
-  lg: "gap-2 px-5 py-2.5",
-};
-// `BOX` from the `md` breakpoint up, for a responsive size, every class written out in full.
-const BOX_MD: Record<ButtonSize, string> = {
-  sm: "md:gap-1.5 md:px-2.5 md:py-1",
-  md: "md:gap-2 md:px-4 md:py-2",
-  lg: "md:gap-2 md:px-5 md:py-2.5",
-};
 /** The padding table and its `md:` twin, for the data test. */
-export const buttonSizeTables = { box: BOX, boxMd: BOX_MD };
-// A plain `disabled` washes out and ignores the pointer. A busy button is disabled too, but keeps
-// pointer events (the cursor says why) and does not take this; a blocked one is `aria-disabled`.
-const DISABLED_PLAIN = "disabled:pointer-events-none disabled:opacity-50";
+export const buttonSizeTables = { box: BUTTON_BOX, boxMd: BUTTON_BOX_MD };
 
-type Look = { color: string; hover: string };
-
-const LINK = "underline-offset-2";
-
-const TONE: Record<ButtonTone, Record<Exclude<ButtonVariant, "dashed">, Look>> = {
-  neutral: {
-    primary: {
-      color: "border-violet-600 bg-violet-600 text-violet-50",
-      hover: "hover:bg-violet-700",
-    },
-    outline: { color: "border-violet-600 text-violet-600", hover: "hover:bg-violet-50" },
-    ghost: { color: "border-transparent text-slate-600", hover: "hover:bg-slate-100" },
-    link: {
-      color: `border-transparent text-violet-600 ${LINK}`,
-      hover: "hover:text-violet-700 hover:underline",
-    },
-  },
-  positive: {
-    primary: {
-      color: "border-emerald-600 bg-emerald-600 text-emerald-50",
-      hover: "hover:bg-emerald-700",
-    },
-    outline: { color: "border-emerald-200 text-emerald-700", hover: "hover:bg-emerald-50" },
-    ghost: { color: "border-transparent text-emerald-700", hover: "hover:bg-emerald-50" },
-    link: { color: `border-transparent text-emerald-700 ${LINK}`, hover: "hover:underline" },
-  },
-  danger: {
-    primary: { color: "border-red-600 bg-red-600 text-red-50", hover: "hover:bg-red-700" },
-    outline: { color: "border-red-200 text-red-700", hover: "hover:bg-red-50" },
-    ghost: { color: "border-transparent text-red-700", hover: "hover:bg-red-50" },
-    link: { color: `border-transparent text-red-700 ${LINK}`, hover: "hover:underline" },
-  },
-};
-
-// The add row: Card dashed's outline and muted text, lit with the accent on hover. One look, so
-// `tone` does not apply to it.
-const DASHED: Look = {
-  color: "border-slate-300 text-slate-500",
-  hover: "hover:border-violet-400 hover:text-violet-700",
-};
-
-// An outline or ghost Button with `pressed` set is a toggle, such as a filter chip: off is neutral
-// (the surface, a hairline, muted text, lit with the accent on hover), on is the tone's primary
-// fill, so the selected one stands out in every theme. A primary is already filled, and link and
-// dashed have no selected state; with `pressed` left out, outline and ghost keep their own look.
-const TOGGLE_OFF: Look = {
-  color: "border-slate-200 bg-white text-slate-600",
-  hover: "hover:border-violet-400",
-};
-
-// The count chip: a pill in the button's own text colour (a hairline of `currentColor`), so it reads
-// on every variant and tone and needs no palette entry. The size is a Badge's: rem text and a
-// min-height, so the chip grows with the reader's text size.
-export const COUNT =
-  "inline-flex min-h-4 min-w-4 items-center justify-center rounded-full border border-current px-1 text-[0.625rem]/[1.4] font-semibold tabular-nums";
+/** The count chip's classes (a Badge's size, in the button's own text colour). */
+export const COUNT = BUTTON_COUNT;
 
 /** The label, then the count chip. The comma is for a screen reader only, so the name reads "Splits, 3". */
 function withCount(children: ReactNode, count: number | undefined): ReactNode {
@@ -103,24 +46,6 @@ function withCount(children: ReactNode, count: number | undefined): ReactNode {
     </>
   );
 }
-
-function lookOf(variant: ButtonVariant, tone: ButtonTone, pressed?: boolean): Look {
-  if (variant === "dashed") return DASHED;
-  if (pressed !== undefined && (variant === "outline" || variant === "ghost")) {
-    return pressed ? TONE[tone].primary : TOGGLE_OFF;
-  }
-  return TONE[tone][variant];
-}
-
-// Blocked replaces the variant's colour and hover rather than overriding them, so no `!` is needed.
-const BLOCKED = "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400";
-const BLOCKED_DASHED = "cursor-not-allowed border-slate-200 text-slate-400";
-const BLOCKED_LINK = "cursor-not-allowed border-transparent text-slate-400";
-const BLOCKED_BY_VARIANT: Partial<Record<ButtonVariant, string>> = {
-  link: BLOCKED_LINK,
-  dashed: BLOCKED_DASHED,
-};
-const BUSY = "cursor-progress opacity-85";
 
 /** Size, tone and variant: the look of a button, apart from its state. */
 type ButtonLook = {
@@ -157,10 +82,10 @@ function shape(
   step: TypeStep | undefined,
 ): string {
   return cx(
-    SHAPE,
-    variant !== "link" && sizeClass(BOX, BOX_MD, size),
-    variant === "link" && "gap-1.5",
-    variant === "dashed" && "w-full border-dashed",
+    BUTTON_SHAPE,
+    variant !== "link" && sizeClass(BUTTON_BOX, BUTTON_BOX_MD, size),
+    variant === "link" && BUTTON_LINK_GAP,
+    variant === "dashed" && BUTTON_DASHED_BOX,
     controlText(size, step, false),
     focusRing,
   );
@@ -193,8 +118,14 @@ function idleClass(
   tone: ButtonTone,
   { step, pressed }: { step: TypeStep | undefined; pressed?: boolean | undefined },
 ): string {
-  const look = lookOf(variant, tone, pressed);
-  return cx(shape(variant, size, step), "cursor-pointer", DISABLED_PLAIN, look.color, look.hover);
+  const look = buttonLook(variant, tone, pressed);
+  return cx(
+    shape(variant, size, step),
+    "cursor-pointer",
+    BUTTON_DISABLED_PLAIN,
+    look.color,
+    look.hover,
+  );
 }
 
 type ButtonAsButton = ButtonLook & {
@@ -271,10 +202,10 @@ function stateClass(
   step: TypeStep | undefined,
 ): string {
   if (state === "blocked") {
-    return cx(shape(variant, size, step), BLOCKED_BY_VARIANT[variant] ?? BLOCKED);
+    return cx(shape(variant, size, step), BUTTON_BLOCKED_BY_VARIANT[variant] ?? BUTTON_BLOCKED);
   }
   if (state === "busy") {
-    return cx(shape(variant, size, step), lookOf(variant, tone, pressed).color, BUSY);
+    return cx(shape(variant, size, step), buttonLook(variant, tone, pressed).color, BUTTON_BUSY);
   }
   return idleClass(variant, size, tone, { step, pressed });
 }

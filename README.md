@@ -19,6 +19,7 @@ It is a moon + Bun-workspaces monorepo. Every package here is published on its o
 | `themes` | `@slashsuite/themes` | Every theme, one CSS file each, remapping those utilities: `catppuccin-mocha.css` (dark, scope `.dark`), `catppuccin-latte.css` (light, scope `.latte`), `thrifty-paper.css` (light, scope `.thrifty-paper`), `thriftloop.css` (light, scope `.thriftloop`), `thriftloop-dark.css` (dark, scope `.thriftloop-dark`), `slash-suite.css` (light, scope `.slash-suite`) and `slash-suite-dark.css` (dark, scope `.slash-suite-dark`). |
 | `packages/oxlint-testing` | `@slashsuite/oxlint-testing` | A shared oxlint config and plugin for UI tests (Playwright, Testing Library, Vitest): elements found the way a user does, waits on a state, behaviour asserted rather than look, one Playwright config shape. |
 | `packages/oxlint-ui` | `@slashsuite/oxlint-ui` | An oxlint config and plugin for apps built on UISlash: no `<style>`, raw colour utility, `dark:` variant, styling prop, look-alike component, inline colour or raw element that has a part. |
+| `packages/core` | `@slashsuite/core` | What the renderers share: each component's token tables, prop types and story fixtures, the parity manifest and the native theme generator. `@slashsuite/ui-react` vendors it, so an app never installs it. |
 | `apps/storybook` | (private) | Storybook for the components, with a toolbar theme switcher that lists every CSS file in `themes/`. |
 | `tools/docs` | (private) | The component docs' tooling: the generated props reference, `llms.txt` and the agent docs `@slashsuite/ui-react` ships. The docs site, hack-cove.com/ui/, is built outside this repo from `packages/ui-react/docs`. |
 
@@ -172,8 +173,12 @@ A theme is one CSS file in the `themes/` package, and its file name is its id:
    bar. Decorative and inactive pairings (hairline dividers, the dimming veil, dimmed text) are
    exempt by role, with the reason, in the same file.
 3. Add a row to the table in `themes/README.md`, and any upstream licence text to `themes/NOTICE`.
-4. `bunx moon run themes:test`. `themes.test.ts` reads every CSS file there and applies the contract
-   to each. `bunx moon run themes:pack-check` then checks the tarball would carry every theme, the
+4. `bunx moon run themes:theme-native` writes `themes/<id>.native.json`, the same theme as a
+   colour map for the native renderer (each palette utility to its colours, the pressed, focused,
+   placeholder and scrim slots, and the status bar per scheme). It is generated from the CSS, never
+   edited, and committed beside it.
+5. `bunx moon run themes:test`. `themes.test.ts` reads every CSS file there and applies the contract
+   to each, and fails when a theme's `.native.json` is stale or leaves a palette utility out. `bunx moon run themes:pack-check` then checks the tarball would carry every theme, the
    manifest, the README and both licences, and nothing else.
 
 There is nothing else to register: the package's `exports` and `files` are globs, and Storybook finds

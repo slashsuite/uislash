@@ -11,6 +11,7 @@ $schema: "./cache/schemas/workspace.json"
 projects:
   ui-react: "packages/ui-react"
   themes-shared: "packages/themes-shared"
+  core: "packages/core"
   themes: "themes"
   storybook: "apps/storybook"
   ui-review: "tools/ui-review"

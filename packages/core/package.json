@@ -1,0 +1,60 @@
+{
+  "name": "@slashsuite/core",
+  "version": "0.0.0",
+  "description": "What the UISlash renderers share: each component's token tables, prop types, story fixtures, the parity manifest and the native theme generator. Pure TypeScript with no runtime dependencies.",
+  "keywords": [
+    "design-system",
+    "design-tokens",
+    "slashsuite"
+  ],
+  "homepage": "https://github.com/slashsuite/uislash/tree/main/packages/core#readme",
+  "bugs": {
+    "url": "https://github.com/slashsuite/uislash/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Jacobus Langner",
+    "url": "https://github.com/madangryscientist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/slashsuite/uislash.git",
+    "directory": "packages/core"
+  },
+  "files": [
+    "dist",
+    "src",
+    "!src/**/*.test.ts",
+    "parity.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "development": "./src/index.ts",
+      "bun": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./parity.json": "./parity.json",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "oxlint -c ../../.oxlintrc.json --type-aware --deny-warnings && bun ../../scripts/check-slop.ts",
+    "test": "vitest run",
+    "parity": "bun scripts/parity.ts",
+    "pack-check": "npm pack --dry-run --ignore-scripts"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:",
+    "vitest": "catalog:"
+  },
+  "nx": {
+    "name": "core"
+  }
+}

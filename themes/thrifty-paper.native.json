@@ -1,0 +1,392 @@
+{
+  "id": "thrifty-paper",
+  "scope": "thrifty-paper",
+  "scheme": "light",
+  "statusBar": "dark-content",
+  "base": {
+    "backgroundColor": "#fdfbf7",
+    "color": "#1c1917",
+    "fontFamily": "Inter"
+  },
+  "selection": {
+    "backgroundColor": "#c2410c",
+    "color": "#ffffff"
+  },
+  "utilities": {
+    "bg-gray-50": {
+      "backgroundColor": "#fdfbf7"
+    },
+    "bg-white": {
+      "backgroundColor": "#ffffff"
+    },
+    "bg-white/80": {
+      "backgroundColor": "rgba(255, 255, 255, 0.85)"
+    },
+    "bg-slate-50": {
+      "backgroundColor": "#f7f2e9"
+    },
+    "bg-slate-50/50": {
+      "backgroundColor": "#f7f2e9"
+    },
+    "bg-slate-50/60": {
+      "backgroundColor": "#f7f2e9"
+    },
+    "bg-slate-50/70": {
+      "backgroundColor": "#f7f2e9"
+    },
+    "bg-slate-100": {
+      "backgroundColor": "#ece3d4"
+    },
+    "bg-slate-200": {
+      "backgroundColor": "#e2d6c2"
+    },
+    "bg-slate-900": {
+      "backgroundColor": "#1c1917"
+    },
+    "bg-black/90": {
+      "backgroundColor": "rgba(28, 25, 23, 0.94)"
+    },
+    "text-white": {
+      "color": "#fdfbf7"
+    },
+    "text-white/70": {
+      "color": "rgba(253, 251, 247, 0.72)"
+    },
+    "bg-white/100": {
+      "backgroundColor": "#ffffff"
+    },
+    "bg-white/95": {
+      "backgroundColor": "#ffffff"
+    },
+    "text-slate-900": {
+      "color": "#1c1917"
+    },
+    "text-slate-800": {
+      "color": "#1c1917"
+    },
+    "text-slate-700": {
+      "color": "#3b342e"
+    },
+    "text-slate-600": {
+      "color": "#3b342e"
+    },
+    "text-slate-500": {
+      "color": "#6b6259"
+    },
+    "text-slate-400": {
+      "color": "#6b6259"
+    },
+    "text-slate-300": {
+      "color": "#6b6259"
+    },
+    "border-slate-50": {
+      "borderColor": "#f7f2e9"
+    },
+    "border-slate-100": {
+      "borderColor": "#ece3d4"
+    },
+    "border-slate-200": {
+      "borderColor": "#ece3d4"
+    },
+    "border-slate-200/70": {
+      "borderColor": "#ece3d4"
+    },
+    "border-slate-300": {
+      "borderColor": "#948a7c"
+    },
+    "border-slate-900": {
+      "borderColor": "#1c1917"
+    },
+    "text-emerald-600": {
+      "color": "#047857"
+    },
+    "bg-emerald-500": {
+      "backgroundColor": "#047857"
+    },
+    "bg-slate-300": {
+      "backgroundColor": "#ece3d4"
+    },
+    "bg-violet-600": {
+      "backgroundColor": "#c2410c"
+    },
+    "text-violet-50": {
+      "color": "#ffffff"
+    },
+    "border-violet-600": {
+      "borderColor": "#c2410c"
+    },
+    "outline-violet-600": {
+      "outlineColor": "#c2410c"
+    },
+    "accent-violet-600": {
+      "accentColor": "#c2410c"
+    },
+    "bg-red-600": {
+      "backgroundColor": "#7a1220"
+    },
+    "text-red-50": {
+      "color": "#ffffff"
+    },
+    "border-red-600": {
+      "borderColor": "#7a1220"
+    },
+    "text-emerald-50": {
+      "color": "#ffffff"
+    },
+    "border-emerald-600": {
+      "borderColor": "#047857"
+    },
+    "bg-orange-600": {
+      "backgroundColor": "#8c5a2b"
+    },
+    "bg-cyan-600": {
+      "backgroundColor": "#0e7490"
+    },
+    "bg-emerald-600": {
+      "backgroundColor": "#047857"
+    },
+    "bg-sky-600": {
+      "backgroundColor": "#1e6a8f"
+    },
+    "bg-pink-600": {
+      "backgroundColor": "#a8325e"
+    },
+    "bg-amber-600": {
+      "backgroundColor": "#7a6a1a"
+    },
+    "bg-emerald-50": {
+      "backgroundColor": "#ecfdf5"
+    },
+    "bg-emerald-50/60": {
+      "backgroundColor": "#ecfdf5"
+    },
+    "bg-amber-50": {
+      "backgroundColor": "#fffbeb"
+    },
+    "bg-amber-50/60": {
+      "backgroundColor": "#fffbeb"
+    },
+    "bg-blue-50": {
+      "backgroundColor": "#f0fdfa"
+    },
+    "bg-violet-50": {
+      "backgroundColor": "#fdf5f0"
+    },
+    "bg-sky-50": {
+      "backgroundColor": "#eff6fa"
+    },
+    "bg-red-50": {
+      "backgroundColor": "#fdf2f4"
+    },
+    "text-emerald-700": {
+      "color": "#047857"
+    },
+    "text-emerald-800": {
+      "color": "#047857"
+    },
+    "text-amber-700": {
+      "color": "#b45309"
+    },
+    "text-amber-800": {
+      "color": "#b45309"
+    },
+    "text-amber-900": {
+      "color": "#b45309"
+    },
+    "text-blue-600": {
+      "color": "#0f766e"
+    },
+    "text-blue-700": {
+      "color": "#0f766e"
+    },
+    "text-blue-800": {
+      "color": "#0f766e"
+    },
+    "text-blue-900": {
+      "color": "#0f766e"
+    },
+    "text-violet-600": {
+      "color": "#9a3412"
+    },
+    "text-violet-700": {
+      "color": "#9a3412"
+    },
+    "text-sky-700": {
+      "color": "#1e6a8f"
+    },
+    "text-neutral-500": {
+      "color": "#8f857b"
+    },
+    "text-purple-700": {
+      "color": "#7e3fb0"
+    },
+    "text-indigo-600": {
+      "color": "#1b6096"
+    },
+    "text-orange-600": {
+      "color": "#d2391a"
+    },
+    "text-teal-600": {
+      "color": "#1b8177"
+    },
+    "text-pink-600": {
+      "color": "#c4096e"
+    },
+    "text-lime-600": {
+      "color": "#438700"
+    },
+    "text-fuchsia-600": {
+      "color": "#7633b9"
+    },
+    "text-rose-600": {
+      "color": "#910922"
+    },
+    "text-yellow-600": {
+      "color": "#946231"
+    },
+    "text-red-700": {
+      "color": "#7a1220"
+    },
+    "text-red-800": {
+      "color": "#7a1220"
+    },
+    "text-red-900": {
+      "color": "#7a1220"
+    },
+    "border-emerald-200": {
+      "borderColor": "rgba(4, 120, 87, 0.3)"
+    },
+    "border-amber-200": {
+      "borderColor": "rgba(180, 83, 9, 0.3)"
+    },
+    "border-amber-600": {
+      "borderColor": "#b45309"
+    },
+    "border-red-200": {
+      "borderColor": "rgba(122, 18, 32, 0.7)"
+    },
+    "border-blue-200": {
+      "borderColor": "rgba(15, 118, 110, 0.3)"
+    },
+    "link": {
+      "color": "#7c2d12",
+      "fontWeight": "500"
+    },
+    "bg-indigo-400/25": {
+      "backgroundColor": "rgba(249, 198, 168, 0.3)"
+    },
+    "bg-teal-400/25": {
+      "backgroundColor": "rgba(185, 220, 207, 0.26)"
+    },
+    "bg-rose-400/25": {
+      "backgroundColor": "rgba(244, 194, 207, 0.26)"
+    },
+    "bg-orange-100": {
+      "backgroundColor": "#eee6df"
+    },
+    "bg-violet-100": {
+      "backgroundColor": "#f6e3db"
+    },
+    "bg-sky-100": {
+      "backgroundColor": "#dde9ee"
+    },
+    "bg-emerald-100": {
+      "backgroundColor": "#d9ebe6"
+    },
+    "bg-amber-100": {
+      "backgroundColor": "#e4e1d1"
+    },
+    "bg-blue-100": {
+      "backgroundColor": "#cfe4e2"
+    },
+    "border-orange-300": {
+      "borderColor": "#6a4725"
+    },
+    "border-violet-300": {
+      "borderColor": "#90350f"
+    },
+    "border-sky-300": {
+      "borderColor": "#1d526b"
+    },
+    "border-emerald-300": {
+      "borderColor": "#0b5c44"
+    },
+    "border-amber-300": {
+      "borderColor": "#5e5219"
+    },
+    "border-blue-300": {
+      "borderColor": "#135a54"
+    },
+    "bg-zinc-50": {
+      "backgroundColor": "#ffffff"
+    }
+  },
+  "states": {
+    "pressed": {
+      "bg-white/10": {
+        "backgroundColor": "rgba(253, 251, 247, 0.12)"
+      },
+      "bg-violet-700": {
+        "backgroundColor": "#9a3412"
+      },
+      "text-violet-700": {
+        "color": "#7c2d12"
+      },
+      "bg-violet-50": {
+        "backgroundColor": "#fdf5f0"
+      },
+      "border-violet-400": {
+        "borderColor": "#c2410c"
+      },
+      "bg-red-700": {
+        "backgroundColor": "#5f0e1a"
+      },
+      "bg-red-50": {
+        "backgroundColor": "#fdf2f4"
+      },
+      "bg-emerald-700": {
+        "backgroundColor": "#065f46"
+      },
+      "bg-emerald-50": {
+        "backgroundColor": "#ecfdf5"
+      },
+      "bg-slate-50": {
+        "backgroundColor": "#f7f2e9"
+      },
+      "bg-slate-100": {
+        "backgroundColor": "#ece3d4"
+      }
+    },
+    "focused": {
+      "outline-white": {
+        "outlineColor": "#fdfbf7"
+      },
+      "outline-violet-600": {
+        "outlineColor": "#c2410c"
+      }
+    },
+    "placeholderTextColor": {
+      "text-slate-400": {
+        "placeholderTextColor": "#736a60"
+      }
+    },
+    "scrim": {
+      "bg-slate-900/35": {
+        "backgroundColor": "rgba(28, 25, 23, 0.35)"
+      }
+    },
+    "disabled": {},
+    "invalid": {
+      "border-red-200": {
+        "borderColor": "rgba(122, 18, 32, 0.7)"
+      }
+    },
+    "target": {
+      "outline-violet-600": {
+        "outlineColor": "#c2410c"
+      }
+    }
+  },
+  "within": {},
+  "compounds": []
+}

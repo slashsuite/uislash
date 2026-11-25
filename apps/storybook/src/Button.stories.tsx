@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { buttonFixtures } from "@slashsuite/core";
 import { Button, ButtonGroup } from "@slashsuite/ui-react";
+import { ButtonFixture } from "./ButtonFixture";
 import { CompactApp } from "./typeSteps";
 import * as examples from "../../../packages/ui-react/docs/examples/Button.examples.js";
 
@@ -50,14 +52,7 @@ export const DontDestructive: S = {
 };
 
 export const Variants: S = {
-  render: () => (
-    <div className="flex flex-wrap gap-2">
-      <Button>Save</Button>
-      <Button variant="outline">Cancel</Button>
-      <Button variant="ghost">Skip</Button>
-      <Button variant="link">Edit</Button>
-    </div>
-  ),
+  render: () => <ButtonFixture fixture={buttonFixtures.Variants} />,
 };
 /** `variant="dashed"`: a dashed outline in muted text that fills its container, like a dashed Card: the "add another" row at the foot of a list. A leading icon is just a child. */
 export const Dashed: S = {
@@ -77,74 +72,14 @@ export const Dashed: S = {
   ),
 };
 export const Small: S = {
-  render: () => (
-    <div className="flex flex-wrap items-center gap-2">
-      <Button size="sm">Save</Button>
-      <Button size="sm" variant="outline">
-        Cancel
-      </Button>
-      <Button size="sm" variant="ghost">
-        Skip
-      </Button>
-      <Button size="sm" variant="link">
-        Edit
-      </Button>
-      <Button size="sm" tone="danger" variant="outline">
-        Remove
-      </Button>
-    </div>
-  ),
+  render: () => <ButtonFixture fixture={buttonFixtures.Small} />,
 };
 export const Danger: S = {
-  render: () => (
-    <div className="flex flex-wrap items-center gap-2">
-      <Button tone="danger">Delete</Button>
-      <Button tone="danger" variant="outline">
-        Clear
-      </Button>
-      <Button tone="danger" variant="ghost">
-        Remove
-      </Button>
-      <Button tone="danger" variant="link">
-        Remove
-      </Button>
-      <Button tone="danger" size="sm">
-        Delete
-      </Button>
-      <Button tone="danger" disabledReason="Nothing to delete">
-        Blocked
-      </Button>
-      <Button tone="danger" busy="Deleting…">
-        Delete
-      </Button>
-    </div>
-  ),
+  render: () => <ButtonFixture fixture={buttonFixtures.Danger} />,
 };
 /** `tone="positive"` is green, for accept and approve. Pair it with a red-outline reject. */
 export const Positive: S = {
-  render: () => (
-    <div className="flex flex-wrap items-center gap-2">
-      <Button tone="positive">Accept</Button>
-      <Button tone="positive" variant="outline">
-        Accept
-      </Button>
-      <Button tone="positive" variant="ghost">
-        Accept
-      </Button>
-      <Button tone="positive" variant="link">
-        Accept
-      </Button>
-      <Button tone="positive" size="sm">
-        Accept
-      </Button>
-      <Button tone="positive" disabledReason="Nothing to accept">
-        Blocked
-      </Button>
-      <Button tone="positive" busy="Accepting…">
-        Accept
-      </Button>
-    </div>
-  ),
+  render: () => <ButtonFixture fixture={buttonFixtures.Positive} />,
 };
 /** The review bar: Accept and Reject side by side. */
 export const ReviewBar: S = {
@@ -161,25 +96,7 @@ export const ReviewBar: S = {
 };
 /** `pressed` makes a toggle on the outline and ghost variants: `aria-pressed`, neutral when off and the tone's primary fill when on. */
 export const Pressed: S = {
-  render: () => (
-    <div className="flex flex-wrap items-center gap-2">
-      <Button variant="outline" pressed={false}>
-        Flag
-      </Button>
-      <Button variant="outline" pressed>
-        Flag
-      </Button>
-      <Button variant="ghost" pressed>
-        Flag
-      </Button>
-      <Button variant="outline" tone="positive" pressed>
-        Accepted
-      </Button>
-      <Button variant="outline" tone="danger" pressed>
-        Rejected
-      </Button>
-    </div>
-  ),
+  render: () => <ButtonFixture fixture={buttonFixtures.Pressed} />,
 };
 /** No box: text with an underline on hover, for an action inside a sentence or a table cell. */
 export const LinkLook: S = {
@@ -221,30 +138,10 @@ export const Disabled: S = {
   ),
 };
 export const Blocked: S = {
-  render: () => (
-    <div className="flex flex-wrap gap-2">
-      <Button disabledReason="Pick a shop first">Save</Button>
-      <Button variant="outline" disabledReason="Pick a shop first">
-        Cancel
-      </Button>
-      <Button variant="ghost" disabledReason="Pick a shop first">
-        Skip
-      </Button>
-    </div>
-  ),
+  render: () => <ButtonFixture fixture={buttonFixtures.Blocked} />,
 };
 export const Busy: S = {
-  render: () => (
-    <div className="flex flex-wrap gap-2">
-      <Button busy="Saving…">Save</Button>
-      <Button variant="outline" busy="Cancelling…">
-        Cancel
-      </Button>
-      <Button variant="ghost" busy>
-        Skip
-      </Button>
-    </div>
-  ),
+  render: () => <ButtonFixture fixture={buttonFixtures.Busy} />,
 };
 export const AsLink: S = {
   render: () => (
