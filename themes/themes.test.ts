@@ -187,6 +187,22 @@ describe.each(files)("%s", (file) => {
     expect(typeFaceFailures(block)).toEqual([]);
   });
 
+  it("paints a page outside AppShell: the scope's own canvas and ink are the shell's", () => {
+    // The scope class sits on `<html>`, where no `.<scope> .<utility>` rule reaches, so the scope
+    // block itself paints a bare page (a CenteredLayout sign-in): the canvas `bg-gray-50` paints and
+    // the ink `text-slate-900` paints (`--hc-ink`).
+    const block =
+      new RegExp(`^\\.${escapeRe(scope)}\\s*\\{([^{}]*)\\}`, "m").exec(rules)?.[1] ?? "";
+    const own = (property: string) =>
+      new RegExp(`(?:^|;|\\s)${property}:\\s*(#[0-9a-f]{6})`).exec(block)?.[1];
+    expect(own("background-color")).toBe(
+      new RegExp(
+        `\\.${escapeRe(scope)} \\.bg-gray-50\\s*\\{\\s*background-color:\\s*(#[0-9a-f]{6});`,
+      ).exec(rules)?.[1],
+    );
+    expect(own("color")).toBe(/--hc-ink:\s*(#[0-9a-f]{6})/.exec(block)?.[1]);
+  });
+
   it("keeps the media scrim dark", () => {
     // Lightbox paints `bg-black/90` over the page; it must stay near-black on a light theme too.
     // Its text and focus ring are measured on it by the contrast contract.

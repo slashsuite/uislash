@@ -126,6 +126,10 @@
 .slash-suite .bg-white\/100 {
   background-color: #ffffff;
 }
+/* The app header's ground: the page ground. */
+.slash-suite .bg-white\/95 {
+  background-color: #eef2f9;
+}
 
 /* Text */
 .slash-suite .text-slate-900,

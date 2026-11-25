@@ -55,6 +55,9 @@ the docs and the e2e all read this folder. `themes.test.ts` is the contract, and
 file here. Run it with `bunx moon run themes:test`. The repo's
 [README](https://github.com/slashsuite/uislash#how-to-add-a-theme) has the steps.
 
+`bg-white/95` is the app header's ground: map it to your card colour, or to your canvas if the
+header sits on the page ground.
+
 ## Colours for chrome the kit cannot draw
 
 Some third-party DOM is not made of `@slashsuite/ui-react` parts, so it cannot take a utility: a

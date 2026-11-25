@@ -121,6 +121,7 @@ export const feedback: ComponentSection = {
       },
       accessibility: [
         "A PageFade is a plain `<div>` with no role, so it changes nothing for assistive technology.",
+        "After `startPageTransition` swaps the page, focus moves to the new view (the PageFade with no `name`), so a screen reader starts reading the new page and Tab goes on from there. A tab or a segmented control that switched the view in place keeps its focus.",
         "Under `prefers-reduced-motion: reduce` the content swaps with no fade, and `startPageTransition` just runs the update.",
         "Where the browser has no View Transitions it is a plain `<div>` and the content swaps.",
       ],
@@ -182,7 +183,7 @@ export const feedback: ComponentSection = {
       },
       accessibility: [
         'While shown it is `role="progressbar"` named by `label` ("Loading page" by default) and has no `aria-valuenow`, so it reads as an indeterminate progress bar. When hidden it is not in the page.',
-        "Under `prefers-reduced-motion: reduce` it is a still, full-width bar with no slide.",
+        "Under `prefers-reduced-motion: reduce` the segment slides slowly and evenly rather than stopping: a still, full-width bar would read as finished.",
         "It takes no pointer events, so it never covers a control in the header.",
       ],
       api: ["NavigationProgress"],

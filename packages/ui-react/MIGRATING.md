@@ -431,6 +431,28 @@ values are still `CalendarDate`s. TypeScript flags nothing.
 New, nothing to change: `DateTimeField` (a `CalendarDateTime`, posted as `YYYY-MM-DDTHH:mm`),
 `toISODateTime`, `fromISODateTime` and the `CalendarDateTime` type.
 
+### A tab's `controls` is gone: give it its `panel`
+
+A button tab took `controls`, the id of a `tabpanel` the caller drew and wired by hand. A tab now
+takes its `panel`, and `Tabs` renders it: `role="tabpanel"`, labelled by the tab, its id in the
+tab's `aria-controls`, hidden while another tab is current (find in page still reaches it and
+switches to its tab). TypeScript flags every `controls`. Move the view into the tab's `panel` and
+delete the hand-drawn `tabpanel`:
+
+```tsx
+// before
+<Tabs items={[{ value: "a", label: "A", controls: "panel" }]} value={v} onChange={setV} label="Views" />
+<div id="panel" role="tabpanel">{v === "a" && <ViewA />}</div>
+
+// after
+<Tabs items={[{ value: "a", label: "A", panel: <ViewA /> }]} value={v} onChange={setV} label="Views" />
+```
+
+Every tab's panel is now mounted, the hidden ones too, so find in page can reach them. A view that
+fetches or subscribes as it mounts now does so on page load, for every tab. To mount only the
+current view, give the others `null`: `panel: v === "a" ? <ViewA /> : null`. Its tab is still wired
+to its panel, but find in page no longer reaches that view's text.
+
 ### ListRow's `revealOnHover` is gone
 
 A static row's `actions` are always shown. An action that appears only on hover is one a touch or

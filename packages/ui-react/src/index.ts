@@ -86,6 +86,7 @@ export { type LinkAdapter, type LinkAdapterProps, LinkProvider } from "./link.js
 export { Avatar, type AvatarShape, type AvatarSize } from "./Avatar.js";
 export { AvatarStack, type AvatarStackPerson } from "./AvatarStack.js";
 export { Breadcrumbs, type Crumb } from "./Breadcrumbs.js";
+export { Stepper } from "./Stepper.js";
 export { Pagination } from "./Pagination.js";
 export { BulletItem, BulletList } from "./BulletList.js";
 export { Callout } from "./Callout.js";
@@ -145,7 +146,7 @@ export {
   storeColourScheme,
   type ColourScheme,
 } from "./colourScheme.js";
-export { Tabs, type Tab } from "./Tabs.js";
+export { Tabs, type Tab, type TabButton } from "./Tabs.js";
 export { SegmentedControl, type Segment } from "./SegmentedControl.js";
 export type { SwitchButton, SwitchLink } from "./switcher.js";
 export { Fieldset } from "./Fieldset.js";

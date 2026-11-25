@@ -21,7 +21,7 @@ const stories = [
   { id: "layout-appshell--overflowing-subnav", links: 7 + 16 },
   { id: "layout-appshell--phone-menu", links: 7 + 6 },
   { id: "layout-appshell--header-slots", links: 7 },
-  // Its menuControls sit above the nav in the menu; the links are the nav's.
+  // Its menuControls sit below the nav in the menu; the links are the nav's.
   { id: "layout-appshell--menu-controls", links: 7 },
   // Its controls overflow the row; the Menu stays on screen beside them.
   { id: "layout-appshell--crowded-controls", links: 7 },
@@ -30,16 +30,34 @@ const stories = [
 const open = async (page: Page, id: string, theme: string) => {
   await page.setViewportSize({ width: WIDTH, height: 700 });
   await page.goto(`/iframe.html?id=${id}&viewMode=story&globals=theme:${theme}`);
-  // The Menu is a native `<details>` (a group); its `<summary>` is the button, found by its text.
-  const menu = page.getByRole("banner").getByRole("group");
-  await menu.waitFor();
+  // The Menu is the browser's popover: one panel holding the nav, the subnav and menuControls,
+  // drawn only while open below `md`. Its links are the header's navigation links.
+  const menu = page.getByRole("banner");
+  await menuButton(menu).waitFor();
   return menu;
 };
 
-const menuButton = (menu: Locator) => menu.getByText("Menu", { exact: true });
+const menuButton = (menu: Locator) => menu.getByRole("button", { name: "Menu", exact: true });
+
+/** The nav's and the subnav's links: in the panel, so hidden until it opens below `md`. */
+const menuLinks = (menu: Locator) => menu.getByRole("navigation").getByRole("link");
+
+/** Whether the panel the Menu button targets is shown, as the browser keeps it (`:popover-open`). */
+const isOpen = (menu: Locator) =>
+  menuButton(menu).evaluate(
+    (button) =>
+      button instanceof HTMLButtonElement &&
+      !!button.popoverTargetElement?.matches(":popover-open"),
+  );
 
 const noSidewaysScroll = (page: Page) =>
   page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+
+/** How far the widest nav in the open Menu scrolls sideways (0: every link wraps into view). */
+const navOverflow = (menu: Locator) =>
+  menu
+    .getByRole("navigation")
+    .evaluateAll((navs) => Math.max(0, ...navs.map((nav) => nav.scrollWidth - nav.clientWidth)));
 
 /** A link a finger can reach: scrolled into view, inside the viewport, and nothing covering it. */
 async function reachable(link: Locator): Promise<boolean> {
@@ -73,16 +91,17 @@ for (const { id: theme } of themes) {
         const button = menuButton(menu);
 
         // Closed: the links are not on screen, and nothing scrolls sideways.
-        await expect(menu.getByRole("link").first()).toBeHidden();
+        await expect(menuLinks(menu).first()).toBeHidden();
         expect(await noSidewaysScroll(page), `${id}: sideways scroll, closed`).toBeLessThanOrEqual(
           0,
         );
 
         // Open: every nav and subnav link is there and can be reached.
         await button.click();
-        await expect(menu).toHaveJSProperty("open", true);
-        const all = menu.getByRole("link");
+        await expect.poll(() => isOpen(menu)).toBe(true);
+        const all = menuLinks(menu);
         await expect(all).toHaveCount(links);
+        expect(await navOverflow(menu), `${id}: a nav in the Menu scrolls sideways`).toBe(0);
         for (const link of await all.all()) {
           expect(await reachable(link), `${id}: ${await link.textContent()} is not reachable`).toBe(
             true,
@@ -102,15 +121,15 @@ test("the Menu button works from the keyboard: Enter and Space open it, Tab ente
 
   await button.focus();
   await page.keyboard.press("Enter");
-  await expect(menu).toHaveJSProperty("open", true);
+  await expect.poll(() => isOpen(menu)).toBe(true);
   await page.keyboard.press("Tab");
-  await expect(menu.getByRole("link").first()).toBeFocused();
+  await expect(menuLinks(menu).first()).toBeFocused();
   await page.keyboard.press("Escape");
-  await expect(menu).toHaveJSProperty("open", false);
+  await expect.poll(() => isOpen(menu)).toBe(false);
   await expect(button).toBeFocused();
 
   await page.keyboard.press("Space");
-  await expect(menu).toHaveJSProperty("open", true);
+  await expect.poll(() => isOpen(menu)).toBe(true);
   // Tab through every link: each is focusable, in the order nav then subnav.
   const names: string[] = [];
   for (let i = 0; i < 13; i++) {
@@ -121,18 +140,24 @@ test("the Menu button works from the keyboard: Enter and Space open it, Tab ente
   expect(names.at(-1)).toBe("Audit");
 });
 
-test("from md there is no Menu button and the nav and subnav are rows", async ({ page }) => {
+test("from md there is no Menu button and the nav and subnav are rows, each exposed once", async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 800, height: 700 });
   await page.goto(
     "/iframe.html?id=layout-appshell--long-page&viewMode=story&globals=theme:default",
   );
   const header = page.getByRole("banner");
-  await expect(header.getByRole("link", { name: "Builds" })).toBeVisible();
-  await expect(header.getByRole("link", { name: "Branches" })).toBeVisible();
-  await expect(header.getByText("Menu", { exact: true })).toBeHidden();
+  const builds = header.getByRole("link", { name: "Builds" });
+  const branches = header.getByRole("link", { name: "Branches" });
+  await expect(builds).toBeVisible();
+  await expect(branches).toBeVisible();
+  await expect(builds).toHaveCount(1);
+  await expect(branches).toHaveCount(1);
+  await expect(header.getByRole("button", { name: "Menu", exact: true })).toBeHidden();
 });
 
-test(`at ${WIDTH}px menuControls are at the top of the Menu, each operable, with the nav after them`, async ({
+test(`at ${WIDTH}px menuControls are at the foot of the Menu, each operable, after the nav`, async ({
   page,
 }) => {
   const menu = await open(page, "layout-appshell--menu-controls", "default");
@@ -146,7 +171,7 @@ test(`at ${WIDTH}px menuControls are at the top of the Menu, each operable, with
   await expect(project).toBeHidden();
 
   await button.click();
-  await expect(menu).toHaveJSProperty("open", true);
+  await expect.poll(() => isOpen(menu)).toBe(true);
   for (const control of [project, environment, signOut]) {
     await expect(control).toBeVisible();
     expect(await reachable(control)).toBe(true);
@@ -158,13 +183,13 @@ test(`at ${WIDTH}px menuControls are at the top of the Menu, each operable, with
   await expect(signOut).toBeEnabled();
   await signOut.click();
 
-  // The nav's links come after the controls, in the same panel.
-  const first = menu.getByRole("link").first();
-  await expect(first).toBeVisible();
+  // The controls come after the nav's links, in the same panel.
+  const last = menuLinks(menu).last();
+  await expect(last).toBeVisible();
   expect(
-    await signOut.evaluate(
-      (el, link) => !!(el.compareDocumentPosition(link) & Node.DOCUMENT_POSITION_FOLLOWING),
-      await first.elementHandle(),
+    await last.evaluate(
+      (el, control) => !!(el.compareDocumentPosition(control) & Node.DOCUMENT_POSITION_FOLLOWING),
+      await project.elementHandle(),
     ),
   ).toBe(true);
   expect(await noSidewaysScroll(page)).toBeLessThanOrEqual(0);
@@ -178,7 +203,7 @@ test("at 1280px menuControls are in the header, once each, with no Menu button",
     "/iframe.html?id=layout-appshell--menu-controls&viewMode=story&globals=theme:default",
   );
   const header = page.getByRole("banner");
-  await expect(header.getByText("Menu", { exact: true })).toBeHidden();
+  await expect(header.getByRole("button", { name: "Menu", exact: true })).toBeHidden();
 
   const project = page.getByLabel("Project");
   const environment = page.getByLabel("Environment");
@@ -203,8 +228,8 @@ test(`at ${WIDTH}px controls that overflow the row clip, and the Menu button sta
   // The Menu button sits wholly on screen.
   await expect(button).toBeInViewport({ ratio: 1 });
   await button.click();
-  await expect(menu).toHaveJSProperty("open", true);
-  for (const link of await menu.getByRole("link").all()) {
+  await expect.poll(() => isOpen(menu)).toBe(true);
+  for (const link of await menuLinks(menu).all()) {
     expect(await reachable(link), `${await link.textContent()} is not reachable`).toBe(true);
   }
   expect(await noSidewaysScroll(page)).toBeLessThanOrEqual(0);

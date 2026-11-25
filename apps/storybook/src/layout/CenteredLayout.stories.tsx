@@ -73,3 +73,15 @@ export const Loading: StoryObj<{ loading: boolean }> = {
     </DemoShell>
   ),
 };
+
+/** A sign-in page with no `AppShell` around it still sits on the theme's canvas, in its ink: the theme's scope sets both. */
+export const WithoutAppShell: S = {
+  render: () => (
+    <CenteredLayout title="Sign in" description="Use your Hack Cove account.">
+      <Field label="Email" htmlFor="bare-sign-in-email">
+        <Input id="bare-sign-in-email" type="email" placeholder="you@example.com" />
+      </Field>
+      <Button>Continue</Button>
+    </CenteredLayout>
+  ),
+};

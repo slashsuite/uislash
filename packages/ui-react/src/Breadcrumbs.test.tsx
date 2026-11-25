@@ -39,7 +39,7 @@ describe("Breadcrumbs link crumbs", () => {
     expect(screen.getByRole("link", { name: "Org" }).getAttribute("href")).toBe("/org");
   });
 
-  it("never links the last crumb, even if it is given a href", () => {
+  it("links the last crumb to the current page with aria-current when it is given a href", () => {
     render(
       <Breadcrumbs
         items={[
@@ -48,9 +48,15 @@ describe("Breadcrumbs link crumbs", () => {
         ]}
       />,
     );
-    expect(screen.queryByRole("link", { name: "Here" })).toBeNull();
-    expect(screen.getByText("Here")).not.toBeNull();
-    expect(screen.getAllByRole("link")).toHaveLength(1);
+    const here = screen.getByRole("link", { name: "Here" });
+    expect(here.getAttribute("href")).toBe("/here");
+    expect(here.getAttribute("aria-current")).toBe("page");
+    expect(screen.getByRole("link", { name: "Org" }).hasAttribute("aria-current")).toBe(false);
+    expect(
+      within(trail())
+        .getAllByRole("listitem")
+        .map((item) => item.getAttribute("aria-current")),
+    ).toEqual([null, null]);
   });
 
   it("external opens in a new tab", () => {

@@ -93,6 +93,22 @@ export function stubPopover(): void {
   }
 }
 
+/**
+ * The popover a button opens (`popovertarget`), as the browser finds it; jsdom does not follow the
+ * attribute. Throws when the button targets nothing.
+ */
+export function popoverTargetOf(button: Element): HTMLElement {
+  const id = button.getAttribute("popovertarget");
+  const target = id ? document.getElementById(id) : null;
+  if (!target) throw new Error("the button targets no popover");
+  return target;
+}
+
+/** Every popover in the document: none means nothing on the page can open one. */
+export function popovers(): Element[] {
+  return [...document.querySelectorAll("[popover]")];
+}
+
 /** Undo `stubPopover`. Call from `afterEach`. */
 export function unstubPopover(): void {
   openPopovers.clear();
@@ -159,4 +175,34 @@ export function stubAnimate(): StubRun[] {
 export function unstubAnimate(): void {
   Reflect.deleteProperty(Element.prototype, "animate");
   Reflect.deleteProperty(Element.prototype, "getAnimations");
+}
+
+/** Give elements `onbeforematch`, so a component takes the browser to support `hidden="until-found"`. Undo with `unstubBeforeMatch`. */
+export function stubBeforeMatch(): void {
+  Object.defineProperty(HTMLElement.prototype, "onbeforematch", {
+    value: null,
+    writable: true,
+    configurable: true,
+  });
+}
+
+/** Undo `stubBeforeMatch`. Call from `afterEach`. */
+export function unstubBeforeMatch(): void {
+  Reflect.deleteProperty(HTMLElement.prototype, "onbeforematch");
+}
+
+/**
+ * Record the `href` of each link a click lands on, stopping its navigation (jsdom does not
+ * navigate). Returns the list, which fills as links are followed, and `stop` to remove the listener.
+ */
+export function recordFollowed(): { followed: string[]; stop: () => void } {
+  const followed: string[] = [];
+  const record = (event: MouseEvent) => {
+    const link = event.target instanceof Element ? event.target.closest("a[href]") : null;
+    if (!link) return;
+    event.preventDefault();
+    followed.push(link.getAttribute("href") ?? "");
+  };
+  document.addEventListener("click", record);
+  return { followed, stop: () => document.removeEventListener("click", record) };
 }

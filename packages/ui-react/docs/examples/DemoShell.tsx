@@ -5,9 +5,9 @@ import { AppShell, Tabs, appShellRootClassFor } from "@slashsuite/ui-react";
 export function layoutPage(): () => void {
   const root = document.documentElement;
   // The light scheme adds no class, so this is only the shell's own root class.
-  const shellClass = appShellRootClassFor("light");
-  root.classList.add(shellClass);
-  return () => root.classList.remove(shellClass);
+  const shellClasses = appShellRootClassFor("light").split(" ");
+  root.classList.add(...shellClasses);
+  return () => root.classList.remove(...shellClasses);
 }
 
 const nav = ["Overview", "Builds", "Snapshots", "Reviews", "Projects", "Members", "Settings"];

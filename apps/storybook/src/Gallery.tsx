@@ -19,6 +19,7 @@ import {
   PageHeading,
   SectionHeading,
   SiteSearch,
+  Stepper,
   Slider,
   Select,
   SubsectionHeading,
@@ -230,6 +231,12 @@ export const gallerySections: GallerySection[] = [
         />
 
         <Pagination label="Pages" page={3} pageCount={10} pageHref={(page) => `#page-${page}`} />
+
+        <Stepper
+          label="Checkout progress"
+          steps={["Cart", "Shipping", "Payment", "Review"]}
+          current={2}
+        />
 
         <SiteSearch
           label="Search components"

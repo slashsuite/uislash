@@ -28,6 +28,7 @@
 .slash-suite-dark {
   color-scheme: dark;
   background-color: #0d1326; /* mantle: the canvas the base-coloured cards lift off */
+  color: #e2e8fc; /* text: the ink of a page outside AppShell */
   /* The type faces: Inter, headings included, and JetBrains Mono after the platform's own
      ui-monospace, which the consuming site loads (this package ships no font file); the system
      stack otherwise. Custom properties on the scope,
@@ -115,6 +116,10 @@
    theme, dark ones included, as the scrim above stays black. */
 .slash-suite-dark .bg-white\/100 {
   background-color: #ffffff;
+}
+/* The app header's ground: the page ground. */
+.slash-suite-dark .bg-white\/95 {
+  background-color: #0d1326;
 }
 
 /* Text */

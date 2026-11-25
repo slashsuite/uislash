@@ -30,10 +30,11 @@ export const navigation: ComponentSection = {
       ],
       usage: {
         do: [
-          "`Tabs` switches a view in place; the caller owns `value` and `onChange`, and the panel sits right under the row.",
+          "`Tabs` switches a view in place: each tab carries its `panel`, which Tabs draws under the row (beside the rail); the caller owns `value` and `onChange`.",
+          'Every panel is mounted, the hidden ones too, so find in page reaches them. A view too heavy to mount before it is chosen is `null` until its tab is current (`panel: value === "a" ? <ViewA /> : null`), and find in page then skips it.',
           "Going to another page is link items (`href`, and `selected` on the current one): links, so the URL, the back button and a new tab all work.",
           "A `count` sits muted after the label and is read as part of the tab's name.",
-          'Across, tabs are always underline, under a `PageHeader` too. `orientation="vertical"` is the pill rail, the current tab filled, for a `SidebarLayout` aside, and only the rail takes `size`.',
+          'Across, tabs are always underline, under a `PageHeader` too: one line that scrolls sideways, with a fade, when it is too wide. `orientation="vertical"` is the pill rail, the current tab filled, for a `SidebarLayout` aside, and only the rail takes `size`.',
           "`size` (`sm`, `md` the default, `lg`) sets the vertical rail on the control scale, so it lines up with a `Button` of the same size; the underline row has one size.",
           "A tab that cannot be chosen yet takes a `disabledReason` that says why.",
           'Pill links with `orientation="vertical"` are the rail of a `SidebarLayout`: one link per line.',
@@ -42,12 +43,13 @@ export const navigation: ComponentSection = {
       accessibility: [
         "The row is a tab list named by `label`; the arrow keys, Home and End move between the tabs, and a `disabled` tab is skipped.",
         "A tab with `disabledReason` is `aria-disabled`: the arrow keys reach it and choose nothing, and the reason shows as a tooltip on hover, keyboard focus and a tap, read out as its description (the native `title` without CSS anchor positioning).",
-        'Give the panel `role="tabpanel"` and a tab `controls` that points at its `id`.',
+        'A tab\'s `panel` is a `tabpanel` labelled by the tab and named in its `aria-controls`; a hidden one is `hidden="until-found"` where the browser has it, so find in page reaches its text and switches to the tab.',
+        "The current tab is told apart by more than colour: the underline, and on the rail an outline round the fill. Every tab has the same weight, so choosing one does not shift the row.",
         'A tab is a `button` with `role="tab"` and `aria-selected`; only the current tab is in the tab order, and the arrow keys move and choose.',
         'Link items form a `<nav>` named by `label`; the current link gets `aria-current="page"`.',
       ],
       api: ["Tabs"],
-      types: ["Tab"],
+      types: ["Tab", "TabButton"],
     },
     {
       slug: "breadcrumbs",
@@ -58,19 +60,41 @@ export const navigation: ComponentSection = {
       pairs: ["Breadcrumbs/Trail", "Breadcrumbs/Hierarchy"],
       usage: {
         do: [
-          "Give the trail in order, parents first. A parent that links is `{ label, href }`, drawn through the app's `LinkProvider` for an in-app path; the last crumb is the current page, plain text.",
+          "Give the trail in order, parents first. A crumb that links is `{ label, href }`, drawn through the app's `LinkProvider` for an in-app path; the last crumb is the current page.",
           "Breadcrumbs show a hierarchy. Peer sections are `Tabs` of links.",
-          "Each crumb truncates, so a long name does not widen the row.",
+          "A trail too long for its row wraps; a long parent truncates, and the current page is never cut.",
           "Put the trail in the `breadcrumbs` slot of a `PageHeader`.",
         ],
       },
       accessibility: [
         '`<nav aria-label="Breadcrumb">` around an ordered list.',
-        'The last item has `aria-current="page"` and is never a link.',
+        'The last crumb is the current page: given an `href` it is a link to this page with `aria-current="page"`, else its item carries it.',
         "The `/` separators are `aria-hidden`.",
       ],
       api: ["Breadcrumbs"],
       types: ["Crumb"],
+    },
+    {
+      slug: "stepper",
+      name: "Stepper",
+      summary: "Where the reader is in a fixed run of steps.",
+      whenToUse:
+        "A flow of a few steps taken in order, such as checkout or setting up an account, where the reader should see what is done and what is left.",
+      pairs: ["Stepper/Progress"],
+      usage: {
+        do: [
+          "Give every step's name in order, one or two words each, and `current`, the step in progress, from 1. Past the last step, every step is done.",
+          '`label` names the list ("Checkout progress"), and `doneLabel` is the word a screen reader hears after a done step, for an app in another language.',
+          "It shows progress and does not navigate: the flow's own buttons move between steps.",
+          "Put it above the step's form, once per page.",
+        ],
+      },
+      accessibility: [
+        'An ordered list named by `label`; the current step has `aria-current="step"`.',
+        'A done step says so in words after its name ("Cart (done)"), not only with its tick; the numbers, the tick and the lines between steps are `aria-hidden`.',
+        "The current step is told apart by more than colour: its marker is outlined and its name is medium weight.",
+      ],
+      api: ["Stepper"],
     },
     {
       slug: "pagination",
@@ -106,18 +130,19 @@ export const navigation: ComponentSection = {
       usage: {
         do: [
           "Put one `SiteSearch` in `AppShell`'s `controls`, on every page, and pass every page as `items`: `{ label, description, href, keywords }`.",
-          '`label` names the phone\'s icon button and titles the dialog: say what is searched ("Search components"). For an app in another language: `resultsLabel` names the list of matches ("Results"), `buttonLabel` is the wide button\'s text ("Search"), `placeholder` the field\'s ("Search"), `hintLabel` the line before typing ("Type a name"), `noResultsLabel` the words before the typed text when nothing matches ("No results for") and `countLabel` turns the count into what a screen reader hears ("3 results").',
+          '`label` names the phone\'s icon button and titles the dialog: say what is searched ("Search components"). For an app in another language: `resultsLabel` names the list of matches ("Results"), `buttonLabel` is the wide button\'s text ("Search"), `placeholder` the field\'s ("Search"), `hintLabel` the line before typing ("Type a name"), `noResultsLabel` the words before the typed text when nothing matches ("No results for"), `allResultsLabel` the words before it on the full results link ("See all results for") and `countLabel` turns the count into what a screen reader hears ("3 results").',
           "Give `items` in the nav's order: results of the same rank keep it.",
           "`keywords` are other names a page answers to (the exports it documents); they match but are not shown.",
           "A result ranks by the name starting with the text, then the name containing it, then a keyword, then the description.",
           "From `sm` up the button reads `buttonLabel` (Search) with its key (Ctrl K, or ⌘ K on a Mac); below `sm` it is the search icon alone.",
-          "It searches names, not page text, and needs no service.",
+          "It searches names, not page text, and needs no service. A site that also has a full text search page passes `resultsHref`, the page's address for a query (`(query) => '/search?q=' + encodeURIComponent(query)`): its link is the last row once something is typed, matches or not, and Enter in the field goes there.",
+          "`size` sets the button's height on a `Button`'s scale (default `sm`), so it lines up with the header's other controls of the same size.",
         ],
       },
       accessibility: [
         "Ctrl+K or Cmd+K opens it from anywhere on the page; the button carries `aria-keyshortcuts`.",
         "It opens a `Dialog` titled by `label` with focus in the search field; Esc closes it and focus goes back to where it was.",
-        "Enter opens the first result. ArrowDown moves from the field to the results and ArrowUp and ArrowDown move between them; they are links, so Tab reaches them too.",
+        "The field is a `search` landmark. Enter opens the first result, or with `resultsHref` the full results page; an Enter that commits an input method's composition does nothing. ArrowDown moves from the field to the results and ArrowUp and ArrowDown move between them; they are links, so Tab reaches them too.",
         'A polite live region reads the result count as you type ("3 results").',
       ],
       api: ["SiteSearch"],

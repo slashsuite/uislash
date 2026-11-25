@@ -1,35 +1,46 @@
 // @vitest-environment jsdom
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { AppShell } from "./AppShell.js";
-import { render, screen, user, within } from "./render.harness.js";
+import {
+  popoverOpen,
+  popovers,
+  popoverTargetOf,
+  stubPopover,
+  unstubPopover,
+} from "./dom.harness.js";
+import { act, render, screen, user, within } from "./render.harness.js";
 
-// The menu is a native <details>: its <summary> is the button, found by its text because jsdom's
-// role table gives <summary> no role. The panel is the <details>, the page's one group.
-const menuButton = (name = "Menu") => screen.getByText(name);
-const menu = () => screen.getByRole("group");
-
-const openMenu = async () => {
-  await user().click(menuButton());
-  expect(menu().hasAttribute("open")).toBe(true);
+// The menu is the browser's popover: the button's `popovertarget` opens it, and a click outside,
+// Escape and the focus going back to the button are the browser's (appshell-phone.spec.ts). jsdom
+// runs none of that: `stubPopover` gives the panel `showPopover`, which stands in for the button.
+const menuButton = (name = "Menu") => screen.getByRole("button", { name });
+const panel = () => popoverTargetOf(menuButton());
+const openMenu = () => {
+  act(() => panel().showPopover());
+  expect(popoverOpen(panel())).toBe(true);
 };
 
 describe("AppShell phone menu", () => {
-  it("draws no menu without a nav or a subnav", () => {
+  beforeEach(stubPopover);
+  afterEach(unstubPopover);
+
+  it("draws no menu without a nav, a subnav or menuControls", () => {
     render(
       <AppShell brand="B" controls="C" header="H">
         x
       </AppShell>,
     );
-    expect(screen.queryByText("Menu")).toBeNull();
-    expect(screen.queryByRole("group")).toBeNull();
+    expect(screen.queryByRole("button", { name: "Menu" })).toBeNull();
+    expect(popovers()).toHaveLength(0);
   });
 
-  it("is a closed disclosure named Menu by default that opens and closes on a click", async () => {
+  it("is a button named Menu by default that targets the closed panel", () => {
     render(<AppShell nav={<nav aria-label="Main">tabs</nav>}>x</AppShell>);
-    expect(menu().hasAttribute("open")).toBe(false);
-    await openMenu();
-    await user().click(menuButton());
-    expect(menu().hasAttribute("open")).toBe(false);
+    expect(panel().getAttribute("popover")).toBe("auto");
+    expect(popoverOpen(panel())).toBe(false);
+    expect(screen.queryByRole("navigation", { name: "Main" })).toBeNull();
+    openMenu();
+    expect(within(panel()).getByRole("navigation", { name: "Main" })).not.toBeNull();
   });
 
   it("takes the menu button's name from menuLabel", () => {
@@ -38,11 +49,11 @@ describe("AppShell phone menu", () => {
         x
       </AppShell>,
     );
-    expect(within(menu()).getByText("Navigatie")).not.toBeNull();
-    expect(screen.queryByText("Menu")).toBeNull();
+    expect(menuButton("Navigatie")).not.toBeNull();
+    expect(screen.queryByRole("button", { name: "Menu" })).toBeNull();
   });
 
-  it("holds the nav and the subnav in the panel, in that order", () => {
+  it("renders the nav once, in the panel, and the subnav's phone copy after it", () => {
     render(
       <AppShell
         nav={<nav aria-label="Main">main-links</nav>}
@@ -51,24 +62,17 @@ describe("AppShell phone menu", () => {
         x
       </AppShell>,
     );
-    const main = within(menu()).getByRole("navigation", { name: "Main" });
-    const section = within(menu()).getByRole("navigation", { name: "Section" });
+    openMenu();
+    expect(screen.getAllByRole("navigation", { name: "Main" })).toHaveLength(1);
+    const main = within(panel()).getByRole("navigation", { name: "Main" });
+    const section = within(panel()).getByRole("navigation", { name: "Section" });
     expect(main.compareDocumentPosition(section) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it("draws the menu for a subnav alone", () => {
     render(<AppShell subnav={<nav aria-label="Section">S</nav>}>x</AppShell>);
-    expect(within(menu()).getByRole("navigation", { name: "Section" })).not.toBeNull();
-  });
-
-  it("closes on Escape and returns focus to the button", async () => {
-    render(<AppShell nav={<a href="/a">A</a>}>x</AppShell>);
-    await openMenu();
-    await user().tab();
-    expect(document.activeElement).toBe(within(menu()).getByRole("link", { name: "A" }));
-    await user().keyboard("{Escape}");
-    expect(menu().hasAttribute("open")).toBe(false);
-    expect(document.activeElement).toBe(menuButton());
+    openMenu();
+    expect(within(panel()).getByRole("navigation", { name: "Section" })).not.toBeNull();
   });
 
   it("closes when a link in the panel is followed, for a router that does not reload", async () => {
@@ -83,59 +87,42 @@ describe("AppShell phone menu", () => {
         x
       </AppShell>,
     );
-    await openMenu();
-    await user().click(within(menu()).getByRole("link", { name: "A" }));
-    expect(menu().hasAttribute("open")).toBe(false);
+    openMenu();
+    await user().click(within(panel()).getByRole("link", { name: "A" }));
+    expect(popoverOpen(panel())).toBe(false);
   });
 
   it("stays open when something other than a link is clicked", async () => {
     render(<AppShell nav={<span>plain</span>}>x</AppShell>);
-    await openMenu();
-    await user().click(within(menu()).getByText("plain"));
-    expect(menu().hasAttribute("open")).toBe(true);
+    openMenu();
+    await user().click(within(panel()).getByText("plain"));
+    expect(popoverOpen(panel())).toBe(true);
   });
 });
 
 describe("AppShell menuControls", () => {
+  beforeEach(stubPopover);
+  afterEach(unstubPopover);
   const signOut = <button type="button">Sign out</button>;
   const nav = <a href="/builds">Builds</a>;
 
-  it("renders them exactly once, inside the menu, above the nav", () => {
+  it("renders them exactly once, inside the menu, after the nav", () => {
     render(
       <AppShell nav={nav} menuControls={signOut}>
         x
       </AppShell>,
     );
+    openMenu();
     expect(screen.getAllByRole("button", { name: "Sign out" })).toHaveLength(1);
-    const button = within(menu()).getByRole("button", { name: "Sign out" });
-    const link = within(menu()).getByRole("link", { name: "Builds" });
-    expect(button.compareDocumentPosition(link) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    const button = within(panel()).getByRole("button", { name: "Sign out" });
+    const link = within(panel()).getByRole("link", { name: "Builds" });
+    expect(link.compareDocumentPosition(button) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it("gives the Menu with menuControls and no nav or subnav", () => {
     render(<AppShell menuControls={signOut}>x</AppShell>);
-    expect(within(menu()).getByText("Menu")).not.toBeNull();
-    expect(within(menu()).getByRole("button", { name: "Sign out" })).not.toBeNull();
-  });
-
-  it("stays open on an Escape inside a dialog opened from its controls, which the dialog takes", async () => {
-    render(
-      <AppShell
-        nav={nav}
-        menuControls={
-          <dialog open>
-            <button type="button">Cancel</button>
-          </dialog>
-        }
-      >
-        x
-      </AppShell>,
-    );
-    await openMenu();
-    const cancel = screen.getByRole("button", { name: "Cancel" });
-    await user().click(cancel);
-    expect(document.activeElement).toBe(cancel);
-    await user().keyboard("{Escape}");
-    expect(menu().hasAttribute("open")).toBe(true);
+    openMenu();
+    expect(menuButton()).not.toBeNull();
+    expect(within(panel()).getByRole("button", { name: "Sign out" })).not.toBeNull();
   });
 });

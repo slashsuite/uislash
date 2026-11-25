@@ -208,6 +208,7 @@ export const CASES: Record<string, () => ReactElement> = {
   ),
   Select: () => <ui.Select items={[]} {...A} />,
   SiteSearch: () => <ui.SiteSearch items={[]} label="Search" {...A} />,
+  Stepper: () => <ui.Stepper steps={["One", "Two"]} current={1} label="Progress" {...A} />,
   Legend: () => <ui.Legend items={[{ label: "a", tone: "info" }]} {...A} />,
   SplitBar: () => <ui.SplitBar a={1} b={2} label="L" names={["a", "b"]} {...A} />,
   Stack: () => <ui.Stack {...A}>x</ui.Stack>,

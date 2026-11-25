@@ -30,6 +30,8 @@ const css = (name: string | undefined): string =>
  * cannot rise above a sticky header outside it: portal overlays to the body. The default one is
  * not. Under `prefers-reduced-motion: reduce` the content swaps with no fade; a named one quiets
  * only its own box, and a router's own transition of the rest of the page is the router's to quiet.
+ * It is where `startPageTransition` puts the focus after the change: it takes focus from script,
+ * never from Tab, and draws no ring for it.
  */
 export function PageFade({
   name,
@@ -43,7 +45,7 @@ export function PageFade({
   return (
     <>
       <style>{css(name)}</style>
-      <div {...rest} data-page-fade={name}>
+      <div {...rest} data-page-fade={name} data-page-view="" className="focus:outline-none">
         {children}
       </div>
     </>
@@ -51,18 +53,45 @@ export function PageFade({
 }
 
 /**
- * Run `update` inside a view transition, so a `PageFade` cross-fades. `update` is a synchronous
- * state change, flushed at once as the browser needs the new DOM; for a router's navigation, which
- * is async, use the router's own view-transition option instead. Where the browser has
- * no View Transitions, or the user prefers reduced motion, `update` just runs. Call it from an event
- * handler, not during render.
+ * Put the focus on the new view: the page's `PageFade` (the unnamed one, else the first), so the
+ * keyboard and a screen reader continue from the new content, not from a control left behind or
+ * the top of the page. Focus on a tab or a radio (Tabs, SegmentedControl) stays: those switch a
+ * view in place and keep their own arrow keys.
+ */
+function focusView(before: Element | null): void {
+  const active = document.activeElement;
+  if (active instanceof Element && active.closest('[role="tab"],[role="radio"]')) return;
+  // The new view put the focus somewhere itself (an `autoFocus` field): leave it there.
+  if (active !== before && active !== document.body && active !== null) return;
+  const views = [...document.querySelectorAll<HTMLElement>("[data-page-view]")];
+  const view = views.find((el) => !el.hasAttribute("data-page-fade")) ?? views[0];
+  if (!view) return;
+  if (!view.hasAttribute("tabindex")) view.tabIndex = -1;
+  view.focus({ preventScroll: true });
+}
+
+/** Run `update` now, so the DOM is the new view's, then move the focus to it. */
+function swap(update: () => void): void {
+  const before = document.activeElement;
+  flushSync(update);
+  focusView(before);
+}
+
+/**
+ * Run `update` inside a view transition, so a `PageFade` cross-fades, then move the focus to the
+ * new view (the page's `PageFade`), unless it is on a tab or a radio, which switch in place.
+ * `update` is a synchronous state change, flushed at once as the browser needs the new DOM; for a
+ * router's navigation, which is async, use the router's own view-transition option instead (and its
+ * own focus handling). Where the browser has no View Transitions, or the user prefers reduced
+ * motion, `update` just runs, and the focus moves the same. Call it from an event handler, not
+ * during render.
  */
 export function startPageTransition(update: () => void): void {
   const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
   if (reduce || typeof document.startViewTransition !== "function") {
-    update();
+    swap(update);
     return;
   }
   // A skipped transition (a second one starting, a hidden tab) rejects `ready`; the update still ran.
-  document.startViewTransition(() => flushSync(update)).ready.catch(() => {});
+  document.startViewTransition(() => swap(update)).ready.catch(() => {});
 }

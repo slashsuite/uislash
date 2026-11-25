@@ -40,6 +40,7 @@ export const PlainParents: S = {
   render: () => <Breadcrumbs items={["Org", "Project", "Build", "Snapshot"]} />,
 };
 
+/** Too long for its row, the trail wraps: each long parent truncates, and the current page is never cut. */
 export const LongTruncates: S = {
   render: () => (
     <div className="flex w-72">
@@ -55,14 +56,14 @@ export const LongTruncates: S = {
   ),
 };
 
-/** A crumb object links with `href`, an in-app one through the app's `LinkProvider`; the last is never a link. */
+/** A crumb object links with `href`, an in-app one through the app's `LinkProvider`; the last links to this page with `aria-current="page"`. */
 export const LinkCrumbs: S = {
   render: () => (
     <Breadcrumbs
       items={[
         { label: "Quotes", href: "/quotes" },
         { label: "Docs", href: "https://example.com/docs", external: true },
-        "Quote 12",
+        { label: "Quote 12", href: "/quotes/12" },
       ]}
     />
   ),
