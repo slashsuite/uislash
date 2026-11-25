@@ -1,6 +1,7 @@
 {
   "name": "@slashsuite/core",
   "version": "0.0.0",
+  "private": true,
   "description": "What the UISlash renderers share: each component's token tables, prop types, story fixtures, the parity manifest and the native theme generator. Pure TypeScript with no runtime dependencies.",
   "keywords": [
     "design-system",
