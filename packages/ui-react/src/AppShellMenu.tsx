@@ -22,7 +22,8 @@ const ICON = {
  * The header's Menu button: a native `popovertarget` for the panel, so it opens and closes by
  * pointer, Enter and Space and is announced with its expanded state, with no script (a page that
  * never hydrates still has its menu). Shown below `md`, and from `md` while the nav is `folded`.
- * Its icon follows the panel (`:popover-open`) through the header's `group/shell`.
+ * Its icon follows the panel (`:popover-open`, its own and no other popover's) through the header's
+ * `group/shell`.
  */
 export function AppShellMenuButton({
   label,
@@ -43,10 +44,19 @@ export function AppShellMenuButton({
         !folded && "md:hidden",
       )}
     >
-      <svg {...ICON} className={cx(ICON.className, "group-has-[:popover-open]/shell:hidden")}>
+      <svg
+        {...ICON}
+        className={cx(ICON.className, "group-has-[[data-shell-menu]:popover-open]/shell:hidden")}
+      >
         <path d="M3 5.5h14M3 10h14M3 14.5h14" />
       </svg>
-      <svg {...ICON} className={cx(ICON.className, "hidden group-has-[:popover-open]/shell:block")}>
+      <svg
+        {...ICON}
+        className={cx(
+          ICON.className,
+          "hidden group-has-[[data-shell-menu]:popover-open]/shell:block",
+        )}
+      >
         <path d="M5 5l10 10M15 5L5 15" />
       </svg>
       {label}
@@ -87,48 +97,37 @@ function useCloseInRowMode(panel: RefObject<HTMLElement | null>, rowMode: boolea
   }, [panel, rowMode]);
 }
 
-/** `menuControls`' wrapper: wrapping at the top of the menu; in row mode, last in the row. */
-function controlsClass(rowMode: boolean, alone: boolean): string {
-  return cx(
-    "flex flex-wrap items-center gap-2",
-    rowMode && "md:order-last md:flex-nowrap md:*:shrink-0 md:[&>.w-full]:w-auto",
-    rowMode && alone && "md:ml-auto",
-  );
-}
-
 /**
- * The one home of AppShell's `nav`, `subnav` and `menuControls`: each is rendered once, here, so a
- * field keeps its state, ids stay unique and a screen reader meets each landmark once. It is a
- * `popover="auto"` panel the Menu button targets, so it light-dismisses on a click outside and on
- * Escape, and hands the focus back to the button, all the browser's.
+ * The one home of AppShell's `nav` and `menuControls`, and the phone's copy of the `subnav`: the nav
+ * and `menuControls` are rendered once, here, so a field keeps its state, ids stay unique and a
+ * screen reader meets the nav once. It is a `popover="auto"` panel the Menu button targets, so it
+ * light-dismisses on a click outside and on Escape, and hands the focus back to the button, all the
+ * browser's.
  *
  * In row mode (from `md`, nav not `folded`) the panel draws no box of its own (`display: contents`,
  * over the UA's `display: none`): its parts are the header row's items, the nav after the brand and
- * the `menuControls` last (`order`), and the subnav hangs as the header's second row. In menu mode
- * (below `md`, or `folded`) it is the dropdown, `menuControls` on top, then the nav and the subnav.
- * Script closes it when a link in it is followed (for a router that does not reload) and when the
- * header leaves menu mode while it is open.
+ * `menuControls` pushed to the row's end, before `controls`, in the order they are in the markup, so
+ * the focus moves as the eye does. The subnav copy is `display: none` there (the header draws the
+ * subnav's own row, `display: none` below `md`), so a screen reader meets one subnav at any width.
+ * In menu mode (below `md`, or `folded`) it is the dropdown: the nav, the subnav below `md`, then
+ * `menuControls`. Script closes it when a link in it is followed (for a router that does not reload)
+ * and when the header leaves menu mode while it is open.
  */
 export function AppShellMenuPanel({
   id,
   controls,
-  controlsAlone,
   nav,
   subnav,
   folded,
-  subnavRow,
 }: {
   id: string;
-  /** AppShell's `menuControls`: at the top of the panel in menu mode, last in the row otherwise. */
+  /** AppShell's `menuControls`: last in the panel in menu mode, at the row's end otherwise. */
   controls: ReactNode;
-  /** No `controls` slot holds the row's end, so in row mode `menuControls` take it themselves. */
-  controlsAlone: boolean;
   nav: ReactNode;
+  /** The subnav's phone copy; from `md` the header draws its own row. */
   subnav: ReactNode;
   /** From `md` the header is in menu mode too: the nav did not fit the row. */
   folded: boolean;
-  /** The subnav's own row from `md` (a scroll row with its fade, drawn by the header); no box in menu mode. */
-  subnavRow: (subnav: ReactNode) => ReactNode;
 }): ReactElement {
   const panel = useRef<HTMLDivElement>(null);
   const rowMode = !folded;
@@ -139,13 +138,13 @@ export function AppShellMenuPanel({
       ref={panel}
       id={id}
       popover="auto"
+      data-shell-menu=""
       className={cx(PANEL_MENU, rowMode && "md:contents")}
       onClick={(event) => {
         if (event.target instanceof Element && event.target.closest("a[href]")) hide(panel.current);
       }}
     >
       <ContainerFrame className={cx("flex flex-col gap-3 py-3", rowMode && "md:contents")}>
-        {controls && <div className={controlsClass(rowMode, controlsAlone)}>{controls}</div>}
         {nav && (
           <div
             // From `md` the nav is a row item of its own (the row's `*:shrink-0` does not reach through
@@ -158,9 +157,16 @@ export function AppShellMenuPanel({
             {nav}
           </div>
         )}
-        {subnav && (
-          <div className={cx("flex flex-col gap-3", rowMode && "md:contents")}>
-            {subnavRow(subnav)}
+        {subnav && <div className="flex flex-col gap-3 md:hidden">{subnav}</div>}
+        {controls && (
+          <div
+            className={cx(
+              "flex flex-wrap items-center gap-2",
+              rowMode &&
+                "md:ml-auto md:shrink-0 md:flex-nowrap md:*:shrink-0 md:[&>.w-full]:w-auto",
+            )}
+          >
+            {controls}
           </div>
         )}
       </ContainerFrame>

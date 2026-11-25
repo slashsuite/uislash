@@ -21,7 +21,7 @@ const stories = [
   { id: "layout-appshell--overflowing-subnav", links: 7 + 16 },
   { id: "layout-appshell--phone-menu", links: 7 + 6 },
   { id: "layout-appshell--header-slots", links: 7 },
-  // Its menuControls sit above the nav in the menu; the links are the nav's.
+  // Its menuControls sit below the nav in the menu; the links are the nav's.
   { id: "layout-appshell--menu-controls", links: 7 },
   // Its controls overflow the row; the Menu stays on screen beside them.
   { id: "layout-appshell--crowded-controls", links: 7 },
@@ -133,7 +133,7 @@ test("the Menu button works from the keyboard: Enter and Space open it, Tab ente
   expect(names.at(-1)).toBe("Audit");
 });
 
-test("from md there is no Menu button and the nav and subnav are rows, each rendered once", async ({
+test("from md there is no Menu button and the nav and subnav are rows, each exposed once", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 800, height: 700 });
@@ -150,7 +150,7 @@ test("from md there is no Menu button and the nav and subnav are rows, each rend
   await expect(header.getByRole("button", { name: "Menu", exact: true })).toBeHidden();
 });
 
-test(`at ${WIDTH}px menuControls are at the top of the Menu, each operable, with the nav after them`, async ({
+test(`at ${WIDTH}px menuControls are at the foot of the Menu, each operable, after the nav`, async ({
   page,
 }) => {
   const menu = await open(page, "layout-appshell--menu-controls", "default");
@@ -176,13 +176,13 @@ test(`at ${WIDTH}px menuControls are at the top of the Menu, each operable, with
   await expect(signOut).toBeEnabled();
   await signOut.click();
 
-  // The nav's links come after the controls, in the same panel.
-  const first = menuLinks(menu).first();
-  await expect(first).toBeVisible();
+  // The controls come after the nav's links, in the same panel.
+  const last = menuLinks(menu).last();
+  await expect(last).toBeVisible();
   expect(
-    await signOut.evaluate(
-      (el, link) => !!(el.compareDocumentPosition(link) & Node.DOCUMENT_POSITION_FOLLOWING),
-      await first.elementHandle(),
+    await last.evaluate(
+      (el, control) => !!(el.compareDocumentPosition(control) & Node.DOCUMENT_POSITION_FOLLOWING),
+      await project.elementHandle(),
     ),
   ).toBe(true);
   expect(await noSidewaysScroll(page)).toBeLessThanOrEqual(0);

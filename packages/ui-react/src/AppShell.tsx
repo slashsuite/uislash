@@ -131,24 +131,6 @@ function ScrollRow({
   );
 }
 
-/** The subnav's own row from `md`, hung under the header row; folded, or below `md`, it draws no box. */
-function subnavRowFor(folded: boolean): (links: ReactNode) => ReactNode {
-  return function SubnavRow(links) {
-    return (
-      <ScrollRow
-        className={cx(
-          "max-md:contents",
-          folded
-            ? "contents"
-            : "md:absolute md:inset-x-0 md:top-[calc(env(safe-area-inset-top)+3.5rem)] md:flex md:h-12",
-        )}
-      >
-        {links}
-      </ScrollRow>
-    );
-  };
-}
-
 /**
  * The row's end: `controls`, then the Menu button (`children`). Below `md` this wrapper may shrink
  * (the row's `*:shrink-0` is overridden), so a crowded `controls` clips inside its own box and the
@@ -157,16 +139,20 @@ function subnavRowFor(folded: boolean): (links: ReactNode) => ReactNode {
 function HeaderEnd({
   controls,
   folded,
+  afterMenuControls,
   children,
 }: {
   controls: ReactNode;
   folded: boolean;
+  /** From `md` `menuControls` in the row take the push to the end, and this follows them. */
+  afterMenuControls: boolean;
   children: ReactNode;
 }): ReactElement {
   return (
     <div
       className={cx(
         "ml-auto flex min-w-0 items-center gap-2 max-md:shrink!",
+        afterMenuControls && !folded && "md:ml-0",
         !controls && !folded && "md:hidden",
       )}
     >
@@ -181,22 +167,23 @@ function HeaderEnd({
   );
 }
 
-/** The sticky header's box. From `md` the subnav row hangs in its bottom padding (it is the panel's, positioned on the header). */
-function headerClass(subnavRow: boolean, hideChromeInPrint: boolean): string {
+/** The sticky header's box. */
+function headerClass(hideChromeInPrint: boolean): string {
   return cx(
     "group/shell sticky top-0 z-10 border-b border-slate-200 bg-white/95 pt-[env(safe-area-inset-top)]",
-    subnavRow && "md:pb-12",
     hideChromeInPrint && "print:hidden",
   );
 }
 
 /**
- * The sticky header: one row of slots in order, brand, the menu panel (`nav`, `subnav` and
- * `menuControls`, each rendered once), the free `children`, then `controls` and the Menu button at
- * the end. `controls` have a wrapper of their own that shrinks and clips, and the button sits beside
- * it, so a crowded `controls` never pushes the Menu off a phone screen. From `md` the panel's parts
- * are the row's (`AppShellMenuPanel`) and the subnav is a second row under it; a nav that does not
- * fit folds the header back into menu mode (`folded`). It pads by the top safe-area inset.
+ * The sticky header: one row of slots in order, brand, the menu panel (`nav` and `menuControls`,
+ * each rendered once, and the phone's `subnav`), the free `children`, then `controls` and the Menu
+ * button at the end. `controls` have a wrapper of their own that shrinks and clips, and the button
+ * sits beside it, so a crowded `controls` never pushes the Menu off a phone screen. From `md` the
+ * panel's parts are the row's (`AppShellMenuPanel`), the subnav is a second row under it, outside
+ * the first row's fade, and a nav that does not fit folds the panel back into menu mode (`folded`).
+ * The markup is in the order the eye reads, so the focus follows it. It pads by the top safe-area
+ * inset.
  */
 function AppShellHeader({
   brand,
@@ -224,7 +211,7 @@ function AppShellHeader({
   const panelId = `${useId()}-menu`;
   const menu = !!(nav || subnav || menuControls);
   return (
-    <header className={headerClass(!!subnav && !folded, hideChromeInPrint)}>
+    <header className={headerClass(hideChromeInPrint)}>
       <ScrollRow className="flex h-14" onRow={onRow}>
         {brand && (
           <div className="flex items-center gap-2 text-base font-bold tracking-tight text-slate-900">
@@ -235,20 +222,19 @@ function AppShellHeader({
           <AppShellMenuPanel
             id={panelId}
             controls={menuControls}
-            controlsAlone={!controls}
             nav={nav}
             subnav={subnav}
             folded={folded}
-            subnavRow={subnavRowFor(folded)}
           />
         )}
         {children}
         {(controls || menu) && (
-          <HeaderEnd controls={controls} folded={folded}>
+          <HeaderEnd controls={controls} folded={folded} afterMenuControls={!!menuControls}>
             {menu && <AppShellMenuButton label={menuLabel} panelId={panelId} folded={folded} />}
           </HeaderEnd>
         )}
       </ScrollRow>
+      {subnav && <ScrollRow className="hidden h-12 md:flex">{subnav}</ScrollRow>}
     </header>
   );
 }
@@ -259,7 +245,7 @@ function shellClass(subnavRow: boolean): string {
     "flex min-h-dvh flex-col bg-gray-50 pb-[env(safe-area-inset-bottom)] font-sans text-slate-900 antialiased",
     // The sticky header's height (its rows, the top inset and the bottom border), for a bar
     // that sticks under it. Below `md` it is one row whatever the slots are: the subnav is in the
-    // menu, and so it is when the nav has folded.
+    // menu. A subnav never folds, so from `md` it is two rows with one.
     "[--app-header:calc(3.5rem+1px+env(safe-area-inset-top))]",
     subnavRow && "md:[--app-header:calc(6.5rem+1px+env(safe-area-inset-top))]",
     // A link or focus that scrolls to any element with an id stops below the sticky header.
@@ -343,8 +329,10 @@ export type AppShellDensity = "compact";
  *
  * `controls` stay in the row at every width, so keep them few (a theme toggle, the viewer's avatar);
  * on a phone a crowded `controls` clips, and the Menu button is never the part cut off. Pickers and
- * actions that do not fit a phone row go in `menuControls`: rendered once, they sit in the row after
- * `controls` from `md`, and below `md` at the top of the Menu, above `nav` and `subnav`.
+ * actions that do not fit a phone row go in `menuControls`: rendered once, from `md` they sit at the
+ * row's end, before `header` and `controls`, and fold into the Menu with a `nav` that does not fit;
+ * below `md` they are at the foot of the Menu, after `nav` and `subnav`. The markup is in the order
+ * the row shows, so the focus moves as the eye does.
  */
 export function AppShell({
   brand,
@@ -370,8 +358,9 @@ export function AppShell({
   controls?: ReactNode;
   /**
    * Pickers and actions that do not fit a phone row, such as a project `Select` and a Sign out
-   * `Button`. From `md` they sit in the row after `controls`; below `md` they are at the top of the
-   * Menu, above `nav` and `subnav`. Rendered once, so a field keeps its state and ids stay unique.
+   * `Button`. From `md` they sit at the row's end, before `header` and `controls`, and fold into the
+   * Menu with the `nav`; below `md` they are at the foot of the Menu, after `nav` and `subnav`.
+   * Rendered once, so a field keeps its state and ids stay unique.
    * `controls` stay in the row at every width, so keep those few.
    */
   menuControls?: ReactNode;
@@ -425,7 +414,7 @@ export function AppShell({
   const folded = useNavFold(row, !!nav);
   return (
     <DensityProvider type={density}>
-      <div {...rest} className={shellClass(!!subnav && !folded)}>
+      <div {...rest} className={shellClass(!!subnav)}>
         <SkipLink target={mainId} label={skipLabel} />
         <AppShellHeader
           brand={brand}

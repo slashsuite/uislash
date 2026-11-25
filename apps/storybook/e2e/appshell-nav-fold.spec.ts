@@ -81,3 +81,58 @@ for (const id of ["layout-appshell--long-page", "layout-appshell--header-slots"]
     await expect(menuButton(page)).toBeHidden();
   });
 }
+
+const WITH_SUBNAV = "layout-appshell--nav-folds-with-subnav";
+const signOut = (page: Page) => page.getByRole("button", { name: "Sign out" });
+const subnavLink = (page: Page) =>
+  page
+    .getByRole("banner")
+    .getByRole("navigation", { name: "Section" })
+    .getByRole("link", { name: "Runs" });
+
+test("at 900 only the nav and menuControls fold: the subnav row stays, and Sign out is at the foot of the Menu", async ({
+  page,
+}) => {
+  await open(page, WITH_SUBNAV, "default", 900);
+  await expect(menuButton(page)).toBeVisible();
+  await expect(subnavLink(page)).toBeVisible();
+  await expect(subnavLink(page)).toBeInViewport({ ratio: 1 });
+  await expect(signOut(page)).toBeHidden();
+  await menuButton(page).click();
+  await expect.poll(() => isOpen(page)).toBe(true);
+  await expect(signOut(page)).toBeVisible();
+  // The Menu holds the nav's links; the subnav's phone copy is not drawn from `md`, so a screen
+  // reader meets one Section nav.
+  const banner = page.getByRole("banner");
+  const nav = banner.getByRole("navigation", { name: "Main" });
+  await expect(nav.getByRole("link")).toHaveCount(LINKS);
+  await expect(banner.getByRole("navigation", { name: "Section" })).toHaveCount(1);
+  const last = nav.getByRole("link").last();
+  const button = await signOut(page).elementHandle();
+  expect(
+    await last.evaluate(
+      (link, control) =>
+        !!control && !!(link.compareDocumentPosition(control) & Node.DOCUMENT_POSITION_FOLLOWING),
+      button,
+    ),
+  ).toBe(true);
+});
+
+test("at 1280 Tab follows the row as it shows: nav, Sign out, the theme toggle, then the subnav", async ({
+  page,
+}) => {
+  await open(page, WITH_SUBNAV, "default", 1280);
+  await expect(menuButton(page)).toBeHidden();
+  const banner = page.getByRole("banner");
+  const settings = rowLink(page);
+  const toggle = banner.getByRole("button", { name: /dark|light/i });
+  await settings.focus();
+  await page.keyboard.press("Tab");
+  await expect(signOut(page)).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(toggle).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(
+    banner.getByRole("navigation", { name: "Section" }).getByRole("link").first(),
+  ).toBeFocused();
+});

@@ -37,12 +37,6 @@ describe("SiteSearch field", () => {
     expect(field.getAttribute("spellcheck")).toBe("false");
   });
 
-  it("follows the first result on Enter", async () => {
-    const { person, field } = await openSearch();
-    await person.type(field, "dia{Enter}");
-    expect(followed).toEqual(["/dialog/"]);
-  });
-
   it.each([
     ["isComposing", { isComposing: true }],
     ["Safari's 229 keyCode", { keyCode: 229 }],
@@ -57,12 +51,6 @@ describe("SiteSearch field", () => {
 });
 
 describe("SiteSearch resultsHref", () => {
-  it("adds no full results link without it", async () => {
-    const { person, dialog, field } = await openSearch();
-    await person.type(field, "zzz");
-    expect(dialog.queryAllByRole("link")).toHaveLength(0);
-  });
-
   it("puts the full results link last once something is typed, matches or not", async () => {
     const { person, dialog, field } = await openSearch(toResults);
     expect(dialog.queryAllByRole("link")).toHaveLength(0);

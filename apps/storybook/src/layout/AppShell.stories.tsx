@@ -191,8 +191,8 @@ const environmentPicker = pick("Environment", [
 
 /**
  * `menuControls`: pickers and actions that do not fit a phone row. From `md` the two Selects and
- * Sign out sit in the row after `controls` (the theme toggle); below `md` they are at the top of the
- * Menu, above the nav. They are rendered once, so a picker keeps its value at every width. Pick
+ * Sign out sit at the row's end, before `controls` (the theme toggle); below `md` they are at the
+ * foot of the Menu, after the nav. They are rendered once, so a picker keeps its value at every width. Pick
  * Phone (375) in the viewport toolbar and open the Menu.
  */
 export const MenuControls: S = {

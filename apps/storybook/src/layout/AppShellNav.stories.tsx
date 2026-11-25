@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
   AppShell,
   AppShellBrand,
+  Button,
   ColourSchemeToggle,
   PageHeader,
   Tabs,
@@ -51,6 +52,42 @@ export const NavFolds: S = {
       <PageHeader
         title="Overview"
         description="Ten links: in the row when they fit, else in the Menu."
+      />
+    </AppShell>
+  ),
+};
+
+/**
+ * The same ten links with a `subnav` and a Sign out in `menuControls`. When the nav folds, Sign out
+ * folds with it, at the foot of the Menu; the subnav is its own row and never folds. From `md`, Tab
+ * goes brand, nav, Sign out, the theme toggle: the order the row shows.
+ */
+export const NavFoldsWithSubnav: S = {
+  render: () => (
+    <AppShell
+      brand={<AppShellBrand href="#" label="Hack Cove" />}
+      nav={
+        <Tabs
+          label="Main"
+          items={tenLinks.map((label, i) => ({ label, href: `#${label}`, selected: i === 0 }))}
+        />
+      }
+      menuControls={<Button variant="outline">Sign out</Button>}
+      controls={<ColourSchemeToggle />}
+      subnav={
+        <Tabs
+          label="Section"
+          items={["Summary", "Runs", "Artifacts"].map((label, i) => ({
+            label,
+            href: `#${label}`,
+            selected: i === 0,
+          }))}
+        />
+      }
+    >
+      <PageHeader
+        title="Overview"
+        description="The nav and Sign out fold into the Menu; the subnav row stays."
       />
     </AppShell>
   ),

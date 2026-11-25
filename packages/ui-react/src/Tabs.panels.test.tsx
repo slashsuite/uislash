@@ -76,6 +76,18 @@ describe("Tabs panels", () => {
     expect(panel("Gamma").getAttribute("hidden")).toBe("");
   });
 
+  it("takes a panel back out of find in page when its tab is disabled", () => {
+    stubBeforeMatch();
+    const { rerender } = render(<Tabs label="Views" items={items} value="a" onChange={() => {}} />);
+    expect(panel("Beta").getAttribute("hidden")).toBe("until-found");
+    const disabled: TabButton[] = [
+      { value: "a", label: "Alpha", panel: "Alpha view" },
+      { value: "b", label: "Beta", panel: "Beta view", disabledReason: "Not yet" },
+    ];
+    rerender(<Tabs label="Views" items={disabled} value="a" onChange={() => {}} />);
+    expect(panel("Beta").getAttribute("hidden")).toBe("");
+  });
+
   it("leaves a plain hidden panel where the browser has no until-found", () => {
     render(<Tabs label="Views" items={items} value="a" onChange={() => {}} />);
     expect(panel("Beta").getAttribute("hidden")).toBe("");

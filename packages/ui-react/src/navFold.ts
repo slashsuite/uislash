@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { observeItems } from "./scrollEdges.js";
 
 // AppShell's `md` step: below it the nav is always in the Menu, so nothing is measured there.
 const WIDE = "(width >= 48rem)";
@@ -35,9 +36,10 @@ export function useNavFold(row: HTMLElement | null, enabled: boolean): boolean {
     };
     const observer = new ResizeObserver(check);
     // The row is the header's width, so it resizes only with the screen; its slots resize with
-    // their content (a font swap, a label that changes), so they are watched too.
+    // their content (a font swap, a label that changes), so they are watched too, through the
+    // menu panel, which draws no box of its own in the row.
     observer.observe(row);
-    for (const slot of row.children) observer.observe(slot);
+    observeItems(observer, row);
     return () => observer.disconnect();
   });
   return enabled && folded;

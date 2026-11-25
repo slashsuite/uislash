@@ -1,6 +1,20 @@
 import { useEffect } from "react";
 
 /**
+ * Observes each child of `box` that draws a box. A ResizeObserver never fires for a
+ * `display: contents` element (it has no box), so such a child is looked through and its own
+ * children are observed instead, down any depth. A hidden child is skipped.
+ */
+export function observeItems(observer: ResizeObserver, box: Element): void {
+  for (const child of box.children) {
+    const display = getComputedStyle(child).display;
+    if (display === "none") continue;
+    if (display === "contents") observeItems(observer, child);
+    else observer.observe(child);
+  }
+}
+
+/**
  * Marks a box that scrolls with which of its edges still has content past it, so the layout can fade
  * them: `data-more-start` (scrolled away from the start), `data-more-end` (more to scroll to) and
  * `data-more` for either. `axis` is the way it scrolls: `x` (a row) or `y` (a column). A box that
@@ -31,8 +45,10 @@ export function useScrollEdges(element: HTMLElement | null, axis: "x" | "y"): vo
     el.addEventListener("scroll", update, { passive: true });
     // jsdom (a consumer's own tests) has no ResizeObserver.
     const resize = typeof ResizeObserver === "undefined" ? undefined : new ResizeObserver(update);
-    resize?.observe(el);
-    for (const child of el.children) resize?.observe(child);
+    if (resize) {
+      resize.observe(el);
+      observeItems(resize, el);
+    }
     return () => {
       el.removeEventListener("scroll", update);
       resize?.disconnect();

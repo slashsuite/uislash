@@ -117,7 +117,12 @@ function TabPanel({
     if (!el || active || !findable || !("onbeforematch" in el)) return undefined;
     el.setAttribute("hidden", "until-found");
     el.addEventListener("beforematch", onFound);
-    return () => el.removeEventListener("beforematch", onFound);
+    return () => {
+      el.removeEventListener("beforematch", onFound);
+      // A panel that stays hidden but is no longer findable (its tab was disabled) is plainly
+      // hidden again; one that became current has had `hidden` removed by React already.
+      if (el.getAttribute("hidden") === "until-found") el.setAttribute("hidden", "");
+    };
   }, [active, findable, onFound]);
   return (
     <div

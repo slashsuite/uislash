@@ -53,7 +53,7 @@ describe("AppShell phone menu", () => {
     expect(screen.queryByRole("button", { name: "Menu" })).toBeNull();
   });
 
-  it("renders the nav and the subnav once, in the panel, in that order", () => {
+  it("renders the nav once, in the panel, and the subnav's phone copy after it", () => {
     render(
       <AppShell
         nav={<nav aria-label="Main">main-links</nav>}
@@ -64,7 +64,6 @@ describe("AppShell phone menu", () => {
     );
     openMenu();
     expect(screen.getAllByRole("navigation", { name: "Main" })).toHaveLength(1);
-    expect(screen.getAllByRole("navigation", { name: "Section" })).toHaveLength(1);
     const main = within(panel()).getByRole("navigation", { name: "Main" });
     const section = within(panel()).getByRole("navigation", { name: "Section" });
     expect(main.compareDocumentPosition(section) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
@@ -107,7 +106,7 @@ describe("AppShell menuControls", () => {
   const signOut = <button type="button">Sign out</button>;
   const nav = <a href="/builds">Builds</a>;
 
-  it("renders them exactly once, inside the menu, above the nav", () => {
+  it("renders them exactly once, inside the menu, after the nav", () => {
     render(
       <AppShell nav={nav} menuControls={signOut}>
         x
@@ -117,7 +116,7 @@ describe("AppShell menuControls", () => {
     expect(screen.getAllByRole("button", { name: "Sign out" })).toHaveLength(1);
     const button = within(panel()).getByRole("button", { name: "Sign out" });
     const link = within(panel()).getByRole("link", { name: "Builds" });
-    expect(button.compareDocumentPosition(link) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(link.compareDocumentPosition(button) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it("gives the Menu with menuControls and no nav or subnav", () => {

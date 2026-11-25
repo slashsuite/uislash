@@ -38,18 +38,18 @@ describe("AppShell", () => {
     expect(within(screen.getByRole("contentinfo")).getByText("foot")).not.toBeNull();
   });
 
-  it("puts the subnav in the header, once", () => {
+  it("draws the subnav twice: its own row from `md` and a phone copy in the menu", () => {
     render(
       <AppShell header="h" subnav={<nav aria-label="Section">tabs</nav>}>
         page
       </AppShell>,
     );
-    // Once, in the menu panel: from `md` it is the header's second row (a closed popover is not
-    // drawn, so it is found hidden here).
+    // Each copy is `display: none` at the other width, so a screen reader meets one; jsdom applies
+    // no class, so both are found. That the row never folds is proved in the e2e.
     const banner = screen.getByRole("banner");
     expect(
       within(banner).getAllByRole("navigation", { name: "Section", hidden: true }),
-    ).toHaveLength(1);
+    ).toHaveLength(2);
   });
 
   it("has a skip link, the first tab stop, that moves the focus to main", async () => {
@@ -66,24 +66,28 @@ describe("AppShell", () => {
     expect(main.tabIndex).toBe(-1);
   });
 
-  it("reads the header slots in order: brand, nav, header, then controls", () => {
+  it("reads the header slots in the order they show: brand, nav, menuControls, header, controls", () => {
     render(
       <AppShell
         brand={<a href="/">Logo</a>}
         nav={<nav aria-label="Main">tabs</nav>}
+        menuControls={<button type="button">Sign out</button>}
         header={<span>extra</span>}
         controls={<button type="button">Theme</button>}
       >
         page
       </AppShell>,
     );
+    // The nav and menuControls are rendered once, in the menu panel, which from `md` lays its
+    // parts into the row; the focus follows this order.
     const brand = screen.getByRole("link", { name: "Logo" });
-    // The nav is rendered once, in the menu panel, which from `md` lays its parts into the row.
     const nav = screen.getByRole("navigation", { name: "Main", hidden: true });
+    const signOut = screen.getByRole("button", { name: "Sign out", hidden: true });
     const extra = screen.getByText("extra");
     const theme = screen.getByRole("button", { name: "Theme" });
     expect(follows(brand, nav)).toBeTruthy();
-    expect(follows(nav, extra)).toBeTruthy();
+    expect(follows(nav, signOut)).toBeTruthy();
+    expect(follows(signOut, extra)).toBeTruthy();
     expect(follows(extra, theme)).toBeTruthy();
   });
 });
