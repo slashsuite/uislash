@@ -104,13 +104,20 @@ export function slotsFor(count: number, open: boolean): number {
   return open ? count + 1 : LIMIT;
 }
 
-/** Where slot `i` of `slots` sits in `box`: its left edge and its vertical centre. */
+/**
+ * The rows a box reserves for its dots, whatever its count: the nine it shows (the `+N` included),
+ * or the rows of an open box's full list. A box with few or no items reserves the same rows, so
+ * its size does not depend on how many items it holds.
+ */
+export function rowsFor(slots: number): number {
+  return Math.ceil(Math.max(LIMIT, slots) / COLS);
+}
+
+/** Where slot `i` of `slots` sits in `box`: its left edge and its vertical centre, on the box's fixed grid. */
 function slotAt(box: FlowNodeBox, i: number, slots: number): { left: number; y: number } {
-  const cols = Math.min(COLS, slots);
-  const rows = Math.ceil(slots / COLS);
-  const top = box.y + box.height - BOX_INSET - rows * SLOT_H;
+  const top = box.y + box.height - BOX_INSET - rowsFor(slots) * SLOT_H;
   return {
-    left: box.x + box.width / 2 - (cols * SLOT_W) / 2 + (i % COLS) * SLOT_W,
+    left: box.x + box.width / 2 - (COLS * SLOT_W) / 2 + (i % COLS) * SLOT_W,
     y: top + Math.floor(i / COLS) * SLOT_H + SLOT_H / 2,
   };
 }

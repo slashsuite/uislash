@@ -7,6 +7,7 @@ import {
   COLS,
   dotLayer,
   placeOf,
+  rowsFor,
   SLOT_H,
   SLOT_W,
   slotsFor,
@@ -67,13 +68,16 @@ const KIND_TAG: Record<StateMachineKind, { text: string; tone: PillTone } | null
   failed: { text: "failed", tone: "danger" },
 };
 
-/** A box's tags: what kind of state it is, who owns it, and how many items it holds. */
+/**
+ * A box's tags: what kind of state it is, who owns it, and how many items it holds. The row is
+ * always there: a box with no items keeps an invisible count tag in it, so an empty box and a full
+ * one are the same height.
+ */
 function boxTags(
   tag: { text: string; tone: PillTone } | null,
   owner: string | undefined,
   count: number,
 ): ReactNode {
-  if (!tag && !owner && count === 0) return null;
   return (
     <span className="flex flex-wrap items-center justify-center gap-1">
       {tag && (
@@ -82,31 +86,35 @@ function boxTags(
         </Pill>
       )}
       {owner && <Pill size="sm">{owner}</Pill>}
-      {count > 0 && (
+      {count > 0 ? (
         <Pill size="sm" tone="accent" dot>
           {count === 1 ? "1 item" : `${count} items`}
         </Pill>
+      ) : (
+        <span aria-hidden="true" className="flex invisible">
+          <Pill size="sm" tone="accent" dot>
+            0 items
+          </Pill>
+        </span>
       )}
     </span>
   );
 }
 
-/** What a box holds under its label: its tags and the room its dots take. */
+/**
+ * What a box holds under its label: its tags, and the dot area it always reserves (the full grid,
+ * even empty), so a box keeps its size whatever its item count.
+ */
 function boxContent(state: StateMachineState | null, count: number, slots: number): ReactNode {
   const tags = boxTags(state ? KIND_TAG[state.kind ?? "normal"] : null, state?.owner, count);
-  if (tags === null) return undefined;
-  const cols = Math.min(COLS, slots);
-  const rows = Math.ceil(slots / COLS);
   return (
     <>
       {tags}
-      {slots > 0 && (
-        <span
-          aria-hidden="true"
-          className="mx-auto mt-1 block"
-          style={{ width: cols * SLOT_W, height: rows * SLOT_H }}
-        />
-      )}
+      <span
+        aria-hidden="true"
+        className="mx-auto mt-1 block"
+        style={{ width: COLS * SLOT_W, height: rowsFor(slots) * SLOT_H }}
+      />
     </>
   );
 }
