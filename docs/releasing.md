@@ -108,6 +108,15 @@ release; then `npm stage publish` stages that version. Because it now has a tag,
 *staged* from the next run on, and *tagged* once its version is approved. New, renamed and tagged
 projects can be in the same run, in that order.
 
+Each step versions only the projects it names in `--projects`, because `nx.json` sets
+`release.version.updateDependents` to `never`. Nx's default also versions every project that
+depends on a released one, and its project graph counts any import as a dependency:
+`oxlint-ui`'s lint fixtures import `@slashsuite/ui-react`, so a `ui-react` release would pull
+`oxlint-ui` into the tagged step. A new project there has no tag and fails the run ("No git tags
+matching pattern"); a staged one would be bumped and published through OIDC, which it cannot use
+yet. No released package depends on another at install time, so nothing needs that cascade. A
+package that should go out when another one changes gets a commit of its own.
+
 ## First publish of a new package
 
 OIDC trusted publishing cannot make a package's first publish, because npm cannot attach a trusted

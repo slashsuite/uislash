@@ -23,6 +23,7 @@
     "version": {
       "conventionalCommits": true,
       "adjustSemverBumpsForZeroMajorVersion": true,
+      "updateDependents": "never",
       "versionActions": "./scripts/release-version-actions.cjs"
     },
     "conventionalCommits": {
