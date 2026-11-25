@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "components": {
+    "Button": {
+      "sm": {
+        "height": 26,
+        "paddingX": 10,
+        "paddingY": 4,
+        "gap": 6,
+        "radius": 8,
+        "borderWidth": 1
+      },
+      "md": {
+        "height": 38,
+        "paddingX": 16,
+        "paddingY": 8,
+        "gap": 8,
+        "radius": 8,
+        "borderWidth": 1
+      },
+      "lg": {
+        "height": 46,
+        "paddingX": 20,
+        "paddingY": 10,
+        "gap": 8,
+        "radius": 8,
+        "borderWidth": 1
+      }
+    }
+  }
+}

@@ -42,6 +42,8 @@ themes** shows every component in every theme on one page.
 | `themes` | `@slashsuite/themes` | One CSS file per theme, `<id>.css`, shipped as-is. |
 | `packages/oxlint-testing` | `@slashsuite/oxlint-testing` | The shared oxlint config and plugin for UI tests. Its fixture suite is its `test`; `bun run lint:testing` reports what it finds in this repo. |
 | `packages/oxlint-ui` | `@slashsuite/oxlint-ui` | The oxlint config and plugin that hold an app to `@slashsuite/ui-react`, the same rules as `ui-review`'s layer 1. Its fixture and parity suites are its `test`. |
+| `packages/core` | `@slashsuite/core` | What the renderers share: token tables, prop types, story fixtures, `parity.json` and the native theme generator. Pure TypeScript, no runtime dependencies. ui-react's build vendors its `dist` into `dist/core/`. |
+| `packages/ui-react-native` | (private) | The components for React Native, from core's tables and each theme's `<id>.native.json`. Its lint adds the native rules (`scripts/native-lint.ts`). A change to a component in `packages/core/parity.json` changes its twin on the other renderer in the same pull request, or names a follow-up with a `Parity: follow-up <ref>` line in the body. |
 | `apps/storybook` | (private) | Storybook and the Playwright e2e. |
 | `packages/themes-shared` | (private) | How Storybook and the docs find the themes: the `themes/*.css` glob, the theme ids and each theme's scope class. |
 | `tools/docs` | (private) | The component docs' tooling: `bunx moon run docs:props` regenerates `packages/ui-react/docs/props.json` and `types.json`, `docs:llms` writes `tools/docs/dist/llms.txt`, and its tests check the docs data. The docs site is built outside this repo. |

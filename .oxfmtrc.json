@@ -1,3 +1,9 @@
 {
-  "ignorePatterns": ["**/dist/**", "**/storybook-static/**", "**/*.md", "bun.lock"]
+  "ignorePatterns": [
+    "**/dist/**",
+    "**/storybook-static/**",
+    "**/*.md",
+    "bun.lock",
+    "themes/*.native.json"
+  ]
 }

@@ -6,6 +6,11 @@ import {
   parseColour,
   type Rgb,
 } from "../packages/themes-shared/src/colour.js";
+import {
+  missingFromNative,
+  nativeTheme,
+  nativeThemeJson,
+} from "../packages/core/src/themeNative.js";
 import { contrastFailures } from "../packages/themes-shared/src/contrast.js";
 import { unmappedUtilities } from "../packages/themes-shared/src/coverage.js";
 import { distanceOf, distinctionFailures } from "../packages/themes-shared/src/distinction.js";
@@ -57,9 +62,10 @@ const files = readdirSync(dir)
 it("is one package, and lists no theme", () => {
   expect(pkg.name).toBe("@slashsuite/themes");
   expect(pkg.license).toBe("MIT");
-  expect(Object.keys(pkg.exports)).toEqual(["./*.css", "./package.json"]);
+  expect(Object.keys(pkg.exports)).toEqual(["./*.css", "./*.native.json", "./package.json"]);
   expect(pkg.exports["./*.css"]).toBe("./*.css");
-  expect(pkg.files).toEqual(["*.css", "NOTICE", "LICENSE"]);
+  expect(pkg.exports["./*.native.json"]).toBe("./*.native.json");
+  expect(pkg.files).toEqual(["*.css", "*.native.json", "NOTICE", "LICENSE"]);
   expect(Object.keys(pkg.peerDependencies)).toEqual(["tailwindcss"]);
   expect(pkg.dependencies).toBeUndefined();
 });
@@ -157,6 +163,17 @@ describe.each(files)("%s", (file) => {
 
   it("remaps every utility in @slashsuite/ui-react's palette", () => {
     expect(unmappedUtilities(css, palette)).toEqual([]);
+  });
+
+  // The native map beside the CSS (`bunx moon run themes:theme-native`, committed) is the same theme for a
+  // React Native renderer: current, carrying every rule, and holding every palette utility.
+  it("has a current native map that carries every rule and palette utility", () => {
+    const id = file.slice(0, -".css".length);
+    const { theme, unmapped } = nativeTheme(css, id);
+    expect(unmapped).toEqual([]);
+    expect(missingFromNative(theme, [...new Set(Object.values(palette).flat())])).toEqual([]);
+    expect(read(`${id}.native.json`)).toBe(nativeThemeJson(theme));
+    expect(theme.statusBar).toBe(declaresDark(css) ? "light-content" : "dark-content");
   });
 
   it("paints selected text from its own palette, at AA", () => {

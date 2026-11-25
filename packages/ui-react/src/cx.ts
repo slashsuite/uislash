@@ -3,9 +3,8 @@ export function cx(...parts: Array<string | false | null | undefined>): string {
   return parts.filter(Boolean).join(" ");
 }
 
-/** The keyboard focus ring every interactive control shares. */
-export const focusRing =
-  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600";
+// The keyboard focus ring and its inset twin are core's, the one copy both renderers read.
+export { focusRing, insetFocusRing } from "./focus.js";
 
 /**
  * A heading's lines are balanced, so a two-line title does not end on one orphaned word; prose is
@@ -21,14 +20,6 @@ export const pretty = "[text-wrap-style:pretty]";
  * colour the page names is kept, so the fill takes the system's Highlight; `!` beats a theme's scoped remap of the stock fill.
  */
 export const forcedFill = "forced-colors:bg-[color:Highlight]!";
-
-/**
- * The same ring drawn inside the control, for one that fills a box which clips anything outside
- * it (a table's sortable title, a scroller). `focusRing` with `-outline-offset-2` added would not
- * do, since `outline-offset-2` comes later in the CSS and wins.
- */
-export const insetFocusRing =
-  "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-violet-600";
 
 /**
  * On a row or card that holds a stretched link (`link-stretch`): every interactive descendant sits

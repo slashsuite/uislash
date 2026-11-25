@@ -8,13 +8,18 @@ $schema: "../../.moon/cache/schemas/project.json"
 # committed: the agent-docs task writes it (the renderer is tools/docs, from the same sources as
 # llms.txt), and `prepack` runs it, so npm publish packs a fresh copy.
 tasks:
+  # Core is vendored into dist (scripts/vendor-core.ts), from core's own build.
   build:
     command: "bun run build"
-    inputs: ["**/*", "!docs/**/*", "!agent-docs/**/*"]
+    # It vendors core's dist, which core:build writes from core's src, so that src is an input too.
+    inputs: ["**/*", "!docs/**/*", "!agent-docs/**/*", "/packages/core/src/**/*"]
     outputs: ["dist"]
+    deps: ["core:build"]
+  # Every task reads core's source through its `development` export condition, so core's src is an
+  # input of each.
   typecheck:
     command: "bun run typecheck"
-    inputs: ["**/*", "!docs/*.json"]
+    inputs: ["**/*", "!docs/*.json", "/packages/core/src/**/*"]
   lint:
     command: "bun run lint"
     # The testing config this project's .oxlintrc.json extends: another project's files.
@@ -23,9 +28,10 @@ tasks:
       - "/packages/oxlint-testing/.oxlintrc.json"
       - "/packages/oxlint-testing/plugin.js"
       - "/packages/oxlint-testing/rules/**/*"
+      - "/packages/core/src/**/*"
   test:
     command: "bun run test"
-    inputs: ["**/*", "!docs/**/*", "!agent-docs/**/*"]
+    inputs: ["**/*", "!docs/**/*", "!agent-docs/**/*", "/packages/core/src/**/*"]
   # Never cached: it reads tools/docs, the docs data, the examples and the themes, too many sources
   # to list as inputs, and takes seconds.
   agent-docs:
@@ -34,5 +40,5 @@ tasks:
       cache: false
   pack-check:
     command: "bun run pack-check"
-    inputs: ["**/*", "!docs/*.json"]
+    inputs: ["**/*", "!docs/*.json", "/packages/core/src/**/*"]
     deps: ["~:build", "~:agent-docs"]

@@ -11,9 +11,11 @@ const hasName = (value: unknown): value is { name: string } =>
 if (!hasName(manifest))
   throw new Error("check-slop: package.json in the current directory has no name");
 const pkg = manifest.name;
-// The colour utilities ui-react's components may use; only that package has the file.
-const roles: Record<string, string[]> | undefined = existsSync("palette.json")
-  ? JSON.parse(readFileSync("palette.json", "utf8"))
+// The colour utilities ui-react's components may use; only that package has the file, and core's
+// token tables are held to it too.
+const paletteFile = pkg === "@slashsuite/core" ? "../ui-react/palette.json" : "palette.json";
+const roles: Record<string, string[]> | undefined = existsSync(paletteFile)
+  ? JSON.parse(readFileSync(paletteFile, "utf8"))
   : undefined;
 const palette = roles && new Set(Object.values(roles).flat());
 // Every source the project owns: its folders, and its root's CSS, docs, config and scripts. The

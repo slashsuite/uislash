@@ -1,12 +1,13 @@
 $schema: "../.moon/cache/schemas/project.json"
 
-# @slashsuite/themes: one CSS file per theme. Each task runs the package.json script of its name.
+# @slashsuite/themes: one CSS file per theme, and its native map (`<id>.native.json`). Each task runs the package.json script of its name.
 # themes.test.ts holds every theme to the palette ui-react uses and to the contrast and
 # distinction contracts in themes-shared, so those files are inputs of every task that reads it.
 fileGroups:
   contract:
     - "/packages/ui-react/palette.json"
     - "/packages/themes-shared/**/*"
+    - "/packages/core/src/**/*"
 
 tasks:
   typecheck:
@@ -18,7 +19,14 @@ tasks:
   test:
     command: "bun run test"
     inputs: ["**/*", "@group(contract)"]
-  # No build: the CSS files ship as they are.
+  # No build: the CSS files ship as they are, and so does each one's committed native map.
+  # theme-native writes the maps from the generator in core; it is run by hand, never by the gate,
+  # so nothing rewrites a map while the test reads it, and the test fails on a map that is missing
+  # or not current.
+  theme-native:
+    command: "bun run theme-native"
+    inputs: ["*.css", "scripts/theme-native.ts", "@group(contract)"]
+    outputs: ["*.native.json"]
   pack-check:
     command: "bun run pack-check"
     inputs: ["**/*"]

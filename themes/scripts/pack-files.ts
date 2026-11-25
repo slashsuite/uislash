@@ -24,9 +24,10 @@ if (!report?.files) {
 
 const packed = report.files.map((file) => file.path).toSorted();
 
-// The scope glob `*.css` picks up a theme without naming it, so a new theme needs no edit here.
+// The globs `*.css` and `*.native.json` pick up a theme without naming it, so a new theme needs no
+// edit here.
 const expected = [
-  ...readdirSync(dir).filter((file) => file.endsWith(".css")),
+  ...readdirSync(dir).filter((file) => file.endsWith(".css") || file.endsWith(".native.json")),
   "LICENSE",
   "NOTICE",
   "README.md",

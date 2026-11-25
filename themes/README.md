@@ -4,6 +4,12 @@ The UISlash themes, all in one package. Each theme is one CSS file with its own 
 each remaps the Tailwind slate/colour utilities that `@slashsuite/ui-react` is written against to its
 own colours. Each also ships a `.link` class.
 
+Beside each CSS file is `<id>.native.json`, the same theme for the native renderer: every palette
+utility mapped to its colours, the pressed, focused, placeholder and scrim slots, the heading face and
+any colour a heading takes, and the status bar style per scheme. It is generated from the CSS file (`bunx moon run themes:theme-native`) and never
+edited by hand; `themes.test.ts` fails on a stale one. Import it as
+`@slashsuite/themes/<id>.native.json`.
+
 | Theme | File | Scope | |
 | --- | --- | --- | --- |
 | Catppuccin Mocha | `catppuccin-mocha.css` | `.dark` | dark; also declares the class-based `dark` variant |
@@ -49,7 +55,7 @@ in its mono stack; the site that installs it loads those font files itself, as f
 
 ## How to add a theme
 
-Add one CSS file here, `<id>.css`. Its file name is the theme's id, and the id never changes once it
+Add one CSS file here, `<id>.css`, and generate its `<id>.native.json` beside it. Its file name is the theme's id, and the id never changes once it
 has baselines. Nothing else registers it: the package's exports and `files` are globs, and Storybook,
 the docs and the e2e all read this folder. `themes.test.ts` is the contract, and it reads every CSS
 file here. Run it with `bunx moon run themes:test`. The repo's

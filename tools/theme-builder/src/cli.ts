@@ -1,10 +1,11 @@
 import { writeFileSync } from "node:fs";
 import { relative } from "node:path";
+import { nativeTheme, nativeThemeJson } from "../../../packages/core/src/themeNative.js";
 import { buildSpec, ROOT } from "./build.js";
 
 /**
  * `bun tools/theme-builder/src/cli.ts <spec.json>`: builds every theme in the spec and writes each
- * to themes/<id>.css, but only when all of them pass every contract; otherwise it prints each
+ * to themes/<id>.css with its native map beside it (themes/<id>.native.json), but only when all of them pass every contract; otherwise it prints each
  * failure, writes nothing and exits 1.
  */
 const out = (line: string): void => void process.stdout.write(`${line}\n`);
@@ -29,5 +30,7 @@ if (failing.length > 0) process.exit(1);
 
 for (const theme of built) {
   writeFileSync(theme.file, theme.css);
-  out(`${relative(ROOT, theme.file)}: written`);
+  const native = theme.file.replace(/\.css$/, ".native.json");
+  writeFileSync(native, nativeThemeJson(nativeTheme(theme.css, theme.id).theme));
+  out(`${relative(ROOT, theme.file)} and ${relative(ROOT, native)}: written`);
 }

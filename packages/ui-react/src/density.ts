@@ -6,6 +6,7 @@ import {
   useContext,
   useMemo,
 } from "react";
+import { CONTROL_LEADING, CONTROL_TEXT } from "@slashsuite/core";
 import { isResponsive, type ResponsiveSize, type Size } from "./size.js";
 
 /**
@@ -69,12 +70,6 @@ export function useTypeStep(): TypeStep | undefined {
   return useContext(DensityContext).type;
 }
 
-/** A control's type size at each step: `md` is 16px at the default step, and `compact` is one step down. */
-const CONTROL_TEXT: Record<"default" | TypeStep, Record<Size, string>> = {
-  default: { sm: "text-sm", md: "text-base", lg: "text-lg" },
-  compact: { sm: "text-xs", md: "text-sm", lg: "text-base" },
-};
-
 /** `CONTROL_TEXT` from the `md` breakpoint up, for a responsive size. */
 const CONTROL_TEXT_MD: Record<"default" | TypeStep, Record<Size, string>> = {
   default: { sm: "md:text-sm", md: "md:text-base", lg: "md:text-lg" },
@@ -87,12 +82,8 @@ const CONTROL_TEXT_MD: Record<"default" | TypeStep, Record<Size, string>> = {
  */
 const TOUCH_TEXT = "pointer-coarse:text-base";
 
-/**
- * A control's line height by `size`, whatever its type step: 16, 20 and 24px, so with its padding
- * every control is 26, 38 and 46px tall at both steps, and a `Select`, an `IconButton` and a
- * `DateRangePicker`, whose heights are fixed, line up with it.
- */
-const CONTROL_LEADING: Record<Size, string> = { sm: "leading-4", md: "leading-5", lg: "leading-6" };
+// `CONTROL_TEXT` and `CONTROL_LEADING` are core's, the one copy both renderers read; a `Select`, an
+// `IconButton` and a `DateRangePicker`, whose heights are fixed, line up with them.
 
 /** `CONTROL_LEADING` from the `md` breakpoint up, for a responsive size. */
 const CONTROL_LEADING_MD: Record<Size, string> = {
