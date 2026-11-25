@@ -26,6 +26,7 @@
     "react": "catalog:react",
     "react-dom": "catalog:react",
     "react-native": "0.88.1",
+    "typescript": "catalog:typescript-api",
     "vitest": "catalog:"
   },
   "peerDependencies": {

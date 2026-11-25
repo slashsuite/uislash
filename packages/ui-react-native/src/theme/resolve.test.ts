@@ -23,20 +23,22 @@ describe("resolve", () => {
   it.each(nativeThemes.map((theme) => [theme.id, theme] as const))(
     "places every class of every Button in %s",
     (_, theme) => {
-      for (const variant of VARIANTS)
-        for (const size of SIZES)
-          for (const tone of TONES)
-            for (const state of STATES)
-              expect(() =>
-                resolve(nativeButtonClass(variant, size, tone, state), theme),
-              ).not.toThrow();
+      const looks = VARIANTS.flatMap((variant) =>
+        SIZES.flatMap((size) => TONES.map((tone) => ({ variant, size, tone }))),
+      );
+      for (const look of looks)
+        for (const state of STATES)
+          expect(() => resolve(nativeButtonClass(look, state), theme)).not.toThrow();
     },
   );
 
   it.each(nativeThemes.map((theme) => [theme.id, theme] as const))(
     "colours a primary Button from %s's remaps",
     (_, theme) => {
-      const resolved = resolve(nativeButtonClass("primary", "md", "neutral", "idle"), theme);
+      const resolved = resolve(
+        nativeButtonClass({ variant: "primary", size: "md", tone: "neutral" }),
+        theme,
+      );
       expect(resolved.box.idle.backgroundColor).toBe(
         theme.utilities["bg-violet-600"]?.backgroundColor,
       );
@@ -53,7 +55,7 @@ describe("resolve", () => {
     const manifest = parityManifest().components.Button ?? {};
     for (const size of SIZES) {
       const { box, text } = pick(
-        resolve(nativeButtonClass("primary", size, "neutral", "idle"), theme),
+        resolve(nativeButtonClass({ variant: "primary", size, tone: "neutral" }), theme),
       );
       expect(box.height).toBeUndefined();
       expect(text.lineHeight).toBe(BUTTON_LINE_PX[size]);

@@ -79,15 +79,20 @@ export function Modal({ visible, children }: Props & { visible: boolean }) {
   return visible ? createElement("div", { "data-rn": "Modal" }, children) : null;
 }
 
+const opened: string[] = [];
 export const Linking = {
-  opened: [] as string[],
+  opened,
   openURL(url: string): Promise<void> {
     Linking.opened.push(url);
     return Promise.resolve();
   },
 };
 
-export const device = { width: 390, height: 844, scheme: "light" as "light" | "dark" | null };
+export const device: { width: number; height: number; scheme: "light" | "dark" | null } = {
+  width: 390,
+  height: 844,
+  scheme: "light",
+};
 export const useWindowDimensions = () => ({
   width: device.width,
   height: device.height,

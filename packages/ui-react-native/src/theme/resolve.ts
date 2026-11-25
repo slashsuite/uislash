@@ -236,6 +236,24 @@ function split(own: NativeStyle, idle: NativeStyle): { box: NativeStyle; text: N
   return { box, text };
 }
 
+/** Where one class goes: a slot and its style, or dropped as web-only; throws on an unknown one. */
+function place(
+  name: string,
+  theme: NativeTheme,
+  on: string | undefined,
+): "dropped" | { target: Slot | "placeholder"; style: NativeStyle } {
+  if (DROP.some((pattern) => pattern.test(name))) return "dropped";
+  const variant = /^([a-z-]+):(.+)$/.exec(name);
+  const target = variant === null ? "idle" : SLOT_OF_VARIANT[at(variant, 1)];
+  if (target === undefined) throw new Error(`resolve: no native slot for the variant in "${name}"`);
+  const style =
+    variant === null
+      ? plainStyle(name, theme, on)
+      : variantStyle(at(variant, 1), at(variant, 2), theme, on);
+  if (style === null) throw new Error(`resolve: unknown class "${name}"`);
+  return { target, style };
+}
+
 /** Resolves a class string for one theme into its slots; throws on a class it cannot place. */
 export function resolve(
   classString: string,
@@ -248,24 +266,11 @@ export function resolve(
   const classes = classString.split(/\s+/).filter(Boolean);
 
   for (const name of classes) {
-    if (DROP.some((pattern) => pattern.test(name))) {
-      dropped.push(name);
-      continue;
-    }
-    const variant = /^([a-z-]+):(.+)$/.exec(name);
-    const target = variant === null ? "idle" : SLOT_OF_VARIANT[at(variant, 1)];
-    if (target === undefined)
-      throw new Error(`resolve: no native slot for the variant in "${name}"`);
-    const style =
-      variant === null
-        ? plainStyle(name, theme, options.on)
-        : variantStyle(at(variant, 1), at(variant, 2), theme, options.on);
-    if (style === null) throw new Error(`resolve: unknown class "${name}"`);
-    if (target === "placeholder") {
-      placeholderTextColor = String(style.placeholderTextColor ?? style.color);
-      continue;
-    }
-    Object.assign(slot[target], style);
+    const placed = place(name, theme, options.on);
+    if (placed === "dropped") dropped.push(name);
+    else if (placed.target === "placeholder")
+      placeholderTextColor = String(placed.style.placeholderTextColor ?? placed.style.color);
+    else Object.assign(slot[placed.target], placed.style);
   }
 
   // A theme rule keyed on two classes at once (a flat, plain disabled solid Button).
@@ -274,8 +279,8 @@ export function resolve(
       Object.assign(slot.disabled, compound.style);
   }
 
-  const box = {} as Record<Slot, NativeStyle>;
-  const text = {} as Record<Slot, NativeStyle>;
+  const box: Record<Slot, NativeStyle> = { idle: {}, pressed: {}, focused: {}, disabled: {} };
+  const text: Record<Slot, NativeStyle> = { idle: {}, pressed: {}, focused: {}, disabled: {} };
   for (const name of SLOTS) {
     const parts = split(slot[name], slot.idle);
     box[name] = parts.box;
@@ -296,7 +301,7 @@ export function pick(
   if (state.focused === true) on.push("focused");
   if (state.disabled === true) on.push("disabled");
   return {
-    box: Object.assign({}, ...on.map((name) => resolved.box[name])) as NativeStyle,
-    text: Object.assign({}, ...on.map((name) => resolved.text[name])) as NativeStyle,
+    box: on.reduce<NativeStyle>((style, name) => ({ ...style, ...resolved.box[name] }), {}),
+    text: on.reduce<NativeStyle>((style, name) => ({ ...style, ...resolved.text[name] }), {}),
   };
 }

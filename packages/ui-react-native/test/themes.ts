@@ -5,7 +5,11 @@ import type { NativeTheme } from "@slashsuite/core";
 
 const dir = join(import.meta.dirname, "../../../themes");
 
+function read(name: string): NativeTheme {
+  return JSON.parse(readFileSync(join(dir, name), "utf8"));
+}
+
 export const nativeThemes: NativeTheme[] = readdirSync(dir)
   .filter((name) => name.endsWith(".native.json"))
-  .sort()
-  .map((name) => JSON.parse(readFileSync(join(dir, name), "utf8")) as NativeTheme);
+  .toSorted()
+  .map(read);

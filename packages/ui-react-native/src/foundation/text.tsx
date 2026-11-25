@@ -6,7 +6,7 @@
  */
 import type { NativeStyle } from "@slashsuite/core";
 import { createContext, type ReactElement, type ReactNode, useContext } from "react";
-import { Text, type TextStyle } from "react-native";
+import { Text } from "react-native";
 
 /** The most the system's text size may grow a control's text. */
 export const MAX_FONT_SCALE = 1.3;
@@ -36,7 +36,7 @@ export const isBareText = (child: ReactNode): child is string | number =>
 export function InheritedText({ children }: { children?: ReactNode }): ReactElement {
   const style = useTextStyle();
   return (
-    <Text style={style as TextStyle} maxFontSizeMultiplier={MAX_FONT_SCALE}>
+    <Text style={style} maxFontSizeMultiplier={MAX_FONT_SCALE}>
       {children}
     </Text>
   );

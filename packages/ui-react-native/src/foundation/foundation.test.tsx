@@ -15,7 +15,27 @@ import { MAX_FONT_SCALE, renderText, TextStyleProvider } from "./text.js";
 const theme = nativeThemes[0];
 if (theme === undefined) throw new Error("no theme");
 const styleOf = (element: Element): Record<string, unknown> =>
-  JSON.parse(element.getAttribute("data-style") ?? "{}") as Record<string, unknown>;
+  JSON.parse(element.getAttribute("data-style") ?? "{}");
+
+function Probe() {
+  return <>{useBreakpoint()}</>;
+}
+
+function Close() {
+  const { close } = useOverlay();
+  return (
+    <button type="button" onClick={close}>
+      Done
+    </button>
+  );
+}
+
+function Glyph(props: { width?: number; height?: number; color?: string }) {
+  return <i data-testid="glyph" data-props={JSON.stringify(props)} />;
+}
+
+const propsOf = (): unknown =>
+  JSON.parse(screen.getByTestId("glyph").getAttribute("data-props") ?? "{}");
 
 describe("F2 text", () => {
   it("wraps a bare string in a Text that takes the style handed down, capped at the font scale", () => {
@@ -53,9 +73,6 @@ describe("F3 layout", () => {
 
   it("follows the window", () => {
     device.width = 800;
-    function Probe() {
-      return <>{useBreakpoint()}</>;
-    }
     render(<Probe />);
     expect(screen.getByText("md")).toBeDefined();
     device.width = 390;
@@ -78,7 +95,7 @@ describe("F3 layout", () => {
 
 describe("F4 links", () => {
   it("opens an external address in the system and hands an internal one to the router", () => {
-    const navigate = vi.fn();
+    const navigate = vi.fn<() => void>();
     follow("https://example.com", navigate);
     follow("/orders/7", navigate);
     expect(Linking.opened).toContain("https://example.com");
@@ -95,15 +112,7 @@ describe("F4 links", () => {
 
 describe("F5 overlays", () => {
   it("opens over the theme's scrim, and a part inside closes it", () => {
-    const onClose = vi.fn();
-    function Close() {
-      const { close } = useOverlay();
-      return (
-        <button type="button" onClick={close}>
-          Done
-        </button>
-      );
-    }
+    const onClose = vi.fn<() => void>();
     render(
       <ThemeProvider theme={theme}>
         <Overlay open onClose={onClose} closeLabel="Close">
@@ -131,12 +140,6 @@ describe("F5 overlays", () => {
 });
 
 describe("F6 icons", () => {
-  function Glyph(props: { width?: number; height?: number; color?: string }) {
-    return <i data-testid="glyph" data-props={JSON.stringify(props)} />;
-  }
-  const propsOf = () =>
-    JSON.parse(screen.getByTestId("glyph").getAttribute("data-props") ?? "{}") as unknown;
-
   it("gives the icon its size and the text colour in force", () => {
     render(
       <TextStyleProvider style={{ color: "#123456" }}>
@@ -188,8 +191,8 @@ describe("F7 accessibility", () => {
 
 describe("F8 events", () => {
   it("takes onClick as the press and hands a field its value", () => {
-    const onClick = vi.fn();
-    const onChange = vi.fn();
+    const onClick = vi.fn<() => void>();
+    const onChange = vi.fn<() => void>();
     expect(pressProps({ onClick })).toEqual({ onPress: onClick });
     expect(pressProps({})).toEqual({});
     const field = valueProps({ value: "a", onChange });

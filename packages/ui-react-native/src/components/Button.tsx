@@ -22,7 +22,7 @@ import {
   FOCUS_RING,
 } from "@slashsuite/core";
 import { type ReactElement, type ReactNode, useState } from "react";
-import { type GestureResponderEvent, Pressable, type ViewStyle } from "react-native";
+import { type GestureResponderEvent, Pressable } from "react-native";
 import { TextStyleProvider, renderText } from "../foundation/text.js";
 import { pick } from "../theme/resolve.js";
 import { useStyles } from "../theme/ThemeProvider.js";
@@ -48,12 +48,13 @@ export type ButtonProps = {
 
 type State = "idle" | "blocked" | "busy";
 
+/** A Button's look: the three props that pick its classes. */
+export type ButtonLook = { variant: ButtonVariant; size: ButtonSize; tone: ButtonTone };
+
 /** The classes of a Button, as the web draws them at one size (no responsive size on native). */
 export function nativeButtonClass(
-  variant: ButtonVariant,
-  size: ButtonSize,
-  tone: ButtonTone,
-  state: State,
+  { variant, size, tone }: ButtonLook,
+  state: State = "idle",
   { pressed, step = "default" }: { pressed?: boolean | undefined; step?: ControlTypeStep } = {},
 ): string {
   const shape = [
@@ -73,6 +74,33 @@ export function nativeButtonClass(
   return [...shape, ...rest[state]].filter(Boolean).join(" ");
 }
 
+function stateOf(disabledReason: string | undefined, busy: ReactNode): State {
+  if (disabledReason !== undefined) return "blocked";
+  return busy === undefined ? "idle" : "busy";
+}
+
+type Optional = {
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
+  testID?: string;
+  onPress?: (event: GestureResponderEvent) => void;
+};
+
+/** The Pressable props that are set, so an absent one is left out rather than passed undefined. */
+function optional(
+  label: string | undefined,
+  hint: string | undefined,
+  testID: string | undefined,
+  onPress: Optional["onPress"] | undefined,
+): Optional {
+  const props: Optional = {};
+  if (label !== undefined) props.accessibilityLabel = label;
+  if (hint !== undefined) props.accessibilityHint = hint;
+  if (testID !== undefined) props.testID = testID;
+  if (onPress !== undefined) props.onPress = onPress;
+  return props;
+}
+
 /** A Button: a Pressable box with its label in the variant's text. */
 export function Button({
   children,
@@ -88,30 +116,25 @@ export function Button({
   "aria-label": label,
   "data-testid": testID,
 }: ButtonProps): ReactElement {
-  const state: State =
-    disabledReason !== undefined ? "blocked" : busy !== undefined ? "busy" : "idle";
-  const styles = useStyles(nativeButtonClass(variant, size, tone, state, { pressed, step }));
+  const state = stateOf(disabledReason, busy);
+  const styles = useStyles(nativeButtonClass({ variant, size, tone }, state, { pressed, step }));
   const [focused, setFocused] = useState(false);
   const off = disabled || state !== "idle";
   const toggle = pressed !== undefined && (variant === "outline" || variant === "ghost");
   return (
     <Pressable
       accessibilityRole="button"
-      {...(label === undefined ? {} : { accessibilityLabel: label })}
-      {...(disabledReason === undefined ? {} : { accessibilityHint: disabledReason })}
+      {...optional(label, disabledReason, testID, onClick)}
       accessibilityState={{
         disabled: off,
         busy: state === "busy",
         ...(toggle ? { checked: pressed } : {}),
       }}
-      {...(testID === undefined ? {} : { testID })}
       disabled={off}
-      {...(onClick === undefined ? {} : { onPress: onClick })}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
       style={({ pressed: down }) =>
-        pick(styles, { pressed: down, focused, disabled: disabled && state === "idle" })
-          .box as ViewStyle
+        pick(styles, { pressed: down, focused, disabled: disabled && state === "idle" }).box
       }
     >
       {({ pressed: down }) => (

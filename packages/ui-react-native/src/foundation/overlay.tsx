@@ -10,7 +10,6 @@ import { useTheme } from "../theme/ThemeProvider.js";
 
 /** The utility a theme remaps for the scrim behind an overlay. */
 export const SCRIM_UTILITY = "bg-slate-900/35";
-const FALLBACK_SCRIM = "rgba(0, 0, 0, 0.35)";
 
 type OverlayApi = { close: () => void };
 const OverlayContext = createContext<OverlayApi | null>(null);
@@ -22,9 +21,11 @@ export function useOverlay(): OverlayApi {
   return api;
 }
 
-/** The scrim colour of a theme: its `backdrop:` remap, else a plain dark wash. */
+/** The scrim colour of a theme: its remap of `SCRIM_UTILITY`. Every theme has one; throws if not. */
 export function scrimColour(scrim: Record<string, { backgroundColor?: string | number }>): string {
-  return String(scrim[SCRIM_UTILITY]?.backgroundColor ?? FALLBACK_SCRIM);
+  const colour = scrim[SCRIM_UTILITY]?.backgroundColor;
+  if (colour === undefined) throw new Error(`scrimColour: the theme remaps no ${SCRIM_UTILITY}`);
+  return String(colour);
 }
 
 export type OverlayProps = {

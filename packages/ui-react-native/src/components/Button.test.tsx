@@ -8,7 +8,7 @@ const theme = nativeThemes[0];
 if (theme === undefined) throw new Error("no theme");
 
 const styleOf = (element: Element): Record<string, unknown> =>
-  JSON.parse(element.getAttribute("data-style") ?? "{}") as Record<string, unknown>;
+  JSON.parse(element.getAttribute("data-style") ?? "{}");
 
 describe("Button", () => {
   it("draws the primary look of the theme in force, and its label in the variant's text", () => {
@@ -25,7 +25,7 @@ describe("Button", () => {
   });
 
   it("presses with onClick and shows the pressed colour while held", () => {
-    const onClick = vi.fn();
+    const onClick = vi.fn<() => void>();
     render(
       <ThemeProvider theme={theme}>
         <Button data-testid="go" onClick={onClick}>
@@ -42,7 +42,7 @@ describe("Button", () => {
   });
 
   it("reads a blocked Button's reason as its hint and does not press", () => {
-    const onClick = vi.fn();
+    const onClick = vi.fn<() => void>();
     render(
       <ThemeProvider theme={theme}>
         <Button data-testid="pay" disabledReason="Add a card first" onClick={onClick}>
