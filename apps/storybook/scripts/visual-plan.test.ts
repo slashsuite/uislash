@@ -2,7 +2,7 @@ import { globSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { themeFiles } from "@slashsuite/themes-shared/files";
 import { describe, expect, it } from "vitest";
-import { GALLERY_TITLE, groupStories, planCapture, readRepo } from "./visual-plan.js";
+import { GALLERY_TITLE, groupStories, planCapture, readRepo, uploadPlan } from "./visual-plan.js";
 import { referenceOf } from "./theme-reach.js";
 import { grouping, repo, storyFiles } from "./visual-plan.fixture.js";
 import { sidebarOrder, titleOf } from "./sidebar-order.js";
@@ -205,6 +205,49 @@ describe("planCapture", () => {
     expect(result.notes).toContain(
       "nothing a component story shows changed: only Overview is captured",
     );
+  });
+});
+
+const branch = (changed: string[]) =>
+  uploadPlan("branch", { repo, grouping, changed, everything: false });
+
+describe("uploadPlan", () => {
+  it("on a branch takes each group the change reaches whole, and skips the rest", () => {
+    expect(capturesOf(plan(["apps/storybook/src/sample.ts"])).content).toEqual([
+      [["Card"], [reference]],
+    ]);
+    const result = branch(["apps/storybook/src/sample.ts"]);
+    expect(capturesOf(result)).toEqual({
+      content: [[["Card", "CardBadge"], [reference]]],
+      overview: overviewEverywhere,
+    });
+    expect(result.skipped.map((g) => g.slug)).toEqual(["layout", "actions"]);
+    expect(result.picked[0]?.why).toEqual(["apps/storybook/src/sample.ts → Card"]);
+  });
+
+  it("on a branch takes the Gallery sections in every theme when one theme changed", () => {
+    expect(capturesOf(branch(["themes/theme-c.css"]))).toEqual({ overview: overviewEverywhere });
+  });
+
+  it("on a branch whose change reaches everything takes every group", () => {
+    const result = branch(["bun.lock"]);
+    expect(result.skipped).toEqual([]);
+    expect(capturesOf(result)).toEqual(capturesOf(plan([], true)));
+  });
+
+  it("on main takes every group whole, whatever the change, and says why", () => {
+    const result = uploadPlan("main", {
+      repo,
+      grouping,
+      changed: ["apps/storybook/src/sample.ts"],
+      everything: false,
+    });
+    expect(result.all).toBe(true);
+    expect(result.skipped).toEqual([]);
+    expect(capturesOf(result)).toEqual(capturesOf(plan([], true)));
+    expect(result.notes).toEqual([
+      "main uploads every group: it is the baseline each group's next branch diffs against",
+    ]);
   });
 });
 

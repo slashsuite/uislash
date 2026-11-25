@@ -133,21 +133,27 @@ function token(): string {
 }
 
 /**
- * What `--upload` needs, checked before any capture, and which upload this is (`decideUpload`). A
- * branch is diffed by the server against the main build it already holds, so every subproject must
- * hold one at the merge-base or an ancestor of it, unless it holds no main build at all (a new
- * subproject, whose first build reads every shot as new); main's own upload needs none. Each
- * subproject must exist: an upload never creates one.
+ * Which upload this is (`decideUpload`): this commit as `main`, or the branch. Checked before
+ * anything is planned or captured.
  */
-export async function checkUpload(subprojects: string[]): Promise<UploadMode> {
+export async function uploadMode(): Promise<UploadMode> {
   if (!process.env["PIXELSLASH_SERVER"]) throw new VisualError("--upload needs PIXELSLASH_SERVER");
   if (process.env["VISUAL_BASE"])
     throw new VisualError("--upload diffs against origin/main on the server; unset VISUAL_BASE");
-  const state = await uploadState();
-  const mode = decide(state);
+  return decide(await uploadState());
+}
+
+/**
+ * What the upload of `subprojects` needs, checked before any capture. A branch is diffed by the
+ * server against the main build it already holds, so each subproject it uploads to must hold one at
+ * the merge-base or an ancestor of it, unless it holds no main build at all (a new subproject, whose
+ * first build reads every shot as new); main's own upload needs none. Each subproject must exist:
+ * an upload never creates one.
+ */
+export async function checkSubprojects(mode: UploadMode, subprojects: string[]) {
   if (mode === "main") await requireSubprojects(subprojects);
-  else await requireBaselines(subprojects, state.mergeBase);
-  return mode;
+  else
+    await requireBaselines(subprojects, await git(repoRoot, "merge-base", "HEAD", "origin/main"));
 }
 
 async function uploadState(): Promise<UploadState> {

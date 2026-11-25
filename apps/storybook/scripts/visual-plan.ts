@@ -33,6 +33,7 @@ import { themeFiles } from "@slashsuite/themes-shared/files";
 import { barrelOf, closureOf, type Reader } from "./import-graph.js";
 import type { Page, Placement, Section } from "./site-types.js";
 import { referenceOf, themesOf } from "./theme-reach.js";
+import type { UploadMode } from "./visual-upload.js";
 
 export type { Placement, Section };
 
@@ -309,6 +310,44 @@ export function planCapture({ repo, grouping, changed, everything }: PlanInput):
   if (picked.every((group) => group.slug === OVERVIEW) && reach.themed.length === 0)
     notes.push("nothing a component story shows changed: only Overview is captured");
   return { all: false, notes, picked, skipped };
+}
+
+/**
+ * An upload's plan: the groups `plan` reached, each one whole (every story in the reference theme,
+ * the Gallery sections in every other), and the rest skipped. The server reads a story missing from
+ * a build as removed, so a group it is sent is never partial; a group it is sent nothing for has no
+ * build on the commit, and the project's status counts only the groups that have one.
+ */
+function wholeGroups(plan: Plan, themes: string[]): Plan {
+  if (plan.all) return plan;
+  const reference = referenceOf(themes);
+  return {
+    ...plan,
+    picked: plan.picked.map((group) => ({
+      ...capturesOf(group, group.files, reference, themes.slice(1)),
+      why: group.why,
+    })),
+  };
+}
+
+/**
+ * What an upload sends. Main sends every group, the baseline each one's next branch diffs against
+ * (a group main skipped for long would leave its branches with no baseline in reach). A branch sends
+ * each group the change reaches, whole, and nothing for the rest: the server reads a story missing
+ * from a build as removed, but a subproject with no build on the commit as not run, and the
+ * project's status counts only the subprojects that have one. A local compare (`mode` null) takes
+ * what `planCapture` picks.
+ */
+export function uploadPlan(mode: UploadMode | null, input: PlanInput): Plan {
+  if (mode === "main")
+    return {
+      ...planCapture({ ...input, everything: true }),
+      notes: [
+        "main uploads every group: it is the baseline each group's next branch diffs against",
+      ],
+    };
+  const plan = planCapture(input);
+  return mode === "branch" ? wholeGroups(plan, input.repo.themes) : plan;
 }
 
 /* ---------------------------------------------------------------------------

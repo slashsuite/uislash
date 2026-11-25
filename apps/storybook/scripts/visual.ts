@@ -44,17 +44,26 @@
  *   auto-accepts as the baseline. This is the post-merge step that keeps those main builds there.
  *
  * Either way it waits for the server to finish diffing and takes the counts and the build's page
- * from the server. An upload always takes a whole group (every story in the reference theme, the
- * Gallery sections in the others; `visual-plan.ts`), since a partial capture would read as removals.
+ * from the server. An upload takes a group whole or not at all (every story in the reference theme,
+ * the Gallery sections in the others; `visual-plan.ts`), since a partial capture would read as
+ * removals. A branch uploads only the groups its change reaches, plus Overview, which is always
+ * captured; main uploads every group (`uploadPlan`).
  */
 import { randomUUID } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { themeFiles } from "@slashsuite/themes-shared/files";
 import { baseThemeIds, capturesOnBase } from "./theme-reach.js";
-import { indexOf, isRecord, shotsByTheme, shotsOf } from "./visual-index.js";
+import { indexOf, shotsByTheme, shotsOf } from "./visual-index.js";
 import { variants } from "./visual-shots.js";
-import { groupStories, planCapture, readRepo, type Grouping, type Plan } from "./visual-plan.js";
+import {
+  groupStories,
+  planCapture,
+  readRepo,
+  uploadPlan,
+  type Grouping,
+  type Plan,
+} from "./visual-plan.js";
 import {
   VisualError,
   baseStatic,
@@ -82,13 +91,9 @@ import {
   type SavedPlan,
 } from "./visual-args.js";
 import { eachAtOnce, parallelFrom, uploadWorkers } from "./visual-parallel.js";
-import { checkUpload, uploadGroup } from "./visual-remote.js";
-import {
-  uploadSummaryLine,
-  uploadTotalLine,
-  type Counts,
-  type GroupResult,
-} from "./visual-upload.js";
+import { checkSubprojects, uploadGroup, uploadMode } from "./visual-remote.js";
+import { readResult } from "./visual-result.js";
+import { uploadSummaryLine, uploadTotalLine, type GroupResult } from "./visual-upload.js";
 
 const upload = process.argv.includes("--upload");
 const everything = process.argv.includes("--all") || process.env["VISUAL_ALL"] === "1";
@@ -155,7 +160,10 @@ function reportPlan(plan: Plan, grouping: Grouping, saved: SavedPlan, whole: Pla
     log(`  ${g.slug}: ${captures.join("; ")}${why}`);
   }
   const skipped = plan.skipped.map((g) => `${g.slug} (${g.files.length} story files)`);
-  if (skipped.length > 0) log(`skipped as unaffected: ${skipped.join(", ")}`);
+  if (skipped.length > 0)
+    log(
+      `skipped, no changed file reaches them${upload ? ", nothing uploaded" : ""}: ${skipped.join(", ")}`,
+    );
   const now = shotsByTheme(index, planned, variants.length);
   const all = shotsByTheme(index, wholeCaptures, variants.length);
   const perTheme = [...all.themes].map(([id, n]) => `${id} ${now.themes.get(id) ?? 0} of ${n}`);
@@ -167,14 +175,14 @@ async function planMode(): Promise<SavedPlan> {
   const repo = await readRepo(repoRoot);
   const grouping = checked(groupStories(repo.sections, repo.storyFiles));
   const base = await resolveBase();
-  // An upload takes every group whole: the server reads a story missing from a build as removed.
-  const plan = planCapture({
-    repo,
-    grouping,
-    changed: await changedSince(base.sha),
-    everything: everything || upload,
-  });
-  const mode = upload ? await checkUpload(grouping.groups.map((g) => g.slug)) : null;
+  const mode = upload ? await uploadMode() : null;
+  const changed = await changedSince(base.sha);
+  const plan = uploadPlan(mode, { repo, grouping, changed, everything });
+  if (mode !== null)
+    await checkSubprojects(
+      mode,
+      plan.picked.map((g) => g.slug),
+    );
   const picked = new Map(plan.picked.map((g) => [g.slug, g]));
   const groups = grouping.groups.map((group) => {
     const pick = picked.get(group.slug);
@@ -185,7 +193,7 @@ async function planMode(): Promise<SavedPlan> {
   const saved: SavedPlan = {
     id: randomUUID(),
     upload,
-    all: everything || upload,
+    all: everything,
     mode,
     sha: base.sha,
     head,
@@ -231,13 +239,16 @@ async function captureBase(dir: string, sha: string, captures: Selection[]) {
   writeFileSync(keyPath, `${key}\n`);
 }
 
+const skippedWhy = (plan: SavedPlan) =>
+  `skipped, no changed file reaches it${plan.mode === null ? "" : "; nothing uploaded"}`;
+
 async function groupMode(plan: SavedPlan, group: PlannedGroup) {
   const { slug } = group;
   const dir = join(out, slug);
   mkdirSync(dir, { recursive: true });
   const result = join(dir, "result.json");
   if (group.skipped) {
-    log(`${slug}: skipped, unaffected`);
+    log(`${slug}: ${skippedWhy(plan)}`);
     writeFileSync(result, `${JSON.stringify({ id: plan.id, slug, skipped: true })}\n`);
     return;
   }
@@ -267,52 +278,6 @@ async function groupMode(plan: SavedPlan, group: PlannedGroup) {
   writeFileSync(result, `${JSON.stringify({ id: plan.id, slug, skipped: false, counts })}\n`);
 }
 
-/** The against-main counts result.json holds, when the server sent them. */
-function againstMainOf(counts: Record<string, unknown>): Pick<Counts, "againstMain" | "toReview"> {
-  const against = counts["againstMain"];
-  const toReview = counts["toReview"];
-  return {
-    ...(isRecord(against) &&
-    typeof against["changed"] === "number" &&
-    typeof against["new"] === "number"
-      ? { againstMain: { changed: against["changed"], new: against["new"] } }
-      : {}),
-    ...(typeof toReview === "number" ? { toReview } : {}),
-  };
-}
-
-/**
- * A group's result from its last run for this plan, and where to read it: the server's build
- * page for an upload, the local report otherwise; `undefined` when the plan skipped it.
- */
-function readResult(id: string, slug: string): GroupResult | undefined {
-  const path = join(out, slug, "result.json");
-  const result = readJson(path);
-  if (!isRecord(result) || result["id"] !== id)
-    throw new VisualError(`${slug} has no result for this plan: its capture did not run`);
-  if (result["skipped"] === true) return undefined;
-  const counts = result["counts"];
-  if (!isRecord(counts)) throw new VisualError(`${path} has no counts`);
-  const read = (key: "changed" | "unchanged" | "new" | "removed") => {
-    const value = counts[key];
-    if (typeof value !== "number") throw new VisualError(`${path} has no ${key} count`);
-    return value;
-  };
-  const status = result["status"];
-  const url = result["url"];
-  return {
-    counts: {
-      changed: read("changed"),
-      unchanged: read("unchanged"),
-      new: read("new"),
-      removed: read("removed"),
-      ...againstMainOf(counts),
-    },
-    ...(typeof status === "string" ? { status } : {}),
-    where: typeof url === "string" && url !== "" ? url : join(out, slug, "report", "index.html"),
-  };
-}
-
 function summaryMode(plan: SavedPlan) {
   const results: GroupResult[] = [];
   const missing: string[] = [];
@@ -326,7 +291,7 @@ function summaryMode(plan: SavedPlan) {
       continue;
     }
     if (result === undefined) {
-      log(`${group.slug}: skipped, unaffected`);
+      log(`${group.slug}: ${skippedWhy(plan)}`);
       continue;
     }
     results.push(result);
@@ -362,7 +327,7 @@ async function main() {
     const head = await git(repoRoot, "rev-parse", "HEAD");
     const groups = pickGroups(plan, {
       upload,
-      all: everything || upload,
+      all: everything,
       head,
       slugs: step.slugs,
     });
