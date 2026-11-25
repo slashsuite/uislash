@@ -31,13 +31,23 @@ export const VIZ_TONE: Record<VizTone, string> = {
   cat8: "text-yellow-600",
 };
 
+/**
+ * The colour of a `StackedBar` part or a `Legend` swatch: a `VizTone`, or `quiet`, the remainder that
+ * matters least (not measured, not counted). A quiet part has no fill, so the bar's track shows
+ * through and the part reads as the empty end of the bar, quieter than `neutral` in every theme;
+ * put it last, where the bar ends.
+ * It sits under the 3:1 a chart mark needs, so its value is always named in words: a bar with a
+ * quiet part draws its `Legend`, and the key's quiet swatch is the track colour with an edge.
+ */
+export type SegmentTone = VizTone | "quiet";
+
 /** One part of a `StackedBar`: its `label`, its `value` (its share is `value` over the sum) and its colour. */
-export type StackedSegment = { label: string; value: number; tone: VizTone };
+export type StackedSegment = { label: string; value: number; tone: SegmentTone };
 
 /** One entry of a `Legend`: the `label` the colour stands for, its swatch, and an optional `detail` (a count, a share) after it. */
 export type LegendItem = {
   label: string;
-  tone: VizTone;
+  tone: SegmentTone;
   /**
    * `solid` (the default) is a filled dot; `dashed` is a dashed ring in the tone's colour with no
    * fill, the key for an outline drawn over the chart (a snapshot overlay).
@@ -46,14 +56,17 @@ export type LegendItem = {
   detail?: string | number | undefined;
 };
 
-/** The colour of a segment: the tone's text colour, painted as a fill, so no new fill utility. */
-const FILL = (tone: VizTone): string => cx("bg-current", VIZ_TONE[tone]);
+/** The colour of a segment: the tone's text colour, painted as a fill, so no new fill utility; none for `quiet`. */
+const FILL = (tone: SegmentTone): string =>
+  tone === "quiet" ? "" : cx("bg-current", VIZ_TONE[tone]);
 
-/** A swatch: a filled dot, or a dashed ring in the same colour. */
-const SWATCH = (item: LegendItem): string =>
-  item.swatch === "dashed"
+/** A swatch: a filled dot, a dashed ring in the same colour, or for `quiet` the track's colour with an edge. */
+function SWATCH(item: LegendItem): string {
+  if (item.tone === "quiet") return "border border-slate-300 bg-slate-100";
+  return item.swatch === "dashed"
     ? cx("border-2 border-dashed border-current", VIZ_TONE[item.tone])
     : FILL(item.tone);
+}
 
 /**
  * A key to the colours of a chart or a row stripe: a swatch in the `VizTone` colour (a filled
@@ -155,7 +168,7 @@ function WaitingStack({
 export function StackedBar({
   items,
   label,
-  legend = false,
+  legend: wantsLegend = false,
   size = "md",
   loading,
   loadingLabel,
@@ -165,7 +178,7 @@ export function StackedBar({
   items: readonly StackedSegment[];
   /** What the bar shows, for a screen reader, which hears it before every part's name and percent. */
   label: string;
-  /** Draw the key under the bar. Defaults to false. */
+  /** Draw the key under the bar. Defaults to false; a bar with a `quiet` part always draws it. */
   legend?: boolean;
   /**
    * The bar's height: `sm` 6px, `md` 8px, `lg` 12px.
@@ -174,6 +187,7 @@ export function StackedBar({
   size?: BarSize;
 } & LoadingProps &
   Passthrough): ReactElement {
+  const legend = wantsLegend || items.some((s) => s.tone === "quiet");
   if (useLoading(loading).loading) {
     return (
       <WaitingStack

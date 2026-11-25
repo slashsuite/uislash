@@ -7,8 +7,10 @@ import {
   type Rgb,
 } from "../packages/themes-shared/src/colour.js";
 import { contrastFailures } from "../packages/themes-shared/src/contrast.js";
+import { unmappedUtilities } from "../packages/themes-shared/src/coverage.js";
 import { distanceOf, distinctionFailures } from "../packages/themes-shared/src/distinction.js";
 import { declaresDark, themeScope } from "../packages/themes-shared/src/scope.js";
+import { selectionFailures } from "../packages/themes-shared/src/selection.js";
 import { utilitiesOf } from "../packages/themes-shared/src/utilities.js";
 
 const dir = import.meta.dirname;
@@ -114,7 +116,8 @@ describe.each(files)("%s", (file) => {
   const css = read(file);
   const rules = strip(css);
   const scope = themeScope(css) ?? "";
-  const scoped = new RegExp(`^\\.${escapeRe(scope)}(\\s|$)`);
+  // `.<scope>::selection` is the one rule on the scope element itself rather than inside it.
+  const scoped = new RegExp(`^\\.${escapeRe(scope)}(\\s|$|::selection$)`);
 
   // What the theme paints a utility, composited over `over` (an opaque colour).
   const utilities = utilitiesOf(css);
@@ -153,13 +156,13 @@ describe.each(files)("%s", (file) => {
   });
 
   it("remaps every utility in @slashsuite/ui-react's palette", () => {
-    const missing = Object.values(palette)
-      .flat()
-      .filter((utility) => {
-        const escaped = escapeRe("." + utility.replace(/[:/]/g, "\\$&"));
-        return !new RegExp(`${escaped}(?=[\\s,:{\\[])`).test(css);
-      });
-    expect(missing).toEqual([]);
+    expect(unmappedUtilities(css, palette)).toEqual([]);
+  });
+
+  it("paints selected text from its own palette, at AA", () => {
+    // Without a `::selection` rule the browser's highlight shows, which no theme chose; the rule
+    // covers the scope element and everything in it, opaque, its text at 4.5:1 on its background.
+    expect(selectionFailures(css)).toEqual([]);
   });
 
   it("meets the contrast contract: every pair measured on every surface at WCAG AA", () => {

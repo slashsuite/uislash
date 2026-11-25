@@ -57,6 +57,14 @@
   --hc-cat-8: #b07704; /* text-yellow-600 */
 }
 
+/* Selected text: the primary fill under its own label, the pair the contrast contract already holds
+   to AA, so a highlight reads in the theme's accent rather than the browser's blue. */
+.latte ::selection,
+.latte::selection {
+  background-color: #8839ef;
+  color: #ffffff;
+}
+
 /* The page canvas: AppShell paints it; white cards lift off the base. */
 .latte .bg-gray-50 {
   background-color: #eff1f5; /* base */
@@ -125,6 +133,12 @@
 .latte .text-slate-900,
 .latte .text-slate-800 {
   color: #4c4f69; /* text: incl. bold totals/footers */
+}
+/* Headings in primary ink take a deeper tone than the body, which read too light at text #4c4f69
+   (7.1:1 on the base). #232634 is Catppuccin Frappe's crust, the ink PixelSlash's site had to add
+   by hand: 13.3:1 on the base, 15.0:1 on the card, 12.4:1 on mantle. */
+.latte :is(h1, h2, h3).text-slate-900 {
+  color: #232634; /* frappe crust */
 }
 .latte .text-slate-700,
 .latte .text-slate-600 {

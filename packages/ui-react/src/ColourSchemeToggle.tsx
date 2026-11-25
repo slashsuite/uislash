@@ -1,8 +1,15 @@
-import { useSyncExternalStore, type ComponentPropsWithoutRef, type ReactElement } from "react";
+import {
+  useEffect,
+  useSyncExternalStore,
+  type ComponentPropsWithoutRef,
+  type ReactElement,
+} from "react";
 import {
   appliedColourScheme,
   applyColourScheme,
+  followColourScheme,
   storeColourScheme,
+  systemColourScheme,
   type ColourScheme,
   type ColourSchemeClasses,
 } from "./colourScheme.js";
@@ -78,7 +85,9 @@ function subscribe(onChange: () => void): () => void {
 const never = (): (() => void) => () => {};
 
 /**
- * A sun/moon button that switches `<html>` between light and dark and remembers the choice. It shows the scheme you would switch to. Pair it with `colourSchemeScript` in `<head>`, unless you pass `schemes` or `defaultValue`: the script knows only the `dark` class and the stored choice, so an app that sets the scheme itself leaves it out.
+ * A sun/moon button that switches `<html>` between light and dark and remembers the choice. It shows the scheme you would switch to.
+ * A click that lands on the system's own scheme forgets the stored choice, so the page follows the system again; a click away from it stores the choice.
+ * With `store` on, the page also follows a choice made in another tab and, while nothing is stored, the system switching. Pair it with `colourSchemeScript` in `<head>`, unless you pass `schemes` or `defaultValue`: the script knows only the `dark` class and the stored choice, so an app that sets the scheme itself leaves it out.
  *
  * An app whose light scheme has a class of its own passes `schemes` (`{ light: "my-light", dark: "dark" }`);
  * the toggle swaps those classes, and `schemeClass` gives the same one for the server to render on `<html>`.
@@ -106,8 +115,12 @@ export function ColourSchemeToggle({
    * @default md
    */
   size?: Size | undefined;
-  /** Called with the new scheme after a click, for an app that persists the choice itself (a cookie). */
-  onChange?: (scheme: ColourScheme) => void;
+  /**
+   * Called with the new scheme after a click, for an app that persists the choice itself (a cookie).
+   * `followsSystem` is true when the new scheme is the system's: forget the choice (clear the cookie)
+   * rather than store it, so the page follows the system again.
+   */
+  onChange?: (scheme: ColourScheme, followsSystem: boolean) => void;
   /** The class each scheme puts on `<html>`. */
   schemes?: ColourSchemeClasses | undefined;
   /**
@@ -143,6 +156,11 @@ export function ColourSchemeToggle({
     () => true,
     () => false,
   );
+  const { light, dark } = schemes;
+  useEffect(
+    () => (store ? followColourScheme(document.documentElement, { light, dark }) : undefined),
+    [store, light, dark],
+  );
   const next: ColourScheme = scheme === "dark" ? "light" : "dark";
   const nextLabel = next === "dark" ? darkLabel : lightLabel;
   return (
@@ -154,9 +172,10 @@ export function ColourSchemeToggle({
           {...tip}
           className={look({ size })}
           onClick={() => {
+            const followsSystem = next === systemColourScheme();
             applyColourScheme(next, document.documentElement, schemes);
-            if (store) storeColourScheme(next);
-            onChange?.(next);
+            if (store) storeColourScheme(followsSystem ? "system" : next);
+            onChange?.(next, followsSystem);
           }}
         >
           <style>{schemeRules(schemes)}</style>

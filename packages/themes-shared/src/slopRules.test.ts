@@ -185,6 +185,22 @@ describe("slopRules: a component's classes", () => {
     expect(slopRules("src/Hero.tsx", `"px-4 sm:px-6"`, ui)).toHaveLength(1);
     expect(slopRules("src/Container.tsx", `"max-w-6xl px-4 sm:px-6"`, ui)).toEqual([]);
   });
+
+  it("fails a font size in px, and passes rem and em", () => {
+    expect(slopRules("src/Pill.tsx", `"text-[11px]"`, ui)).toEqual([
+      "src/Pill.tsx:1: a font size in px; use rem, so the text grows with the reader's text size",
+    ]);
+    expect(slopRules("src/Pill.tsx", `"sm:text-[12.5px]"`, ui)).toHaveLength(1);
+    expect(slopRules("src/Pill.tsx", `"text-[0.6875rem] text-[0.9em] w-[11px]"`, ui)).toEqual([]);
+    expect(slopRules("src/Pill.test.tsx", `"text-[11px]"`, ui)).toEqual([]);
+  });
+
+  it("fails a thin scrollbar", () => {
+    expect(slopRules("src/cx.ts", `"[scrollbar-width:thin]"`, ui)).toEqual([
+      "src/cx.ts:1: a thin scrollbar is hard to grab; keep the native width",
+    ]);
+    expect(slopRules("src/Tabs.tsx", `"[scrollbar-width:none]"`, ui)).toEqual([]);
+  });
 });
 
 describe("slopRules: both npm scopes name the component package", () => {

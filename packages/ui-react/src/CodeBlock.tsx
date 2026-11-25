@@ -25,7 +25,7 @@ type CodeBlockSource =
  * `$ `. `label` names the language or file (`bash`, `css`) in a caption above the code. `text` (the
  * default) leaves the code in one colour, for a block that is not a language. Give the text as `children` or as `lines`. Long lines wrap, so
  * nothing is cut off and a command stays one copyable line; `overflow="scroll"` keeps lines whole
- * and scrolls them sideways under a thin themed scrollbar, for code whose layout matters. With
+ * and scrolls them sideways under a themed scrollbar, for code whose layout matters. With
  * `overflow="scroll"`, a strip wider than its box is a tab stop named by `label`, else "Code". Every
  * other figure prop goes on the root `<figure>`. For one short line to copy, `CopyLine` is the
  * smaller box.
@@ -61,7 +61,7 @@ export function CodeBlock({
   return (
     <figure
       {...rest}
-      className="overflow-hidden rounded-lg border border-slate-200 bg-slate-50 font-mono text-[12.5px] leading-normal text-slate-900"
+      className="overflow-hidden rounded-lg border border-slate-200 bg-slate-50 font-mono text-[0.78125rem] leading-normal text-slate-900"
     >
       {label && (
         <figcaption

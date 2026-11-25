@@ -57,6 +57,14 @@
   --hc-cat-8: #946231; /* text-yellow-600 */
 }
 
+/* Selected text: the primary fill under its own label, the pair the contrast contract already holds
+   to AA, so a highlight reads in the theme's accent rather than the browser's blue. */
+.thrifty-paper ::selection,
+.thrifty-paper::selection {
+  background-color: #c2410c;
+  color: #ffffff;
+}
+
 /* The page canvas: AppShell paints it; white cards lift off the cream. */
 .thrifty-paper .bg-gray-50 {
   background-color: #fdfbf7; /* canvas */

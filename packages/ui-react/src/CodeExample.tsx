@@ -11,7 +11,7 @@ import { AppScale } from "./typography.js";
  * button beside the code copies it exactly as given (client JS; off by default). An optional `caption` is the frame's last band. The code is React, so
  * it is coloured as TSX. The preview is its own height, never padded to match a neighbour, down to
  * a shared minimum so two frames side by side start alike. A wide preview or a long line of code
- * scrolls inside the frame, under a thin themed scrollbar, instead of widening the page or
+ * scrolls inside the frame, under a themed scrollbar, instead of widening the page or
  * wrapping. Inside a `Prose` the preview stays on the app scale, so a demo looks as the component
  * does anywhere else; the caption is outside it.
  */

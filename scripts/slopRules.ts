@@ -52,6 +52,13 @@ function paletteHits(line: string, palette: ReadonlySet<string>): string[] {
 // renders one instead of copying its classes.
 const CONTENT_EDGE = /max-w-6xl|px-4 sm:px-6/;
 
+// A font size in px does not grow with the reader's text size (the browser's setting, or the OS's
+// through `<meta name="text-scale">`); a component sizes text in rem, or em relative to its parent.
+const PX_TEXT = /(?<![\w-])(?:[a-z-]+:)*text-\[\d+(?:\.\d+)?px\]/;
+
+// A thin scrollbar is hard to grab with a mouse or a finger; a themed one keeps the native width.
+const THIN_SCROLLBAR = /scrollbar-width:\s*thin/;
+
 // The palette's names are the theme's: the purple ink is the accent in every theme, so docs prose
 // that calls it violet is wrong in all but one. A value in backticks (`violet`) is code and passes.
 // Both names while consumers move to @slashsuite: a package still named @hackcove/ui-react is the same library.
@@ -98,6 +105,10 @@ function componentHits(line: string, file: FileKind): string[] {
   const hits = file.palette === undefined ? [] : paletteHits(line, file.palette);
   if (file.component && file.path !== "src/Container.tsx" && CONTENT_EDGE.test(line))
     hits.push("the content width and side padding are Container's; render a Container");
+  if (file.component && PX_TEXT.test(line))
+    hits.push("a font size in px; use rem, so the text grows with the reader's text size");
+  if (file.component && THIN_SCROLLBAR.test(line))
+    hits.push("a thin scrollbar is hard to grab; keep the native width");
   return hits;
 }
 

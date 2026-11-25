@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ColourSchemeToggle } from "@slashsuite/ui-react";
-import { resetColourScheme } from "./resetColourScheme";
+import { resetColourScheme, startColourScheme } from "./resetColourScheme";
 import * as examples from "../../../packages/ui-react/docs/examples/ColourSchemeToggle.examples.js";
 
 const meta: Meta = { title: "Actions/ColourSchemeToggle" };
@@ -51,8 +51,8 @@ export const Sizes: S = {
   ),
 };
 
-/** `defaultValue="dark"` is the scheme the server rendered, for an app whose pages render dark. The server and the hydrating client draw the sun, the switch to light; the toggle then follows the class on `<html>`, so here, where the story starts light, it settles on the moon. */
+/** `defaultValue="dark"` is the scheme the server rendered, for an app whose pages render dark. A server that renders dark also puts the dark class on `<html>`, as this story does, so the server, the hydrating client and the page all draw the sun, the switch to light. The toggle follows the class on `<html>`, not `defaultValue`, once it runs. */
 export const DefaultDark: S = {
-  beforeEach: resetColourScheme,
+  beforeEach: () => startColourScheme("dark"),
   render: () => <ColourSchemeToggle defaultValue="dark" />,
 };

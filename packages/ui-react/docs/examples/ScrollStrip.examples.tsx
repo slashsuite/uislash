@@ -1,7 +1,7 @@
 import { Cluster, MediaTile, ScrollStrip } from "@slashsuite/ui-react";
 import { sampleScenes } from "./sampleScene.js";
 
-/** A row of media that runs past the page is a `ScrollStrip`: one line, a thin scrollbar, snapping. */
+/** A row of media that runs past the page is a `ScrollStrip`: one line, a themed scrollbar, snapping. */
 export const DoRow = () => (
   <ScrollStrip label="Recent statuses">
     {[...sampleScenes, ...sampleScenes].map((scene, index) => (

@@ -6,7 +6,7 @@ import {
   type ReactNode,
   useContext,
 } from "react";
-import { cx } from "./cx.js";
+import { balanced, cx, pretty } from "./cx.js";
 import type { StackGap } from "./Stack.js";
 import { useStackGap } from "./stackGap.js";
 import { useTypeStep } from "./density.js";
@@ -233,12 +233,13 @@ function plainText(children: ReactNode): string | undefined {
 export const Display = typography(
   "Display",
   "h1",
-  "text-4xl/[1.1] font-semibold tracking-tight sm:text-5xl/[1.05] lg:text-6xl/[1.05]",
+  cx("text-4xl/[1.1] font-semibold tracking-tight sm:text-5xl/[1.05] lg:text-6xl/[1.05]", balanced),
   "default",
 );
 
+const LEAD = cx("text-lg/7 font-normal sm:text-xl/8", pretty);
 /** The supporting sentence under a `Display`. `p`, text-lg/7 normal, secondary. */
-export const Lead = typography("Lead", "p", "text-lg/7 font-normal sm:text-xl/8", "secondary");
+export const Lead = typography("Lead", "p", LEAD, "secondary");
 
 /**
  * Page title. `h1`, text-3xl/9 bold (text-4xl/10 from `sm`), tight, primary text: well above the
@@ -247,7 +248,7 @@ export const Lead = typography("Lead", "p", "text-lg/7 font-normal sm:text-xl/8"
 export const PageHeading = typography(
   "PageHeading",
   "h1",
-  "text-3xl/9 font-bold tracking-tight sm:text-4xl/10",
+  cx("text-3xl/9 font-bold tracking-tight sm:text-4xl/10", balanced),
   "default",
 );
 
@@ -354,11 +355,11 @@ export function SectionHeading<E extends ElementType = "h2">({
   // An `id` makes the heading a link target, so an anchor jump leaves it clear of the sticky header.
   const scroll = props.id === undefined ? undefined : SCROLL_TARGET;
   if (!hasDescription) {
-    return pinned("h2", cx(rule && hairline, size, scroll), "default", props);
+    return pinned("h2", cx(rule && hairline, size, balanced, scroll), "default", props);
   }
   return (
     <div className={cx("flex flex-col gap-1", rule && hairline)}>
-      {pinned("h2", cx(size, scroll), "default", props)}
+      {pinned("h2", cx(size, balanced, scroll), "default", props)}
       <Text tone="muted">{description}</Text>
     </div>
   );
@@ -409,7 +410,7 @@ export function SubsectionHeading<E extends ElementType = "h3">({
    */
   lines?: TextLines | undefined;
 }): ReactElement {
-  return pinned("h3", useScale(SUBSECTION_SIZE[size]), "default", props);
+  return pinned("h3", cx(useScale(SUBSECTION_SIZE[size]), balanced), "default", props);
 }
 
 // --- Inline roles -------------------------------------------------------------
@@ -504,7 +505,7 @@ function textVariant(
 ): string {
   return cx(
     preserveNewlines && "whitespace-pre-line",
-    measure && "max-w-[72ch]",
+    measure && cx("max-w-[72ch]", pretty),
     size,
     strong ? "font-medium" : "font-normal",
   );

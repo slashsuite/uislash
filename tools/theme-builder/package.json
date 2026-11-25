@@ -1,0 +1,21 @@
+{
+  "name": "@slashsuite/theme-builder",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Derives a brand theme from a theme in themes/ by swapping its accent, and refuses to write one that fails the theme contracts. Dev tooling; not published.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "oxlint -c ../../.oxlintrc.json --type-aware --deny-warnings && bun ../../scripts/check-slop.ts",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/bun": "1.4.4",
+    "typescript": "5.9.3",
+    "vitest": "5.1.0"
+  },
+  "nx": {
+    "name": "theme-builder"
+  }
+}

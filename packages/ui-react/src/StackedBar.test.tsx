@@ -69,6 +69,24 @@ describe("StackedBar", () => {
         .map((item) => item.textContent),
     ).toEqual(["Changed20", "New10", "Removed10", "Same60"]);
   });
+
+  it("a quiet part is named like any other, and its bar always draws the key", () => {
+    render(
+      <StackedBar
+        items={[
+          { label: "Changed", value: 3, tone: "warn" },
+          { label: "Not measured", value: 1, tone: "quiet" },
+        ]}
+        label="Builds"
+      />,
+    );
+    expect(screen.getByRole("img", { name: "Builds: Changed 75%, Not measured 25%" })).toBeTruthy();
+    expect(
+      within(screen.getByRole("list"))
+        .getAllByRole("listitem")
+        .map((item) => item.textContent),
+    ).toEqual(["Changed3", "Not measured1"]);
+  });
 });
 
 describe("Legend", () => {
