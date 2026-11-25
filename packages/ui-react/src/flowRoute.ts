@@ -19,16 +19,13 @@
  * turned into it and back.
  */
 
-/** A point, as in `flowLayout`. */
-export type Point = { x: number; y: number };
-/** A box, its top left corner and its size. */
-export type Rect = { x: number; y: number; width: number; height: number };
+import type { FlowBox as Rect, FlowPoint as Point } from "./flowLayout.js";
 
 /** One arrow to route: its ends, and dagre's points from the source to the target. */
-export type RouteEdge = { from: string; to: string; points: readonly Point[] };
+type RouteEdge = { from: string; to: string; points: readonly Point[] };
 
 /** The routed diagram: every arrow as a square path's corners, and how to move a y past widened gaps. */
-export type Routed = { lines: Point[][]; shift: (y: number) => number; grow: number };
+type Routed = { lines: Point[][]; shift: (y: number) => number; grow: number };
 
 /** The space between two runs across one gap, and between a run and the gap's edges. */
 const TRACK = 8;

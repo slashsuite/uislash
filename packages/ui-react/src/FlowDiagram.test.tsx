@@ -48,12 +48,6 @@ function groupOf(layout: FlowLayout, name: string): FlowBox {
   return box;
 }
 
-/** The boxes that reach past the canvas on any side. */
-const outside = (layout: FlowLayout): FlowNodeBox[] =>
-  layout.nodes.filter(
-    (n) => n.x < 0 || n.y < 0 || n.x + n.width > layout.width || n.y + n.height > layout.height,
-  );
-
 describe("FlowDiagram", () => {
   it("lays out every node and every edge, each edge with a path", () => {
     const layout = laidOut({ label: "Article flow", nodes, edges });
@@ -162,13 +156,6 @@ const pair = [
   { id: "a", width: 80, height: 40 },
   { id: "b", width: 80, height: 40 },
 ];
-const ids = Array.from({ length: 26 }, (_, i) => `n${i}`);
-/** 26 boxes in a ring, each with a second arrow seven on: loops, and arrows back up the ranks. */
-const ring = ids.flatMap((id, i) => [
-  { from: id, to: `n${(i + 1) % ids.length}` },
-  { from: id, to: `n${(i * 7) % ids.length}`, label: { width: 40, height: 16 } },
-]);
-
 describe("layoutFlow", () => {
   it("ranks down by default", () => {
     const out = layoutFlow(pair, [{ from: "a", to: "b" }], "down");
@@ -178,16 +165,5 @@ describe("layoutFlow", () => {
   it("ranks right on request", () => {
     const out = layoutFlow(pair, [{ from: "a", to: "b" }], "right");
     expect(boxOf(out, "b").x).toBeGreaterThan(boxOf(out, "a").x);
-  });
-
-  it("keeps every box inside the canvas, loops included", () => {
-    const out = layoutFlow(
-      ids.map((id) => ({ id, width: 120, height: 40 })),
-      ring,
-      "down",
-    );
-    expect(out.nodes).toHaveLength(26);
-    expect(out.edges).toHaveLength(52);
-    expect(outside(out)).toEqual([]);
   });
 });

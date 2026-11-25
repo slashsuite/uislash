@@ -95,6 +95,8 @@ const ring = ids.flatMap((id, i) => [
   { from: id, to: `n${(i * 7) % ids.length}`, label: { width: 40, height: 16 } },
 ]);
 const ringBoxes = ids.map((id, i) => ({ id, width: 120, height: 40 + (i % 3) * 30 }));
+/** The ring with its boxes in four groups, which dagre gives border ranks of their own. */
+const grouped = ringBoxes.map((b, i) => ({ ...b, group: `g${i % 4}` }));
 
 type Segment = { a: { x: number; y: number }; b: { x: number; y: number } };
 const segments = (edge: FlowEdgePath): Segment[] =>
@@ -223,15 +225,27 @@ describe("routed arrows", () => {
         ),
       ).toEqual([]);
     });
+
+    it(`keep off every box and label when the boxes are grouped, ranked ${direction}`, () => {
+      const out = layoutFlow(grouped, ring, direction);
+      expect(
+        clashes(
+          out,
+          ring.map((e) => e.label),
+        ),
+      ).toEqual([]);
+    });
   }
 
   it("leave and enter a box through its ends, never its sides, ranked down", () => {
     expect(sideEnds(layoutFlow(machine, moves, "down"))).toEqual([]);
   });
 
-  it("keeps every box and every corner inside the canvas", () => {
-    expect(outside(layoutFlow(machine, moves, "down"))).toEqual([]);
-    expect(outside(layoutFlow(machine, moves, "right"))).toEqual([]);
+  it("keeps every box and every corner inside the canvas, loops included", () => {
+    for (const direction of ["down", "right"] as const) {
+      expect(outside(layoutFlow(machine, moves, direction))).toEqual([]);
+      expect(outside(layoutFlow(ringBoxes, ring, direction))).toEqual([]);
+    }
   });
 
   it("never lays two runs across one gap on the same line", () => {
