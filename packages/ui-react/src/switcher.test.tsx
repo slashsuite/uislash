@@ -241,18 +241,6 @@ describe("Tabs", () => {
     await u.keyboard("{ArrowDown}");
     expect(onChange).not.toHaveBeenCalled();
   });
-
-  it("points a tab at its panel with controls", () => {
-    render(
-      <Tabs
-        items={[{ value: "a", label: "A", controls: "panel-a" }]}
-        value="a"
-        onChange={() => {}}
-        label="Range"
-      />,
-    );
-    expect(screen.getByRole("tab", { name: "A" }).getAttribute("aria-controls")).toBe("panel-a");
-  });
 });
 
 describe("SegmentedControl", () => {

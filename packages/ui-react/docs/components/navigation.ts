@@ -30,10 +30,10 @@ export const navigation: ComponentSection = {
       ],
       usage: {
         do: [
-          "`Tabs` switches a view in place; the caller owns `value` and `onChange`, and the panel sits right under the row.",
+          "`Tabs` switches a view in place: each tab carries its `panel`, which Tabs draws under the row (beside the rail); the caller owns `value` and `onChange`.",
           "Going to another page is link items (`href`, and `selected` on the current one): links, so the URL, the back button and a new tab all work.",
           "A `count` sits muted after the label and is read as part of the tab's name.",
-          'Across, tabs are always underline, under a `PageHeader` too. `orientation="vertical"` is the pill rail, the current tab filled, for a `SidebarLayout` aside, and only the rail takes `size`.',
+          'Across, tabs are always underline, under a `PageHeader` too: one line that scrolls sideways, with a fade, when it is too wide. `orientation="vertical"` is the pill rail, the current tab filled, for a `SidebarLayout` aside, and only the rail takes `size`.',
           "`size` (`sm`, `md` the default, `lg`) sets the vertical rail on the control scale, so it lines up with a `Button` of the same size; the underline row has one size.",
           "A tab that cannot be chosen yet takes a `disabledReason` that says why.",
           'Pill links with `orientation="vertical"` are the rail of a `SidebarLayout`: one link per line.',
@@ -42,12 +42,13 @@ export const navigation: ComponentSection = {
       accessibility: [
         "The row is a tab list named by `label`; the arrow keys, Home and End move between the tabs, and a `disabled` tab is skipped.",
         "A tab with `disabledReason` is `aria-disabled`: the arrow keys reach it and choose nothing, and the reason shows as a tooltip on hover, keyboard focus and a tap, read out as its description (the native `title` without CSS anchor positioning).",
-        'Give the panel `role="tabpanel"` and a tab `controls` that points at its `id`.',
+        'A tab\'s `panel` is a `tabpanel` labelled by the tab and named in its `aria-controls`; a hidden one is `hidden="until-found"` where the browser has it, so find in page reaches its text and switches to the tab.',
+        "The current tab is told apart by more than colour: the underline, and on the rail an outline round the fill. Every tab has the same weight, so choosing one does not shift the row.",
         'A tab is a `button` with `role="tab"` and `aria-selected`; only the current tab is in the tab order, and the arrow keys move and choose.',
         'Link items form a `<nav>` named by `label`; the current link gets `aria-current="page"`.',
       ],
       api: ["Tabs"],
-      types: ["Tab"],
+      types: ["Tab", "TabButton"],
     },
     {
       slug: "breadcrumbs",

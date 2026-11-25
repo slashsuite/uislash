@@ -10,7 +10,7 @@ type S = StoryObj;
 const views = ["overview", "activity", "settings"].map((value) => ({
   value,
   label: value[0]?.toUpperCase() + value.slice(1),
-  controls: "panel",
+  panel: <Text>Showing {value}.</Text>,
 }));
 
 export const DoSwitchView: S = {
@@ -37,16 +37,34 @@ export const DontCount: S = {
   render: examples.DontCount,
 };
 
-/** The caller owns `value`; click a tab, or Tab in and use the arrow keys, Home and End. */
+/** The caller owns `value`; click a tab, or Tab in and use the arrow keys, Home and End. Each tab's `panel` is drawn under the row. */
 export const Default: S = {
   render: () => {
     const [value, setValue] = useState("overview");
     return (
-      <div className="flex max-w-xl flex-col gap-4">
+      <div className="max-w-xl">
         <Tabs label="Project views" items={views} value={value} onChange={setValue} />
-        <div id="panel" role="tabpanel">
-          <Text>Showing {value}.</Text>
-        </div>
+      </div>
+    );
+  },
+};
+
+/** A row too wide for its box stays one line and scrolls sideways, fading out on the side that has more. */
+export const TooWide: S = {
+  render: () => {
+    const [value, setValue] = useState("overview");
+    const many = [
+      "Overview",
+      "Activity",
+      "Deployments",
+      "Environments",
+      "Observability",
+      "Integrations",
+      "Settings",
+    ].map((label) => ({ value: label.toLowerCase(), label, panel: <Text>Showing {label}.</Text> }));
+    return (
+      <div className="max-w-xs">
+        <Tabs label="Project views" items={many} value={value} onChange={setValue} />
       </div>
     );
   },
@@ -85,16 +103,19 @@ export const WithDisabledTab: S = {
   },
 };
 
-/** The current tab is a filled pill, as a row of page links draws it, with no rule under the row. */
+/** The vertical pill rail with panels: the current tab filled and outlined, its panel beside the rail. */
 export const Pill: S = {
   render: () => {
     const [value, setValue] = useState("overview");
     return (
-      <div className="flex max-w-xl flex-col gap-4">
-        <Tabs label="Project views" items={views} value={value} onChange={setValue} />
-        <div id="panel" role="tabpanel">
-          <Text>Showing {value}.</Text>
-        </div>
+      <div className="max-w-xl">
+        <Tabs
+          label="Project views"
+          orientation="vertical"
+          items={views}
+          value={value}
+          onChange={setValue}
+        />
       </div>
     );
   },

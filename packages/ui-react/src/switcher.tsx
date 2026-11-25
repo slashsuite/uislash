@@ -32,8 +32,6 @@ export type SwitchButton = Option & {
    * keyboard focus and a tap, read out as its description.
    */
   disabledReason?: string;
-  /** The id of the element this option controls (a tab's panel). */
-  controls?: string;
   href?: undefined;
   external?: undefined;
 };
@@ -50,7 +48,6 @@ export type SwitchLink = Option & {
   selected?: boolean;
   disabled?: undefined;
   disabledReason?: undefined;
-  controls?: undefined;
   external?: boolean;
   /** Where the option links. */
   href: string;
@@ -64,11 +61,12 @@ type Shared = {
   label: string;
 } & Passthrough;
 
-export type SwitchProps = Shared &
+/** A group's props; `Button` is its button option (Tabs adds a `panel` to it). */
+export type SwitchProps<Button extends SwitchButton = SwitchButton> = Shared &
   (
     | {
         /** The options in order: `{ value, label }` buttons, or links (`href`), the current link marked by its `selected` or by a `value` equal to the group's. Either may carry a `count`; a button may be `disabled`. */
-        items: SwitchButton[];
+        items: Button[];
         /** The `value` of the current option; for links, an alternative to `selected` on the item. */
         value: string;
         /** Called with the option's `value` when one is chosen, by click or arrow key. */
@@ -96,6 +94,10 @@ type Parts = {
   stacked?: boolean;
   root: string;
   option: (active: boolean, disabled: boolean) => string;
+  /** Handed the group's root element (the box that scrolls, for a Tabs row). */
+  onRoot?: (root: HTMLElement | null) => void;
+  /** A button option's own id and the id of the panel it controls (`aria-controls`), by index; none for an option with no panel. */
+  ids?: (index: number) => { tab: string; panel: string } | undefined;
 };
 
 /** The index a key moves to from `at` among `count` enabled options, wrapping; -1 for a key that does not move. */
@@ -116,6 +118,10 @@ function Label({ item }: { item: SwitchItem }): ReactElement {
     </>
   );
 }
+
+/** A tab's own id and `aria-controls`, when it has a panel. */
+const ariaIds = (ids: { tab: string; panel: string } | undefined) =>
+  ids ? { id: ids.tab, "aria-controls": ids.panel } : {};
 
 const isLinks = (items: SwitchProps["items"]): items is SwitchLink[] =>
   items.some((item) => item.href !== undefined);
@@ -176,10 +182,10 @@ export function Switcher({
   parts,
   ...rest
 }: SwitchProps & { parts: Parts }): ReactElement {
-  const root = parts.root;
+  const { root, onRoot } = parts;
   if (isLinks(items)) {
     return (
-      <nav {...rest} aria-label={label} className={root}>
+      <nav {...rest} ref={onRoot} aria-label={label} className={root}>
         {items.map((item, index) => (
           <SwitchLinkItem
             key={item.value ?? item.href ?? index}
@@ -202,6 +208,7 @@ export function Switcher({
   return (
     <div
       {...rest}
+      ref={onRoot}
       role={parts.group}
       aria-label={label}
       {...(parts.stacked ? { "aria-orientation": "vertical" as const } : {})}
@@ -209,7 +216,7 @@ export function Switcher({
       onKeyDown={(event) => moveByArrows(event, parts.vertical)}
       className={root}
     >
-      {items.map((item) => (
+      {items.map((item, index) => (
         // A title is the option's description, shown on hover and keyboard focus; on a disabled
         // option it is the reason, and a tap shows it too.
         <Tipped
@@ -227,7 +234,7 @@ export function Switcher({
               {...(parts.item === "tab"
                 ? { "aria-selected": item.value === value }
                 : { "aria-checked": item.value === value })}
-              {...(item.controls === undefined ? {} : { "aria-controls": item.controls })}
+              {...ariaIds(parts.ids?.(index))}
               tabIndex={item.value === stop ? 0 : -1}
               {...(off(item) ? { "aria-disabled": true } : {})}
               {...(reasoned(item) ? { "data-hc-reason": "" } : {})}

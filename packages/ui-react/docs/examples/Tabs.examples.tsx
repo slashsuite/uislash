@@ -1,25 +1,20 @@
 import { useState } from "react";
 import { Tabs, SegmentedControl, Stack, Text } from "@slashsuite/ui-react";
 
-/** `Tabs` switches a view in place; the panel it controls sits right under the row. */
+/** `Tabs` switches a view in place: each tab carries its `panel`, drawn right under the row. */
 export const DoSwitchView = () => {
   const [value, setValue] = useState("overview");
   return (
-    <Stack>
-      <Tabs
-        label="Project views"
-        value={value}
-        onChange={setValue}
-        items={[
-          { value: "overview", label: "Overview", controls: "panel" },
-          { value: "activity", label: "Activity", controls: "panel" },
-          { value: "settings", label: "Settings", controls: "panel" },
-        ]}
-      />
-      <div id="panel" role="tabpanel">
-        <Text>Showing {value}.</Text>
-      </div>
-    </Stack>
+    <Tabs
+      label="Project views"
+      value={value}
+      onChange={setValue}
+      items={[
+        { value: "overview", label: "Overview", panel: <Text>The project at a glance.</Text> },
+        { value: "activity", label: "Activity", panel: <Text>What changed this week.</Text> },
+        { value: "settings", label: "Settings", panel: <Text>Who can see the project.</Text> },
+      ]}
+    />
   );
 };
 

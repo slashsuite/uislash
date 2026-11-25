@@ -145,7 +145,7 @@ export {
   storeColourScheme,
   type ColourScheme,
 } from "./colourScheme.js";
-export { Tabs, type Tab } from "./Tabs.js";
+export { Tabs, type Tab, type TabButton } from "./Tabs.js";
 export { SegmentedControl, type Segment } from "./SegmentedControl.js";
 export type { SwitchButton, SwitchLink } from "./switcher.js";
 export { Fieldset } from "./Fieldset.js";

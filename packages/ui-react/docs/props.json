@@ -7,7 +7,7 @@
   },
   "AppShell": {
     "name": "AppShell",
-    "description": "The page frame: it paints the page canvas and sets the type face, ink and font smoothing\n(`antialiased`), so an app writes no page-background or font rule of its own (a theme remaps\nthe canvas and the font stacks). A sticky one-row header, an optional second `subnav` row, the main area and an\noptional footer. Header, main and footer each sit in a `Container`, so pages never set their own\nwidth or padding. `bleed` drops main's Container (the header keeps its own), for a layout that\nneeds the whole width (`FullBleedLayout`). Main is a flex column. `SidebarLayout` needs no\n`bleed`: its rail and canvas share the header's Container.\n\nThe header row is laid out by its slots, left to right: `brand`, `nav`, then `header` (anything\nthe slots do not cover), then `controls`, pushed to the end. An app writes no wrapper or\nstyling for any of them: an item that only fits a wide screen goes in a `Show from`. A bar\nthat sticks under the header as the page scrolls is a `StickyBar`.\n\nOn a phone (below `md`) the header is one 56px row at every page: `brand`, `header`, `controls`\nand a \"Menu\" button (`menuLabel`), and `nav` and `subnav` move into that menu, so every link is\nreachable and nothing scrolls sideways. The menu is a native `<details>`, so it works with the\nkeyboard, with a screen reader and on a page that never hydrates. From `md` the header is the\nrow, and the `subnav` row, as they are, except that a `nav` too wide for the row folds into the\nMenu and comes back when the screen is wide enough (measured, with script; a `subnav` never\nfolds, it scrolls sideways with a fade).\n\nThe edges need nothing from the app: with `viewport-fit=cover` every Container clears the\nsafe-area insets at the sides, the header the top one and the shell the bottom one; and an\nelement with an `id` anywhere inside lands below the sticky header when a link or focus scrolls\nto it.\n\n`controls` stay in the row at every width, so keep them few (a theme toggle, the viewer's avatar);\non a phone a crowded `controls` clips, and the Menu button is never the part cut off. Pickers and\nactions that do not fit a phone row go in `menuControls`: rendered once, they sit in the row after\n`controls` from `md`, and below `md` at the top of the Menu, above `nav` and `subnav`.",
+    "description": "The page frame: it paints the page canvas and sets the type face, ink and font smoothing\n(`antialiased`), so an app writes no page-background or font rule of its own (a theme remaps\nthe canvas and the font stacks). A sticky one-row header, an optional second `subnav` row, the main area and an\noptional footer. Header, main and footer each sit in a `Container`, so pages never set their own\nwidth or padding. `bleed` drops main's Container (the header keeps its own), for a layout that\nneeds the whole width (`FullBleedLayout`). Main is a flex column. `SidebarLayout` needs no\n`bleed`: its rail and canvas share the header's Container.\n\nThe header row is laid out by its slots, left to right: `brand`, `nav`, then `header` (anything\nthe slots do not cover), then `controls`, pushed to the end. An app writes no wrapper or\nstyling for any of them: an item that only fits a wide screen goes in a `Show from`. A bar\nthat sticks under the header as the page scrolls is a `StickyBar`.\n\nOn a phone (below `md`) the header is one 56px row at every page: `brand`, `header`, `controls`\nand a \"Menu\" button (`menuLabel`), and `nav` and `subnav` move into that menu, so every link is\nreachable and nothing scrolls sideways. The menu is the browser's popover (`popovertarget`), so\nit works with the keyboard, closes on Escape and a click outside, hands focus back to the button,\nand opens on a page that never hydrates. From `md` the header is the\nrow, and the `subnav` row, as they are, except that a `nav` too wide for the row folds into the\nMenu and comes back when the screen is wide enough (measured, with script; a `subnav` never\nfolds, it scrolls sideways with a fade).\n\nThe edges need nothing from the app: with `viewport-fit=cover` every Container clears the\nsafe-area insets at the sides, the header the top one and the shell the bottom one; and an\nelement with an `id` anywhere inside lands below the sticky header when a link or focus scrolls\nto it.\n\n`controls` stay in the row at every width, so keep them few (a theme toggle, the viewer's avatar);\non a phone a crowded `controls` clips, and the Menu button is never the part cut off. Pickers and\nactions that do not fit a phone row go in `menuControls`: rendered once, they sit in the row after\n`controls` from `md`, and below `md` at the top of the Menu, above `nav` and `subnav`.",
     "props": [
       {
         "name": "bleed",
@@ -87,6 +87,14 @@
         "required": false,
         "default": "true",
         "description": "Whether a print shows the header and footer. `false` prints only the page: the header and\nfooter are hidden, and main's Container drops its padding (the page margin is then `@page`'s).\n\nThe screen is unchanged.",
+        "native": false
+      },
+      {
+        "name": "skipLabel",
+        "type": "string",
+        "required": false,
+        "default": "Skip to content",
+        "description": "The skip link's words, for an app in another language. The link is the page's first tab stop,\nhidden until it has the focus, and moves the focus past the header to the main area.",
         "native": false
       },
       {
@@ -6000,7 +6008,7 @@
       },
       {
         "name": "items",
-        "type": "Segment[]",
+        "type": "Segment[] | SwitchButton[]",
         "required": true,
         "description": "The options in order: `{ value, label }` buttons, or links (`href`), the current link marked by its `selected` or by a `value` equal to the group's. Either may carry a `count`; a button may be `disabled`.",
         "native": false
@@ -7452,7 +7460,7 @@
   },
   "Tabs": {
     "name": "Tabs",
-    "description": "Tabs for switching a view in place or between pages. Across (the default) they are underline\ntabs: a row over a bottom rule, the current tab underlined in the accent. `orientation=\"vertical\"`\nis the pill rail instead, the current tab filled, for a `SidebarLayout` aside, and takes a\n`size`. `items` are `{ value, label }` buttons (`value` and `onChange` are the caller's state;\nthe arrow keys, Home and End move between tabs) or links (`href`, an in-app one through\n`LinkProvider`; `selected` on an item, or `value`, marks the current one, which gets\n`aria-current`). An item may carry a `count`, and a button one `disabledReason` (it stays\nreachable by the arrows and its reason is a tooltip) or a bare `disabled`; `disabled` on the row disables every tab. `label` names the tab list. The panel is\nthe caller's: give it `role=\"tabpanel\"`, and a tab `controls` to point at it.",
+    "description": "Tabs for switching a view in place or between pages. Across (the default) they are underline\ntabs: one line over a bottom rule, the current tab underlined in the accent, scrolling sideways\nwith a fade when the row is too wide. `orientation=\"vertical\"` is the pill rail instead, the\ncurrent tab filled and outlined, for a `SidebarLayout` aside, and takes a `size`. `items` are\n`{ value, label, panel }` buttons (`value` and `onChange` are the caller's state; the arrow\nkeys, Home and End move between tabs) or links (`href`, an in-app one through `LinkProvider`;\n`selected` on an item, or `value`, marks the current one, which gets `aria-current`). A button's\n`panel` is rendered as its `tabpanel`, wired to the tab and hidden while another is current. An\nitem may carry a `count`, and a button one `disabledReason` (it stays reachable by the arrows and\nits reason is a tooltip) or a bare `disabled`; `disabled` on the row disables every tab. `label`\nnames the tab list.",
     "props": [
       {
         "name": "disabled",
@@ -7470,7 +7478,7 @@
       },
       {
         "name": "items",
-        "type": "Tab[]",
+        "type": "Tab[] | TabButton[]",
         "required": true,
         "description": "The options in order: `{ value, label }` buttons, or links (`href`), the current link marked by its `selected` or by a `value` equal to the group's. Either may carry a `count`; a button may be `disabled`.",
         "native": false
@@ -7494,7 +7502,7 @@
         "type": "\"horizontal\" | \"vertical\"",
         "required": false,
         "default": "horizontal",
-        "description": "`horizontal` is a row of underline tabs over a bottom rule; `vertical` is the pill rail, a\ncolumn at the rail's width for a `SidebarLayout` aside, where the up and down arrows move\nbetween button tabs.",
+        "description": "`horizontal` is a row of underline tabs over a bottom rule, one line that scrolls\nsideways when it is too wide; `vertical` is the pill rail, a column at the rail's width\nfor a `SidebarLayout` aside, where the up and down arrows move between button tabs.",
         "native": false
       },
       {

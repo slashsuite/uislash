@@ -176,3 +176,17 @@ export function unstubAnimate(): void {
   Reflect.deleteProperty(Element.prototype, "animate");
   Reflect.deleteProperty(Element.prototype, "getAnimations");
 }
+
+/** Give elements `onbeforematch`, so a component takes the browser to support `hidden="until-found"`. Undo with `unstubBeforeMatch`. */
+export function stubBeforeMatch(): void {
+  Object.defineProperty(HTMLElement.prototype, "onbeforematch", {
+    value: null,
+    writable: true,
+    configurable: true,
+  });
+}
+
+/** Undo `stubBeforeMatch`. Call from `afterEach`. */
+export function unstubBeforeMatch(): void {
+  Reflect.deleteProperty(HTMLElement.prototype, "onbeforematch");
+}

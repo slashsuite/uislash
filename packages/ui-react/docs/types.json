@@ -382,7 +382,7 @@
   "SwitchButton": {
     "name": "SwitchButton",
     "description": "An option that is a button: it calls `onChange(value)`.",
-    "definition": "{ label: ReactNode; count?: number; title?: string; value: string; disabled?: boolean; disabledReason?: string; controls?: string }"
+    "definition": "{ label: ReactNode; count?: number; title?: string; value: string; disabled?: boolean; disabledReason?: string }"
   },
   "SwitchLink": {
     "name": "SwitchLink",
@@ -392,7 +392,12 @@
   "Tab": {
     "name": "Tab",
     "description": "One tab of a Tabs row: a button with a `value`, or a link with an `href`; never both kinds in one row.",
-    "definition": "SwitchButton | SwitchLink"
+    "definition": "TabButton | SwitchLink"
+  },
+  "TabButton": {
+    "name": "TabButton",
+    "description": "A button tab; its `panel` is the view it shows, rendered by Tabs under (or beside) the row.",
+    "definition": "{ label: ReactNode; count?: number; title?: string; value: string; disabled?: boolean; disabledReason?: string; panel?: ReactNode }"
   },
   "TableSort": {
     "name": "TableSort",
