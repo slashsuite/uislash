@@ -223,7 +223,9 @@ jobs:
           done
 
       # Projects that already have a tag and are on npm: conventional commits decide the bump, and publishing
-      # authenticates through OIDC. No token is in this step's environment.
+      # authenticates through OIDC. No token is in this step's environment. It versions only $TAGGED:
+      # nx.json's `updateDependents: "never"` keeps Nx from adding a project that imports one of them
+      # (oxlint-ui's lint fixtures import ui-react), which may be new or staged (docs/releasing.md).
       - name: Release (tagged projects, OIDC)
         if: steps.projects.outputs.tagged != ''
         env:
