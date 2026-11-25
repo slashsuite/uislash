@@ -5,7 +5,15 @@
  * `MAX_FONT_SCALE`, past which a control would outgrow its row.
  */
 import type { NativeStyle } from "@slashsuite/core";
-import { createContext, type ReactElement, type ReactNode, useContext } from "react";
+import {
+  Children,
+  createContext,
+  Fragment,
+  isValidElement,
+  type ReactElement,
+  type ReactNode,
+  useContext,
+} from "react";
 import { Text } from "react-native";
 
 /** The most the system's text size may grow a control's text. */
@@ -42,11 +50,40 @@ export function InheritedText({ children }: { children?: ReactNode }): ReactElem
   );
 }
 
-/** `children` with each bare string or number wrapped in an `InheritedText`; elements pass as they are. */
+/** A `<>…</>`, whose children sit beside its siblings once rendered. */
+function isFragment(node: ReactNode): node is ReactElement<{ children?: ReactNode }> {
+  return isValidElement(node) && node.type === Fragment;
+}
+
+/** `children` as one flat list: nested arrays and fragments opened, null and booleans dropped. */
+function flatten(children: ReactNode): ReactNode[] {
+  return Children.toArray(children).flatMap((child) =>
+    isFragment(child) ? flatten(child.props.children) : [child],
+  );
+}
+
+/**
+ * `children` with each run of bare strings and numbers wrapped in one `InheritedText`, so
+ * `Delete {n} items` stays one run of text (one flex item, wrapping as a sentence); elements pass
+ * as they are, and nested arrays and fragments are opened first (`flatten`).
+ */
 export function renderText(children: ReactNode): ReactNode {
   if (isBareText(children)) return <InheritedText>{children}</InheritedText>;
-  if (!Array.isArray(children)) return children;
-  return children.map((child: ReactNode, index) =>
-    isBareText(child) ? <InheritedText key={index}>{child}</InheritedText> : child,
-  );
+  if (!Array.isArray(children) && !isFragment(children)) return children;
+  const out: ReactNode[] = [];
+  let run: Array<string | number> = [];
+  const flush = (): void => {
+    if (run.length > 0)
+      out.push(<InheritedText key={`text-${out.length}`}>{run.join("")}</InheritedText>);
+    run = [];
+  };
+  for (const child of flatten(children)) {
+    if (isBareText(child)) run.push(child);
+    else {
+      flush();
+      out.push(child);
+    }
+  }
+  flush();
+  return out;
 }

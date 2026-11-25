@@ -127,7 +127,7 @@ const EXACT: Record<string, NativeStyle> = {
   "inline-flex": { flexDirection: "row" },
   "flex-col": { flexDirection: "column" },
   "flex-wrap": { flexWrap: "wrap" },
-  "w-full": { alignSelf: "stretch" },
+  "w-full": { width: "100%" },
   border: { borderWidth: 1, borderStyle: "solid" },
   "border-b": { borderBottomWidth: 1 },
   "border-dashed": { borderStyle: "dashed" },
@@ -175,7 +175,7 @@ const RULES: Rule[] = [
   [/^tracking-(tight|normal|wide)$/, (m) => ({ letterSpacingEm: TRACKING[at(m, 1)] ?? 0 })],
   [/^opacity-(\d+)$/, (m) => ({ opacity: Number(at(m, 1)) / 100 })],
   [/^outline-(\d)$/, (m) => ({ outlineWidth: Number(at(m, 1)), outlineStyle: "solid" })],
-  [/^outline-offset-(\d)$/, (m) => ({ outlineOffset: Number(at(m, 1)) })],
+  [/^(-?)outline-offset-(\d)$/, (m) => ({ outlineOffset: Number(`${at(m, 1)}${at(m, 2)}`) })],
 ];
 
 /** A layout, type or effect utility, or null when it is none of Tailwind's fixed scale. */

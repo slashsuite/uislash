@@ -15,6 +15,7 @@ describe("native lint", () => {
       ["colour-literal", 10],
       ["bare-text", 11],
       ["bare-text", 12],
+      ["bare-text", 13],
     ]);
   });
 

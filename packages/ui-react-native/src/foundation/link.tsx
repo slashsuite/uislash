@@ -1,7 +1,6 @@
 /**
  * F4: links on native. An external address opens in the system (`Linking.openURL`); any other goes
- * to the app's router, which the app hands in once with `LinkProvider`. A link is `inline` (text in
- * running text) or `block` (a box that is the link, such as a card).
+ * to the app's router, which the app hands in once with `LinkProvider`.
  */
 import { createContext, type ReactElement, type ReactNode, useContext } from "react";
 import { Linking } from "react-native";
@@ -37,14 +36,4 @@ export function follow(href: string, navigate: Navigate | null): void {
 export function useFollow(): (href: string) => void {
   const navigate = useContext(LinkContext);
   return (href) => follow(href, navigate);
-}
-
-export type LinkKind = "inline" | "block";
-
-/**
- * What a link of `kind` renders as: an inline link is a nested Text (so it wraps with the sentence
- * around it), a block link a Pressable holding its content.
- */
-export function linkHost(kind: LinkKind): "text" | "pressable" {
-  return kind === "inline" ? "text" : "pressable";
 }

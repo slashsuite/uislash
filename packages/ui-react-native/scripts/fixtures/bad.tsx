@@ -10,6 +10,7 @@ export function Bad() {
     <View style={[sheet.box, styles.box.idle, { backgroundColor: "#ff0000" }]}>
       Hello
       <Pressable onPress={() => undefined}>press me</Pressable>
+      {`${styles.box.idle.gap ?? 0} apart`}
     </View>
   );
 }

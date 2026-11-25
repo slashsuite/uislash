@@ -49,6 +49,7 @@ type PressableProps = Props & {
   children?: ReactNode | ((state: { pressed: boolean }) => ReactNode);
   onPress?: () => void;
   disabled?: boolean;
+  hitSlop?: unknown;
 };
 
 /** A button; pointer down holds `pressed`, so a test can read the pressed style. */
@@ -66,6 +67,7 @@ export function Pressable({ style, children, onPress, disabled, ...rest }: Press
       "data-hint": rest.accessibilityHint,
       "data-role": rest.accessibilityRole,
       "data-state": styleOf(rest.accessibilityState),
+      "data-hitslop": styleOf(rest.hitSlop),
       disabled,
       onClick: onPress,
       onPointerDown: () => setPressed(true),

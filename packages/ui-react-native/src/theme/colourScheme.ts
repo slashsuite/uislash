@@ -3,7 +3,7 @@
  * choice is kept in a `SchemeStorage` the app passes in (AsyncStorage, MMKV, a file), so this
  * package takes no storage dependency; `memoryStorage` keeps it for the session only.
  */
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useColorScheme } from "react-native";
 
 export type Scheme = "light" | "dark";
@@ -43,11 +43,13 @@ export type ColourScheme = {
 export function useColourScheme(storage: SchemeStorage): ColourScheme {
   const system = useColorScheme();
   const [choice, setLocal] = useState<SchemeChoice>("system");
+  // A choice made before the stored one arrives is newer; the stored one must not undo it.
+  const chosen = useRef(false);
 
   useEffect(() => {
     let live = true;
     void Promise.resolve(storage.get()).then((stored) => {
-      if (live && stored !== null) setLocal(stored);
+      if (live && !chosen.current && stored !== null) setLocal(stored);
     });
     return () => {
       live = false;
@@ -56,6 +58,7 @@ export function useColourScheme(storage: SchemeStorage): ColourScheme {
 
   const setChoice = useCallback(
     (next: SchemeChoice) => {
+      chosen.current = true;
       setLocal(next);
       void Promise.resolve(storage.set(next));
     },

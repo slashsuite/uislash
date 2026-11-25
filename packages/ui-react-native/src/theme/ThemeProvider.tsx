@@ -5,15 +5,25 @@
  */
 import type { NativeTheme } from "@slashsuite/core";
 import { createContext, type ReactElement, type ReactNode, useContext, useMemo } from "react";
+import { TextStyleProvider } from "../foundation/text.js";
 import { resolve, type Resolved, type ResolveOptions } from "./resolve.js";
 
 const ThemeContext = createContext<NativeTheme | null>(null);
 
 export type ThemeProviderProps = { theme: NativeTheme; children?: ReactNode };
 
-/** Puts `theme` in force for everything inside it. */
+/** Puts `theme` in force for everything inside it, its base ink and font under all the text. */
 export function ThemeProvider({ theme, children }: ThemeProviderProps): ReactElement {
-  return <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>;
+  const { color, fontFamily } = theme.base;
+  const base = useMemo(
+    () => (fontFamily === null ? { color } : { color, fontFamily }),
+    [color, fontFamily],
+  );
+  return (
+    <ThemeContext.Provider value={theme}>
+      <TextStyleProvider style={base}>{children}</TextStyleProvider>
+    </ThemeContext.Provider>
+  );
 }
 
 /** The theme in force; throws outside a `ThemeProvider`, since a native component has no default look. */

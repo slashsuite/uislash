@@ -7,7 +7,7 @@ import { a11y } from "./a11y.js";
 import { pressProps, valueProps } from "./events.js";
 import { Icon, ToneContext } from "./icon.js";
 import { breakpointOf, Cluster, columnsFor, Stack, useBreakpoint } from "./layout.js";
-import { follow, isExternal, linkHost } from "./link.js";
+import { follow, isExternal } from "./link.js";
 import { hitSlopFor, withinPixel } from "./metrics.js";
 import { Overlay, scrimColour, useOverlay } from "./overlay.js";
 import { MAX_FONT_SCALE, renderText, TextStyleProvider } from "./text.js";
@@ -46,9 +46,44 @@ describe("F2 text", () => {
         </TextStyleProvider>
       </TextStyleProvider>,
     );
-    const text = screen.getByText("Hello");
+    const text = screen.getByText("Hello there");
     expect(styleOf(text)).toEqual({ color: "#111", fontSize: 16 });
     expect(text.getAttribute("data-max-scale")).toBe(String(MAX_FONT_SCALE));
+  });
+
+  it("keeps a sentence built from strings and numbers as one Text, beside the elements", () => {
+    render(<>{renderText(["Delete ", 3, " items", <b key="b">now</b>, [" or ", "later"]])}</>);
+    expect(screen.getByText("Delete 3 items")).toBeDefined();
+    expect(screen.getByText("or later")).toBeDefined();
+    expect(screen.getByText("now").tagName).toBe("B");
+  });
+
+  it("sets the theme's base ink and font under all the text", () => {
+    render(
+      <ThemeProvider theme={theme}>
+        <Stack>Hello</Stack>
+      </ThemeProvider>,
+    );
+    expect(styleOf(screen.getByText("Hello"))).toMatchObject({
+      color: theme.base.color,
+      ...(theme.base.fontFamily === null ? {} : { fontFamily: theme.base.fontFamily }),
+    });
+  });
+
+  it("opens a fragment, so its text is wrapped too", () => {
+    render(
+      <>
+        {renderText(
+          <>
+            Delete {3} <b>now</b>
+          </>,
+        )}
+      </>,
+    );
+    expect(screen.getByText("Delete 3").getAttribute("data-max-scale")).toBe(
+      String(MAX_FONT_SCALE),
+    );
+    expect(screen.getByText("now").tagName).toBe("B");
   });
 
   it("passes an element through as it is", () => {
@@ -88,8 +123,8 @@ describe("F3 layout", () => {
     const stack = screen.getByText("one").parentElement;
     const cluster = screen.getByText("two").parentElement;
     if (stack === null || cluster === null) throw new Error("no parent");
-    expect(styleOf(stack)).toEqual({ flexDirection: "column", gap: 24 });
-    expect(styleOf(cluster)).toMatchObject({ flexDirection: "row", flexWrap: "wrap", gap: 12 });
+    expect(styleOf(stack)).toEqual({ flexDirection: "column", gap: 32 });
+    expect(styleOf(cluster)).toMatchObject({ flexDirection: "row", flexWrap: "wrap", gap: 16 });
   });
 });
 
@@ -102,11 +137,6 @@ describe("F4 links", () => {
     expect(navigate).toHaveBeenCalledWith("/orders/7");
     expect(isExternal("mailto:a@b.c")).toBe(true);
     expect(() => follow("/x", null)).toThrow(/LinkProvider/);
-  });
-
-  it("renders an inline link as text and a block link as a pressable", () => {
-    expect(linkHost("inline")).toBe("text");
-    expect(linkHost("block")).toBe("pressable");
   });
 });
 
@@ -148,7 +178,7 @@ describe("F6 icons", () => {
         </Icon>
       </TextStyleProvider>,
     );
-    expect(propsOf()).toEqual({ width: 16, height: 16, color: "#123456" });
+    expect(propsOf()).toEqual({ width: 14, height: 14, color: "#123456" });
   });
 
   it("takes a tone's ink over the text colour", () => {
@@ -161,7 +191,7 @@ describe("F6 icons", () => {
         </TextStyleProvider>
       </ToneContext.Provider>,
     );
-    expect(propsOf()).toEqual({ width: 20, height: 20, color: "#ff0000" });
+    expect(propsOf()).toEqual({ width: 16, height: 16, color: "#ff0000" });
   });
 });
 

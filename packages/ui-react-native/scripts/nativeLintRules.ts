@@ -31,7 +31,22 @@ function lineOf(source: string, index: number): number {
   return source.slice(0, index).split("\n").length;
 }
 
-/** JSX text that is a direct child of a container element. */
+/**
+ * Text a container would throw on: JSX text, or a string or template literal in braces. A string
+ * held in a variable (`{label}`) needs the type checker and is out of reach of this rule.
+ */
+function bare(child: ts.JsxChild): boolean {
+  if (ts.isJsxText(child)) return child.text.trim() !== "";
+  const value = ts.isJsxExpression(child) ? child.expression : undefined;
+  return (
+    value !== undefined &&
+    (ts.isStringLiteral(value) ||
+      ts.isNoSubstitutionTemplateLiteral(value) ||
+      ts.isTemplateExpression(value))
+  );
+}
+
+/** Bare text that is a direct child of a container element. */
 export function bareText(source: string): Finding[] {
   const findings: Finding[] = [];
   const file = ts.createSourceFile(
@@ -44,14 +59,11 @@ export function bareText(source: string): Finding[] {
   const visit = (node: ts.Node): void => {
     const tag = ts.isJsxElement(node) ? node.openingElement.tagName.getText(file) : "";
     const texts = ts.isJsxElement(node) && CONTAINERS.has(tag) ? node.children : [];
-    const words = texts.flatMap((each) =>
-      ts.isJsxText(each) && each.text.trim() !== "" ? [each] : [],
-    );
-    for (const child of words) {
+    for (const child of texts.filter((each) => bare(each))) {
       findings.push({
         rule: "bare-text",
         line: file.getLineAndCharacterOfPosition(child.getStart(file)).line + 1,
-        message: `text "${child.text.trim()}" inside <${tag}>: wrap it in <Text> or renderText`,
+        message: `text ${child.getText(file).trim()} inside <${tag}>: wrap it in <Text> or renderText`,
       });
     }
     ts.forEachChild(node, visit);

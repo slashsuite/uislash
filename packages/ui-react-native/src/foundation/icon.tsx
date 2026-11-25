@@ -13,8 +13,8 @@ import {
 } from "react";
 import { useTextStyle } from "./text.js";
 
-/** The icon sizes, in px: the web's `sm`, `md` and `lg`. */
-export const ICON_PX = { sm: 16, md: 20, lg: 24 } as const;
+/** The icon sizes, in px: the web Icon's `sm`, `md` and `lg` (`size-3.5`, `size-4`, `size-5`). */
+export const ICON_PX = { sm: 14, md: 16, lg: 20 } as const;
 export type IconSize = keyof typeof ICON_PX;
 
 /** The ink a tone sets for the icons inside, over the text colour. */

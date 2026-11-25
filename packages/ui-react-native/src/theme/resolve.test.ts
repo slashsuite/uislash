@@ -1,6 +1,9 @@
 import {
-  BUTTON_LINE_PX,
+  CONTROL_LEADING,
+  FOCUS_RING,
+  FOCUS_RING_INSET,
   parityManifest,
+  spacingPx,
   type ButtonSize,
   type ButtonTone,
   type ButtonVariant,
@@ -58,7 +61,7 @@ describe("resolve", () => {
         resolve(nativeButtonClass({ variant: "primary", size, tone: "neutral" }), theme),
       );
       expect(box.height).toBeUndefined();
-      expect(text.lineHeight).toBe(BUTTON_LINE_PX[size]);
+      expect(text.lineHeight).toBe(spacingPx(CONTROL_LEADING[size], "leading"));
       const height =
         Number(text.lineHeight) + 2 * Number(box.paddingVertical) + 2 * Number(box.borderWidth);
       expect(height).toBe(manifest[size]?.height);
@@ -100,6 +103,14 @@ describe("resolve", () => {
     expect(staticUtility("leading-5")).toEqual({ lineHeight: 20 });
     expect(staticUtility("tabular-nums")).toEqual({ fontVariant: "tabular-nums" });
     expect(staticUtility("grid")).toBeNull();
+    expect(staticUtility("w-full")).toEqual({ width: "100%" });
+  });
+
+  it("resolves both of core's focus rings, the inset one at a negative offset", () => {
+    const theme = nativeThemes[0];
+    if (theme === undefined) throw new Error("no theme");
+    expect(resolve(FOCUS_RING, theme).box.focused.outlineOffset).toBe(2);
+    expect(resolve(FOCUS_RING_INSET, theme).box.focused.outlineOffset).toBe(-2);
   });
 
   it("works tracking out in px from the font size", () => {

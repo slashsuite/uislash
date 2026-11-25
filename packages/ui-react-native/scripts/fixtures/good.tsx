@@ -7,7 +7,7 @@ export function Good({ label }: { label: string }) {
   return (
     <View style={styles.box.idle}>
       <Text style={styles.text.idle}>{label}</Text>
-      {label}
+      <Text style={styles.text.idle}>{`${label} again`}</Text>
     </View>
   );
 }

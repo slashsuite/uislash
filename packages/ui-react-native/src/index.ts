@@ -21,15 +21,7 @@ export {
   type Gap,
   type StackProps,
 } from "./foundation/layout.js";
-export {
-  follow,
-  isExternal,
-  LinkProvider,
-  linkHost,
-  useFollow,
-  type LinkKind,
-  type Navigate,
-} from "./foundation/link.js";
+export { follow, isExternal, LinkProvider, useFollow, type Navigate } from "./foundation/link.js";
 export { hitSlopFor, MIN_TARGET, withinPixel } from "./foundation/metrics.js";
 export { Overlay, scrimColour, useOverlay, type OverlayProps } from "./foundation/overlay.js";
 export {

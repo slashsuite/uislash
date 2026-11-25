@@ -34,8 +34,8 @@ export function useColumns(minWidth: number, gap: number): number {
   return columnsFor(useWindowDimensions().width, minWidth, gap);
 }
 
-/** The gap scale, in px: `xs` to `xl`, the web's `gap-2` to `gap-12`. */
-export const GAP = { xs: 8, sm: 12, md: 16, lg: 24, xl: 48 } as const;
+/** The gap scale, in px: the web Stack's `xs` to `xl` (`gap-2`, `gap-4`, `gap-6`, `gap-8`, `gap-12`). */
+export const GAP = { xs: 8, sm: 16, md: 24, lg: 32, xl: 48 } as const;
 export type Gap = keyof typeof GAP;
 
 export type StackProps = { gap?: Gap | undefined; children?: ReactNode };

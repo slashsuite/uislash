@@ -54,6 +54,42 @@ describe("Button", () => {
     expect(button.getAttribute("data-hint")).toBe("Add a card first");
     expect(JSON.parse(button.getAttribute("data-state") ?? "{}")).toMatchObject({ disabled: true });
     expect(styleOf(button).backgroundColor).toBe(theme.utilities["bg-slate-100"]?.backgroundColor);
+    fireEvent.click(button);
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
+  it("is busy, not blocked, when given both, and takes `busy` as a flag", () => {
+    render(
+      <ThemeProvider theme={theme}>
+        <Button data-testid="skip" busy disabledReason="Pick a shop first">
+          Skip
+        </Button>
+      </ThemeProvider>,
+    );
+    const button = screen.getByTestId("skip");
+    expect(screen.getByText("Skip")).toBeDefined();
+    expect(button.getAttribute("data-hint")).toBeNull();
+    expect(JSON.parse(button.getAttribute("data-state") ?? "{}")).toMatchObject({ busy: true });
+  });
+
+  it("slops a small Button's touch target to 44pt and leaves a big one alone", () => {
+    render(
+      <ThemeProvider theme={theme}>
+        <Button data-testid="sm" size="sm">
+          Small
+        </Button>
+        <Button data-testid="lg" size="lg">
+          Large
+        </Button>
+      </ThemeProvider>,
+    );
+    expect(JSON.parse(screen.getByTestId("sm").getAttribute("data-hitslop") ?? "{}")).toEqual({
+      top: 9,
+      bottom: 9,
+      left: 0,
+      right: 0,
+    });
+    expect(JSON.parse(screen.getByTestId("lg").getAttribute("data-hitslop") ?? "{}")).toEqual({});
   });
 
   it("swaps a busy Button's label and says it is busy", () => {
