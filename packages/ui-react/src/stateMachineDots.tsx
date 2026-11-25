@@ -113,6 +113,14 @@ export function rowsFor(slots: number): number {
   return Math.ceil(Math.max(LIMIT, slots) / COLS);
 }
 
+/**
+ * The room a box reserves under its tags for `slots` dots: the full grid's width and `rowsFor`'s
+ * height, so it is the same at 0, 1, 9 or 12 items (closed) and grows only when a box is opened.
+ */
+export function dotArea(slots: number): { width: number; height: number } {
+  return { width: COLS * SLOT_W, height: rowsFor(slots) * SLOT_H };
+}
+
 /** Where slot `i` of `slots` sits in `box`: its left edge and its vertical centre, on the box's fixed grid. */
 function slotAt(box: FlowNodeBox, i: number, slots: number): { left: number; y: number } {
   const top = box.y + box.height - BOX_INSET - rowsFor(slots) * SLOT_H;

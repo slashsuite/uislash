@@ -3,17 +3,7 @@ import { FlowView, type ViewNode, type ViewTone } from "./FlowDiagram.js";
 import { Pill, type PillTone } from "./Pill.js";
 import type { Passthrough } from "./props.js";
 import { Bone, BusyLabel, busy, type LoadingProps, useLoading } from "./skeleton.js";
-import {
-  COLS,
-  dotLayer,
-  placeOf,
-  rowsFor,
-  SLOT_H,
-  SLOT_W,
-  slotsFor,
-  UNPLACED,
-  useMoves,
-} from "./stateMachineDots.js";
+import { dotArea, dotLayer, placeOf, slotsFor, UNPLACED, useMoves } from "./stateMachineDots.js";
 import { useFlowLayout } from "./useFlowLayout.js";
 
 /**
@@ -110,11 +100,7 @@ function boxContent(state: StateMachineState | null, count: number, slots: numbe
   return (
     <>
       {tags}
-      <span
-        aria-hidden="true"
-        className="mx-auto mt-1 block"
-        style={{ width: COLS * SLOT_W, height: rowsFor(slots) * SLOT_H }}
-      />
+      <span aria-hidden="true" className="mx-auto mt-1 block" style={dotArea(slots)} />
     </>
   );
 }

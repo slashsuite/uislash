@@ -7,6 +7,7 @@ import {
   type StateMachineState,
   type StateMachineTransition,
 } from "./StateMachine.js";
+import { dotArea, slotsFor } from "./stateMachineDots.js";
 
 const states: StateMachineState[] = [
   { id: "draft", label: "Draft", kind: "initial", owner: "writer" },
@@ -116,6 +117,28 @@ describe("StateMachine", () => {
     expect(screen.getAllByRole("img", { name: /, in Draft$/ })).toHaveLength(12);
     await user().click(screen.getByRole("button", { name: "Show fewer in Draft" }));
     expect(screen.getAllByRole("img", { name: /, in Draft$/ })).toHaveLength(8);
+  });
+
+  it("reserves the same dot room in a box at 0, 1, 9 and 12 items", () => {
+    // A box's size is its label, its tag row and this room; none of it may follow the count, or
+    // the diagram moves when an item arrives.
+    const empty = dotArea(slotsFor(0, false));
+    for (const n of [1, 9, 12]) expect(dotArea(slotsFor(n, false)), `${n} items`).toEqual(empty);
+    // Opened past nine, a box grows to show every item.
+    expect(dotArea(slotsFor(12, true)).height).toBeGreaterThan(empty.height);
+  });
+
+  it("keeps the tag row in a box with no items, so it is as tall as a box with some", () => {
+    render(
+      <StateMachine
+        label="Queue"
+        states={[{ id: "queued", label: "Queued" }]}
+        transitions={[]}
+        items={[]}
+      />,
+    );
+    // The count tag holds its room, hidden, until an item arrives.
+    expect(screen.getAllByText("0 items")).not.toHaveLength(0);
   });
 
   it("rings the active state", () => {
