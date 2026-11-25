@@ -56,7 +56,7 @@ it from there. With no theme the components render in Tailwind's own default col
 look; that is only what a theme remaps, not a look the repo designs or checks, so Storybook, its
 Overview and the visual matrix list `themes/*.css` and nothing else.
 
-**React Native is `packages/ui-react-native`, built natively rather than through react-native-web.** The two renderers stay in step through core: a value both draw lives in core's tables, never in one renderer's file, and the parity manifest (`packages/core/parity.json`) is the native test oracle for sizes. A component in the manifest has a twin on each side; a pull request that changes one twin changes the other too, or carries a `Parity: follow-up <ref>` line in its body (`scripts/parityLine.ts`, CI's `parity` job, which exits 8 naming the component). A new native component adds itself to the manifest. Its gallery, device lanes and visual upload come later.
+**React Native is `packages/ui-react-native`, built natively rather than through react-native-web.** The two renderers stay in step through core: a value both draw lives in core's tables, never in one renderer's file, and the parity manifest (`packages/core/parity.json`) is the native test oracle for sizes. A component in the manifest has a twin on each side; a pull request that changes one twin changes the other too, or carries a `Parity: follow-up <ref>` line in its body (`scripts/parityLine.ts`, the `Parity` workflow, which reruns when the body is edited and exits 8 naming the component). A new native component adds itself to the manifest. Its gallery, device lanes and visual upload come later.
 
 ## The gate
 
@@ -210,8 +210,8 @@ global rule; what is particular to uislash:
    `@slashsuite/themes`, wildcard exports and `files` that list no theme, rules scoped under each
    file's own scope class, no Tailwind import, remaps every palette utility, clears the WCAG AA contrast contract in `packages/themes-shared/src/contrastRules.ts` and the distinction contract in `packages/themes-shared/src/distinction.ts` (colours a page must tell apart, by OKLab distance); a dark theme also declares `@custom-variant dark`).
    The scope class is read from the CSS file, never listed. Do not add a theme list anywhere.
-   Beside each CSS file sits its generated `<id>.native.json` (`themes:theme-native`, which
-   `themes:build` runs, from `packages/core/src/themeNative.ts`); the same test fails on a stale one
+   Beside each CSS file sits its generated `<id>.native.json` (`themes:theme-native`, run by
+   hand, from `packages/core/src/themeNative.ts`); the same test fails on a stale one
    or one that leaves a palette utility out. It is never edited by hand.
 3. **Packages stay (nearly) dependency-free at runtime.** `@slashsuite/ui-react` has two approved runtime
    dependencies: `react-aria-components`, for the date picker (with `@internationalized/date`, whose
