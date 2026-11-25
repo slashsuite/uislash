@@ -4,7 +4,8 @@
  * `parity.json`; its test fails when the file is stale, so a token change shows up as a diff of
  * the manifest that both renderers are measured against.
  */
-import { BUTTON_BOX, BUTTON_LINE_PX, BUTTON_SHAPE, type ButtonSize } from "./button.js";
+import { BUTTON_BOX, BUTTON_SHAPE, type ButtonSize } from "./button.js";
+import { CONTROL_LEADING } from "./control.js";
 
 /** Tailwind's spacing step: `p-1` is 0.25rem, 4px at the default root size. */
 const SPACING_PX = 4;
@@ -47,7 +48,7 @@ function buttonBox(size: ButtonSize): BoxMetrics {
   const borderWidth = /(?:^|\s)border(?=\s|$)/.test(BUTTON_SHAPE) ? 1 : 0;
   const paddingY = spacingPx(box, "py");
   return {
-    height: BUTTON_LINE_PX[size] + 2 * paddingY + 2 * borderWidth,
+    height: spacingPx(CONTROL_LEADING[size], "leading") + 2 * paddingY + 2 * borderWidth,
     paddingX: spacingPx(box, "px"),
     paddingY,
     gap: spacingPx(box, "gap"),

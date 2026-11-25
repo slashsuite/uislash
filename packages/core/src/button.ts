@@ -113,9 +113,3 @@ export function buttonLook(
   }
   return BUTTON_TONE[tone][variant];
 }
-
-/**
- * The line height of a Button's label at each size, in px, at the default type step (`text-xs`,
- * `text-sm` and `text-base`): with the padding and the hairline it gives the height.
- */
-export const BUTTON_LINE_PX: Record<ButtonSize, number> = { sm: 16, md: 20, lg: 24 };

@@ -5,8 +5,8 @@ each remaps the Tailwind slate/colour utilities that `@slashsuite/ui-react` is w
 own colours. Each also ships a `.link` class.
 
 Beside each CSS file is `<id>.native.json`, the same theme for the native renderer: every palette
-utility mapped to its colours, the pressed, focused, placeholder and scrim slots, and the status bar
-style per scheme. It is generated from the CSS file (`bunx moon run themes:theme-native`) and never
+utility mapped to its colours, the pressed, focused, placeholder and scrim slots, the heading face and
+any colour a heading takes, and the status bar style per scheme. It is generated from the CSS file (`bunx moon run themes:theme-native`) and never
 edited by hand; `themes.test.ts` fails on a stale one. Import it as
 `@slashsuite/themes/<id>.native.json`.
 

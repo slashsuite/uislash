@@ -6,7 +6,8 @@
   "base": {
     "backgroundColor": "#eef2f9",
     "color": "#24273a",
-    "fontFamily": "Inter"
+    "fontFamily": "Inter",
+    "headingFontFamily": null
   },
   "selection": {
     "backgroundColor": "#fab387",
@@ -281,7 +282,7 @@
       "borderColor": "rgba(30, 102, 245, 0.4)"
     },
     "link": {
-      "color": "#8a2e03",
+      "color": "#a03604",
       "fontWeight": "500"
     },
     "bg-indigo-400/25": {
@@ -367,6 +368,9 @@
       },
       "bg-slate-100": {
         "backgroundColor": "#dee1ea"
+      },
+      "link": {
+        "color": "#8a2e03"
       }
     },
     "focused": {
@@ -426,6 +430,7 @@
       }
     }
   },
+  "headings": {},
   "compounds": [
     {
       "utility": "disabled:opacity-50",

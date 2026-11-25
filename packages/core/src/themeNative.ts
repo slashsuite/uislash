@@ -34,8 +34,13 @@ export type NativeTheme = {
   scheme: "light" | "dark";
   /** The status bar's content style: light content on a dark theme. */
   statusBar: "light-content" | "dark-content";
-  /** The page: its canvas, its ink and its sans family. */
-  base: { backgroundColor: string; color: string; fontFamily: string | null };
+  /** The page: its canvas, its ink, its sans family and the family its headings take. */
+  base: {
+    backgroundColor: string;
+    color: string;
+    fontFamily: string | null;
+    headingFontFamily: string | null;
+  };
   /** The text selection's colours. */
   selection: NativeStyle;
   /** Every plain palette utility, keyed as a component writes it. */
@@ -44,6 +49,8 @@ export type NativeTheme = {
   states: Record<NativeState, Record<string, NativeStyle>>;
   /** A utility drawn on a tint: `within["bg-violet-50"]["text-slate-500"]`. */
   within: Record<string, Record<string, NativeStyle>>;
+  /** A utility as a heading draws it: `headings["text-slate-900"]`. */
+  headings: Record<string, NativeStyle>;
   compounds: NativeCompound[];
 };
 
@@ -161,13 +168,14 @@ type Parsed = {
   utilities: Record<string, NativeStyle>;
   states: NativeTheme["states"];
   within: NativeTheme["within"];
+  headings: NativeTheme["headings"];
   compounds: NativeCompound[];
 };
 
 function emptyParsed(scope: string): Parsed {
   return {
     scope,
-    base: { backgroundColor: "", color: "", fontFamily: null },
+    base: { backgroundColor: "", color: "", fontFamily: null, headingFontFamily: null },
     selection: {},
     utilities: {},
     states: {
@@ -180,21 +188,41 @@ function emptyParsed(scope: string): Parsed {
       target: {},
     },
     within: {},
+    headings: {},
     compounds: [],
   };
 }
 
-/** The scope rule: the page's canvas, ink and sans family. */
+/** The first family of a `--font-…` stack in the scope rule, unquoted; none gives `null`. */
+function familyOf(body: string, variable: string): string | null {
+  const family = new RegExp(`--font-${variable}:([^;]+);`)
+    .exec(body)?.[1]
+    ?.split(",")[0]
+    ?.trim()
+    .replace(/^["']|["']$/g, "");
+  return family === undefined || family === "" ? null : family;
+}
+
+/** The scope rule: the page's canvas, ink, sans family and heading family. */
 function readScope(parsed: Parsed, body: string, file: string, unmapped: string[]): void {
   const style = declarationsOf(body, `${file} .${parsed.scope}`, unmapped);
   parsed.base.backgroundColor = String(style["backgroundColor"] ?? "");
   parsed.base.color = String(style["color"] ?? "");
-  const sans = /--font-sans:([^;]+);/.exec(body)?.[1];
-  const family = sans
-    ?.split(",")[0]
-    ?.trim()
-    .replace(/^["']|["']$/g, "");
-  parsed.base.fontFamily = family === undefined || family === "" ? null : family;
+  parsed.base.fontFamily = familyOf(body, "sans");
+  parsed.base.headingFontFamily = familyOf(body, "heading");
+}
+
+/**
+ * A rule on the headings. The heading face is `base.headingFontFamily`, read from the scope rule, so
+ * a bare heading rule of font-family alone is taken; a utility on a heading
+ * (`:is(h1, h2, h3).text-slate-900`) lands in `headings`; anything else is unmapped.
+ */
+function readHeading(parsed: Parsed, rest: string, style: NativeStyle): boolean {
+  if (rest === "") return Object.keys(style).every((key) => key === "fontFamily");
+  const utility = new RegExp(`^\\.${CLASS}$`).exec(rest)?.[1];
+  if (utility === undefined) return false;
+  merge(parsed.headings, unescapeClass(utility), style);
+  return true;
 }
 
 /** A selector that is not one utility: the selection, the headings, a utility on a tint. */
@@ -204,8 +232,8 @@ function readSpecial(parsed: Parsed, selector: string, style: NativeStyle): bool
     Object.assign(parsed.selection, style);
     return true;
   }
-  // Headings take the theme's heading face, which a native renderer sets per text role.
-  if (new RegExp(`^\\.${scope}\\s+:is\\(h1, h2, h3`).test(selector)) return true;
+  const heading = new RegExp(`^\\.${scope}\\s+:is\\(h1, h2, h3[^)]*\\)(.*)$`).exec(selector);
+  if (heading) return readHeading(parsed, heading[1] ?? "", style);
   const within = new RegExp(`^\\.${scope}\\s+\\.${CLASS}\\s+\\.${CLASS}$`).exec(selector);
   if (!within) return false;
   const tint = unescapeClass(within[1] ?? "");
@@ -224,7 +252,11 @@ function readUtility(parsed: Parsed, utility: string, rest: string, style: Nativ
   }
   const { variant, plain } = splitVariant(utility);
   if (variant === undefined) {
-    merge(parsed.utilities, plain, style);
+    // A plain class with its own `:hover` (`.link:hover`) is that class pressed; any other
+    // pseudo-class on a plain class has no slot.
+    if (rest === ":hover") merge(parsed.states.pressed, plain, style);
+    else if (rest === "") merge(parsed.utilities, plain, style);
+    else return false;
     return true;
   }
   const state = STATE_OF_VARIANT[variant];
@@ -258,7 +290,7 @@ export function nativeTheme(css: string, id: string): { theme: NativeTheme; unma
   const uncommented = css.replace(/\/\*[\s\S]*?\*\//g, "");
   const scheme = /@custom-variant\s+dark\b/.test(uncommented) ? "dark" : "light";
   const unmapped: string[] = [];
-  const { scope, base, selection, utilities, states, within, compounds } = parse(
+  const { scope, base, selection, utilities, states, within, headings, compounds } = parse(
     uncommented.replace(/@[^;{}]*;/g, ""),
     file,
     unmapped,
@@ -274,6 +306,7 @@ export function nativeTheme(css: string, id: string): { theme: NativeTheme; unma
       utilities,
       states,
       within,
+      headings,
       compounds,
     },
     unmapped,

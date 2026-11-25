@@ -176,7 +176,7 @@ A theme is one CSS file in the `themes/` package, and its file name is its id:
 3. Add a row to the table in `themes/README.md`, and any upstream licence text to `themes/NOTICE`.
 4. `bunx moon run themes:theme-native` writes `themes/<id>.native.json`, the same theme as a
    colour map for the native renderer (each palette utility to its colours, the pressed, focused,
-   placeholder and scrim slots, and the status bar per scheme). It is generated from the CSS, never
+   placeholder and scrim slots, the heading face and colours, and the status bar per scheme). It is generated from the CSS, never
    edited, and committed beside it.
 5. `bunx moon run themes:test`. `themes.test.ts` reads every CSS file there and applies the contract
    to each, and fails when a theme's `.native.json` is stale or leaves a palette utility out. `bunx moon run themes:pack-check` then checks the tarball would carry every theme, the

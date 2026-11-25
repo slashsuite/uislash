@@ -8,12 +8,16 @@ const css = String.raw`
   background-color: #101010;
   color: #EEEEEE;
   --font-sans: "DM Sans", sans-serif;
+  --font-heading: "DM Serif Display", serif;
   --hc-ink: #eeeeee;
 }
 .night ::selection,
 .night::selection { background-color: #ff8800; color: #000000; }
 .night :is(h1, h2, h3, .font-heading) { font-family: var(--font-heading); }
+.night :is(h1, h2, h3).text-slate-900 { color: #050505; }
 .night .bg-white { background-color: #1a1a1a; }
+.night .link { color: #7828df; }
+.night .link:hover { color: #515bab; }
 .night .bg-black\/50 { background-color: rgba( 0, 0, 0, 0.5 ); }
 .night .hover\:bg-violet-700:hover { background-color: #7700ff; }
 .night .focus-visible\:outline-violet-600:focus-visible { outline-color: #8800ff; }
@@ -34,6 +38,7 @@ describe("a theme's native map", () => {
       backgroundColor: "#101010",
       color: "#eeeeee",
       fontFamily: "DM Sans",
+      headingFontFamily: "DM Serif Display",
     });
     expect(theme.selection).toEqual({ backgroundColor: "#ff8800", color: "#000000" });
   });
@@ -41,6 +46,15 @@ describe("a theme's native map", () => {
   it("keys plain utilities as a component writes them, colours in one form", () => {
     expect(theme.utilities["bg-white"]).toEqual({ backgroundColor: "#1a1a1a" });
     expect(theme.utilities["bg-black/50"]).toEqual({ backgroundColor: "rgba(0, 0, 0, 0.5)" });
+  });
+
+  it("keeps a plain class's own hover in pressed, off its idle colour", () => {
+    expect(theme.utilities["link"]).toEqual({ color: "#7828df" });
+    expect(theme.states.pressed["link"]).toEqual({ color: "#515bab" });
+  });
+
+  it("keeps a utility on a heading apart from the plain one", () => {
+    expect(theme.headings["text-slate-900"]).toEqual({ color: "#050505" });
   });
 
   it("puts each state variant in its slot", () => {
@@ -74,10 +88,14 @@ describe("a theme's native map", () => {
 
   it("names what it cannot carry instead of dropping it", () => {
     const odd = nativeTheme(
-      ".x { color: #000; } .x .bg-white { box-shadow: none; } .x > p { color: #f00; }",
+      ".x { color: #000; } .x .bg-white { box-shadow: none; } .x > p { color: #f00; } .x .link:active { color: #111; }",
       "x",
     );
-    expect(odd.unmapped).toEqual(["x.css .x .bg-white { box-shadow }", "x.css: selector .x > p"]);
+    expect(odd.unmapped).toEqual([
+      "x.css .x .bg-white { box-shadow }",
+      "x.css: selector .x > p",
+      "x.css: selector .x .link:active",
+    ]);
   });
 
   it("reads a light theme with dark ink in the status bar", () => {
