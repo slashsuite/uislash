@@ -39,13 +39,13 @@ describe("Cluster", () => {
 
 describe("Cluster as a list", () => {
   it.each(["ul", "ol"] as const)(
-    "as=%s is a list named by aria-label, one item per child",
+    "as=%s is a list named by aria-label, each child in its own item",
     (as) => {
       render(
         <Cluster as={as} aria-label="Tags">
-          <li>Vintage</li>
-          <li>Books</li>
-          <li>Vinyl</li>
+          <span>Vintage</span>
+          <span>Books</span>
+          <span>Vinyl</span>
         </Cluster>,
       );
       const list = screen.getByRole("list", { name: "Tags" });

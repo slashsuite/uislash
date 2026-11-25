@@ -18,10 +18,10 @@ const october: DateRange = {
 };
 
 const shown = () => screen.getAllByRole("spinbutton").map((s) => s.textContent);
-const side = (name: "Start date" | "End date") => screen.getByRole("group", { name });
+const side = (name: string) => screen.getByRole("group", { name });
 
 /** Click into one side's day segment and type, as a person does. */
-async function typeInto(name: "Start date" | "End date", digits: string) {
+async function typeInto(name: string, digits: string) {
   const u = user();
   await u.click(within(side(name)).getAllByRole("spinbutton")[0] ?? document.body);
   await u.keyboard(digits);
@@ -71,6 +71,12 @@ describe("DateRangePicker", () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
+  it("starts an impossible day's message with the side's own label", async () => {
+    render(<DateRangePicker label="Période" startLabel="Début" endLabel="Fin" />);
+    await typeInto("Fin", "31022026");
+    expect(drawn("Fin: February 2026 has 28 days.")).not.toBeNull();
+  });
+
   it("opens one Monday-first month", () => {
     render(<DateRangePicker label="Period" defaultOpen defaultValue={october} />);
     expect(screen.getAllByRole("grid")).toHaveLength(1);
@@ -93,5 +99,28 @@ describe("DateRangePicker", () => {
     expect(announced()).toEqual(["Too long a period."]);
     expect(screen.getAllByRole("spinbutton")[0]?.getAttribute("aria-invalid")).toBe("true");
     expect(screen.getByText("A hint.")).not.toBeNull();
+  });
+});
+
+describe("DateRangePicker words", () => {
+  it("renames the sides and the word between them", () => {
+    render(
+      <DateRangePicker
+        label="Période"
+        startLabel="Date de début"
+        endLabel="Date de fin"
+        toLabel="au"
+      />,
+    );
+    expect(screen.getByRole("group", { name: "Date de début" })).not.toBeNull();
+    expect(screen.getByRole("group", { name: "Date de fin" })).not.toBeNull();
+    expect(screen.getByText("au")).not.toBeNull();
+    expect(screen.queryByText("to")).toBeNull();
+  });
+
+  it("renames the calendar's Clear button", () => {
+    render(<DateRangePicker label="Période" defaultOpen clearLabel="Effacer" />);
+    expect(screen.getByRole("button", { name: "Effacer" })).not.toBeNull();
+    expect(screen.queryByRole("button", { name: "Clear" })).toBeNull();
   });
 });

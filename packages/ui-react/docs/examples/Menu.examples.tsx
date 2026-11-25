@@ -20,9 +20,9 @@ export const DoOverflow = () => (
             size="sm"
             label="More actions"
             items={[
-              { label: "Favourite", icon: "plus", onSelect: () => undefined },
-              { label: "Settings", icon: "settings", onSelect: () => undefined },
-              { label: "Hide chat", tone: "danger", onSelect: () => undefined },
+              { label: "Favourite", icon: "plus", onClick: () => undefined },
+              { label: "Settings", icon: "settings", onClick: () => undefined },
+              { label: "Hide chat", tone: "danger", onClick: () => undefined },
             ]}
           />
         </>
@@ -58,9 +58,9 @@ export const DoDestructive = () => (
     label="More actions"
     defaultOpen
     items={[
-      { label: "Favourite", icon: "plus", onSelect: () => undefined },
-      { label: "Settings", icon: "settings", onSelect: () => undefined },
-      { label: "Hide chat", tone: "danger", onSelect: () => undefined },
+      { label: "Favourite", icon: "plus", onClick: () => undefined },
+      { label: "Settings", icon: "settings", onClick: () => undefined },
+      { label: "Hide chat", tone: "danger", onClick: () => undefined },
     ]}
   />
 );
@@ -71,9 +71,9 @@ export const DontDestructive = () => (
     label="More actions"
     defaultOpen
     items={[
-      { label: "Hide chat", tone: "danger", onSelect: () => undefined },
-      { label: "Favourite", icon: "plus", onSelect: () => undefined },
-      { label: "Settings", icon: "settings", onSelect: () => undefined },
+      { label: "Hide chat", tone: "danger", onClick: () => undefined },
+      { label: "Favourite", icon: "plus", onClick: () => undefined },
+      { label: "Settings", icon: "settings", onClick: () => undefined },
     ]}
   />
 );

@@ -1,5 +1,5 @@
 import ts from "typescript";
-import { attributeOf, insert, isOn, remove, replace } from "../attributes.js";
+import { attributeOf, insert, isOn, replace } from "../attributes.js";
 import { componentOf, type Context, report, type Tag, type TagRule } from "../source.js";
 
 function tagOf(node: ts.Node): Tag | undefined {
@@ -76,12 +76,14 @@ export function numericHead(tag: Tag, component: string, context: Context): void
   }
 }
 
-/** A `numeric` cell is end aligned by itself: `align="end"` goes, and one with no `align` keeps `start`. */
+/**
+ * A `numeric` cell is end aligned by itself, so one with no `align` keeps `start`. An `align="end"`
+ * stays, a pin like that `start`: with it gone a second run could not tell the cell from a 0.10 one
+ * and would write `start`. The `--unpin` step drops both.
+ */
 export function numericCell(tag: Tag, component: string, context: Context): void {
   if ((component !== "TableCell" && component !== "TableEditCell") || !isNumeric(tag)) return;
-  const align = attributeOf(tag, "align");
-  if (align === undefined) insert(context, tag, 'align="start"');
-  else if (stringOf(align) === "end") remove(context, align);
+  if (attributeOf(tag, "align") === undefined) insert(context, tag, 'align="start"');
 }
 
 /** A `Table` needs a `label` now. */

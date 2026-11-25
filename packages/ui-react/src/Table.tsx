@@ -27,8 +27,8 @@ import { BusyLabel, busy, type LoadingProps, LoadingScope, useLoading } from "./
  * names the table for assistive tech and is not drawn. Inside a `Card` it is plain: no card of its
  * own (border, fill and shadow), no tinted head strip and no row hover, only the row dividers. A
  * column of figures says so once, with `numeric` on its `TableHeaderCell`: its cells then take end
- * alignment and tabular figures. `size` is the row padding, and the controls in the rows follow it
- * (`sm` by default). Other props (`id`, `data-*`, `aria-*`) go on the `<table>`. While `loading`, a
+ * alignment and tabular figures. `size` is the row padding, and the buttons and pills in the rows follow it
+ * (`sm` by default); a field keeps its own `size`. Other props (`id`, `data-*`, `aria-*`) go on the `<table>`. While `loading`, a
  * body with no rows draws five rows of bones, one per column, and an empty cell draws a bone; the
  * table keeps its role and its name.
  */
@@ -198,8 +198,9 @@ export function TableRow({
 
 /**
  * A full-width group header in the body: a tinted row with a `label` that spans every column the
- * head declares (or `colSpan` columns), and optional `trailing` content at the far end (a count, a
- * subtotal, a small button). The group's rows follow it. For a panel of other content across the
+ * head declares (or `colSpan` columns), and optional `trailing` text at the far end: the group's
+ * count or subtotal, muted. The group's rows follow it. The row is a `<th>`, a heading for the
+ * group, so an action on the group goes in its rows or above the table, not here. For a panel of other content across the
  * whole row, use a `TableCell span="full"` instead.
  */
 export function TableGroupRow({
@@ -210,7 +211,7 @@ export function TableGroupRow({
 }: {
   /** The group's name, at the start of the row. */
   label: ReactNode;
-  /** Content at the far end of the row: a count, a subtotal, a small button. */
+  /** The group's count or subtotal, muted at the far end of the row. */
   trailing?: ReactNode;
   /**
    * How many columns the header spans.

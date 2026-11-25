@@ -90,3 +90,25 @@ export const DoLabel: S = {
 export const DontLabel: S = {
   render: examples.DontLabel,
 };
+
+/** While `loading`, a frame with no `src` yet is a bone of its shape, and the regions wait with it. */
+export const Loading: StoryObj<{ loading: boolean }> = {
+  args: { loading: true },
+  render: ({ loading }) => (
+    <RegionFrame
+      src={loading ? undefined : sampleShot}
+      alt="A screenshot of a dashboard"
+      aspect="16:9"
+      width="lg"
+      loading={loading}
+    >
+      {!loading && (
+        <OutlineRegion
+          rect={{ x: 168, y: 112, width: 136, height: 72 }}
+          within={sampleShotSize}
+          label="manifest"
+        />
+      )}
+    </RegionFrame>
+  ),
+};

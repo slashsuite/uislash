@@ -44,11 +44,11 @@ export function GalleryButtons() {
         <Menu
           label="More actions"
           items={[
-            { label: "Favourite", onSelect: noop },
-            { label: "Hide", tone: "danger", onSelect: noop },
+            { label: "Favourite", onClick: noop },
+            { label: "Hide", tone: "danger", onClick: noop },
           ]}
         />
-        <Menu trigger="button" label="Export" items={[{ label: "As CSV", onSelect: noop }]} />
+        <Menu trigger="button" label="Export" items={[{ label: "As CSV", onClick: noop }]} />
       </div>
       <div className="flex flex-wrap items-center gap-2">
         <Button size="sm">Save</Button>

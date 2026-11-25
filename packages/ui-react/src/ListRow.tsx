@@ -92,11 +92,10 @@ function rowBase(props: ListRowProps): string {
 }
 
 function look(props: ListRowProps): string {
-  const { size = "md", divided = false, focused = false } = props;
+  const { size = "md", focused = false } = props;
   return cx(
     rowBase(props),
     PAD[size],
-    divided && "border-t border-slate-200/70",
     fillOf(props),
     isDisabled(props) && DISABLED,
     focused && FOCUSED,
@@ -113,7 +112,6 @@ function StaticRow(props: ListRowStaticProps & Pieces): ReactElement {
     highlighted: _hl,
     selected,
     size: _s,
-    divided: _d,
     actions,
     panel,
     expanded: _e,
@@ -182,7 +180,6 @@ function LinkRow(props: ListRowLinkProps & Pieces): ReactElement {
     selected,
     expanded: _e,
     size: _s,
-    divided: _d,
     actions: _a,
     panel: _p,
     start,
@@ -225,7 +222,6 @@ function ButtonRow(props: ListRowButtonProps & Pieces & { labelId: string }): Re
     selected,
     expanded,
     size: _s,
-    divided: _d,
     actions: _a,
     panel: _p,
     href: _h,
@@ -266,8 +262,8 @@ function ButtonRow(props: ListRowButtonProps & Pieces & { labelId: string }): Re
  * `<button>` or link stretched over it, so a tap anywhere on the row runs it; a `TextLink`,
  * `Button` or `Checkbox` in the row (in `trailing`, say a "View" link on a row that selects) sits
  * above it and is clickable on its own. A button row's button is named by the label alone. With `expanded` it is the header of a
- * collapsible section: `aria-expanded` and a chevron. Rows sit in a `Card flush`; `divided` draws
- * the line between them, on each row after the first.
+ * collapsible section: `aria-expanded` and a chevron. Rows sit in a `Card flush`, in a
+ * `Stack divided` that draws the line between them.
  *
  * `secondary` is a second, muted line under the label. `leading` is content before the label (`leadingWidth="thumbnail"` gives it a fixed picture width),
  * `selected` marks the row in view, `focused` the one the keyboard cursor is on and `highlighted` fills
@@ -277,8 +273,7 @@ function ButtonRow(props: ListRowButtonProps & Pieces & { labelId: string }): Re
  * `onClick` is a plain `<div>` with no action of its own, for one that holds its own buttons:
  * `actions` follow `trailing`, always shown, so a touch, a keyboard and a pointer find them alike. Such a row
  * also takes a `panel`, content under the row that starts where the label does (a conversation
- * that opens under its chat); `divided` draws the line above the whole row, panel included, so a
- * list of them is `divided={index > 0}` on each. Inside a row a `Stack` is `xs` apart, and a `sm`
+ * that opens under its chat); in a `Stack divided` the line sits above the whole row, panel included. Inside a row a `Stack` is `xs` apart, and a `sm`
  * row makes the buttons in it `sm`. While `loading` an empty label is a bone, and what the row holds
  * waits with it.
  */

@@ -8,6 +8,7 @@ import {
   ListRow,
   Menu,
   type MenuAction,
+  Stack,
   Text,
 } from "@slashsuite/ui-react";
 import { useState } from "react";
@@ -32,9 +33,9 @@ const FakeLink: LinkAdapter = ({ href, ...rest }) => <a {...rest} href={`#${href
 const noop = () => undefined;
 
 const ROW_ACTIONS: [MenuAction, ...MenuAction[]] = [
-  { label: "Favourite", icon: "plus", onSelect: () => undefined },
-  { label: "Settings", icon: "settings", onSelect: () => undefined },
-  { label: "Hide chat", tone: "danger", onSelect: () => undefined },
+  { label: "Favourite", icon: "plus", onClick: () => undefined },
+  { label: "Settings", icon: "settings", onClick: () => undefined },
+  { label: "Hide chat", tone: "danger", onClick: () => undefined },
 ];
 
 export const DoOverflow: S = {
@@ -61,9 +62,9 @@ function Chosen() {
       <Menu
         label="More actions"
         items={[
-          { label: "Favourite", icon: "plus", onSelect: () => setDone("Favourited") },
-          { label: "Archive", onSelect: () => setDone("Archived") },
-          { label: "Hide chat", tone: "danger", onSelect: () => setDone("Hidden") },
+          { label: "Favourite", icon: "plus", onClick: () => setDone("Favourited") },
+          { label: "Archive", onClick: () => setDone("Archived") },
+          { label: "Hide chat", tone: "danger", onClick: () => setDone("Hidden") },
         ]}
       />
       <Text>{done}</Text>
@@ -92,8 +93,8 @@ export const ButtonTrigger: S = {
         label="Export"
         defaultOpen
         items={[
-          { label: "As CSV", onSelect: noop },
-          { label: "As PDF", onSelect: noop },
+          { label: "As CSV", onClick: noop },
+          { label: "As PDF", onClick: noop },
         ]}
       />
     </>
@@ -133,7 +134,7 @@ export const Links: S = {
   ),
 };
 
-/** A `disabled` item is dimmed and the arrows skip it. */
+/** An item with `disabledReason` is dimmed, shows its reason under the label, and the arrows skip it. */
 export const DisabledItem: S = {
   render: () => (
     <>
@@ -141,9 +142,9 @@ export const DisabledItem: S = {
         label="More actions"
         defaultOpen
         items={[
-          { label: "Favourite", icon: "plus", onSelect: noop },
-          { label: "Archive", disabled: true, onSelect: noop },
-          { label: "Hide chat", tone: "danger", onSelect: noop },
+          { label: "Favourite", icon: "plus", onClick: noop },
+          { label: "Archive", disabledReason: "Nothing to archive yet", onClick: noop },
+          { label: "Hide chat", tone: "danger", onClick: noop },
         ]}
       />
     </>
@@ -155,17 +156,18 @@ export const InRow: S = {
   render: () => (
     <div className="max-w-md">
       <Card flush>
-        {["Rent", "Insurance"].map((name, index) => (
-          <ListRow
-            key={name}
-            size="sm"
-            divided={index > 0}
-            trailing="R 1 850"
-            actions={<Menu size="sm" label={`${name} actions`} items={ROW_ACTIONS} />}
-          >
-            {name}
-          </ListRow>
-        ))}
+        <Stack divided>
+          {["Rent", "Insurance"].map((name) => (
+            <ListRow
+              key={name}
+              size="sm"
+              trailing="R 1 850"
+              actions={<Menu size="sm" label={`${name} actions`} items={ROW_ACTIONS} />}
+            >
+              {name}
+            </ListRow>
+          ))}
+        </Stack>
       </Card>
     </div>
   ),
@@ -186,8 +188,8 @@ function DialogWithMenu() {
             <Menu
               label="More actions"
               items={[
-                { label: "Favourite", onSelect: () => setDone("Favourited") },
-                { label: "Hide chat", tone: "danger", onSelect: () => setDone("Hidden") },
+                { label: "Favourite", onClick: () => setDone("Favourited") },
+                { label: "Hide chat", tone: "danger", onClick: () => setDone("Hidden") },
               ]}
             />
           </div>

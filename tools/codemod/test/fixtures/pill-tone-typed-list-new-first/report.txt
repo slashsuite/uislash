@@ -1,0 +1,1 @@
+3: "info" is in this list twice now: an earlier value became it

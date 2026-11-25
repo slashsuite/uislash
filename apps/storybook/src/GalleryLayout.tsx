@@ -70,15 +70,9 @@ function ClusterAndStackOptions() {
         <Button>Keeps its width</Button>
       </Stack>
       <Cluster as="ul" aria-label="Cluster as ul">
-        <li>
-          <Pill>Cluster as ul</Pill>
-        </li>
-        <li>
-          <Pill>One li</Pill>
-        </li>
-        <li>
-          <Pill>Per item</Pill>
-        </li>
+        <Pill>Cluster as ul</Pill>
+        <Pill>Each item</Pill>
+        <Pill>In its own li</Pill>
       </Cluster>
       <Cluster gap="sm">
         <Show below="sm">

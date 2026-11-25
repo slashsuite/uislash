@@ -33,11 +33,13 @@ export const Fill: S = {
   render: () => (
     <div className="h-100 max-w-md">
       <Card flush bar title="Shops nearby" count={shops.length} fill>
-        {shops.map((shop, i) => (
-          <ListRow key={shop} href={`#shop-${i}`} divided={i > 0} size="sm">
-            {shop}
-          </ListRow>
-        ))}
+        <Stack divided>
+          {shops.map((shop, i) => (
+            <ListRow key={shop} href={`#shop-${i}`} size="sm">
+              {shop}
+            </ListRow>
+          ))}
+        </Stack>
       </Card>
     </div>
   ),

@@ -140,3 +140,23 @@ describe("FieldDialog", () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("FieldDialog words", () => {
+  it("words the close button Cancel, or cancelLabel", () => {
+    const { unmount } = render(
+      <FieldDialog {...PROPS} onSubmit={() => Promise.resolve()} onClose={() => undefined} />,
+    );
+    expect(button("Cancel")).not.toBeNull();
+    unmount();
+    render(
+      <FieldDialog
+        {...PROPS}
+        cancelLabel="Annuler"
+        onSubmit={() => Promise.resolve()}
+        onClose={() => undefined}
+      />,
+    );
+    expect(button("Annuler")).not.toBeNull();
+    expect(screen.queryByRole("button", { name: "Cancel" })).toBeNull();
+  });
+});

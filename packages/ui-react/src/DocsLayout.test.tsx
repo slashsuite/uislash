@@ -24,7 +24,7 @@ const contents: DocsHeading[] = [
 
 function page(props: Partial<ComponentProps<typeof DocsLayout>> = {}) {
   return render(
-    <DocsLayout nav={nav} navLabel="Docs" title="Install" {...props}>
+    <DocsLayout nav={nav} asideLabel="Docs" title="Install" {...props}>
       <p>Body</p>
     </DocsLayout>,
   );
@@ -41,7 +41,7 @@ const marked = () =>
 const onThisPage = () => screen.queryAllByRole("navigation", { name: "On this page" });
 
 describe("DocsLayout", () => {
-  it("names the nav's landmark navLabel, each group's links by its title, and marks the current page", () => {
+  it("names the nav's landmark asideLabel, each group's links by its title, and marks the current page", () => {
     page();
     const rail = screen.getByRole("complementary", { name: "Docs" });
     const guides = within(rail).getByRole("navigation", { name: "Guides" });

@@ -171,7 +171,7 @@ export const layout: ComponentSection = {
           "An empty `ClusterGrow` is a spacer: what follows it goes to the end.",
           "A row of buttons is a `ButtonGroup`, which wraps on a phone and can pin an item to the end. Use `Cluster` for every other row.",
           '`justify="between"` is for two items; with more, the middle one floats, so use a spacer.',
-          '`as="ul"` or `as="ol"` makes a wrapping row of like things (tags, chips) a list. Write each item as an `<li>`, as in a `Stack` list; the Cluster does not wrap them, and a `ClusterGrow` does not belong in a list.',
+          '`as="ul"` or `as="ol"` makes a wrapping row of like things (tags, chips) a list. Pass the items themselves: the Cluster puts each in its own `<li>`, as `CardGrid as="ul"` does, and a `ClusterGrow` does not belong in a list.',
         ],
       },
       accessibility: [

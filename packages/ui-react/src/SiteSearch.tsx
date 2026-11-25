@@ -52,12 +52,20 @@ export function rankSiteSearch(items: readonly SiteSearchItem[], text: string): 
     .map((entry) => entry.item);
 }
 
-/** What the live region says for a result count. */
-function countText(query: string, count: number): string {
-  if (query.trim() === "") return "";
+/** What the live region says for a result count, in English. */
+function englishCount(count: number): string {
   if (count === 0) return "No results";
   return count === 1 ? "1 result" : `${count} results`;
 }
+
+/** The words `SearchBody` renders, each a `SiteSearch` prop with its English default. */
+type BodyWords = {
+  resultsLabel: string;
+  placeholder: string;
+  hintLabel: string;
+  noResultsLabel: string;
+  countLabel: (count: number) => string;
+};
 
 // The shortcut's key reads ⌘ K on Apple platforms. The server cannot know, so it renders Ctrl K and
 // the client swaps after hydration.
@@ -89,14 +97,33 @@ function linksIn(list: HTMLElement | null): HTMLAnchorElement[] {
   return list ? [...list.querySelectorAll<HTMLAnchorElement>("a[href]")] : [];
 }
 
+/** The muted line under the field: the prompt before anything is typed, the no-match line after. */
+function SearchNote({
+  query,
+  found,
+  words: { hintLabel, noResultsLabel },
+}: {
+  query: string;
+  found: boolean;
+  words: Pick<BodyWords, "hintLabel" | "noResultsLabel">;
+}): ReactElement | null {
+  if (query.trim() === "") return <Text tone="muted">{hintLabel}</Text>;
+  if (found) return null;
+  return (
+    <Text tone="muted">
+      {noResultsLabel} {query.trim()}
+    </Text>
+  );
+}
+
 function SearchBody({
   items,
   label,
-  resultsLabel,
+  words: { resultsLabel, placeholder, hintLabel, noResultsLabel, countLabel },
 }: {
   items: readonly SiteSearchItem[];
   label: string;
-  resultsLabel: string;
+  words: BodyWords;
 }) {
   const [query, setQuery] = useState("");
   const box = useRef<HTMLDivElement>(null);
@@ -138,7 +165,7 @@ function SearchBody({
         type="search"
         icon="search"
         aria-label={label}
-        placeholder="Search"
+        placeholder={placeholder}
         autoComplete="off"
         spellCheck={false}
         value={query}
@@ -146,16 +173,21 @@ function SearchBody({
         onKeyDown={onFieldKey}
       />
       <div role="status" aria-live="polite" className="sr-only">
-        {countText(query, results.length)}
+        {typed ? countLabel(results.length) : ""}
       </div>
-      {!typed && <Text tone="muted">Type a name</Text>}
-      {typed && results.length === 0 && <Text tone="muted">No results for {query.trim()}</Text>}
+      <SearchNote query={query} found={results.length > 0} words={{ hintLabel, noResultsLabel }} />
       {results.length > 0 && (
         // The keys only move focus between the links inside it; the list itself takes none.
-        <ul ref={list} aria-label={resultsLabel} onKeyDown={onListKey} onClick={onListClick}>
-          {results.map((item, index) => (
+        <ul
+          ref={list}
+          aria-label={resultsLabel}
+          onKeyDown={onListKey}
+          onClick={onListClick}
+          className="border-slate-200/70 *:not-first:border-t *:not-first:border-inherit"
+        >
+          {results.map((item) => (
             <li key={item.href}>
-              <ListRow href={item.href} size="sm" divided={index > 0} secondary={item.description}>
+              <ListRow href={item.href} size="sm" secondary={item.description}>
                 {item.label}
               </ListRow>
             </li>
@@ -165,6 +197,46 @@ function SearchBody({
     </div>
   );
 }
+
+type SiteSearchProps = {
+  /** Every page to search, in the order ties are listed (the rail's order). */
+  items: readonly SiteSearchItem[];
+  /**
+   * The dialog's title and the phone's icon button's accessible name: "Search components". The wide
+   * button is named by its own text, `buttonLabel`.
+   */
+  label: string;
+  /**
+   * The name of the list of matches, for an app in another language.
+   * @default Results
+   */
+  resultsLabel?: string | undefined;
+  /**
+   * The wide button's text, which is also its accessible name.
+   * @default Search
+   */
+  buttonLabel?: string | undefined;
+  /**
+   * The search field's placeholder.
+   * @default Search
+   */
+  placeholder?: string | undefined;
+  /**
+   * The muted line under the field before anything is typed.
+   * @default Type a name
+   */
+  hintLabel?: string | undefined;
+  /**
+   * The muted line when nothing matches; the typed text follows it: "No results for tabel".
+   * @default No results for
+   */
+  noResultsLabel?: string | undefined;
+  /**
+   * What a screen reader hears for the number of matches once something is typed.
+   * @default `No results`, `1 result`, `4 results`
+   */
+  countLabel?: ((count: number) => string) | undefined;
+} & Passthrough;
 
 /**
  * The site's search: a header button that opens a dialog with a search field over a list of links
@@ -177,21 +249,13 @@ export function SiteSearch({
   items,
   label,
   resultsLabel = "Results",
+  buttonLabel = "Search",
+  placeholder = "Search",
+  hintLabel = "Type a name",
+  noResultsLabel = "No results for",
+  countLabel = englishCount,
   ...rest
-}: {
-  /** Every page to search, in the order ties are listed (the rail's order). */
-  items: readonly SiteSearchItem[];
-  /**
-   * The dialog's title and the phone's icon button's accessible name: "Search components". The wide
-   * button is named by its own text, "Search".
-   */
-  label: string;
-  /**
-   * The name of the list of matches, for an app in another language.
-   * @default Results
-   */
-  resultsLabel?: string | undefined;
-} & Passthrough): ReactElement {
+}: SiteSearchProps): ReactElement {
   const [open, setOpen] = useState(false);
   const opener = useRef<HTMLElement | null>(null);
   const apple = useSyncExternalStore(noSubscribe, isApple, () => false);
@@ -236,7 +300,7 @@ export function SiteSearch({
           onClick={openFrom}
         >
           <Icon name="search" size="sm" />
-          Search
+          {buttonLabel}
           <Kbd aria-hidden="true">{keys}</Kbd>
         </Button>
       </span>
@@ -252,7 +316,11 @@ export function SiteSearch({
       </span>
       {open && (
         <Dialog title={label} width="md" onClose={close}>
-          <SearchBody items={items} label={label} resultsLabel={resultsLabel} />
+          <SearchBody
+            items={items}
+            label={label}
+            words={{ resultsLabel, placeholder, hintLabel, noResultsLabel, countLabel }}
+          />
         </Dialog>
       )}
     </span>

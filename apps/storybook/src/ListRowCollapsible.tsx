@@ -6,7 +6,6 @@ export function Collapsible() {
   return (
     <Card flush>
       <ListRow
-        divided
         expanded={open}
         aria-controls="monthly-plan"
         trailing="R 15 550"

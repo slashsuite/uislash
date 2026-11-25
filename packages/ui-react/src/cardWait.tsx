@@ -1,5 +1,6 @@
 import type { ReactElement, ReactNode } from "react";
 import { ListRow } from "./ListRow.js";
+import { Stack } from "./Stack.js";
 import { BoneLines, BusyLabel, isEmptySlot } from "./skeleton.js";
 
 /**
@@ -31,12 +32,10 @@ export function CardWait({
 function CardBones({ flush }: { flush: boolean }): ReactElement {
   if (!flush) return <BoneLines />;
   return (
-    <>
+    <Stack divided>
       {[0, 1, 2].map((i) => (
-        <ListRow key={i} divided={i > 0}>
-          {null}
-        </ListRow>
+        <ListRow key={i}>{null}</ListRow>
       ))}
-    </>
+    </Stack>
   );
 }

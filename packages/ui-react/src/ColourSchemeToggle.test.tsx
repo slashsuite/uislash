@@ -162,3 +162,22 @@ describe("ColourSchemeToggle", () => {
     });
   });
 });
+
+describe("ColourSchemeToggle words", () => {
+  it("names the button and its tooltip by darkLabel on a light page and lightLabel on a dark one", async () => {
+    render(<ColourSchemeToggle darkLabel="Passer au sombre" lightLabel="Passer au clair" />);
+    expect(title()).toBe("Passer au sombre");
+    expect(screen.getByText("Passer au sombre").getAttribute("data-scheme-name")).toBe("dark");
+    expect(screen.getByText("Passer au clair").getAttribute("data-scheme-name")).toBe("light");
+    await user().click(screen.getByRole("button"));
+    expect(title()).toBe("Passer au clair");
+  });
+
+  it("draws the English names by default", () => {
+    render(<ColourSchemeToggle />);
+    expect(screen.getByText("Switch to dark theme").getAttribute("data-scheme-name")).toBe("dark");
+    expect(screen.getByText("Switch to light theme").getAttribute("data-scheme-name")).toBe(
+      "light",
+    );
+  });
+});

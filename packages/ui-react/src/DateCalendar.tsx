@@ -62,7 +62,12 @@ const selectClass = `rounded-md border border-slate-300 bg-white py-1 pr-1 pl-2 
  * a one-date calendar's state, or a range calendar's when there is none.
  */
 /** The names of the calendar's month and year dropdowns, for an app in another language. */
-export type CalendarLabels = { monthLabel: string; yearLabel: string };
+export type CalendarLabels = {
+  monthLabel: string;
+  yearLabel: string;
+  /** The footer button that empties the picker. With none, `Clear`. */
+  clearLabel?: string | undefined;
+};
 
 function CalendarHeader({ monthLabel, yearLabel }: CalendarLabels): ReactElement | null {
   const single = useContext(CalendarStateContext);
@@ -118,7 +123,7 @@ function CalendarHeader({ monthLabel, yearLabel }: CalendarLabels): ReactElement
 }
 
 /** Clears the picker's value, a date or a range, and closes the popover. */
-function ClearButton(): ReactElement {
+function ClearButton({ label }: { label: string }): ReactElement {
   const single = useContext(DatePickerStateContext);
   const range = useContext(DateRangePickerStateContext);
   const picker = single ?? range;
@@ -131,7 +136,7 @@ function ClearButton(): ReactElement {
         picker?.close();
       }}
     >
-      Clear
+      {label}
     </button>
   );
 }
@@ -221,9 +226,11 @@ function MonthGrid({
  */
 function PickerPopover({
   container,
+  clearLabel = "Clear",
   children,
 }: {
   container: Element | undefined;
+  clearLabel: string | undefined;
   children: ReactNode;
 }): ReactElement {
   return (
@@ -235,7 +242,7 @@ function PickerPopover({
       <Dialog className="flex flex-col gap-3 outline-none">
         {children}
         <div className="flex justify-end border-t border-slate-200 pt-2">
-          <ClearButton />
+          <ClearButton label={clearLabel} />
         </div>
       </Dialog>
     </Popover>
@@ -251,7 +258,7 @@ export function CalendarPopover({
   labels: CalendarLabels;
 }): ReactElement {
   return (
-    <PickerPopover container={container}>
+    <PickerPopover container={container} clearLabel={labels.clearLabel}>
       <Calendar<CalendarDate> firstDayOfWeek="mon" className="flex flex-col gap-3">
         <CalendarHeader {...labels} />
         <MonthGrid cellClass={cellClass} />
@@ -294,7 +301,7 @@ export function RangeCalendarPopover({
   labels: CalendarLabels;
 }): ReactElement {
   return (
-    <PickerPopover container={container}>
+    <PickerPopover container={container} clearLabel={labels.clearLabel}>
       {presets && presets.length > 0 ? <PresetRow presets={presets} /> : null}
       <RangeCalendar<CalendarDate> firstDayOfWeek="mon" className="flex flex-col gap-3">
         <CalendarHeader {...labels} />

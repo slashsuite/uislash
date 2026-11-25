@@ -62,18 +62,12 @@ export const DontSpacer = () => (
   </Cluster>
 );
 
-/** A wrapping row of like things (a store's tags) is `Cluster as="ul"` with an `li` per item: a list a screen reader counts. */
+/** A wrapping row of like things (a store's tags) is `Cluster as="ul"`: it puts each item in its own `li`, a list a screen reader counts. */
 export const DoList = () => (
   <Cluster as="ul" aria-label="Tags">
-    <li>
-      <Pill>Vintage</Pill>
-    </li>
-    <li>
-      <Pill>Books</Pill>
-    </li>
-    <li>
-      <Pill>Vinyl</Pill>
-    </li>
+    <Pill>Vintage</Pill>
+    <Pill>Books</Pill>
+    <Pill>Vinyl</Pill>
   </Cluster>
 );
 

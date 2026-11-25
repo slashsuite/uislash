@@ -2,7 +2,6 @@ import type { TagRule } from "../source.js";
 import {
   attributeOf,
   attributesOf,
-  isOn,
   literalOf,
   nameOf,
   remove,
@@ -144,10 +143,4 @@ export function heldTones(tag: Tag, component: string, context: Context): void {
   }
 }
 
-/** `Cluster wrap` is the default now; a bare one (or `={true}`) goes. */
-export function clusterWrap(tag: Tag, component: string, context: Context): void {
-  const wrap = attributeOf(tag, "wrap");
-  if (component === "Cluster" && wrap !== undefined && isOn(wrap)) remove(context, wrap);
-}
-
-export const tagRules: readonly TagRule[] = [renames, drops, values, heldTones, clusterWrap];
+export const tagRules: readonly TagRule[] = [renames, drops, values, heldTones];

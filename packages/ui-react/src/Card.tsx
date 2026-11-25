@@ -10,7 +10,7 @@ import { DensityProvider } from "./density.js";
 import { type HeadingLevel, HeadingLevelProvider, useHeadingLevel } from "./headingLevel.js";
 import type { IconName } from "./icons.js";
 import { renderLink } from "./link.js";
-import type { Unstyled } from "./props.js";
+import type { Passthrough } from "./props.js";
 import { GapProvider } from "./stackGap.js";
 import { busy, type LoadingProps, LoadingScope, useLoading } from "./skeleton.js";
 import { CardWait } from "./cardWait.js";
@@ -180,7 +180,9 @@ type CardLinkProps = CardBase & {
    * goes through the app's `LinkProvider`.
    */
   href: string;
-} & Unstyled<Omit<ComponentPropsWithoutRef<"a">, "href" | "title" | "children">>;
+} & Passthrough &
+  /** The link's own: a file to save, a `rel` beyond `external`'s, and a press to track. */
+  Pick<ComponentPropsWithoutRef<"a">, "download" | "rel" | "onClick">;
 
 function isCardLink(props: CardPanelProps | CardLinkProps): props is CardLinkProps {
   return props.href !== undefined;

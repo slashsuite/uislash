@@ -106,11 +106,11 @@ export const navigation: ComponentSection = {
       usage: {
         do: [
           "Put one `SiteSearch` in `AppShell`'s `controls`, on every page, and pass every page as `items`: `{ label, description, href, keywords }`.",
-          '`label` names the phone\'s icon button and titles the dialog: say what is searched ("Search components"). `resultsLabel` names the list of matches, "Results" by default, for an app in another language.',
+          '`label` names the phone\'s icon button and titles the dialog: say what is searched ("Search components"). For an app in another language: `resultsLabel` names the list of matches ("Results"), `buttonLabel` is the wide button\'s text ("Search"), `placeholder` the field\'s ("Search"), `hintLabel` the line before typing ("Type a name"), `noResultsLabel` the words before the typed text when nothing matches ("No results for") and `countLabel` turns the count into what a screen reader hears ("3 results").',
           "Give `items` in the nav's order: results of the same rank keep it.",
           "`keywords` are other names a page answers to (the exports it documents); they match but are not shown.",
           "A result ranks by the name starting with the text, then the name containing it, then a keyword, then the description.",
-          "From `sm` up the button reads Search with its key (Ctrl K, or ⌘ K on a Mac); below `sm` it is the search icon alone.",
+          "From `sm` up the button reads `buttonLabel` (Search) with its key (Ctrl K, or ⌘ K on a Mac); below `sm` it is the search icon alone.",
           "It searches names, not page text, and needs no service.",
         ],
       },

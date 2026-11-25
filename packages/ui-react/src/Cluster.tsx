@@ -1,4 +1,4 @@
-import type { ReactElement, ReactNode } from "react";
+import { Children, isValidElement, type ReactElement, type ReactNode } from "react";
 import { cx } from "./cx.js";
 import type { Passthrough } from "./props.js";
 import { STACK_GAP, type StackGap } from "./Stack.js";
@@ -23,6 +23,17 @@ const JUSTIFY: Record<ClusterJustify, string> = {
   end: "justify-end",
 };
 
+/** A Cluster that is a `ul` or `ol` is a list: its role, and each child in its own `<li>`. */
+function listOf(tag: string, children: ReactNode): { role?: "list"; items: ReactNode } {
+  if (tag !== "ul" && tag !== "ol") return { items: children };
+  const items = Children.toArray(children).map((child, index) => (
+    <li key={isValidElement(child) ? child.key : index} className="flex">
+      {child}
+    </li>
+  ));
+  return { role: "list", items };
+}
+
 /**
  * A horizontal row of items a fixed `gap` apart (`sm` by default): the row counterpart of `Stack`. `align` is the
  * cross axis (`center` default, `baseline` for mixed text sizes, `start`, `end`) and `justify` the
@@ -35,8 +46,8 @@ const JUSTIFY: Record<ClusterJustify, string> = {
  * `ButtonGroup` is the row for buttons; use `Cluster` for any other row. `as="span"` is for a row
  * inside phrasing content, such as a `PageHeader` description (a `<p>`): its items must be phrasing
  * content too, so no `ClusterGrow`. `as="ul"` or `as="ol"` is a wrapping list with no markers
- * (tags, chips): as in a `Stack` list the Cluster does not wrap its children, so each child is an
- * `<li>` the caller writes, and a `ClusterGrow` (a `div`) does not belong in it.
+ * (tags, chips), as in `CardGrid`: the Cluster wraps each child in its own `<li>`, so the caller
+ * writes the items (`Pill`s) and never an `<li>`.
  */
 export function Cluster({
   as: Tag = "div",
@@ -49,7 +60,7 @@ export function Cluster({
 }: {
   /**
    * The element: `div`, `span` for a row inside a `<p>` or other phrasing content, or `ul` or `ol`
-   * for a list (no markers; each child is an `<li>`).
+   * for a list (no markers; the Cluster wraps each child in an `<li>`).
    *
    * In a `span` the items must be phrasing content, so no `ClusterGrow`.
    * @default div
@@ -78,19 +89,22 @@ export function Cluster({
   wrap?: boolean | undefined;
   children?: ReactNode;
 } & Passthrough): ReactElement {
+  const { role, items } = listOf(Tag, children);
   return (
     <Tag
+      // `list-none` drops the list role in Safari; the role puts it back.
+      role={role}
       {...rest}
       className={cx(
         "flex",
-        (Tag === "ul" || Tag === "ol") && "list-none",
+        role && "list-none",
         STACK_GAP[gap],
         ALIGN[align],
         JUSTIFY[justify],
         wrap && "flex-wrap",
       )}
     >
-      {children}
+      {items}
     </Tag>
   );
 }

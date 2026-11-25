@@ -165,3 +165,33 @@ describe.each([
     expect(home()).not.toBeNull();
   });
 });
+
+describe("status page words", () => {
+  it("renames Back to home, Try again and the detail's caption", () => {
+    render(
+      <ErrorPage
+        detail="Requête 4f2a"
+        detailLabel="Erreur"
+        onRetry={() => undefined}
+        retryLabel="Réessayer"
+        homeLabel="Retour à l'accueil"
+      />,
+    );
+    expect(screen.getByRole("link", { name: "Retour à l'accueil" })).not.toBeNull();
+    expect(screen.getByRole("button", { name: "Réessayer" })).not.toBeNull();
+    expect(within(screen.getByRole("figure")).getByText("Erreur")).not.toBeNull();
+    expect(screen.queryByRole("link", { name: "Back to home" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Try again" })).toBeNull();
+  });
+
+  it("renames Offline's Try again and NotFound's home link", () => {
+    render(
+      <>
+        <Offline onRetry={() => undefined} retryLabel="Réessayer" />
+        <NotFound homeLabel="Accueil" />
+      </>,
+    );
+    expect(screen.getByRole("button", { name: "Réessayer" })).not.toBeNull();
+    expect(screen.getByRole("link", { name: "Accueil" })).not.toBeNull();
+  });
+});

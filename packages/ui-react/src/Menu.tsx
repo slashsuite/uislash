@@ -5,18 +5,20 @@ import {
   MenuItem,
   MenuTrigger,
   Popover,
+  Text as AriaText,
 } from "react-aria-components";
 import { buttonClass } from "./Button.js";
 import { cx } from "./cx.js";
 import { Icon } from "./Icon.js";
 import { look, type IconButtonTone } from "./IconButton.js";
 import type { IconName } from "./icons.js";
+import { hasReason } from "./blocked.js";
 import { renderLink } from "./link.js";
 import { Tipped } from "./Tooltip.js";
 import { definedProps, type Passthrough } from "./props.js";
 import type { Size } from "./size.js";
 
-/** One entry of a `Menu`: an action that runs `onSelect`, or a link to `href`. Never both. */
+/** One entry of a `Menu`: an action that runs `onClick`, or a link to `href`. Never both. */
 export type MenuAction = {
   /** The item's text and its accessible name. */
   label: string;
@@ -27,17 +29,20 @@ export type MenuAction = {
    * @default neutral
    */
   tone?: IconButtonTone | undefined;
-  /** Shown dimmed; the arrows skip it and a press does nothing. */
-  disabled?: boolean | undefined;
+  /**
+   * Why the item cannot be chosen: it is shown dimmed with the reason as a muted line under its
+   * label (its description), the arrows skip it and a press does nothing.
+   */
+  disabledReason?: string | undefined;
 } & (
   | {
       /** Runs when the item is chosen; the menu then closes and focus goes back to the trigger. */
-      onSelect: () => void;
+      onClick: () => void;
       href?: undefined;
       external?: undefined;
     }
   | {
-      onSelect?: undefined;
+      onClick?: undefined;
       /** Makes the item a link; an in-app path goes through the app's `LinkProvider`. */
       href: string;
       /** Opens in a new tab: adds `target="_blank"` and `rel="noreferrer"`. */
@@ -64,6 +69,13 @@ type MenuProps = Passthrough & {
   size?: Size | undefined;
   /** Opens on mount, for a story or a test that shows the open menu. */
   defaultOpen?: boolean | undefined;
+  /**
+   * Holds the menu open or shut from the app's own state (a keyboard shortcut that opens it). Pass
+   * `onOpenChange` with it, or the trigger, Escape and a choice cannot change it.
+   */
+  open?: boolean | undefined;
+  /** Runs with the new state when the trigger, Escape, a click outside or a choice opens or shuts it. */
+  onOpenChange?: ((open: boolean) => void) | undefined;
 };
 
 const FRAME =
@@ -103,8 +115,9 @@ function Face({ icon, label, size }: { icon: boolean; label: string; size: Size 
 /**
  * A button that opens a short list of actions: the overflow menu at the end of a row, a card header
  * or a page header. Keep the one main action in view beside it and put the rest here, the `danger`
- * one last. `items` are data: each a `label` with `onSelect`, or a link with `href` (`external` for
- * a new tab), an optional leading `icon`, `tone="danger"` and `disabled`.
+ * one last. `items` are data: each a `label` with `onClick`, or a link with `href` (`external` for
+ * a new tab), an optional leading `icon`, `tone="danger"` and `disabledReason`. `open` and
+ * `onOpenChange` hold it open from the app's own state.
  *
  * `trigger="icon"` (the default) is a ghost three-dot button named by `label`; `trigger="button"` is
  * an outline button reading `label`. The menu opens below the trigger, aligned to its end, and flips
@@ -118,6 +131,8 @@ export function Menu({
   trigger = "icon",
   size = "md",
   defaultOpen = false,
+  open,
+  onOpenChange,
   ...rest
 }: MenuProps): ReactElement {
   const { container, find } = useDialogOf();
@@ -144,7 +159,7 @@ export function Menu({
   // The three-dot trigger shows its name as the library's tooltip, as an `IconButton` does. React
   // Aria's button takes no pointer handlers, so they sit on a wrapper; focus and keys bubble to it.
   return (
-    <MenuTrigger defaultOpen={defaultOpen}>
+    <MenuTrigger defaultOpen={defaultOpen} {...definedProps({ isOpen: open, onOpenChange })}>
       {icon ? (
         <Tipped<HTMLSpanElement> text={label} describes={false} own={{}}>
           {(tip) => (
@@ -178,7 +193,16 @@ function Item({ item }: { item: MenuAction }): ReactElement {
   const inside = (
     <>
       {item.icon ? <Icon name={item.icon} size="md" /> : null}
-      <span className="min-w-0 flex-1 truncate">{item.label}</span>
+      <span className="flex min-w-0 flex-1 flex-col">
+        <AriaText slot="label" className="truncate">
+          {item.label}
+        </AriaText>
+        {hasReason(item.disabledReason) ? (
+          <AriaText slot="description" className="text-xs text-slate-500">
+            {item.disabledReason}
+          </AriaText>
+        ) : null}
+      </span>
     </>
   );
   if (item.href !== undefined) {
@@ -187,20 +211,20 @@ function Item({ item }: { item: MenuAction }): ReactElement {
       <MenuItem
         textValue={item.label}
         href={href}
-        isDisabled={item.disabled ?? false}
+        isDisabled={hasReason(item.disabledReason)}
         className={className}
         render={(props) => {
           // An item with `href` is drawn as an anchor; the `div` form is React Aria's fallback.
           if (!("href" in props)) return <div {...props} />;
           // React Aria hands the anchor its role, tab index, handlers and ref; the app's router
           // link draws it when `href` is an in-app path.
-          const { href: _href, className: drawn, children: _children, ...aria } = props;
+          const { href: _href, className: drawn, children, ...aria } = props;
           return renderLink({
             ...aria,
+            children,
             href,
             external,
             className: drawn ?? cx(ITEM, tone.ink),
-            children: inside,
           });
         }}
       >
@@ -211,8 +235,8 @@ function Item({ item }: { item: MenuAction }): ReactElement {
   return (
     <MenuItem
       textValue={item.label}
-      onAction={item.onSelect}
-      isDisabled={item.disabled ?? false}
+      onAction={item.onClick}
+      isDisabled={hasReason(item.disabledReason)}
       className={className}
     >
       {inside}

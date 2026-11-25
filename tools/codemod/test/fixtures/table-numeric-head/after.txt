@@ -12,7 +12,7 @@ export const view = (
       {quotes.map((q) => (
         <TableRow key={q.ref}>
           <TableCell>{q.client}</TableCell>
-          <TableCell numeric>
+          <TableCell align="end" numeric>
             {q.premium}
           </TableCell>
         </TableRow>

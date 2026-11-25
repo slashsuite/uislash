@@ -1,0 +1,4 @@
+import { Menu } from "@hackcove/ui-react";
+import { actions } from "./actions";
+
+export const view = <Menu label="Actions" items={actions} />;

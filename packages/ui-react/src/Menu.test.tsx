@@ -8,9 +8,9 @@ import { render, screen, user } from "./render.harness.js";
 
 function actions(spies: { fav?: () => void; chat?: () => void; hide?: () => void } = {}) {
   return [
-    { label: "Favourite", icon: "plus", onSelect: spies.fav ?? (() => undefined) },
-    { label: "Copy link", onSelect: spies.chat ?? (() => undefined) },
-    { label: "Hide chat", tone: "danger", onSelect: spies.hide ?? (() => undefined) },
+    { label: "Favourite", icon: "plus", onClick: spies.fav ?? (() => undefined) },
+    { label: "Copy link", onClick: spies.chat ?? (() => undefined) },
+    { label: "Hide chat", tone: "danger", onClick: spies.hide ?? (() => undefined) },
   ] satisfies [MenuAction, ...MenuAction[]];
 }
 
@@ -22,7 +22,7 @@ function Row() {
         <Menu
           size="sm"
           label="Row actions"
-          items={[{ label: "Hide", onSelect: () => setHidden(true) }]}
+          items={[{ label: "Hide", onClick: () => setHidden(true) }]}
         />
       }
     >
@@ -161,14 +161,68 @@ describe("Menu", () => {
   it("skips a disabled item with the arrows and ignores a click on it", async () => {
     const chat = vi.fn<() => void>();
     const items = actions({ chat });
-    items[1] = { ...items[1], disabled: true } as (typeof items)[1];
+    items[1] = { ...items[1], disabledReason: "No link yet" } as (typeof items)[1];
     render(<Menu label="More actions" items={items} />);
     const u = user();
     await u.click(screen.getByRole("button", { name: "More actions" }));
     await u.keyboard("{ArrowDown}");
     expect(document.activeElement).toBe(screen.getByRole("menuitem", { name: "Hide chat" }));
-    await u.click(screen.getByRole("menuitem", { name: "Copy link" }));
+    const copy = screen.getByRole("menuitem", { name: "Copy link" });
+    expect(copy.getAttribute("aria-disabled")).toBe("true");
+    await u.click(copy);
     expect(chat).not.toHaveBeenCalled();
+  });
+
+  it("names a dimmed item's reason as its description", async () => {
+    const items = actions({});
+    items[1] = { ...items[1], disabledReason: "No link yet" } as (typeof items)[1];
+    render(<Menu label="More actions" items={items} defaultOpen />);
+    expect(
+      screen.getByRole("menuitem", { name: "Copy link", description: "No link yet" }),
+    ).toBeTruthy();
+  });
+
+  it("names a link item by its label and its reason as its description", () => {
+    const items: [MenuAction] = [{ label: "Docs", href: "/docs", disabledReason: "Not published" }];
+    render(<Menu label="More actions" items={items} defaultOpen />);
+    expect(
+      screen.getByRole("menuitem", { name: "Docs", description: "Not published" }),
+    ).toBeTruthy();
+  });
+
+  it("leaves an item with an empty reason enabled", async () => {
+    const copy = vi.fn<() => void>();
+    const items = actions({ chat: copy });
+    items[1] = { ...items[1], disabledReason: "" } as (typeof items)[1];
+    render(<Menu label="More actions" items={items} defaultOpen />);
+    const item = screen.getByRole("menuitem", { name: "Copy link" });
+    expect(item.getAttribute("aria-disabled")).toBeNull();
+    await user().click(item);
+    expect(copy).toHaveBeenCalledOnce();
+  });
+
+  it("holds the menu open from the app's state and reports each change", async () => {
+    const onOpenChange = vi.fn<(open: boolean) => void>();
+    function Held() {
+      const [open, setOpen] = useState(true);
+      return (
+        <Menu
+          label="More actions"
+          items={actions({})}
+          open={open}
+          onOpenChange={(next) => {
+            onOpenChange(next);
+            setOpen(next);
+          }}
+        />
+      );
+    }
+    render(<Held />);
+    expect(screen.getByRole("menu")).toBeTruthy();
+    const u = user();
+    await u.keyboard("{Escape}");
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+    expect(screen.queryByRole("menu")).toBeNull();
   });
 
   it("draws a link item as a menuitem link, external in a new tab", async () => {
@@ -208,7 +262,7 @@ describe("Menu", () => {
 
   it("refuses an item that is both an action and a link", () => {
     // @ts-expect-error an item is an action or a link, never both
-    const both: MenuAction = { label: "x", onSelect: () => undefined, href: "/x" };
+    const both: MenuAction = { label: "x", onClick: () => undefined, href: "/x" };
     expect(both.label).toBe("x");
   });
 

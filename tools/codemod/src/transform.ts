@@ -11,10 +11,13 @@ import { tagRules as props } from "./rules/props.js";
 import { tagRules as tables } from "./rules/tables.js";
 import { tagRules as text, vizTones } from "./rules/text.js";
 import { typedTones } from "./rules/typedTones.js";
+import { tagRules as to13, typedItems } from "./rules/to13.js";
 import { tagRules as unpin } from "./rules/unpin.js";
 import {
   componentOf,
   type Context,
+  EITHER_SCOPE,
+  PACKAGE,
   packageImports,
   parse,
   type Report,
@@ -40,8 +43,20 @@ const TAG_RULES: readonly TagRule[] = [
  */
 const UNPIN_RULES: readonly TagRule[] = [...unpin, fieldPair];
 
-/** Which pass to run: the 0.10 to 0.11 rewrite (the default), or the step that drops its pins. */
-export type Options = { step?: "0.11" | "unpin" };
+/** The step for the next minor, run alone by `--to-0.13`: the renames 0.13 ships. */
+const TO_13_RULES: readonly TagRule[] = to13;
+
+/**
+ * Which pass to run: the 0.10 to 0.11 rewrite (the default), the step that drops its pins, or the
+ * 0.12 to 0.13 renames.
+ */
+export type Options = { step?: "0.11" | "unpin" | "0.13" };
+
+const RULES: Readonly<Record<NonNullable<Options["step"]>, readonly TagRule[]>> = {
+  "0.11": TAG_RULES,
+  unpin: UNPIN_RULES,
+  "0.13": TO_13_RULES,
+};
 
 /** The file rewritten, and a line of the rewritten file for each thing a person has to decide. */
 export function transform(
@@ -49,16 +64,20 @@ export function transform(
   fileName: string,
   options: Options = {},
 ): { output: string; reports: Report[] } {
+  const step = options.step ?? "0.11";
   const file = parse(source, fileName);
-  const context: Context = { file, imports: packageImports(file), edits: [], reports: [] };
+  // Only 0.10 code is the 0.11 pass's to read, and that only ever imported the old scope.
+  const packages = step === "0.11" ? [PACKAGE] : EITHER_SCOPE;
+  const imported = packageImports(file, packages);
+  const context: Context = { file, imports: imported, edits: [], reports: [], packages };
   if (context.imports.declarations.length === 0) return { output: source, reports: [] };
-  const unpinning = options.step === "unpin";
-  if (!unpinning) {
+  if (step === "0.11") {
     imports(context);
     vizTones(context);
     typedTones(context);
   }
-  const rules = unpinning ? UNPIN_RULES : TAG_RULES;
+  if (step === "0.13") typedItems(context);
+  const rules = RULES[step];
   const visit = (node: ts.Node): void => {
     if (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) {
       const component = componentOf(node, context.imports);
@@ -68,7 +87,7 @@ export function transform(
   };
   visit(file);
   const rewritten = applyEdits(source, context.edits);
-  const pruned = rewritten === source ? [] : pruneImports(file, rewritten, fileName);
+  const pruned = rewritten === source ? [] : pruneImports(file, rewritten, fileName, packages);
   const output = applyEdits(rewritten, pruned);
   const lines = parse(output, fileName);
   const reports = context.reports

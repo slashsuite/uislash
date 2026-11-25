@@ -1,0 +1,6 @@
+import { type Toast, ToastRegion } from "@hackcove/ui-react";
+
+const saved = (body: string): Toast => ({ id: "saved", title: "Saved", body });
+const welcome: Toast = { id: "hi", title: "Welcome", body: "Glad you are here." };
+
+export const view = (toasts: Toast[]) => <ToastRegion toasts={toasts} onDismiss={dismiss} />;

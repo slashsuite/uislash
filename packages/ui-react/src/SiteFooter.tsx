@@ -1,7 +1,7 @@
 import type { ReactElement, ReactNode } from "react";
 import { Cluster } from "./Cluster.js";
 import { cx, focusRing } from "./cx.js";
-import { renderLink } from "./link.js";
+import { renderLink, useHome } from "./link.js";
 import { MetaList } from "./MetaList.js";
 import type { Passthrough } from "./props.js";
 import { Stack } from "./Stack.js";
@@ -19,7 +19,7 @@ export type SiteFooterLink = { label: string; href: string; external?: boolean |
  */
 export function SiteFooter({
   brand,
-  brandHref = "/",
+  brandHref,
   brandLabel,
   links = [],
   notes = [],
@@ -30,18 +30,19 @@ export function SiteFooter({
   brand?: ReactNode;
   /**
    * Where the brand links. Needs `brand`.
-   * @default "/"
+   * @default the nearest `LinkProvider`'s `home`, else "/"
    */
   brandHref?: string | undefined;
   /** Names the brand link for assistive tech ("PixelSlash home"). Needs `brand`. */
   brandLabel?: string | undefined;
   /** The site's own links (Privacy, Terms, GitHub, a mail address), one wrapping row. */
-  links?: SiteFooterLink[] | undefined;
+  links?: readonly SiteFooterLink[] | undefined;
   /** Lines of fine print under the links (a licence, a trademark, a credit), one paragraph each. */
-  notes?: ReactNode[] | undefined;
+  notes?: readonly ReactNode[] | undefined;
   /** A sentence at body size beside the brand: the contact line ("Email hello@..."). */
   children?: ReactNode;
 } & Passthrough): ReactElement {
+  const home = useHome();
   const top = brand != null || children != null;
   return (
     <Stack {...rest} gap="sm">
@@ -49,7 +50,7 @@ export function SiteFooter({
         <Cluster gap="md">
           {brand != null &&
             renderLink({
-              href: brandHref,
+              href: brandHref ?? home,
               "aria-label": brandLabel,
               className: cx("rounded text-slate-900", focusRing),
               children: brand,

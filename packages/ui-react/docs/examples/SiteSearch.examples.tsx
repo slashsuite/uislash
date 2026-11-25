@@ -25,13 +25,13 @@ export const DoHeader = () => (
 export const DontHeader = () => (
   <Stack gap="sm">
     <Input type="search" aria-label="Filter" icon="search" defaultValue="dia" />
-    <div>
+    <Stack divided>
       <ListRow href="#dialog" size="sm">
         Dialog
       </ListRow>
-      <ListRow href="#field-dialog" size="sm" divided>
+      <ListRow href="#field-dialog" size="sm">
         FieldDialog
       </ListRow>
-    </div>
+    </Stack>
   </Stack>
 );

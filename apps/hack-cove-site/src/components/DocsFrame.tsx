@@ -37,7 +37,7 @@ export function DocsFrame({
   return (
     <DocsLayout
       nav={nav}
-      navLabel="All components"
+      asideLabel="All components"
       title={title}
       description={description}
       contents={contents}

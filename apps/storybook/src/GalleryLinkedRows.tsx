@@ -21,20 +21,22 @@ export function GalleryLinkedRows() {
   return (
     <div className="flex flex-col gap-4">
       <Card flush>
-        <ListRow
-          href="#grace"
-          trailing={
-            <Cluster as="span">
-              <TextLink href="#grace-notes">Notes</TextLink>
-              <Button size="sm">Accept</Button>
-            </Cluster>
-          }
-        >
-          Linked row with a link and a button
-        </ListRow>
-        <ListRow href="#ada" divided highlighted>
-          Active row
-        </ListRow>
+        <Stack divided>
+          <ListRow
+            href="#grace"
+            trailing={
+              <Cluster as="span">
+                <TextLink href="#grace-notes">Notes</TextLink>
+                <Button size="sm">Accept</Button>
+              </Cluster>
+            }
+          >
+            Linked row with a link and a button
+          </ListRow>
+          <ListRow href="#ada" highlighted>
+            Active row
+          </ListRow>
+        </Stack>
       </Card>
       <Table label="Linked rows">
         <TableHead>

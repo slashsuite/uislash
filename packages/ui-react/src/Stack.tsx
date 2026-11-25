@@ -5,7 +5,7 @@ import {
   type ReactNode,
 } from "react";
 import { cx } from "./cx.js";
-import type { Passthrough, Unstyled } from "./props.js";
+import type { Passthrough } from "./props.js";
 import { useStackGap } from "./stackGap.js";
 import { EmptySlot, hasNoChildren } from "./emptySlot.js";
 
@@ -186,17 +186,21 @@ type StackProps = StackBase &
     | ({
         /** The element: `div`, `section`, `form` (takes the form's props), `ul` or `ol` (no markers; each child is an `<li>`). */
         as: "form";
-      } & Unstyled<Omit<ComponentPropsWithoutRef<"form">, "children">>)
+      } & Passthrough &
+        Pick<
+          ComponentPropsWithoutRef<"form">,
+          "onSubmit" | "action" | "method" | "noValidate" | "name" | "autoComplete"
+        >)
     | ({
         /** The element: `div`, `section`, `form` (takes the form's props), `ul` or `ol` (no markers; each child is an `<li>`). */
         as: "ul";
         /** Drawn in place of the list when it has no children: an `EmptyState`. */
         empty?: ReactNode;
-      } & Unstyled<Omit<ComponentPropsWithoutRef<"ul">, "children">>)
+      } & Passthrough)
     | ({
         /** The element: `div`, `section`, `form` (takes the form's props), `ul` or `ol` (no markers; each child is an `<li>`). */
         as: "ol";
         /** Drawn in place of the list when it has no children: an `EmptyState`. */
         empty?: ReactNode;
-      } & Unstyled<Omit<ComponentPropsWithoutRef<"ol">, "children">>)
+      } & Passthrough)
   );

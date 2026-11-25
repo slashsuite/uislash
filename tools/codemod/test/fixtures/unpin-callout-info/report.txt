@@ -1,0 +1,1 @@
+4: tone="info" kept: a Callout is neutral by default now, remove it unless the note must stay blue

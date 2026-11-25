@@ -9,6 +9,8 @@
  * - `Cluster` and `ScrollStrip` `gap`: `xs`, `sm` and `md`, the first steps of the gap scale.
  * - `Icon` `size`: also `feature`, the mark of a feature card.
  * - `Dialog` `width`: also `full`, the whole screen. `ChatThread` `height`: also `fill`, its parent's.
+ * - `ImageWidth` (`Image`, `RegionFrame` and `MediaTile` `width`): also `full`, the parent's width;
+ *   `sm`, `md` and `lg` are 96, 160 and 256px.
  *
  * Defaults that are not `md`:
  * - `Table` `size` is `sm`, its row padding, and the buttons and pills in a table take that size;
@@ -17,6 +19,8 @@
  *   column.
  * - `Stack` and `Section` `gap` are `xs` inside a `Card`, `Dialog`, `Drawer`, `BottomSheet`,
  *   `Callout` or `ListRow`.
+ * - `Image` and `RegionFrame` `width` are `full`: a picture fills its column unless it is a
+ *   thumbnail. `MediaTile` `width` is `md`, one tile of a grid of them.
  * - A `Pill`, `Button` or `IconButton` with no `size` takes the size of the `Card`, `ListRow` or
  *   `Table` it sits in; an `EmptyState` takes its slot's.
  *

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Card, ListRow, SortableItem, SortableList } from "@slashsuite/ui-react";
+import { Button, Card, ListRow, SortableItem, SortableList, Stack } from "@slashsuite/ui-react";
 
 /** The list reports a move and the app applies it to its own data, so a drag or the keyboard reorders it. */
 export const DoReorder = () => {
@@ -28,23 +28,25 @@ export const DoReorder = () => {
 /** Up and down buttons on every row are a wall of controls, and they cannot move a task into another band. */
 export const DontReorder = () => (
   <Card flush>
-    {["Ship the invoice export", "Book the car service", "Review the quote"].map((task, index) => (
-      <ListRow
-        key={task}
-        divided={index > 0}
-        actions={
-          <>
-            <Button size="sm" variant="outline">
-              Up
-            </Button>
-            <Button size="sm" variant="outline">
-              Down
-            </Button>
-          </>
-        }
-      >
-        {task}
-      </ListRow>
-    ))}
+    <Stack divided>
+      {["Ship the invoice export", "Book the car service", "Review the quote"].map((task) => (
+        <ListRow
+          key={task}
+
+          actions={
+            <>
+              <Button size="sm" variant="outline">
+                Up
+              </Button>
+              <Button size="sm" variant="outline">
+                Down
+              </Button>
+            </>
+          }
+        >
+          {task}
+        </ListRow>
+      ))}
+    </Stack>
   </Card>
 );

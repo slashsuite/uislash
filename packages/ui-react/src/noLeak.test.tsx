@@ -8,7 +8,7 @@ import * as ui from "./index.js";
 // per component and prop, beside noStyling.test.tsx, instead of a check in every component's file.
 // The markup is read as data (its attribute names), so a server render is the right tool here.
 
-const MENU: [ui.MenuAction] = [{ label: "Hide", onSelect: () => undefined }];
+const MENU: [ui.MenuAction] = [{ label: "Hide", onClick: () => undefined }];
 
 type Case = { prop: string; node: () => ReactElement };
 
@@ -91,14 +91,6 @@ const CASES: Record<string, Case[]> = {
         </ui.ListRow>
       ),
     },
-    {
-      prop: "divided",
-      node: () => (
-        <ui.ListRow divided href="#x">
-          a
-        </ui.ListRow>
-      ),
-    },
     { prop: "selected", node: () => <ui.ListRow selected>a</ui.ListRow> },
     {
       prop: "selected",
@@ -174,7 +166,7 @@ const CASES: Record<string, Case[]> = {
     },
   ],
   SubsectionHeading: [
-    { prop: "truncate", node: () => <ui.SubsectionHeading truncate>x</ui.SubsectionHeading> },
+    { prop: "lines", node: () => <ui.SubsectionHeading lines={1}>x</ui.SubsectionHeading> },
     { prop: "size", node: () => <ui.SubsectionHeading size="lg">x</ui.SubsectionHeading> },
   ],
   TextLink: [

@@ -8,6 +8,7 @@ import {
   IconButton,
   ListRow,
   Pill,
+  Stack,
   Text,
 } from "@slashsuite/ui-react";
 import { Collapsible } from "./ListRowCollapsible";
@@ -22,15 +23,13 @@ export const Rows: S = {
   render: () => (
     <div className="max-w-md">
       <Card flush>
-        <div>
+        <Stack divided>
           <ListRow trailing="R 9 500">Rent</ListRow>
-          <ListRow divided trailing={<Pill tone="warn">due</Pill>}>
-            Insurance
-          </ListRow>
-          <ListRow divided href="#status" trailing="3">
+          <ListRow trailing={<Pill tone="warn">due</Pill>}>Insurance</ListRow>
+          <ListRow href="#status" trailing="3">
             A link row
           </ListRow>
-        </div>
+        </Stack>
       </Card>
     </div>
   ),
@@ -49,30 +48,34 @@ export const Small: S = {
   render: () => (
     <div className="max-w-md">
       <Card size="sm" flush>
-        <ListRow size="sm" trailing="R 9 500">
-          Rent
-        </ListRow>
-        <ListRow size="sm" divided trailing="R 1 850">
-          Transport
-        </ListRow>
-        <ListRow size="sm" divided href="#status" trailing="3">
-          A link row
-        </ListRow>
+        <Stack divided>
+          <ListRow size="sm" trailing="R 9 500">
+            Rent
+          </ListRow>
+          <ListRow size="sm" trailing="R 1 850">
+            Transport
+          </ListRow>
+          <ListRow size="sm" href="#status" trailing="3">
+            A link row
+          </ListRow>
+        </Stack>
       </Card>
     </div>
   ),
 };
 
-/** A compact bordered list, such as a split's summary: a `Card flush` around plain rows (no `href`, no `onClick`) at `size="sm"`, `divided` after the first; no hover fill, no click target. */
+/** A compact bordered list, such as a split's summary: a `Card flush` around plain rows (no `href`, no `onClick`) at `size="sm"` in a `Stack divided`; no hover fill, no click target. */
 export const CompactList: S = {
   render: () => (
     <Card flush>
-      <ListRow size="sm" trailing="R 1 200">
-        Groceries
-      </ListRow>
-      <ListRow size="sm" divided trailing="R 640">
-        Household
-      </ListRow>
+      <Stack divided>
+        <ListRow size="sm" trailing="R 1 200">
+          Groceries
+        </ListRow>
+        <ListRow size="sm" trailing="R 640">
+          Household
+        </ListRow>
+      </Stack>
     </Card>
   ),
 };
@@ -82,20 +85,17 @@ export const LeadingAndSelected: S = {
   render: () => (
     <div className="max-w-md">
       <Card flush>
-        <ListRow leading={<Avatar name="Ada Lovelace" size="sm" />} trailing="3 builds">
-          Ada Lovelace
-        </ListRow>
-        <ListRow
-          divided
-          selected
-          leading={<Avatar name="Grace Hopper" size="sm" />}
-          trailing="1 build"
-        >
-          Grace Hopper
-        </ListRow>
-        <ListRow divided href="#linus" leading={<Avatar name="Linus T" size="sm" />}>
-          Linus T
-        </ListRow>
+        <Stack divided>
+          <ListRow leading={<Avatar name="Ada Lovelace" size="sm" />} trailing="3 builds">
+            Ada Lovelace
+          </ListRow>
+          <ListRow selected leading={<Avatar name="Grace Hopper" size="sm" />} trailing="1 build">
+            Grace Hopper
+          </ListRow>
+          <ListRow href="#linus" leading={<Avatar name="Linus T" size="sm" />}>
+            Linus T
+          </ListRow>
+        </Stack>
       </Card>
     </div>
   ),
@@ -106,13 +106,15 @@ export const Focused: S = {
   render: () => (
     <div className="max-w-md">
       <Card flush>
-        <ListRow trailing="R 9 500">Rent</ListRow>
-        <ListRow divided focused trailing="R 1 850">
-          Transport
-        </ListRow>
-        <ListRow divided selected focused trailing="R 4 100">
-          Groceries
-        </ListRow>
+        <Stack divided>
+          <ListRow trailing="R 9 500">Rent</ListRow>
+          <ListRow focused trailing="R 1 850">
+            Transport
+          </ListRow>
+          <ListRow selected focused trailing="R 4 100">
+            Groceries
+          </ListRow>
+        </Stack>
       </Card>
     </div>
   ),
@@ -123,19 +125,21 @@ export const Thumbnail: S = {
   render: () => (
     <div className="max-w-md">
       <Card flush>
-        {["Dashboard", "Settings"].map((name, index) => (
-          <ListRow
-            key={name}
-            divided={index > 0}
-            href={`#${name.toLowerCase()}`}
-            leadingWidth="thumbnail"
-            leading={<img alt="" src={samplePhoto} />}
-            trailing={<Pill tone="warn">changed</Pill>}
-          >
-            <Text>{name}</Text>
-            <Caption>0.4% of pixels differ</Caption>
-          </ListRow>
-        ))}
+        <Stack divided>
+          {["Dashboard", "Settings"].map((name) => (
+            <ListRow
+              key={name}
+
+              href={`#${name.toLowerCase()}`}
+              leadingWidth="thumbnail"
+              leading={<img alt="" src={samplePhoto} />}
+              trailing={<Pill tone="warn">changed</Pill>}
+            >
+              <Text>{name}</Text>
+              <Caption>0.4% of pixels differ</Caption>
+            </ListRow>
+          ))}
+        </Stack>
       </Card>
     </div>
   ),
@@ -146,35 +150,35 @@ export const StaticWithActions: S = {
   render: () => (
     <div className="max-w-md">
       <Card flush>
-        <ListRow
-          leading={<Avatar name="Ada Lovelace" size="sm" />}
-          trailing={<Pill tone="neutral">admin</Pill>}
-        >
-          Ada Lovelace
-        </ListRow>
-        <ListRow
-          divided
-          leading={<Avatar name="Grace Hopper" size="sm" />}
-          actions={
-            <>
-              <Button size="sm" variant="outline">
-                Reject
-              </Button>
-              <Button size="sm">Accept</Button>
-            </>
-          }
-        >
-          Grace Hopper
-        </ListRow>
-        <ListRow
-          divided
-          selected
-          leading={<Avatar name="Linus T" size="sm" />}
-          trailing="invited"
-          actions={<Button size="sm">Resend</Button>}
-        >
-          Linus T
-        </ListRow>
+        <Stack divided>
+          <ListRow
+            leading={<Avatar name="Ada Lovelace" size="sm" />}
+            trailing={<Pill tone="neutral">admin</Pill>}
+          >
+            Ada Lovelace
+          </ListRow>
+          <ListRow
+            leading={<Avatar name="Grace Hopper" size="sm" />}
+            actions={
+              <>
+                <Button size="sm" variant="outline">
+                  Reject
+                </Button>
+                <Button size="sm">Accept</Button>
+              </>
+            }
+          >
+            Grace Hopper
+          </ListRow>
+          <ListRow
+            selected
+            leading={<Avatar name="Linus T" size="sm" />}
+            trailing="invited"
+            actions={<Button size="sm">Resend</Button>}
+          >
+            Linus T
+          </ListRow>
+        </Stack>
       </Card>
     </div>
   ),
@@ -185,16 +189,18 @@ export const RowActions: S = {
   render: () => (
     <div className="max-w-md">
       <Card flush>
-        {["Rent", "Insurance", "Transport"].map((name, index) => (
-          <ListRow
-            key={name}
-            divided={index > 0}
-            trailing="R 1 850"
-            actions={<IconButton label={`Remove ${name}`} icon="close" />}
-          >
-            {name}
-          </ListRow>
-        ))}
+        <Stack divided>
+          {["Rent", "Insurance", "Transport"].map((name) => (
+            <ListRow
+              key={name}
+
+              trailing="R 1 850"
+              actions={<IconButton label={`Remove ${name}`} icon="close" />}
+            >
+              {name}
+            </ListRow>
+          ))}
+        </Stack>
       </Card>
     </div>
   ),
@@ -217,11 +223,13 @@ export const Sizes: S = {
   render: () => (
     <div className="max-w-md">
       <Card flush>
-        {(["sm", "md", "lg"] as const).map((size, i) => (
-          <ListRow key={size} size={size} divided={i > 0} trailing="R 9 500">
-            Rent, {size}
-          </ListRow>
-        ))}
+        <Stack divided>
+          {(["sm", "md", "lg"] as const).map((size) => (
+            <ListRow key={size} size={size} trailing="R 9 500">
+              Rent, {size}
+            </ListRow>
+          ))}
+        </Stack>
       </Card>
     </div>
   ),
@@ -235,20 +243,22 @@ export const ActiveFollowsPointerAndKeyboard: S = {
     return (
       <div className="max-w-md">
         <Card flush>
-          {names.map((name, index) => (
-            <ListRow
-              key={name}
-              href={`#${name}`}
-              divided={index > 0}
-              highlighted={active === name}
-              onPointerEnter={() => setActive(name)}
-              onPointerLeave={() => setActive(undefined)}
-              onFocus={() => setActive(name)}
-              trailing={active === name ? "Open" : undefined}
-            >
-              {name}
-            </ListRow>
-          ))}
+          <Stack divided>
+            {names.map((name) => (
+              <ListRow
+                key={name}
+                href={`#${name}`}
+
+                highlighted={active === name}
+                onPointerEnter={() => setActive(name)}
+                onPointerLeave={() => setActive(undefined)}
+                onFocus={() => setActive(name)}
+                trailing={active === name ? "Open" : undefined}
+              >
+                {name}
+              </ListRow>
+            ))}
+          </Stack>
         </Card>
       </div>
     );
@@ -260,15 +270,17 @@ export const Secondary: S = {
   render: () => (
     <div className="max-w-sm">
       <Card flush>
-        <ListRow trailing="R 9 500" secondary="Due 1 December">
-          Rent
-        </ListRow>
-        <ListRow divided trailing="R 1 850" secondary="Debit order, FNB">
-          Transport
-        </ListRow>
-        <ListRow divided href="#insurance" trailing="R 640" secondary="Renews in March">
-          Insurance
-        </ListRow>
+        <Stack divided>
+          <ListRow trailing="R 9 500" secondary="Due 1 December">
+            Rent
+          </ListRow>
+          <ListRow trailing="R 1 850" secondary="Debit order, FNB">
+            Transport
+          </ListRow>
+          <ListRow href="#insurance" trailing="R 640" secondary="Renews in March">
+            Insurance
+          </ListRow>
+        </Stack>
       </Card>
     </div>
   ),

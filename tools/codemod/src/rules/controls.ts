@@ -64,19 +64,55 @@ function checkedUses(arrow: ts.ArrowFunction, name: string): ts.Node[] | undefin
 export function checkboxChange(tag: Tag, component: string, context: Context): void {
   const change = attributeOf(tag, "onChange");
   if (component !== "Checkbox" || change === undefined) return;
-  const handler = eventHandler(valueOf(change), context);
+  const value = valueOf(change);
+  if (takesChecked(value, context)) return;
+  const handler = eventHandler(value, context);
   if (handler === undefined) {
     report(context, change, "Checkbox onChange is handed checked, not the event: rewrite it");
     return;
   }
   const { arrow, param, uses } = handler;
   const callee = passedOn(arrow, uses);
-  if (callee !== undefined && ts.isIdentifier(callee)) {
+  // Only a setter collapses to its name: a second run reads `setX` as taking the state, and would
+  // report any other bare name.
+  if (callee !== undefined && ts.isIdentifier(callee) && /^set[A-Z]/.test(callee.text)) {
     replace(context, arrow, callee.getText(context.file));
     return;
   }
   replace(context, param, "checked");
   for (const use of uses) replace(context, use, "checked");
+}
+
+/**
+ * Whether a handler already takes the new state, as this rule writes one: a state setter
+ * (`setWeekly`), or an arrow whose one parameter is `checked` and never read as an event. Without
+ * this a second run would report its own output.
+ */
+function takesChecked(value: ts.Expression | undefined, context: Context): boolean {
+  if (value === undefined) return false;
+  if (ts.isIdentifier(value)) return /^set[A-Z]/.test(value.text);
+  if (!ts.isArrowFunction(value) || value.parameters.length !== 1) return false;
+  const param = value.parameters[0];
+  if (param === undefined || !ts.isIdentifier(param.name) || param.name.text !== "checked") {
+    return false;
+  }
+  return !readsEvent(value, context);
+}
+
+/** Whether an arrow reads `checked.something`, as it would read an event. */
+function readsEvent(arrow: ts.ArrowFunction, context: Context): boolean {
+  let reads = false;
+  const visit = (node: ts.Node): void => {
+    if (
+      ts.isPropertyAccessExpression(node) &&
+      node.expression.getText(context.file) === "checked"
+    ) {
+      reads = true;
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(arrow.body);
+  return reads;
 }
 
 /** An arrow that reads its one parameter only as `p.target.checked`, with those reads. */

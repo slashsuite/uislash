@@ -1,6 +1,5 @@
 import {
   Children,
-  type ComponentPropsWithoutRef,
   createContext,
   type ElementType,
   type ReactElement,
@@ -33,7 +32,7 @@ export type { TextAlign, TextLines } from "./textBox.js";
    and `minWidth`. A heading takes no ink of its own.
 
    Element axis: every component has a semantic default element; the `as` prop
-   overrides it (type-safe: the extra props follow the element you pass).
+   overrides it. Whatever the element, a role takes only `id`, `data-*` and `aria-*` through.
 
    Block vs inline: `Text` and `Caption` are a paragraph (`<p>`); `as="span"` is the inline form,
    for a run inside a row, a cell, a button or a sentence. `Overline` is a `<span>`. The structural
@@ -113,24 +112,29 @@ type RunOwnProps = {
   italic?: boolean | undefined;
   /** Break a long unbroken string (a URL, a token) where the container ends, instead of overflowing. */
   breakWords?: boolean | undefined;
+  /** The full text on hover, for a run that `lines` cuts and whose content is not plain text. */
+  title?: string | undefined;
 };
 
 type Own = OwnProps & InlineOwnProps;
 
-/** Polymorphic props: own props + `as` + the intrinsic props of whichever element `as` selects. */
+/**
+ * Own props + `as` + what every part takes through (`id`, `data-*`, `aria-*`). The element varies,
+ * its own attributes do not follow it: a role is text, so it takes no `role` or handler (`Text` and `Caption` take a `title` for `lines`).
+ */
 type TypographyProps<E extends ElementType> = OwnProps & {
-  /** The element to render (each role has a semantic default); the other props follow it. */
+  /** The element to render; each role has a semantic default. */
   as?: E;
-} & Omit<ComponentPropsWithoutRef<E>, keyof OwnProps | "as" | "className" | "style" | "color">;
+} & Passthrough;
 
 /**
  * The props of an inline role: `TypographyProps` plus `tone`, `numeric`, `mono` and `align`.
- * Spelled out like `TypographyProps`, not as an `Omit` of it, so the docs read its real types.
+ * Spelled out like `TypographyProps`, not as an intersection with it, so the docs read its real types.
  */
 export type InlineTypographyProps<E extends ElementType> = Own & {
-  /** The element to render (each role has a semantic default); the other props follow it. */
+  /** The element to render; each role has a semantic default. */
   as?: E;
-} & Omit<ComponentPropsWithoutRef<E>, keyof Own | "as" | "className" | "style" | "color">;
+} & Passthrough;
 
 /**
  * Build a semantic component that pins `variantClass` (size + weight + tracking)
@@ -386,12 +390,11 @@ const SUBSECTION_SIZE: Record<SubsectionHeadingSize, Scale> = {
  * body size set apart by its weight) for a form-group caption or a dense card, or up to `lg`
  * (text-xl) for a drawer title; `md` is the default. Under an `AppShell density="compact"` each is one step down. Inside a `Prose`
  * `md` is text-xl/7 (the h3 of a doc), `sm` text-base/7 (the h4: body size, set apart by its weight)
- * and `lg` text-2xl/8, the size of a `SectionHeading` there. `truncate` keeps it on
+ * and `lg` text-2xl/8, the size of a `SectionHeading` there. `lines={1}` keeps it on
  * one line and cuts it with an ellipsis where its container ends, the full text as the `title`.
  */
 export function SubsectionHeading<E extends ElementType = "h3">({
   size = "md",
-  truncate,
   ...props
 }: TypographyProps<E> & {
   /**
@@ -400,13 +403,13 @@ export function SubsectionHeading<E extends ElementType = "h3">({
    * @default md
    */
   size?: SubsectionHeadingSize;
-  /** One line, cut with an ellipsis where the container ends; the full text becomes the `title`. */
-  truncate?: boolean | undefined;
+  /**
+   * Show at most this many lines (1 to 4) and end in an ellipsis, as on `Text`: `1` cuts the
+   * heading where its container ends. With plain-text content the full text becomes the `title`.
+   */
+  lines?: TextLines | undefined;
 }): ReactElement {
-  return pinned("h3", useScale(SUBSECTION_SIZE[size]), "default", {
-    ...props,
-    lines: truncate ? 1 : undefined,
-  });
+  return pinned("h3", useScale(SUBSECTION_SIZE[size]), "default", props);
 }
 
 // --- Inline roles -------------------------------------------------------------

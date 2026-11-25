@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Avatar, Card, ListRow } from "@slashsuite/ui-react";
+import { Avatar, Card, ListRow, Stack } from "@slashsuite/ui-react";
 import * as examples from "../../../packages/ui-react/docs/examples/ListRowReason.examples.js";
 
 const meta: Meta = { title: "Data/ListRow" };
@@ -19,12 +19,14 @@ export const Loading: StoryObj<{ loading: boolean }> = {
   args: { loading: true },
   render: ({ loading }) => (
     <Card flush>
-      <ListRow loading={loading} trailing="Today">
-        {loading ? null : "Cove Hardware"}
-      </ListRow>
-      <ListRow loading={loading} divided leading={<Avatar name={loading ? "" : "Mia Botha"} />}>
-        {loading ? null : "Mia Botha"}
-      </ListRow>
+      <Stack divided>
+        <ListRow loading={loading} trailing="Today">
+          {loading ? null : "Cove Hardware"}
+        </ListRow>
+        <ListRow loading={loading} leading={<Avatar name={loading ? "" : "Mia Botha"} />}>
+          {loading ? null : "Mia Botha"}
+        </ListRow>
+      </Stack>
     </Card>
   ),
 };

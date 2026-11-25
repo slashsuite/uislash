@@ -22,7 +22,7 @@ export const DoSaved = () => {
         Save
       </Button>
       <ToastRegion
-        toasts={toasts}
+        items={toasts}
         onDismiss={(id) => setToasts((all) => all.filter((toast) => toast.id !== id))}
       />
     </>
@@ -44,31 +44,31 @@ export const DoAction = () => {
       id: "update",
       tone: "info",
       title: "Update available",
-      body: "Reload to get the new version.",
+      description: "Reload to get the new version.",
       actions: <Button size="sm">Reload</Button>,
     },
   ]);
   return (
     <ToastRegion
-      toasts={toasts}
+      items={toasts}
       onDismiss={(id) => setToasts((all) => all.filter((toast) => toast.id !== id))}
     />
   );
 };
 
 /**
- * An action put in `body` is not an action to the region: the toast still leaves after eight
+ * An action put in `description` is not an action to the region: the toast still leaves after eight
  * seconds, taking the button with it before the reader reaches it.
  */
 export const DontAction = () => (
   <ToastRegion
     onDismiss={() => undefined}
-    toasts={[
+    items={[
       {
         id: "update",
         tone: "info",
         title: "Update available",
-        body: <Button size="sm">Reload</Button>,
+        description: <Button size="sm">Reload</Button>,
       },
     ]}
   />

@@ -34,7 +34,7 @@ export const FullPage = () => (
           ],
         },
       ]}
-      navLabel="Docs"
+      asideLabel="Docs"
       breadcrumbs={<Breadcrumbs items={[{ label: "Docs", href: "#docs" }, "Install"]} />}
       title="Install"
       description="Add the CLI to a project and run its first capture."
@@ -70,7 +70,7 @@ export const FullPage = () => (
 export const DoDocs = () => (
   <DocsLayout
     nav={[{ title: "Guides", items: [{ label: "Install", href: "#install", selected: true }] }]}
-    navLabel="Docs"
+    asideLabel="Docs"
     title="Install"
     contents={[
       { id: "do-setup", label: "Setup", level: 2 },

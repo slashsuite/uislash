@@ -1,10 +1,14 @@
 import ts from "typescript";
 import type { Edit } from "./edits.js";
 
-/** The package whose elements the codemod touches. */
-// Deliberately still the old scope: the codemod rewrites 0.10-era app code, which only ever
-// imported @hackcove/ui-react, and its fixtures match that.
+/** The package whose elements the 0.11 pass touches. */
+// Deliberately still the old scope: the 0.11 pass rewrites 0.10-era app code, which only ever
+// imported @hackcove/ui-react (the first @slashsuite/ui-react is 0.11.3). Run on 0.11 code it
+// would pin a wrapping Cluster to one line, so it never reads the new scope.
 export const PACKAGE = "@hackcove/ui-react";
+
+/** The package under both its names, for the steps that start from 0.11 or later code. */
+export const EITHER_SCOPE: readonly string[] = [PACKAGE, "@slashsuite/ui-react"];
 
 /** A JSX element's opening tag, with its attributes. */
 export type Tag = ts.JsxOpeningElement | ts.JsxSelfClosingElement;
@@ -34,6 +38,8 @@ export type Context = {
   imports: Imports;
   edits: Edit[];
   reports: Note[];
+  /** The package names this step reads imports from. */
+  packages: readonly string[];
 };
 
 export function parse(source: string, fileName: string): ts.SourceFile {
@@ -48,12 +54,15 @@ function scriptKind(fileName: string): ts.ScriptKind {
 }
 
 /** The bindings of every import from the package in the file. */
-export function packageImports(file: ts.SourceFile): Imports {
+export function packageImports(
+  file: ts.SourceFile,
+  packages: readonly string[] = [PACKAGE],
+): Imports {
   const imports: Imports = { named: new Map(), namespaces: new Set(), declarations: [] };
   for (const statement of file.statements) {
     if (!ts.isImportDeclaration(statement)) continue;
     const from = statement.moduleSpecifier;
-    if (!ts.isStringLiteral(from) || from.text !== PACKAGE) continue;
+    if (!ts.isStringLiteral(from) || !packages.includes(from.text)) continue;
     imports.declarations.push(statement);
     bind(statement.importClause?.namedBindings, imports);
   }
@@ -85,9 +94,11 @@ export function componentOf(tag: Tag, imports: Imports): string | undefined {
   return undefined;
 }
 
-/** Records a line for a person at a node. */
+/** Records a line for a person at a node, once: two rules that reach one node say it once. */
 export function report(context: Context, node: ts.Node, message: string): void {
-  context.reports.push({ at: node.getStart(context.file), message });
+  const at = node.getStart(context.file);
+  if (context.reports.some((note) => note.at === at && note.message === message)) return;
+  context.reports.push({ at, message });
 }
 
 /** The tag of the element a node sits directly inside, skipping JSX expressions and fragments. */

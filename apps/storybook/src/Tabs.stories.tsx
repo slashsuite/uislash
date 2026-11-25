@@ -44,9 +44,9 @@ export const Default: S = {
     return (
       <div className="flex max-w-xl flex-col gap-4">
         <Tabs label="Project views" items={views} value={value} onChange={setValue} />
-        <Text id="panel" role="tabpanel">
-          Showing {value}.
-        </Text>
+        <div id="panel" role="tabpanel">
+          <Text>Showing {value}.</Text>
+        </div>
       </div>
     );
   },
@@ -92,9 +92,9 @@ export const Pill: S = {
     return (
       <div className="flex max-w-xl flex-col gap-4">
         <Tabs label="Project views" items={views} value={value} onChange={setValue} />
-        <Text id="panel" role="tabpanel">
-          Showing {value}.
-        </Text>
+        <div id="panel" role="tabpanel">
+          <Text>Showing {value}.</Text>
+        </div>
       </div>
     );
   },

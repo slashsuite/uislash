@@ -226,7 +226,7 @@ export const Totals: S = {
   ),
 };
 
-/** `TableGroupRow` is a full-width group header: its `label` spans the `colSpan` columns you give it (the table's column count), `trailing` sits at the far end. A full-width panel (an empty state, a note) is a `TableCell` with `colSpan`. */
+/** `TableGroupRow` is a full-width group header: its `label` spans the `colSpan` columns you give it (the table's column count), `trailing`, the group's count or subtotal, sits at the far end. A full-width panel (an empty state, a note) is a `TableCell` with `colSpan`. */
 export const GroupRows: S = {
   render: () => (
     <Table label="Budget by group">
@@ -283,7 +283,7 @@ export const CellTones: S = {
   ),
 };
 
-/** `truncate` caps a long value's width, ellipsises it on one line and puts the full text in a `title`. One width, no prop. */
+/** `lines={1}` caps a long value's width, ellipsises it on one line and puts the full text in a `title`. One width, no prop. */
 export const Truncate: S = {
   render: () => (
     <Table label="Branches">
@@ -295,13 +295,13 @@ export const Truncate: S = {
       </TableHead>
       <TableBody>
         <TableRow>
-          <TableCell mono truncate>
+          <TableCell mono lines={1}>
             feature/omnibus-planner-rework-the-whole-budget-import-flow-end-to-end
           </TableCell>
           <TableCell numeric>14</TableCell>
         </TableRow>
         <TableRow>
-          <TableCell mono truncate>
+          <TableCell mono lines={1}>
             main
           </TableCell>
           <TableCell numeric>212</TableCell>

@@ -129,3 +129,39 @@ describe("SiteSearch", () => {
     expect(dialog.getByRole("status").textContent).toBe("No results");
   });
 });
+
+describe("SiteSearch words", () => {
+  it("uses the English words by default", async () => {
+    search();
+    await user().click(firstTrigger());
+    const dialog = within(screen.getByRole("dialog", { name: "Search components" }));
+    expect(dialog.getByRole("searchbox").getAttribute("placeholder")).toBe("Search");
+  });
+
+  it("renames the button, placeholder, prompt, no-match line and count", async () => {
+    render(
+      <SiteSearch
+        items={ITEMS}
+        label="Rechercher des composants"
+        buttonLabel="Rechercher"
+        placeholder="Nom"
+        hintLabel="Tapez un nom"
+        noResultsLabel="Aucun résultat pour"
+        countLabel={(count) => `${count} trouvés`}
+      />,
+    );
+    const person = user();
+    await person.click(screen.getByRole("button", { name: "Rechercher" }));
+    expect(screen.queryByRole("button", { name: "Search" })).toBeNull();
+    const dialog = within(screen.getByRole("dialog", { name: "Rechercher des composants" }));
+    const field = dialog.getByRole("searchbox");
+    expect(field.getAttribute("placeholder")).toBe("Nom");
+    expect(dialog.getByText("Tapez un nom")).not.toBeNull();
+    await person.type(field, "modal");
+    expect(dialog.getByRole("status").textContent).toBe("1 trouvés");
+    await person.clear(field);
+    await person.type(field, "zzz");
+    expect(dialog.getByText("Aucun résultat pour zzz")).not.toBeNull();
+    expect(dialog.getByRole("status").textContent).toBe("0 trouvés");
+  });
+});

@@ -22,7 +22,7 @@ export type Toast = {
   /** The bold line: the whole message for a short one ("Saved"). */
   title: string;
   /** A line of detail under the title. */
-  body?: ReactNode;
+  description?: ReactNode;
   /**
    * What the notice means, with `Callout`'s surfaces. A `warn` or `danger` toast never hides itself.
    * @default neutral
@@ -47,7 +47,7 @@ function hides(toast: Toast): boolean {
 
 /**
  * Puts the toast's words in the live region once, when it first shows, and takes them out when it
- * goes: the title, the body's text, and `actionsLabel` when it has actions. The buttons themselves
+ * goes: the title, the description's text, and `actionsLabel` when it has actions. The buttons themselves
  * are never read out as part of the notice.
  */
 function useAnnounce(
@@ -83,6 +83,7 @@ function ToastItem({
   dismissLabel,
   actionsLabel,
   live,
+  alert,
   back,
   onDismiss,
 }: {
@@ -90,12 +91,17 @@ function ToastItem({
   dismissLabel: string;
   actionsLabel: string;
   live: RefObject<HTMLDivElement | null>;
+  alert: RefObject<HTMLDivElement | null>;
   back: RefObject<HTMLElement | null>;
   onDismiss: (id: string) => void;
 }): ReactElement {
   const tone = toast.tone ?? "neutral";
   const hide = hides(toast);
-  const body = useAnnounce(live, toast.title, toast.actions == null ? null : actionsLabel);
+  const body = useAnnounce(
+    tone === "danger" ? alert : live,
+    toast.title,
+    toast.actions == null ? null : actionsLabel,
+  );
   return (
     <div
       data-toast=""
@@ -113,9 +119,9 @@ function ToastItem({
     >
       <div className="min-w-0 flex-1 py-0.5">
         <p className="font-semibold">{toast.title}</p>
-        {toast.body != null && (
+        {toast.description != null && (
           <div ref={body} className="mt-1">
-            {toast.body}
+            {toast.description}
           </div>
         )}
       </div>
@@ -140,17 +146,18 @@ function ToastItem({
 
 /**
  * The page's toasts: short notices fixed to the bottom of the viewport, from a list the app holds.
- * Mount it once, at the root beside `AppShell`; add a toast to `toasts` to show it, and drop it in
+ * Mount it once, at the root beside `AppShell`; add a toast to `items` to show it, and drop it in
  * `onDismiss` to remove it. A `neutral`, `info` or `positive` toast with no `actions` leaves on its
  * own after eight seconds (paused while the pointer is over it or focus is in it); a `warn` or
  * `danger` toast, or one with `actions`, stays until dismissed. The region is a named landmark with
  * a polite `role="status"` kept in the page while empty, which reads each new toast's text once,
- * followed by "Actions available" when it has actions; its buttons are not read out. Dismissing the
+ * followed by "Actions available" when it has actions; its buttons are not read out. A `danger`
+ * toast is read through a `role="alert"` beside it instead, so it interrupts. Dismissing the
  * toast that holds focus moves focus to the next toast, or back where it was. A toast raised while a
  * `Dialog`, `Drawer` or `Lightbox` is open is held back (those already shown stay), shown and read once the modal has closed.
  */
 export function ToastRegion({
-  toasts,
+  items,
   onDismiss,
   label = "Notifications",
   dismissLabel = "Dismiss",
@@ -158,8 +165,8 @@ export function ToastRegion({
   ...rest
 }: {
   /** What is shown, oldest first. `[]` shows nothing and keeps the live region in the page. */
-  toasts: readonly Toast[];
-  /** Called by a toast's close button and when a self-hiding toast's time is up: drop it from `toasts`. */
+  items: readonly Toast[];
+  /** Called by a toast's close button and when a self-hiding toast's time is up: drop it from `items`. */
   onDismiss: (id: string) => void;
   /**
    * The region's accessible name.
@@ -178,15 +185,16 @@ export function ToastRegion({
   actionsLabel?: string | undefined;
 } & Passthrough): ReactElement {
   const live = useRef<HTMLDivElement>(null);
+  const alert = useRef<HTMLDivElement>(null);
   /** What had focus before it came into the region, to hand it back when the last toast goes. */
   const back = useRef<HTMLElement | null>(null);
   const held = useModalOpen();
   // The toasts on screen when a modal opened stay; only newer ones are held back. The ids shown
   // are kept from the last render with no modal open, adjusted during render rather than in an effect.
   const [kept, setKept] = useState<readonly string[]>([]);
-  const ids = toasts.map((toast) => toast.id);
+  const ids = items.map((toast) => toast.id);
   if (!held && ids.join("\n") !== kept.join("\n")) setKept(ids);
-  const visible = held ? toasts.filter((toast) => kept.includes(toast.id)) : toasts;
+  const visible = held ? items.filter((toast) => kept.includes(toast.id)) : items;
   return (
     <section
       aria-label={label}
@@ -199,8 +207,9 @@ export function ToastRegion({
       className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex justify-center px-4 pb-[max(1rem,env(safe-area-inset-bottom))]"
     >
       <style>{css}</style>
-      {/* The live region holds only words, put there by each toast (`useAnnounce`). */}
+      {/* The live regions hold only words, put there by each toast (`useAnnounce`). */}
       <div ref={live} role="status" aria-live="polite" aria-atomic="false" className="sr-only" />
+      <div ref={alert} role="alert" aria-atomic="false" className="sr-only" />
       <div className="flex w-full max-w-sm flex-col gap-2">
         {visible.map((toast) => (
           <ToastItem
@@ -209,6 +218,7 @@ export function ToastRegion({
             dismissLabel={dismissLabel}
             actionsLabel={actionsLabel}
             live={live}
+            alert={alert}
             back={back}
             onDismiss={onDismiss}
           />

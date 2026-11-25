@@ -26,11 +26,11 @@ export const DontScale: S = {
   render: examples.DontScale,
 };
 
-/** `truncate` cuts a `SubsectionHeading` that is too long for its column to one line with an ellipsis, and keeps the full text as its tooltip. */
+/** `lines={1}` cuts a `SubsectionHeading` that is too long for its column to one line with an ellipsis, and keeps the full text as its tooltip. */
 export const Truncated: S = {
   render: () => (
     <div className="w-60">
-      <SubsectionHeading truncate>
+      <SubsectionHeading lines={1}>
         Awaiting a reply from the customer about the revised scope
       </SubsectionHeading>
     </div>
@@ -138,9 +138,7 @@ export const AsOverride: S = {
       </Caption>
       <Text>Text (default): a block paragraph.</Text>
       <Caption>Caption (default): a block.</Caption>
-      <Overline as="label" htmlFor="x">
-        Overline as="label" (accepts label props like htmlFor)
-      </Overline>
+      <Overline as="div">Overline as="div" (a label for a control is a Field's)</Overline>
     </div>
   ),
 };

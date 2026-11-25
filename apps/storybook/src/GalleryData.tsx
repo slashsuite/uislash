@@ -19,6 +19,7 @@ import {
   Text,
   Timeline,
   TimelineItem,
+  Stack,
 } from "@slashsuite/ui-react";
 import { samplePhoto } from "./samplePhoto";
 import { InsetAndNested } from "./GalleryCardInset";
@@ -66,18 +67,16 @@ export function GalleryData() {
         <Callout banner tone="warn" actions={<Button size="sm">Fix</Button>}>
           One bill has no due date.
         </Callout>
-        <div>
+        <Stack divided>
           <ListRow trailing="R 9 500">Rent</ListRow>
-          <ListRow divided trailing="R 1 850">
-            Transport
-          </ListRow>
-          <ListRow divided secondary="Debit order" trailing="R 640">
+          <ListRow trailing="R 1 850">Transport</ListRow>
+          <ListRow secondary="Debit order" trailing="R 640">
             Insurance
           </ListRow>
-          <ListRow divided href="#bills" trailing="3">
+          <ListRow href="#bills" trailing="3">
             A link row
           </ListRow>
-        </div>
+        </Stack>
       </Card>
       <Card title="PixelSlash" status={<Pill tone="warn">Coming soon</Pill>}>
         Status beside the title.
@@ -129,29 +128,29 @@ export function GalleryData() {
 function GalleryStaticRows() {
   return (
     <Card flush>
-      <ListRow selected leading={<Avatar name="Ada Lovelace" size="sm" />} trailing="admin">
-        Selected static row
-      </ListRow>
-      <ListRow
-        divided
-        leading={<Avatar name="Grace Hopper" size="sm" />}
-        actions={<Button size="sm">Remove</Button>}
-      >
-        Static row with actions
-      </ListRow>
-      <ListRow divided focused trailing="R 1 850">
-        Focused row
-      </ListRow>
-      <ListRow
-        divided
-        href="#dashboard"
-        leadingWidth="thumbnail"
-        leading={<img alt="" src={samplePhoto} />}
-        trailing={<Pill tone="warn">changed</Pill>}
-      >
-        <Text>Thumbnail row</Text>
-        <Caption>A block label under the title.</Caption>
-      </ListRow>
+      <Stack divided>
+        <ListRow selected leading={<Avatar name="Ada Lovelace" size="sm" />} trailing="admin">
+          Selected static row
+        </ListRow>
+        <ListRow
+          leading={<Avatar name="Grace Hopper" size="sm" />}
+          actions={<Button size="sm">Remove</Button>}
+        >
+          Static row with actions
+        </ListRow>
+        <ListRow focused trailing="R 1 850">
+          Focused row
+        </ListRow>
+        <ListRow
+          href="#dashboard"
+          leadingWidth="thumbnail"
+          leading={<img alt="" src={samplePhoto} />}
+          trailing={<Pill tone="warn">changed</Pill>}
+        >
+          <Text>Thumbnail row</Text>
+          <Caption>A block label under the title.</Caption>
+        </ListRow>
+      </Stack>
     </Card>
   );
 }
@@ -229,8 +228,8 @@ function BudgetTable() {
       <TableBody>
         <TableGroupRow label="Home" trailing="R 4 120.00" colSpan={2} />
         <TableRow>
-          <TableCell mono truncate>
-            feature/a-branch-name-long-enough-to-be-cut-at-the-cell-width-by-truncate
+          <TableCell mono lines={1}>
+            feature/a-branch-name-long-enough-to-be-cut-at-the-cell-width-by-lines-1
           </TableCell>
           <TableCell numeric tone="positive">
             + R 1 200.00

@@ -36,11 +36,11 @@ export const Tones: S = {
   render: () => (
     <ToastRegion
       onDismiss={() => undefined}
-      toasts={[
+      items={[
         {
           id: "neutral",
           title: "Draft kept",
-          body: "It is in your drafts.",
+          description: "It is in your drafts.",
           actions: <Button size="sm">Open</Button>,
         },
         {
@@ -55,8 +55,18 @@ export const Tones: S = {
           title: "Invite sent",
           actions: <Button size="sm">Undo</Button>,
         },
-        { id: "warn", tone: "warn", title: "Offline", body: "Changes save when you reconnect." },
-        { id: "danger", tone: "danger", title: "Not saved", body: "The server did not answer." },
+        {
+          id: "warn",
+          tone: "warn",
+          title: "Offline",
+          description: "Changes save when you reconnect.",
+        },
+        {
+          id: "danger",
+          tone: "danger",
+          title: "Not saved",
+          description: "The server did not answer.",
+        },
       ]}
     />
   ),

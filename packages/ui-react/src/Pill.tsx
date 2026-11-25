@@ -57,8 +57,12 @@ type Removable =
   | {
       /** Adds a small x button after the text that calls this: for a chip the reader can drop (an attachment, a filter). It sits beside a link or button pill, never inside it. */
       onRemove: () => void;
-      /** The x button's accessible name and tooltip: `Remove invoice.pdf`. Required with `onRemove`. */
-      removeLabel: string;
+      /**
+       * The x button's whole accessible name and tooltip: `Remove invoice.pdf`. Left out, it is
+       * `Remove` followed by the pill's text when that text is a string or a number, else `Remove`.
+       * @default Remove
+       */
+      removeLabel?: string | undefined;
     };
 
 type PillProps = PillBase &
@@ -239,6 +243,13 @@ function renderMain(parts: MainParts) {
   );
 }
 
+/** The x button's name when the app gives none: `Remove` and the pill's text, when it is text. */
+function removeName(children: ReactNode): string {
+  return typeof children === "string" || typeof children === "number"
+    ? `Remove ${children}`
+    : "Remove";
+}
+
 /** The shell round a removable pill: the text half and the x button beside it. */
 function RemoveShell({
   look,
@@ -248,7 +259,7 @@ function RemoveShell({
   children,
 }: {
   look: Look;
-  remove: { onRemove: () => void; removeLabel: string | undefined };
+  remove: { onRemove: () => void; removeLabel: string };
   attrs: object;
   interactive: boolean;
   children: ReactNode;
@@ -281,7 +292,7 @@ function RemoveShell({
  * a link (the app's router link through `LinkProvider` for an in-app path, else a plain `<a>`;
  * `external` opens a new tab) and `onClick` makes it
  * a button, each with a hover dim and the focus ring. `onRemove` adds an x button after the text
- * (named by `removeLabel`), a separate button beside a link or button pill rather than nested in
+ * (named by `removeLabel`, by default `Remove` and the pill's text), a separate button beside a link or button pill rather than nested in
  * it. `title` is its tooltip and description; a plain pill with one takes a tab stop. While
  * `loading` with no text yet it is a bone of its size.
  */
@@ -360,7 +371,7 @@ function ShownPill({
         ) : (
           <RemoveShell
             look={look}
-            remove={{ onRemove, removeLabel }}
+            remove={{ onRemove, removeLabel: removeLabel ?? removeName(children) }}
             attrs={shell}
             interactive={interactive}
           >

@@ -14,7 +14,7 @@ const meta: Meta = { title: "Data/Table" };
 export default meta;
 type S = StoryObj;
 
-/** `align="center"` centres a cell's content: here a `colSpan` empty state and a centred column. A `truncate` cell's box follows the alignment. */
+/** `align="center"` centres a cell's content: here a `colSpan` empty state and a centred column. A `lines={1}` cell's box follows the alignment. */
 export const CentredCells: S = {
   render: () => (
     <Stack gap="md">
@@ -56,7 +56,7 @@ export const CentredCells: S = {
           </TableRow>
           <TableRow>
             <TableCell tone="strong">Serial numbers</TableCell>
-            <TableCell align="center" truncate>
+            <TableCell align="center" lines={1}>
               SN-2041-88213, SN-2041-88214, SN-2041-88215, SN-2041-88216, SN-2041-88217
             </TableCell>
           </TableRow>

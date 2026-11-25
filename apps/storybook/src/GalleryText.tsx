@@ -127,7 +127,7 @@ export function GalleryText() {
         <SubsectionHeading size="md">SubsectionHeading md</SubsectionHeading>
         <SubsectionHeading size="lg">SubsectionHeading lg</SubsectionHeading>
         <div className="w-40">
-          <SubsectionHeading truncate>SubsectionHeading truncated to one line</SubsectionHeading>
+          <SubsectionHeading lines={1}>SubsectionHeading truncated to one line</SubsectionHeading>
         </div>
       </div>
       <div>

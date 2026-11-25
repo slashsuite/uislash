@@ -224,11 +224,7 @@ export function DialogFrame({
                 <BodyContext>{children}</BodyContext>
               </div>
             )}
-            {error && (
-              <div className="mt-5 shrink-0">
-                <Callout tone="danger">{error}</Callout>
-              </div>
-            )}
+            <FormError error={error} space="mt-5" />
             {footer && <div className="mt-5 flex shrink-0 justify-end gap-2">{footer}</div>}
           </FormColumn>
         </div>
@@ -248,10 +244,30 @@ export function DialogFrame({
 }
 
 /**
- * With `onSubmit`, the body, error and footer in one `<form>` that keeps the panel's column, so the
- * body still scrolls under the cap; without it they sit in the panel as they are.
+ * The `error` of a form dialog or drawer: a danger `Callout`, announced as an alert, pinned between
+ * the body and the footer. `space` is the panel's own spacing around it.
  */
-function FormColumn({
+export function FormError({
+  error,
+  space,
+}: {
+  error: ReactNode;
+  space: string;
+}): ReactElement | null {
+  if (!error) return null;
+  return (
+    <div className={cx("shrink-0", space)}>
+      <Callout tone="danger">{error}</Callout>
+    </div>
+  );
+}
+
+/**
+ * With `onSubmit`, the body, error and footer in one `<form>` that keeps the panel's column, so the
+ * body still scrolls under the cap; without it they sit in the panel as they are. Shared by `Dialog`
+ * and `Drawer`.
+ */
+export function FormColumn({
   onSubmit,
   children,
 }: {

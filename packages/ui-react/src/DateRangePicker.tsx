@@ -63,6 +63,26 @@ export type DateRangePickerProps = Pick<
      * @default Year
      */
     yearLabel?: string | undefined;
+    /**
+     * The name of the start date's segments, for a screen reader.
+     * @default Start date
+     */
+    startLabel?: string | undefined;
+    /**
+     * The name of the end date's segments, for a screen reader.
+     * @default End date
+     */
+    endLabel?: string | undefined;
+    /**
+     * The word between the two dates.
+     * @default to
+     */
+    toLabel?: string | undefined;
+    /**
+     * The calendar's footer button that empties the range.
+     * @default Clear
+     */
+    clearLabel?: string | undefined;
   };
 
 type Side = ReturnType<typeof useShownRange>["start"];
@@ -125,6 +145,10 @@ export function DateRangePicker({
   required,
   monthLabel = "Month",
   yearLabel = "Year",
+  startLabel = "Start date",
+  endLabel = "End date",
+  toLabel = "to",
+  clearLabel = "Clear",
   value,
   defaultValue,
   onChange,
@@ -137,13 +161,14 @@ export function DateRangePicker({
   ...rest
 }: DateRangePickerProps): ReactElement {
   const frame = usePickerFrame(size);
+  // `rest` carries the bounds, as `Notes` reads them.
   const shown = useShownRange({
+    ...rest,
     value,
     defaultValue,
     onChange,
-    minValue: rest.minValue,
-    maxValue: rest.maxValue,
     isRequired: required,
+    labels: [startLabel, endLabel],
   });
   const { container, findDialog } = useDialogContainer();
   return (
@@ -167,14 +192,14 @@ export function DateRangePicker({
             <Group className={(state) => cx(frameClass(state), frame)}>
               <SideInput
                 slot="start"
-                name="Start date"
+                name={startLabel}
                 side={shown.start}
                 onRead={shown.onReadStart}
               />
               <span aria-hidden="true" className="px-1 text-slate-500">
-                to
+                {toLabel}
               </span>
-              <SideInput slot="end" name="End date" side={shown.end} onRead={shown.onReadEnd} />
+              <SideInput slot="end" name={endLabel} side={shown.end} onRead={shown.onReadEnd} />
               <Button className={cx(iconButtonLook, pickerButton(size), "ml-auto")}>
                 {calendarIcon}
               </Button>
@@ -185,7 +210,7 @@ export function DateRangePicker({
             <RangeCalendarPopover
               container={container}
               presets={presets}
-              labels={{ monthLabel, yearLabel }}
+              labels={{ monthLabel, yearLabel, clearLabel }}
             />
           </>
         )}

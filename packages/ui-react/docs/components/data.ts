@@ -50,7 +50,7 @@ export const data: ComponentSection = {
         'A `TableHeaderCell` is a `<th scope="col">`; a `TableGroupRow` is a `<th scope="rowgroup">`.',
         "A `TableHeaderCell` `label` is hidden text inside the header cell, so an actions column still has a name for a screen reader.",
         "Colour alone never carries a row's or a cell's status; name it in text.",
-        "A `truncate` cell puts its full text in a `title`.",
+        "A `lines={1}` cell puts its full text in a `title`.",
         "A stretched `TextLink` is a real link and the only tab stop in its row; the row's whole area is its click target.",
         "A `TableEditCell` or `InlineEdit` is a native `<button>` named by its value and its `label`. Opening moves the focus to the editor, a group named by `label`; Esc and `close` move it back to the value.",
         "On a narrow screen the card scrolls sideways instead of squeezing its columns.",
@@ -71,7 +71,7 @@ export const data: ComponentSection = {
         "TableGroupRow",
         "TableExpandCell",
       ],
-      types: ["CellTone", "RowTone", "TableSort"],
+      types: ["CellAlign", "CellTone", "RowTone", "TableSort"],
     },
     {
       slug: "list-row",
@@ -88,13 +88,13 @@ export const data: ComponentSection = {
       stories: ["ListRowPanel", "LinkedControls"],
       usage: {
         do: [
-          "Put the rows in a `Card flush` and set `divided` on every row after the first. `trailing` is a value, a count or a `Pill`; `leading` is an `Avatar` or an icon.",
+          "Put the rows in a `Stack divided` in a `Card flush`: the Stack draws the line between rows. `trailing` is a value, a count or a `Pill`; `leading` is an `Avatar` or an icon.",
           "A row with `onClick` is a button; with `href` it is a link. `external` opens a link in a new tab.",
           "`expanded` makes the row the header of a collapsible section: you own the state and the section, and pass `aria-controls` to name it.",
           "`selected` marks the one row whose detail is open; set it on a single row of a list. `focused` marks the row the keyboard cursor is on in a list you move through yourself: an inset accent ring, apart from `selected`'s fill.",
           'A button row (`onClick`) or a link row (`href`) can hold its own link or button in `trailing`: it sits above the row\'s button or link and takes its own click, with no class from you, so a row that selects can still carry a "View" link to its page. A row with no `href` and no `onClick` has no action of its own: its buttons go in `actions`, after `trailing`. They are always shown: an action that appears only on hover is one a touch or keyboard user cannot find. A long list keeps one action per row in view and the rest in a `Menu`.',
           'A row\'s own link or button goes in `trailing`, never in the label. `size="sm"` is the dense padding for a list that must fit more rows, `size="lg"` the roomy one for a short list of big targets; `md` is the default.',
-          'A compact bordered list for read-only data, such as the lines of a split, is a `Card flush` around rows with no action at `size="sm"`, `divided` after the first, with the amount in `trailing`. There is no separate part: a row with no action has no hover fill and no click target.',
+          'A compact bordered list for read-only data, such as the lines of a split, is a `Card flush` around rows with no action at `size="sm"` in a `Stack divided`, with the amount in `trailing`. There is no separate part: a row with no action has no hover fill and no click target.',
           "Records with several columns to compare are a `Table`, not rows.",
         ],
         dont: ["Do not add your own indent or a wrapper around the row."],
@@ -132,7 +132,7 @@ export const data: ComponentSection = {
       },
       accessibility: [
         "The list is a grid with one row per item. Tab moves into it, and the arrow keys move between rows.",
-        'To move an item from the keyboard: on its row, press the Right arrow to reach its grip handle, named "Reorder <title>", and press Enter. Each Up or Down arrow moves the drop line one gap, across section headings and into an empty section\'s "Drop here" row, and Enter drops. Escape cancels, leaves the order as it was and puts focus back on the handle. Tab does not leave the list during a move: it steps between the page\'s drop areas, and only Enter or Escape ends it.',
+        'To move an item from the keyboard: on its row, press the Right arrow to reach its grip handle, named "Reorder <title>" (`reorderLabel` renames the word), and press Enter. Each Up or Down arrow moves the drop line one gap, across section headings and into an empty section\'s "Drop here" row, and Enter drops. Escape cancels, leaves the order as it was and puts focus back on the handle. Tab does not leave the list during a move: it steps between the page\'s drop areas, and only Enter or Escape ends it.',
         "While an item is moved, a screen reader announces it by its `title` and announces each drop position.",
         "A pointer drags the row itself, and on a touch screen a long press starts the drag; the handle is for the keyboard and screen readers.",
         'Section headings are row headers with the section\'s title, and the "Drop here" row cannot be focused or dragged.',
@@ -229,7 +229,7 @@ export const data: ComponentSection = {
         "A `Legend` is a list. Its swatches are hidden from assistive tech and its labels are always drawn, so colour is never the only signal.",
       ],
       api: ["StackedBar", "Legend"],
-      types: ["LegendItem", "StackedSegment", "VizTone"],
+      types: ["CategoryTone", "LegendItem", "StackedSegment", "VizTone"],
     },
     {
       slug: "trend-chart",

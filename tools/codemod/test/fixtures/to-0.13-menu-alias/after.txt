@@ -1,0 +1,6 @@
+import { Menu, type MenuAction } from "@hackcove/ui-react";
+
+const actions: MenuAction[] = [{ label: "Edit", onClick: edit }];
+const copy = actions;
+
+export const view = <Menu label="Actions" items={actions} />;

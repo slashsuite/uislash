@@ -1,4 +1,4 @@
-import { Avatar, Card, ListRow, Text } from "@slashsuite/ui-react";
+import { Avatar, Card, ListRow, Text, Stack } from "@slashsuite/ui-react";
 
 /** A dense ListRow in a small flush Card, and a compact bordered list: a flush Card of plain `size="sm"` rows, and a plain row with a `panel`. */
 export function DenseRows() {
@@ -10,12 +10,14 @@ export function DenseRows() {
         </ListRow>
       </Card>
       <Card flush>
-        <ListRow size="sm" trailing="R 1 200">
-          Compact list
-        </ListRow>
-        <ListRow size="sm" divided trailing="R 640">
-          Static rows, divided
-        </ListRow>
+        <Stack divided>
+          <ListRow size="sm" trailing="R 1 200">
+            Compact list
+          </ListRow>
+          <ListRow size="sm" trailing="R 640">
+            Static rows, divided
+          </ListRow>
+        </Stack>
       </Card>
       <Card flush>
         <ListRow

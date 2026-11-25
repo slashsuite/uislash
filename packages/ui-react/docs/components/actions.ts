@@ -96,20 +96,21 @@ export const actions: ComponentSection = {
       usage: {
         do: [
           "Keep the one main action in view as a `Button` and put the rest in one `Menu` beside it; a row of several icon buttons is a `Menu`.",
-          "`items` is data: each a `label` with `onSelect`, or a link with `href` (through the app's `LinkProvider`; `external` opens a new tab). `icon` adds a leading glyph from the `Icon` set and `disabled` dims one.",
+          "`items` is data: each a `label` with `onClick`, or a link with `href` (through the app's `LinkProvider`; `external` opens a new tab). `icon` adds a leading glyph from the `Icon` set. An item that cannot be chosen yet takes `disabledReason`: it dims and shows the reason under its label.",
+          "`open` and `onOpenChange` hold the menu open from the app's own state, such as a keyboard shortcut.",
           'A destructive item is `tone="danger"` and goes last, so it is never the first thing the arrows reach.',
           'The default trigger is a ghost three-dot button named by `label`; `trigger="button"` is an outline button reading `label`, for a menu whose name is worth a word ("Export"). `size="sm"` inside a row or a card header.',
           "In a `ListRow`, a row's `Menu` goes in its `actions`, shown on every row.",
         ],
         dont: [
           "Never put the only action of a row in a `Menu`: one action is a `Button` or an `IconButton`.",
-          "Do not hide a reason in the menu: an item that cannot be chosen says why in its label or on the page.",
+          "Never dim an item with no reason: a dimmed item says why with `disabledReason`.",
         ],
       },
       accessibility: [
         "The trigger is a button with `aria-haspopup` and `aria-expanded`, named by `label`; the menu takes the same name.",
         "Enter, Space or ArrowDown open it on the first item, ArrowUp on the last; the arrows, Home, End and a typed letter move; Enter chooses; Escape closes it, and focus goes back to the trigger.",
-        'A link item is a real link with `role="menuitem"`; a disabled item is skipped by the arrows.',
+        'A link item is a real link with `role="menuitem"`; an item with `disabledReason` is skipped by the arrows, and its reason is its description.',
         "Inside a `Dialog` the menu opens in the dialog, so it is not inert, and Escape closes only the menu.",
       ],
       api: ["Menu"],
@@ -223,7 +224,7 @@ export const actions: ComponentSection = {
         ],
       },
       accessibility: [
-        "It is a button named `Switch to dark theme` or `Switch to light theme`, so the name says the action, and the icon is `aria-hidden`. The name follows the class on `<html>` through CSS before hydration, with no script; only the tooltip waits for the client.",
+        "It is a button named `Switch to dark theme` or `Switch to light theme` (`darkLabel` and `lightLabel`, for an app in another language), so the name says the action, and the icon is `aria-hidden`. The name follows the class on `<html>` through CSS before hydration, with no script; only the tooltip waits for the client.",
         "The icon shown is the scheme you would switch to: the moon on a light page, the sun on a dark one. It follows the class on `<html>` through CSS, so it is right on the first frame.",
         "`applyColourScheme` also sets `color-scheme` on `<html>`, so native controls and scrollbars follow.",
       ],

@@ -163,7 +163,7 @@ export const pagelayouts: ComponentSection = {
       stories: ["DocsLayout"],
       usage: {
         do: [
-          "Give `nav` the docs pages in reading order, in groups: each group's `title` over its links, a group with no title at the top. `navLabel` names the rail and the disclosure it folds behind below `md`.",
+          "Give `nav` the docs pages in reading order, in groups: each group's `title` over its links, a group with no title at the top. `asideLabel` names the rail and the disclosure it folds behind below `md`.",
           "Give `contents` the page's own headings (`id`, `label`, `level` 2 or 3) in order; the layout draws the On this page list, a closed disclosure above the article below `xl` and a sticky column right of it from `xl`. With fewer than two there is no list.",
           "`current` is the id of the heading being read, a value the page passes; a site that follows the reader computes it. Left out, no entry is marked.",
           "Give `previous` and `next` the pages either side in reading order; they are links, not cards, so they add no heading to the outline.",
@@ -175,7 +175,7 @@ export const pagelayouts: ComponentSection = {
         ],
       },
       accessibility: [
-        'The rail is an `<aside>` named `navLabel`; each group is a `<nav>` named by its title (the top group by `navLabel`), and the current page has `aria-current="page"`.',
+        'The rail is an `<aside>` named `asideLabel`; each group is a `<nav>` named by its title (the top group by `asideLabel`), and the current page has `aria-current="page"`.',
         "The title is the page's one `h1`.",
         'The On this page list is one `<nav>` named `contentsLabel` at every width, so there is one copy of each link; the entry for `current` has `aria-current="location"`.',
         'Previous and next are one `<nav>` named from `previousLabel` and `nextLabel`; each link\'s name is its visible text, the word then the page ("Previous Install").',

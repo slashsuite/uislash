@@ -64,6 +64,7 @@ export const overlayPages: ComponentPage[] = [
         "Use it for a record to read or edit, or a form with several fields; a yes-or-no question is a `Dialog`.",
         "The actions go in `footer`, pinned under the body, which scrolls between the header and the footer. A scroll that reaches the end of the body stops there and never moves the page behind.",
         "`width` is `sm`, `md` (the default) or `lg`; choose by the content, `sm` for one field and `lg` for a table. `description` is a muted line under the title, as on a `Dialog`.",
+        "For a form, give it `onSubmit`, as on a `Dialog`: the body and the footer become one form, so a `Button type=\"submit\"` in the footer or Enter in a field submits it. What went wrong with the whole submit is `error`, pinned above the footer; a field's own error is its `Field`'s.",
         "Set `closeLabel` to the reader's language when the page is not in English.",
         'It slides out again on close, but only while it is still in the DOM, so `onClose` is called once the exit has finished: put `setOpen(false)` there and nowhere else. Esc, the scrim and the close button close it that way already. A Cancel or Save button in the `footer` closes it by calling `.close()` on its `<dialog>`, which a click handler finds with `event.currentTarget.closest("dialog")`. A button that calls `setOpen(false)` itself unmounts the drawer at once, with no exit animation. After async work, keep the `<dialog>` from the event before the `await` and call `.close()` when it resolves.',
       ],
@@ -188,7 +189,7 @@ export const overlayPages: ComponentPage[] = [
     pairs: ["FieldDialog/OneField"],
     usage: {
       do: [
-        "Render it only while it is open, and give every string it shows: `title`, `label`, `placeholder`, `hint`, `emptyReason`, `submit` and `busyLabel`, and a `description` under the title when the question needs a sentence.",
+        "Render it only while it is open, and give every string it shows: `title`, `label`, `placeholder`, `hint`, `emptyReason`, `submit` and `busyLabel`, and a `description` under the title when the question needs a sentence. `cancelLabel` rewords Cancel, for an app in another language.",
         "`onSubmit` gets the trimmed value and returns a promise. Resolving closes the dialog; rejecting shows the error message under the field and keeps the dialog open.",
         "More than one field is a `Dialog` with `onSubmit` holding its `Field`s, or a `Drawer`.",
       ],

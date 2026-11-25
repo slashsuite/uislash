@@ -113,9 +113,35 @@ describe("Pill onRemove", () => {
     ).toBeTruthy();
   });
 
-  it("needs a removeLabel with onRemove, and cannot be a plain pill's label-less x", () => {
-    // @ts-expect-error onRemove without removeLabel
-    const bad: ComponentProps<typeof Pill> = { onRemove: () => undefined, children: "x" };
+  it("names the x Remove and the pill's text when removeLabel is left out", () => {
+    render(
+      <>
+        <Pill onRemove={() => undefined}>invoice.pdf</Pill>
+        <Pill onRemove={() => undefined}>{3}</Pill>
+        <Pill onRemove={() => undefined}>
+          <b>bold</b>
+        </Pill>
+      </>,
+    );
+    const remove = screen.getByRole("button", { name: "Remove invoice.pdf" });
+    expect(remove.getAttribute("title")).toBe("Remove invoice.pdf");
+    expect(screen.getByRole("button", { name: "Remove 3" })).not.toBeNull();
+    expect(screen.getByRole("button", { name: "Remove" })).not.toBeNull();
+  });
+
+  it("takes removeLabel as the x's whole name when given", () => {
+    render(
+      <Pill onRemove={() => undefined} removeLabel="Retirer la facture">
+        invoice.pdf
+      </Pill>,
+    );
+    expect(screen.getByRole("button", { name: "Retirer la facture" })).not.toBeNull();
+    expect(screen.queryByRole("button", { name: /^Remove/ })).toBeNull();
+  });
+
+  it("cannot be a plain pill's label-less x", () => {
+    // @ts-expect-error removeLabel without onRemove
+    const bad: ComponentProps<typeof Pill> = { removeLabel: "Remove", children: "x" };
     expect(bad).toBeDefined();
   });
 });

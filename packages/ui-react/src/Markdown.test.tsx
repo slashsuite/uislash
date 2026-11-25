@@ -2,6 +2,7 @@
 import { describe, expect, it } from "vitest";
 import { Markdown } from "./Markdown.js";
 import { render, screen, within } from "./render.harness.js";
+import { Section } from "./Section.js";
 
 describe("Markdown", () => {
   it("renders headings, bullets and paragraphs", () => {
@@ -27,5 +28,25 @@ describe("Markdown", () => {
     const source = "<script>alert(1)</script>";
     render(<Markdown md={source} />);
     expect(screen.getByRole("paragraph").textContent).toBe(source);
+  });
+
+  it("puts its headings one and two levels below the heading that holds it", () => {
+    render(
+      <Section title="Notes">
+        <Markdown md={"## Done\n### Next"} />
+      </Section>,
+    );
+    expect(screen.getByRole("heading", { level: 3, name: "Done" })).not.toBeNull();
+    expect(screen.getByRole("heading", { level: 4, name: "Next" })).not.toBeNull();
+  });
+
+  it("never goes past h6", () => {
+    render(
+      <Section title="Notes" level={6}>
+        <Markdown md={"## Done\n### Next"} />
+      </Section>,
+    );
+    expect(screen.getByRole("heading", { level: 6, name: "Done" })).not.toBeNull();
+    expect(screen.getByRole("heading", { level: 6, name: "Next" })).not.toBeNull();
   });
 });

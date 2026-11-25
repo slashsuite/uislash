@@ -10,6 +10,7 @@ export {
   type LegendItem,
   type StackedSegment,
   type VizTone,
+  type CategoryTone,
 } from "./StackedBar.js";
 export { TrendChart, type TrendSeries } from "./TrendChart.js";
 export { FlowDiagram, type FlowEdge, type FlowNode } from "./FlowDiagram.js";
@@ -70,6 +71,7 @@ export {
   type ClusterJustify,
 } from "./Cluster.js";
 export { Section, type SectionSize } from "./Section.js";
+export type { HeadingLevel } from "./headingLevel.js";
 export {
   Stack,
   type StackAlign,
@@ -104,10 +106,11 @@ export {
   TableRow,
   type TableSort,
 } from "./Table.js";
-export type { RowTone } from "./tableRow.js";
+export type { CellAlign, RowTone } from "./tableRow.js";
 export { InlineEdit } from "./InlineEdit.js";
 export { TableEditCell } from "./TableEditCell.js";
 export { EmptyState } from "./EmptyState.js";
+export type { EmptySize } from "./emptySlot.js";
 export { Step, Steps, type StepsSize } from "./Steps.js";
 export { Timeline, TimelineItem } from "./Timeline.js";
 export { ChatComposer } from "./ChatComposer.js";
@@ -144,6 +147,7 @@ export {
 } from "./colourScheme.js";
 export { Tabs, type Tab } from "./Tabs.js";
 export { SegmentedControl, type Segment } from "./SegmentedControl.js";
+export type { SwitchButton, SwitchLink } from "./switcher.js";
 export { Fieldset } from "./Fieldset.js";
 export { Checkbox } from "./Checkbox.js";
 export { Switch } from "./Switch.js";
@@ -162,8 +166,8 @@ export type { ResponsiveSize, Size } from "./size.js";
 export type { Tone } from "./tone.js";
 export { MetaList, type MetaListSeparator } from "./MetaList.js";
 export { Kbd } from "./Kbd.js";
-export { KeyValue, KeyValueList } from "./KeyValueList.js";
-export { Select } from "./Select.js";
+export { KeyValue, KeyValueList, type KeyValueAlign } from "./KeyValueList.js";
+export { Select, type SelectItem } from "./Select.js";
 export { Combobox } from "./Combobox.js";
 export { NumberField } from "./NumberField.js";
 export { Slider } from "./Slider.js";

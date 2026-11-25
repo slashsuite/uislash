@@ -1,0 +1,11 @@
+import { Cluster, Pill } from "@hackcove/ui-react";
+
+export const view = (tags: string[]) => (
+  <Cluster as="ol">
+    {tags.map((tag) => (
+      <li key={tag} className="tag">
+        <Pill>{tag}</Pill>
+      </li>
+    ))}
+  </Cluster>
+);

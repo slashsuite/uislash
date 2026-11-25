@@ -1,0 +1,8 @@
+import { ToastRegion } from "@hackcove/ui-react";
+
+export const view = (
+  <ToastRegion
+    toasts={[{ id: "saved", title: "Saved", body: "Your draft is safe." }]}
+    onDismiss={dismiss}
+  />
+);

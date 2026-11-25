@@ -26,7 +26,7 @@ export const NoContents: S = {
     <DemoShell>
       <DocsLayout
         nav={[{ items: [{ label: "All docs", href: "#docs", selected: true }] }]}
-        navLabel="Docs"
+        asideLabel="Docs"
         title="All docs"
         contents={[{ id: "start", label: "Start here", level: 2 }]}
       >
@@ -46,4 +46,23 @@ export const DoDocs: S = {
 
 export const DontDocs: S = {
   render: examples.DontDocs,
+};
+
+/** While `loading` the article waits: the empty title is a bone and the paragraph draws its own; the nav, the contents list and the pager are navigation and draw as themselves. */
+export const Loading: StoryObj<{ loading: boolean }> = {
+  args: { loading: true },
+  render: ({ loading }) => (
+    <DemoShell>
+      <DocsLayout
+        nav={[{ items: [{ label: "Install", href: "#install", selected: true }] }]}
+        asideLabel="Docs"
+        title={loading ? null : "Install"}
+        loading={loading}
+      >
+        <Prose>
+          <Text>{loading ? null : "Install the CLI, then run your first build."}</Text>
+        </Prose>
+      </DocsLayout>
+    </DemoShell>
+  ),
 };

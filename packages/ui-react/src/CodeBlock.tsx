@@ -1,7 +1,7 @@
-import { type ComponentPropsWithoutRef, type ReactElement, useId } from "react";
+import { type ReactElement, useId } from "react";
 import { CodeBody } from "./CodeBody.js";
 import type { CodeLanguage } from "./highlight.js";
-import type { Unstyled } from "./props.js";
+import type { Passthrough } from "./props.js";
 
 /** Exactly one of `children` (a string, newlines kept) or `lines` (one array entry per line). */
 type CodeBlockSource =
@@ -56,7 +56,7 @@ export function CodeBlock({
    */
   copy?: boolean;
 } & CodeBlockSource &
-  Unstyled<Omit<ComponentPropsWithoutRef<"figure">, "children">>): ReactElement {
+  Passthrough): ReactElement {
   const captionId = useId();
   return (
     <figure

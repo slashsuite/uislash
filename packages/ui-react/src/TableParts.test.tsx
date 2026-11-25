@@ -103,21 +103,21 @@ describe("TableCell colSpan", () => {
   });
 });
 
-describe("TableCell truncate", () => {
+describe("TableCell lines={1}", () => {
   it("puts the full text in a title", () => {
-    cell({ truncate: true, mono: true, children: "feature/very-long-branch-name" });
+    cell({ lines: 1, mono: true, children: "feature/very-long-branch-name" });
     expect(screen.getByTitle("feature/very-long-branch-name").textContent).toBe(
       "feature/very-long-branch-name",
     );
   });
 
   it("titles a number, end-aligned", () => {
-    cell({ truncate: true, align: "end", children: 12 });
+    cell({ lines: 1, align: "end", children: 12 });
     expect(screen.getByTitle("12").textContent).toBe("12");
   });
 
   it("titles the joined text of mixed strings and numbers", () => {
-    cell({ truncate: true, children: ["R ", 12] });
+    cell({ lines: 1, children: ["R ", 12] });
     expect(screen.getByTitle("R 12")).not.toBeNull();
   });
 
@@ -127,13 +127,13 @@ describe("TableCell truncate", () => {
   });
 
   it("gives a node no title", () => {
-    cell({ truncate: true, children: <b>x</b> });
+    cell({ lines: 1, children: <b>x</b> });
     expect(screen.queryByTitle("x")).toBeNull();
     expect(screen.getByText("x")).not.toBeNull();
   });
 
   it("keeps the second line outside the titled box", () => {
-    cell({ truncate: true, children: "Naledi", secondary: "second" });
+    cell({ lines: 1, children: "Naledi", secondary: "second" });
     expect(screen.getByTitle("Naledi").textContent).toBe("Naledi");
     expect(within(screen.getByRole("cell")).getByText("second")).not.toBeNull();
   });

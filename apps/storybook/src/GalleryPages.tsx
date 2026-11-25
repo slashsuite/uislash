@@ -208,7 +208,7 @@ export function GalleryGridPages() {
           nav={[
             { title: "Guides", items: [{ label: "Install", href: "#install", selected: true }] },
           ]}
-          navLabel="Docs"
+          asideLabel="Docs"
           title="Install"
           contents={[
             { id: "gallery-setup", label: "Setup", level: 2 },

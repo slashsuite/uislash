@@ -3,7 +3,7 @@ import { Callout } from "./Callout.js";
 import { Card } from "./Card.js";
 import { cx } from "./cx.js";
 import { PageHeader, PageHeaderContent, type PageHeaderProps } from "./PageHeader.js";
-import { STACK_WIDTH, Stack, type StackGap } from "./Stack.js";
+import { STACK_WIDTH, Stack, type StackGap, type StackWidth } from "./Stack.js";
 import { SplitColumns } from "./SideColumn.js";
 import { StickyBar } from "./StickyBar.js";
 import type { Passthrough, Unstyled } from "./props.js";
@@ -178,6 +178,12 @@ export function FormLayout({
 }
 
 /**
+ * The `StackWidth`s a text page takes. `compact` (28rem) is one card's column, too narrow for a page
+ * of text with a header, and `default` would be `full` under a second name in a page column.
+ */
+type ProseWidth = Extract<StackWidth, "narrow" | "wide" | "full">;
+
+/**
  * A text page: header, then `children` stacked `gap` apart (`md` by default), all in one column that
  * starts at the Container's start edge (it is not re-centred, so the title does not jump). `width`
  * sets the column: `narrow` (`max-w-3xl`, the default) is a reading measure; `wide` (`max-w-5xl`) and
@@ -205,10 +211,10 @@ export function ProseLayout({
    */
   gap?: StackGap | undefined;
   /**
-   * The column's width: `narrow` max-w-3xl, `wide` max-w-5xl, `full` the Container's width.
+   * The column's width, as a `Stack`'s: `narrow` max-w-3xl, `wide` max-w-5xl, `full` the Container's width.
    * @default narrow
    */
-  width?: "narrow" | "wide" | "full" | undefined;
+  width?: ProseWidth | undefined;
   children?: ReactNode;
 } & Passthrough): ReactElement {
   const wait = useWait(loading, loadingLabel);

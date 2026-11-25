@@ -2,7 +2,9 @@
 
 ## @hackcove is now @slashsuite: the npm scope moves
 
-If the app is still on 0.10, run the codemod (below, "Running the codemod") first: it matches imports from `@hackcove/ui-react`, so after the swap it finds nothing and says nothing.
+If the app is still on 0.10, run the codemod (below, "Running the codemod") first: the 0.10 to 0.11
+pass matches imports from `@hackcove/ui-react` only, so after the swap it finds nothing and says
+nothing. The later steps, `--unpin` and `--to-0.13`, read either name.
 
 Every Slash package moves from the `@hackcove` npm scope to `@slashsuite`, and keeps the part after the scope:
 `@hackcove/ui-react` is `@slashsuite/ui-react`, `@hackcove/themes` is `@slashsuite/themes`. There is no alias
@@ -241,7 +243,7 @@ row, the size of the buttons in it. An explicit prop on the child always wins.
 | Old | New | |
 | --- | --- | --- |
 | `Stack`, `Section` with no `gap` | the same at page level; inside a `Card`, `Dialog`, `Drawer`, `BottomSheet`, `Callout` or `ListRow` the gap is `xs` | codemod writes `gap="md"` where there is none, so nothing moves |
-| `Cluster` with no `wrap` | now wraps: `wrap={false}` keeps one line | codemod writes `wrap={false}`; drops `wrap` |
+| `Cluster` with no `wrap` | now wraps: `wrap={false}` keeps one line | codemod writes `wrap={false}`; keeps a bare `wrap`, which `--unpin` removes |
 | `Cluster` with no `gap` | now `sm` (was `xs`) | codemod writes `gap="xs"` |
 | `MetaList nowrap` | leave it out: an item never breaks inside itself | codemod drops it |
 | `ListRow active` | `highlighted` | codemod |
@@ -281,7 +283,7 @@ A table is named by `label`, says a column of figures once in its head, and is p
 | `Table variant="plain"` | leave it out: a table inside a `Card` is plain | codemod drops it |
 | `TableHeaderCell srLabel` | `label` | codemod |
 | `TableHeaderCell align="end"` over a column of `numeric` cells | `TableHeaderCell numeric`: the title and every cell under it are end aligned in tabular figures | codemod, where the first body row's cell in that column is `numeric` |
-| `TableCell numeric align="end"` | `numeric` alone: it implies `end` | codemod drops `align="end"` |
+| `TableCell numeric align="end"` | `numeric` alone: it implies `end` | codemod keeps `align="end"`, which `--unpin` removes |
 | `TableCell tone="default"` | leave it out: `neutral` is the default | codemod drops it |
 | `TableCell tone="neutral"` (`text-slate-600`) | `neutral`, now `text-slate-700`, the one plain cell ink | nothing to change |
 
@@ -377,8 +379,11 @@ Each `file:line` it prints is a **by hand** row above, on a line of the rewritte
 them, then typecheck: what TypeScript still flags sits on or next to a line the codemod printed. The
 lists under "TypeScript does not flag these" are what is left to check by eye.
 
-The pins it writes (`as="span"`, `gap="md"`, `wrap={false}`, `align="start"`) keep the 0.10 look.
-Once the app is on 0.11, the second step takes them out: see "0.11 to 0.12: drop the pins".
+The pins it writes or keeps (`as="span"`, `gap="md"`, `wrap={false}`, a bare `wrap`, `align="start"`,
+`align="end"` on a `numeric` cell) keep the 0.10 look. Run it once: on its own output it changes
+nothing and prints nothing new, except a bare `Text` it made from `as="p"`, which a second run reads
+as 0.10 and pins `as="span"` again. Once the app is on 0.11, the second step takes the pins out:
+see "0.11 to 0.12: drop the pins".
 
 ## 0.11 to 0.12: drop the pins
 
@@ -391,7 +396,7 @@ bun <checkout>/tools/codemod/src/run.ts src --unpin           # a dry run
 bun <checkout>/tools/codemod/src/run.ts src --unpin --write   # rewrites the files
 ```
 
-`--unpin` runs only these rules, never the 0.11 pass, which would write every pin back. It cannot
+`--unpin` runs only these rules, never the 0.11 pass, which would write every pin back. It reads imports from `@hackcove/ui-react` and `@slashsuite/ui-react` alike. It cannot
 tell a pin it wrote from one a person wrote, so it removes a pin only where the new default draws
 the same thing, and prints a `file:line` for each one a person decides.
 
@@ -399,9 +404,13 @@ the same thing, and prints a `file:line` for each one a person decides.
 | --- | --- | --- |
 | `Text as="span"`, `Caption as="span"` | the text is a `<p>`, a block on its own line: the same in a column, but anything inline beside it moves to the next line, and a long `Text` alone in a plain block (a `Card`, a `Callout`, a `div`) now wraps at 72 characters, the measure for reading | codemod removes it when the element sits directly in a `Stack`, `Section` or `Field`, or is the one child of a `Card`, `Dialog`, `Drawer`, `BottomSheet`, `Callout`, `Fieldset`, `div`, `section`, `article`, `main`, `header`, `footer` or `li`; anywhere else (a row, a cell, a button, a sentence, a `map`, next to a sibling in a plain block) it stays and is reported |
 | `Stack gap="md"`, `Section gap="md"` | nothing at page level, where `md` is the default; inside a `Card`, `Dialog`, `Drawer`, `BottomSheet`, `Callout`, `ListRow` or `CenteredLayout` (which draws a `Card`) the gap closes to `xs`, the new look | codemod removes it when no such container holds it in the same file; inside one it stays and is reported, and so does a `Section` with a `size` other than `md`, whose size sets its gap. A component rendered inside a `Card` from another file takes `xs` too: the codemod reads one file at a time |
-| `Cluster wrap={false}` | the row wraps onto a second line when it runs out of room | by hand: every one is reported, remove it unless the row must stay on one line |
-| `align="start"` on a `numeric` `TableCell` or `TableEditCell` | the figures line up at the end of the cell | codemod removes it when `numeric` is bare or `{true}`; when `numeric` is an expression it stays and is reported |
+| `Cluster wrap={false}`, `Cluster wrap` | the row wraps onto a second line when it runs out of room | codemod removes `wrap={false}`, a bare `wrap` and `wrap={true}`; `wrap` set to an expression stays and is reported |
+| `align="start"` or `align="end"` on a `numeric` `TableCell` or `TableEditCell` | the figures line up at the end of the cell | codemod removes either when `numeric` is bare or `{true}`; `align="start"` with an expression for `numeric` stays and is reported |
 | `Field htmlFor` with the control's matching `id` | nothing on screen: a `Field` makes its own id and gives it to the `Input`, `Select`, `Textarea` or `FileDrop` inside it, so the label still names the control. The control's DOM id becomes a generated one, so search the app for the old id (a stylesheet, a test selector, a link from another page) before you merge | codemod removes both when they name only each other in the file (no `aria-describedby`, `href="#…"`, `getElementById` or second use); `htmlFor={id}` with `id={id}` goes too when `id` is a `const id = useId()`, whose line is then reported as unused. An id from a prop or a `useId` that is not React's, a template string, a raw `<input>` or anything else stays and is reported. The 0.11 pass runs this rule as well, so an app still going 0.10 to 0.11 gets it in one run |
+| `Callout tone="info"` | a callout with no `tone` is `neutral`, a grey note, not the blue one | by hand: every one is reported, since the new default never draws the same box; remove it unless the note must stay blue |
+
+A `FormRowField`'s `htmlFor` stays: it is still required and goes straight onto the `<label>`, so
+the codemod neither removes nor reports it.
 
 ## 0.12 to 0.13: date fields follow the locale
 
@@ -456,6 +465,157 @@ the buttons are no longer inside the `role="status"`: a test that finds a toast'
 within the status finds it in the region instead. While a `Dialog`, `Drawer` or `Lightbox` is open,
 new toasts wait and show once it closes. Dismissing a toast moves the focus to the next toast's
 close button, or back to where it was.
+
+### One word for one job
+
+Several parts named the same job differently. Each now takes the word the rest of the library uses,
+with no alias. TypeScript flags every old name, and `--to-0.13` (below) makes most swaps.
+
+| Old | New |
+| --- | --- |
+| `ListRow divided` | gone: put the rows in a `Stack divided`, which draws the line between them |
+| `SubsectionHeading truncate`, `TableCell truncate` | `lines={1}`, as on `Text` |
+| a `Menu` item's `onSelect` | `onClick` |
+| a `Menu` item's `disabled` | `disabledReason`: the words under the label that say why it cannot be chosen yet |
+| `ToastRegion toasts` | `items` |
+| a toast's `body` | `description` |
+| `DocsLayout navLabel` | `asideLabel`, as on `SidebarLayout` |
+
+`ListRow divided` drew the line from the row, so a row on its own or the last in a list could not
+know whether to draw one. The `Stack` that holds the rows draws it:
+
+```tsx
+// before
+<Card flush>
+  {rows.map((row) => <ListRow key={row.id} divided>{row.name}</ListRow>)}
+</Card>
+// after
+<Card flush>
+  <Stack divided>
+    {rows.map((row) => <ListRow key={row.id}>{row.name}</ListRow>)}
+  </Stack>
+</Card>
+```
+
+A dimmed `Menu` item says why: `disabledReason` is a muted line under its label and the item's
+description for a screen reader. An item with no reason to give is left out of `items`.
+
+### Cluster wraps its list items
+
+`Cluster as="ul"` and `as="ol"` now put each child in its own `<li>`, as `CardGrid as="ul"` does.
+TypeScript flags nothing. An app that wrote the `<li>`s gets an `<li>` in an `<li>`: drop its own.
+The codemod unwraps the plain ones and reports the rest.
+
+```tsx
+// before
+<Cluster as="ul" aria-label="Tags">
+  <li><Pill>Vintage</Pill></li>
+</Cluster>
+// after
+<Cluster as="ul" aria-label="Tags">
+  <Pill>Vintage</Pill>
+</Cluster>
+```
+
+### A danger toast interrupts
+
+A `danger` toast is read through a `role="alert"`, so a screen reader reads it at once; the rest
+stay polite. A test that finds a danger toast's words in the `status` finds them in the `alert`.
+
+### SiteFooter links its brand to the app's home
+
+`SiteFooter`'s brand links to the nearest `LinkProvider`'s `home` when `brandHref` is left out,
+where it always linked to `/`. An app with no `home` set sees no change. `links` and `notes` take
+readonly arrays.
+
+### Text and the headings take no element props
+
+`Text`, `Caption`, `Overline`, `Lead`, `Display`, `PageHeading`, `SectionHeading` and
+`SubsectionHeading` took every attribute of the element `as` picked. They now take `id`, `data-*` and
+`aria-*`, and `Text` and `Caption` also take `title` (the full text on hover of a run that `lines` cuts).
+TypeScript flags every other prop: `role`, `htmlFor`, `onClick` and the rest. Put the element that
+needs it around the text:
+
+```tsx
+// before
+<Text id="panel" role="tabpanel">Shots for this build.</Text>
+// after
+<div id="panel" role="tabpanel">
+  <Text>Shots for this build.</Text>
+</div>
+```
+
+An `Overline as="label" htmlFor` is a `Field`'s label: use the `Field`.
+
+### Containers and rows take `id`, `data-*` and `aria-*`
+
+These took every attribute of their element and now take `id`, `data-*` and `aria-*`, plus the few
+props listed. TypeScript flags the rest; move a handler or attribute to an element you own around or
+inside the part.
+
+| Part | Still takes |
+| --- | --- |
+| `Container`, `CodeBlock`, `OutlineRegion` | nothing more |
+| `Card` with `href` | `download`, `rel`, `onClick` (`external` is the one way to open a new tab, so `target` is gone) |
+| `ListRow` with neither `href` nor `onClick` | `onPointerEnter`, `onPointerLeave`, `onFocus`, `onBlur`, which set `highlighted` |
+| `Stack as="form"` | `onSubmit`, `action`, `method`, `noValidate`, `name`, `autoComplete` |
+| `Stack as="ul"`, `Stack as="ol"` | `empty` |
+
+### RegionFrame's `loading` is the skeleton's
+
+`RegionFrame` took the `<img>`'s attributes, so `loading` was the browser's `"lazy"` or `"eager"`.
+`loading` is now the skeleton's boolean, as on `Image`: with no `src` yet it draws a bone of its
+shape. `src` may be `undefined`. Of the `<img>`'s own props it keeps `alt` and `onLoad`, plus `id`,
+`data-*` and `aria-*`. TypeScript flags `loading="lazy"`: delete it. A screenshot in a frame is
+drawn when it is shown, so it has nothing to defer. TypeScript also flags every other `<img>` prop,
+such as `decoding`, `srcSet` and `title`: delete it.
+
+### Markdown's headings follow the page outline
+
+`Markdown` always drew `## ` as an `h2` and `### ` as an `h3`. `## ` is now one level below the
+heading that holds the Markdown, and `### ` one below that, stopping at `h6`. On the page they are
+still `h2` and `h3`. In a `Section` they are `h3` and `h4`, and in a titled `Card` in a `Section`
+`h4` and `h5`. They look the same as before. TypeScript flags nothing. A test that finds such a
+heading by `level` passes the new level.
+
+### Every built-in word has a prop
+
+The English words a part draws on its own now each have a `*Label` prop, for an app in another
+language: `FieldDialog` `cancelLabel`; `DateField` (with `calendar`) `clearLabel`; `DateRangePicker`
+`startLabel`, `endLabel`, `toLabel` and `clearLabel`; `ColourSchemeToggle` `darkLabel` and
+`lightLabel`; `SiteSearch` `buttonLabel`, `placeholder`, `hintLabel`, `noResultsLabel` and
+`countLabel` (a function of the count, for plurals, as `Pagination`'s `pageLabel`); `NotFound`,
+`ErrorPage`, `Offline` and `Forbidden` `homeLabel`; `ErrorPage` and `Offline` `retryLabel`;
+`ErrorPage` `detailLabel`; `SortableSection` `endLabel`; `SortableItem` `reorderLabel`. Each
+defaults to the word it drew before, so nothing changes. `Pill`'s `removeLabel` is optional now: left
+out, the remove button is named "Remove" and the pill's text.
+
+New, nothing to change: `Menu` takes `open` and `onOpenChange` to hold the menu open from the app's
+state, and `DocsLayout` takes `loading` and `loadingLabel`. `Drawer` takes `onSubmit` and `error` as `Dialog` does. `ProseLayout`'s
+`width` is typed from `StackWidth` (`narrow`, `wide`, `full`, as before). These types are now
+exported: `HeadingLevel`, `SelectItem`, `EmptySize`, `CellAlign` (a table cell's `align`),
+`CategoryTone`, `KeyValueAlign`, `SwitchButton` and `SwitchLink`.
+
+### Running the codemod for 0.13
+
+A third codemod step makes the renames 0.13 ships. It runs alone, on 0.12 code, never with
+`--unpin`, and reads imports from `@hackcove/ui-react` and `@slashsuite/ui-react` alike:
+
+```bash
+bun <checkout>/tools/codemod/src/run.ts src --to-0.13           # a dry run
+bun <checkout>/tools/codemod/src/run.ts src --to-0.13 --write   # rewrites the files
+```
+
+| Old | New | |
+| --- | --- | --- |
+| `ListRow divided` | gone: put the rows in a `Stack divided` | codemod removes it and reports the row, so a person adds the `Stack` |
+| `SubsectionHeading truncate`, `TableCell truncate` | `lines={1}` | codemod for a bare `truncate` or `{true}`, and removes `{false}`; one set to an expression is reported |
+| `Menu items`: an action's `onSelect` | `onClick` | codemod in an inline array of object literals, and in a literal the same file types `MenuAction` (or an array of it) from the package; a `Menu` whose `items` the file does not write out in full is reported |
+| `ToastRegion toasts` | `items` | codemod |
+| a toast's `body` | `description` | codemod in an inline `items` array and in a literal the same file types `Toast` (or an array of it) from the package; a `ToastRegion` whose toasts the file does not write out in full is reported once |
+| `DocsLayout navLabel` | `asideLabel` | codemod |
+| a `Menu` item's `disabled` | `disabledReason` | by hand: every one is reported, since only a person can write the reason |
+| `Cluster as="ul"` or `as="ol"` with an `<li>` round each child | the children alone: the Cluster wraps each one in an `<li>` | codemod unwraps an `<li>` with no attribute but `key` round one element, and moves its `key` onto that element; any other `<li>` (another attribute, the element has its own `key`, more than one child, one inside a `map`) is reported |
 
 ## 0.9 → 0.10: Avatar `2xl` is 64px, the old 96px is `3xl`
 
