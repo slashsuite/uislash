@@ -51,8 +51,8 @@
     "pack-check": "npm pack --dry-run --ignore-scripts"
   },
   "devDependencies": {
-    "@types/bun": "catalog:",
-    "vitest": "catalog:"
+    "@types/bun": "1.4.4",
+    "vitest": "5.1.0"
   },
   "nx": {
     "name": "core"

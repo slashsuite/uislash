@@ -1,6 +1,6 @@
 /**
  * Writes `<id>.native.json` beside every `*.css` here, by glob, naming no theme (`theme-native`,
- * which `build` runs), with the generator in `@slashsuite/core`. It fails, naming each, on a rule or declaration the
+ * run by hand), with the generator in `@slashsuite/core`. It fails, naming each, on a rule or declaration the
  * native map cannot carry, or a palette utility the map does not hold.
  */
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";

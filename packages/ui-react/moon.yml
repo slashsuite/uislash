@@ -11,7 +11,8 @@ tasks:
   # Core is vendored into dist (scripts/vendor-core.ts), from core's own build.
   build:
     command: "bun run build"
-    inputs: ["**/*", "!docs/**/*", "!agent-docs/**/*"]
+    # It vendors core's dist, which core:build writes from core's src, so that src is an input too.
+    inputs: ["**/*", "!docs/**/*", "!agent-docs/**/*", "/packages/core/src/**/*"]
     outputs: ["dist"]
     deps: ["core:build"]
   # Every task reads core's source through its `development` export condition, so core's src is an

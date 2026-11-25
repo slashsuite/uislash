@@ -165,7 +165,7 @@ describe.each(files)("%s", (file) => {
     expect(unmappedUtilities(css, palette)).toEqual([]);
   });
 
-  // The native map beside the CSS (`theme-native`, which `build` runs) is the same theme for a
+  // The native map beside the CSS (`bunx moon run themes:theme-native`, committed) is the same theme for a
   // React Native renderer: current, carrying every rule, and holding every palette utility.
   it("has a current native map that carries every rule and palette utility", () => {
     const id = file.slice(0, -".css".length);

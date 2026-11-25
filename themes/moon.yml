@@ -19,15 +19,14 @@ tasks:
   test:
     command: "bun run test"
     inputs: ["**/*", "@group(contract)"]
-  # The CSS files ship as they are; build writes each one's native map beside it, from the generator
-  # in core, and the test fails on a map that is not current.
+  # No build: the CSS files ship as they are, and so does each one's committed native map.
+  # theme-native writes the maps from the generator in core; it is run by hand, never by the gate,
+  # so nothing rewrites a map while the test reads it, and the test fails on a map that is missing
+  # or not current.
   theme-native:
     command: "bun run theme-native"
     inputs: ["*.css", "scripts/theme-native.ts", "@group(contract)"]
     outputs: ["*.native.json"]
-  build:
-    command: "noop"
-    deps: ["~:theme-native"]
   pack-check:
     command: "bun run pack-check"
     inputs: ["**/*"]
