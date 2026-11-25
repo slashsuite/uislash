@@ -17,9 +17,17 @@ const open = async (page: Page, id: string, theme: string, width: number) => {
   await page.getByRole("banner").waitFor();
 };
 
-// The Menu is a native `<details>` (a group); its `<summary>` is the button, found by its text.
-const menu = (page: Page) => page.getByRole("banner").getByRole("group");
-const menuButton = (page: Page) => page.getByRole("banner").getByText("Menu", { exact: true });
+// The Menu is the browser's popover, which the button targets; its links are the header's navigation links.
+const menuButton = (page: Page) =>
+  page.getByRole("banner").getByRole("button", { name: "Menu", exact: true });
+const menuLinks = (page: Page) =>
+  page.getByRole("banner").getByRole("navigation").getByRole("link");
+const isOpen = (page: Page) =>
+  menuButton(page).evaluate(
+    (button) =>
+      button instanceof HTMLButtonElement &&
+      !!button.popoverTargetElement?.matches(":popover-open"),
+  );
 const rowLink = (page: Page) =>
   page.getByRole("banner").getByRole("link", { name: "Settings", exact: true });
 
@@ -46,10 +54,10 @@ for (const { id: theme } of themes) {
       await expect(menuButton(page)).toBeVisible();
       expect(await sideways(page)).toBeLessThanOrEqual(0);
       await menuButton(page).click();
-      await expect(menu(page)).toHaveJSProperty("open", true);
-      await expect(menu(page).getByRole("link")).toHaveCount(LINKS);
-      await menu(page).getByRole("link", { name: "Audit" }).click();
-      await expect(menu(page)).toHaveJSProperty("open", false);
+      await expect.poll(() => isOpen(page)).toBe(true);
+      await expect(menuLinks(page)).toHaveCount(LINKS);
+      await menuLinks(page).filter({ hasText: "Audit" }).click();
+      await expect.poll(() => isOpen(page)).toBe(false);
       expect(await sideways(page)).toBeLessThanOrEqual(0);
     });
   });

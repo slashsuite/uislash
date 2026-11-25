@@ -31,7 +31,7 @@ export const framePages: ComponentPage[] = [
     accessibility: [
       "The header is a `<header>` (the banner landmark), main is `<main>` and the footer is `<footer>`.",
       "`AppShellBrand` is one link named by its `label`; the logo is `aria-hidden`. With `collapse` the label is visually hidden below `sm` and still names the link.",
-      "On a phone `nav` and `subnav` sit behind one Menu button, a native disclosure: it opens with no JavaScript, from the keyboard (Enter or Space) and for a screen reader, Escape closes it and returns to the button, and following a link closes it. The panel is not in the header's flow, so the header is the same height on every page.",
+      "On a phone `nav` and `subnav` sit behind one Menu button that opens the browser's own popover: it opens with no JavaScript, from the keyboard (Enter or Space) and for a screen reader, Escape or a click outside closes it and returns focus to the button, and following a link closes it. The panel is not in the header's flow, so the header is the same height on every page.",
       "`menuControls` render once, in the Menu below `md` and in the row from `md`, so a field keeps its value and its label names one control. A crowded `controls` clips beside the Menu button, never over it, so the nav stays reachable.",
       "From `md` a `nav` too wide for the header row folds into the Menu instead of scrolling, and comes back when the screen is wide enough. A `subnav` row that is wider than the screen scrolls sideways and never wraps; a link that takes focus scrolls into view, and the side with more to reach fades out.",
       "Give `nav` and `subnav` `Tabs` of links, so each is a labelled `<nav>`.",

@@ -90,8 +90,10 @@ const stacks = (utilities: string[]): string[][] => utilities.map((utility) => [
  * neutral ink (`wide`) but not tone text, muted text or a control edge (`narrow`).
  */
 function surfaces(palette: Palette) {
-  const wide = roleOf(palette, "canvas", "surface", "subtle", "inset").filter(isBackground);
-  const narrow = roleOf(palette, "canvas", "surface", "subtle").filter(isBackground);
+  const wide = roleOf(palette, "canvas", "surface", "header", "subtle", "inset").filter(
+    isBackground,
+  );
+  const narrow = roleOf(palette, "canvas", "surface", "header", "subtle").filter(isBackground);
   return { wide, narrow };
 }
 

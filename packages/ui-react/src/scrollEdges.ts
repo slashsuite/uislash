@@ -18,7 +18,8 @@ export function useScrollEdges(element: HTMLElement | null, axis: "x" | "y"): vo
     const update = () => {
       const [position, scrollSize, clientSize] =
         axis === "x"
-          ? [el.scrollLeft, el.scrollWidth, el.clientWidth]
+          ? // Right to left, scrollLeft runs from 0 at the start to negative at the end.
+            [Math.abs(el.scrollLeft), el.scrollWidth, el.clientWidth]
           : [el.scrollTop, el.scrollHeight, el.clientHeight];
       const start = position > 1;
       const end = scrollSize - clientSize - position > 1;

@@ -24,6 +24,7 @@
 .dark {
   color-scheme: dark;
   background-color: #181825; /* mantle: the canvas the base-coloured cards lift off */
+  color: #cdd6f4; /* text: the ink of a page outside AppShell */
   /* The type faces: Inter where installed, the system stack otherwise. Custom properties on the
      scope, so every `font-sans` / `font-mono` below it (AppShell's page font included) follows. */
   --font-sans:
@@ -109,6 +110,10 @@
    theme, dark ones included, as the scrim above stays black. */
 .dark .bg-white\/100 {
   background-color: #ffffff;
+}
+/* The app header's ground: card. */
+.dark .bg-white\/95 {
+  background-color: #1e1e2e;
 }
 
 /* Text */

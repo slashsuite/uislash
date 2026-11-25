@@ -93,6 +93,22 @@ export function stubPopover(): void {
   }
 }
 
+/**
+ * The popover a button opens (`popovertarget`), as the browser finds it; jsdom does not follow the
+ * attribute. Throws when the button targets nothing.
+ */
+export function popoverTargetOf(button: Element): HTMLElement {
+  const id = button.getAttribute("popovertarget");
+  const target = id ? document.getElementById(id) : null;
+  if (!target) throw new Error("the button targets no popover");
+  return target;
+}
+
+/** Every popover in the document: none means nothing on the page can open one. */
+export function popovers(): Element[] {
+  return [...document.querySelectorAll("[popover]")];
+}
+
 /** Undo `stubPopover`. Call from `afterEach`. */
 export function unstubPopover(): void {
   openPopovers.clear();

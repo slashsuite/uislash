@@ -114,6 +114,10 @@
 .thrifty-paper .bg-white\/100 {
   background-color: #ffffff;
 }
+/* The app header's ground: card. */
+.thrifty-paper .bg-white\/95 {
+  background-color: #ffffff;
+}
 
 /* Text */
 .thrifty-paper .text-slate-900,

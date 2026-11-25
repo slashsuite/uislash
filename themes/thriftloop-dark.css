@@ -4,6 +4,7 @@
 .thriftloop-dark {
   color-scheme: dark;
   background-color: #0c191d;
+  color: #e6edef;
   --font-sans:
     "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
     sans-serif;
@@ -91,6 +92,10 @@
 
 .thriftloop-dark .bg-white\/100 {
   background-color: #ffffff;
+}
+/* The app header's ground: card. */
+.thriftloop-dark .bg-white\/95 {
+  background-color: #102026;
 }
 
 .thriftloop-dark .text-slate-900,

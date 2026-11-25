@@ -92,6 +92,10 @@
 .thriftloop .bg-white\/100 {
   background-color: #ffffff;
 }
+/* The app header's ground: card. */
+.thriftloop .bg-white\/95 {
+  background-color: #fffaea;
+}
 
 .thriftloop .text-slate-900,
 .thriftloop .text-slate-800 {

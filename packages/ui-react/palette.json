@@ -13,6 +13,7 @@
     "focus-visible:outline-white"
   ],
   "media-matte": ["bg-white/100"],
+  "header": ["bg-white/95"],
   "line": ["border-slate-200", "border-slate-200/70", "border-slate-300"],
   "ink": [
     "text-slate-900",

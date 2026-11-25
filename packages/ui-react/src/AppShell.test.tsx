@@ -3,18 +3,12 @@ import { describe, expect, it } from "vitest";
 import { AppShell, AppShellBrand, appShellRootClass, appShellRootClassFor } from "./AppShell.js";
 import { schemeClass } from "./colourScheme.js";
 import { Show } from "./Show.js";
-import { follows, render, screen, within } from "./render.harness.js";
+import { follows, render, screen, user, within } from "./render.harness.js";
 
 // jsdom has no layout, so these are the slot-order tests only. The nav that folds into the Menu
 // from `md` when it does not fit is proved in the e2e (`appshell-nav-fold.spec.ts`),
 // not here by faking a ResizeObserver measurement. The safe-area insets and where an anchor lands
 // are read, not tested: a headless browser reports no insets, and a scroll position is not asserted.
-
-function first<T>(found: T[]): T {
-  const [one] = found;
-  if (one === undefined) throw new Error("none found");
-  return one;
-}
 
 describe("AppShell", () => {
   it("puts the header in the banner and the page in main", () => {
@@ -44,15 +38,32 @@ describe("AppShell", () => {
     expect(within(screen.getByRole("contentinfo")).getByText("foot")).not.toBeNull();
   });
 
-  it("puts the subnav in the header", () => {
+  it("puts the subnav in the header, once", () => {
     render(
       <AppShell header="h" subnav={<nav aria-label="Section">tabs</nav>}>
         page
       </AppShell>,
     );
-    // Twice in the header: its own row (wide screens) and the phone menu, each shown at one width.
+    // Once, in the menu panel: from `md` it is the header's second row (a closed popover is not
+    // drawn, so it is found hidden here).
     const banner = screen.getByRole("banner");
-    expect(within(banner).getAllByRole("navigation", { name: "Section" })).toHaveLength(2);
+    expect(
+      within(banner).getAllByRole("navigation", { name: "Section", hidden: true }),
+    ).toHaveLength(1);
+  });
+
+  it("has a skip link, the first tab stop, that moves the focus to main", async () => {
+    render(
+      <AppShell brand={<a href="/">Logo</a>} skipLabel="Naar inhoud">
+        page
+      </AppShell>,
+    );
+    await user().tab();
+    const skip = screen.getByRole("link", { name: "Naar inhoud" });
+    expect(document.activeElement).toBe(skip);
+    const main = screen.getByRole("main");
+    expect(skip.getAttribute("href")).toBe(`#${main.id}`);
+    expect(main.tabIndex).toBe(-1);
   });
 
   it("reads the header slots in order: brand, nav, header, then controls", () => {
@@ -67,8 +78,8 @@ describe("AppShell", () => {
       </AppShell>,
     );
     const brand = screen.getByRole("link", { name: "Logo" });
-    // The first Main nav is the row's; the menu's copy comes after the controls.
-    const nav = first(screen.getAllByRole("navigation", { name: "Main" }));
+    // The nav is rendered once, in the menu panel, which from `md` lays its parts into the row.
+    const nav = screen.getByRole("navigation", { name: "Main", hidden: true });
     const extra = screen.getByText("extra");
     const theme = screen.getByRole("button", { name: "Theme" });
     expect(follows(brand, nav)).toBeTruthy();
