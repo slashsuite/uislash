@@ -230,7 +230,9 @@ describe("uploadPlan", () => {
   });
 
   it("on a branch whose change reaches everything takes every group", () => {
-    expect(branch(["bun.lock"])).toEqual(plan(["bun.lock"]));
+    const result = branch(["bun.lock"]);
+    expect(result.skipped).toEqual([]);
+    expect(capturesOf(result)).toEqual(capturesOf(plan([], true)));
   });
 
   it("on main takes every group whole, whatever the change, and says why", () => {
