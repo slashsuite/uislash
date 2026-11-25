@@ -429,7 +429,11 @@
   "compounds": [
     {
       "utility": "disabled:opacity-50",
-      "requiresAny": ["bg-violet-600", "bg-emerald-600", "bg-red-600"],
+      "requiresAny": [
+        "bg-violet-600",
+        "bg-emerald-600",
+        "bg-red-600"
+      ],
       "style": {
         "opacity": 1,
         "backgroundColor": "#374463",
