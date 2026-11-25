@@ -44,15 +44,16 @@ jobs:
           persist-credentials: false
 
       # pixelslash is not published; the upload runs its CLI from this checkout. It runs with the
-      # org token in its env, so it is pinned to a commit (pixelslash main, 2026-11-15), never a
-      # branch. Bumping it is a deliberate change of this one line. It sits beside hackcove, not in
-      # it, because the upload refuses a dirty tree.
+      # org token in its env, so it is pinned to a commit (pixelslash main, 2026-11-24, the first
+      # that settles a page whose images load lazily), never a branch. Bumping it is a deliberate
+      # change of this one line. It sits beside hackcove, not in it, because the upload refuses a
+      # dirty tree.
       - name: Check out pixelslash
         if: env.PIXELSLASH_TOKEN != ''
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           repository: madangryscientist/pixelslash
-          ref: a191bd0490168e0906367273a895d20dd0bc5e89
+          ref: a745fe099a01342d59726e77346a3c5b3b270c52
           path: pixelslash
           persist-credentials: false
 
