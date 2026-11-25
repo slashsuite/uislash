@@ -59,15 +59,15 @@ export const navigation: ComponentSection = {
       pairs: ["Breadcrumbs/Trail", "Breadcrumbs/Hierarchy"],
       usage: {
         do: [
-          "Give the trail in order, parents first. A parent that links is `{ label, href }`, drawn through the app's `LinkProvider` for an in-app path; the last crumb is the current page, plain text.",
+          "Give the trail in order, parents first. A crumb that links is `{ label, href }`, drawn through the app's `LinkProvider` for an in-app path; the last crumb is the current page.",
           "Breadcrumbs show a hierarchy. Peer sections are `Tabs` of links.",
-          "Each crumb truncates, so a long name does not widen the row.",
+          "A trail too long for its row wraps; a long parent truncates, and the current page is never cut.",
           "Put the trail in the `breadcrumbs` slot of a `PageHeader`.",
         ],
       },
       accessibility: [
         '`<nav aria-label="Breadcrumb">` around an ordered list.',
-        'The last item has `aria-current="page"` and is never a link.',
+        'The last crumb is the current page: given an `href` it is a link to this page with `aria-current="page"`, else its item carries it.',
         "The `/` separators are `aria-hidden`.",
       ],
       api: ["Breadcrumbs"],

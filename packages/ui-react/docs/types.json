@@ -116,7 +116,7 @@
   },
   "Crumb": {
     "name": "Crumb",
-    "description": "A crumb that links: `href`, drawn by the app's router link through `LinkProvider` for an in-app\npath, else a plain `<a>`. `external` opens in a new tab. The last crumb is the current page and is\nnever a link.",
+    "description": "A crumb that links: `href`, drawn by the app's router link through `LinkProvider` for an in-app\npath, else a plain `<a>`. `external` opens in a new tab. The last crumb is the current page: given\nan `href` it is a link to this page with `aria-current=\"page\"`.",
     "definition": "{ label: ReactNode; href: string; external?: boolean }"
   },
   "DateRange": {

@@ -420,7 +420,7 @@
   },
   "Breadcrumbs": {
     "name": "Breadcrumbs",
-    "description": "`org / project / build / snapshot`: each crumb truncates, and the last is the current page. A\ncrumb is a node, or a `Crumb` object when it links.",
+    "description": "`org / project / build / snapshot`: the last crumb is the current page. A crumb is a node, or a\n`Crumb` object when it links. A trail too long for its row wraps onto the next line; a long parent\ntruncates, and the current page is never cut: its words wrap instead.",
     "props": [
       {
         "name": "id",
@@ -433,7 +433,7 @@
         "name": "items",
         "type": "(ReactNode | Crumb)[]",
         "required": true,
-        "description": "The trail, first to current: a node, or a `Crumb` (`{ label, href, external? }`) for one that links. The last is the current page and never a link.",
+        "description": "The trail, first to current: a node, or a `Crumb` (`{ label, href, external? }`) for one that links. The last is the current page; a `Crumb` there links to it with `aria-current=\"page\"`.",
         "native": false
       },
       {
