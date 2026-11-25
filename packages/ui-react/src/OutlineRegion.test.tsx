@@ -12,6 +12,20 @@ describe("OutlineRegion", () => {
     expect(screen.getByText("config")).not.toBeNull();
   });
 
+  it.each(["accent", "positive", "warn", "danger"] as const)(
+    "shows its label tag in the %s tone, dashed and active",
+    (tone) => {
+      render(<OutlineRegion rect={rect} within={within} label={tone} tone={tone} dashed active />);
+      expect(screen.getByText(tone)).not.toBeNull();
+    },
+  );
+
+  it("has no neutral or info tone", () => {
+    // @ts-expect-error a pale edge would not stand out on a picture
+    const view = <OutlineRegion rect={rect} within={within} tone="info" />;
+    expect(view).not.toBeNull();
+  });
+
   it("takes a data attribute, and has no tag without a label", () => {
     render(<OutlineRegion rect={rect} within={within} data-testid="region" />);
     expect(screen.getByTestId("region").textContent).toBe("");

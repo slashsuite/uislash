@@ -626,6 +626,72 @@ drag. The keyboard is unchanged. TypeScript flags nothing. A test that drags a r
 drags it by the button named "Reorder " and its title. A moved row now slides to its new place,
 and does not under `prefers-reduced-motion`.
 
+### SideColumn folds only with `fold`
+
+`SideColumn`'s `asideLabel` now only names the `<aside>` landmark. Folding the aside behind a
+disclosure below `lg` is its own choice, `fold`, which needs `asideLabel` to name the disclosure.
+TypeScript flags nothing: an aside that folded now shows below `lg`. Add `fold` to keep it folded.
+
+```tsx
+// before
+<SideColumn aside={agent} asideLabel="Ask the reply agent">{thread}</SideColumn>
+// after
+<SideColumn aside={agent} asideLabel="Ask the reply agent" fold>{thread}</SideColumn>
+```
+
+### Steps md reads at the body size
+
+`Steps size="md"` sets each step's title and detail at the body size (1rem on a 1.5rem line), as
+running text is, in place of the small size. Nothing changes in the code; each step is taller, so
+a page with a `Steps` moves down. `size="lg"` is unchanged.
+
+### Image's `framed` is `mat="white"`
+
+`Image` took `framed` for a white mat under a QR code. It now takes `mat`: `"white"` is that mat,
+and the new `"page"` sets a screenshot on a mat in the page's own tone. TypeScript flags `framed`:
+write `mat="white"` for `framed`, and delete `framed={false}`. An own theme that remaps the palette
+adds the page mat, as `.your-scope .bg-zinc-50 { background-color: <your page tone>; }`.
+
+Every `Image` now loads lazily, and every `Video` too where the browser supports it, so one far
+down the page is fetched only when it comes near. Give the one picture at the top of the page
+`priority`, so it loads first. `Video` now holds a fixed shape, 16:9 unless `aspect` says another,
+and a clip of another shape is letterboxed in it.
+`ImageAspect` has a new `16:10` and `ImageWidth` a new `xl` (448px): a `Record` keyed by either needs
+the new key.
+
+### Card's `as` is gone: a titled Card is an article
+
+A panel Card (no `href` or `onPress`) with a `title` or an `aria-label` is now an `<article>`, in
+place of a `<section>`, and any other Card a `<div>`. `as` is gone: TypeScript flags it. Delete `as="article"` from a titled Card.
+An untitled Card that was an `article` gets a `title` (with `titleStyle="name"` for a thing with a
+name) or an `aria-label`. A test that finds a Card by `getByRole("region")` finds it by
+`getByRole("article")`.
+
+### A link card is named by its title
+
+A Card with `href` was one link named by all of its text: the title, the body and the `badge`. Its
+link is now named by the title alone, and an untitled link card by the card's text. Nothing changes
+in the code. A test that finds the link by its whole text, as `getByRole("link", { name: "Home Your
+home page" })`, finds it by the title, `{ name: "Home" }`.
+
+### Card takes `hue`, `dashed`, `onPress`, `more` and `width`
+
+These are new; nothing breaks, but Card's props are now a union of a panel, a link card (`href`)
+and a button card (`onPress`), so a value typed `ComponentProps<typeof Card>` that passes `href` and `onPress` together, or
+`more` on a panel, is flagged. `dashed` was removed in 0.11 in favour of `EmptyState`, and comes back
+with another meaning: a card for something not real yet, such as a plan beside a measured result. An
+empty state is still an `EmptyState`. An own theme that remaps the palette adds the six peer hues
+`hue` paints: `bg-orange-100`, `bg-violet-100`, `bg-sky-100`, `bg-emerald-100`, `bg-amber-100` and
+`bg-blue-100`, with their `-300` borders.
+
+### A cut one-line run shows its text in a tooltip
+
+`Code lines={1}`, `TableCell lines={1}` and a cut `Breadcrumbs` parent showed their whole text in a
+native `title`. Where the browser has anchor positioning they now show it in the library's tooltip,
+on hover, keyboard focus and a tap, and a plain run is a focus stop while it is cut; elsewhere they
+keep the `title`. Nothing changes in the code. A browser test that read the `title` of a cut run
+hovers it and reads the tooltip.
+
 ### Running the codemod for 0.13
 
 A third codemod step makes the renames 0.13 ships. It runs alone, on 0.12 code, never with

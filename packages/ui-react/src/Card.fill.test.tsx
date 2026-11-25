@@ -14,13 +14,13 @@ describe("Card fill", () => {
     expect(link.props.href).toBe("/x");
   });
 
-  it.each([true, false])("is still a region named by its title (bar %s)", (bar) => {
+  it.each([true, false])("is still an article named by its title (bar %s)", (bar) => {
     render(
       <Card title="Shops nearby" bar={bar} fill>
         <p>body</p>
       </Card>,
     );
-    const region = screen.getByRole("region", { name: "Shops nearby" });
-    expect(within(region).getByText("body")).not.toBeNull();
+    const article = screen.getByRole("article", { name: "Shops nearby" });
+    expect(within(article).getByText("body")).not.toBeNull();
   });
 });

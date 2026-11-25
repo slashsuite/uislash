@@ -31,7 +31,7 @@ export const TONE_TEXT: Record<Tone, string> = {
 /**
  * A tinted notice box, with an optional bold title above its body. Its text is text-sm (text-base/7
  * inside a `Prose`, boxed or `banner`). `actions` puts a button or link
- * at the end of the row; `banner` makes it a flat strip (bottom border only, no radius) for the
+ * at the end of the row, or under the text at full width below `sm`; `banner` makes it a flat strip (bottom border only, no radius) for the
  * top of a `Card flush` and nowhere else: a padded card or a padded `FullBleedLayout` column
  * would inset it. `align="center"` centres the text. In a page's column the notice is a plain Callout, first in the column's `Stack`. With `actions` the box is `relative`, so a `TextLink
  * stretch` there makes the whole callout its click target, like a link in a table row. `icon`
@@ -68,7 +68,7 @@ export function Callout({
    * @default start
    */
   align?: "start" | "center" | undefined;
-  /** A button or link at the end of the row, beside the title and body. */
+  /** A button or link at the end of the row, beside the title and body; on a phone, under them at full width. */
   actions?: ReactNode;
   children: ReactNode;
 } & Passthrough): ReactElement {
@@ -99,9 +99,11 @@ export function Callout({
     >
       <GapProvider gap="xs">
         {actions ? (
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">{content}</div>
-            <div className="flex shrink-0 items-center gap-2">{actions}</div>
+            <div className="flex items-center gap-2 *:flex-1 sm:shrink-0 sm:*:flex-none">
+              {actions}
+            </div>
           </div>
         ) : (
           content

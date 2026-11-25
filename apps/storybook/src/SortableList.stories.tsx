@@ -131,6 +131,35 @@ export const TwoLists: S = {
   ),
 };
 
+/**
+ * A narrow list whose titles do not fit: each is cut with an ellipsis, and a cut title shows in full
+ * in a tooltip on hover, when its row has keyboard focus, or on a tap.
+ */
+export const LongTitles: S = {
+  render: () => (
+    <div className="max-w-xs">
+      <Queue
+        label="Long titles"
+        start={[
+          {
+            id: "long",
+            title: "Inbox",
+            tasks: [
+              {
+                id: "l1",
+                title: "Reconcile the March bank statement against the ledger export",
+                tag: "admin",
+              },
+              { id: "l2", title: "Call the plumber about the leak under the kitchen sink" },
+              { id: "l3", title: "Short one" },
+            ],
+          },
+        ]}
+      />
+    </div>
+  ),
+};
+
 export const DoReorder: S = {
   render: examples.DoReorder,
 };

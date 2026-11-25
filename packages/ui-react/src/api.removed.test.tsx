@@ -247,10 +247,8 @@ export const removed = {
   r84: () => <ui.ListRow detail="y">x</ui.ListRow>,
   // @ts-expect-error static is gone: a row with no href or onClick is static by itself
   r85: () => <ui.ListRow static>x</ui.ListRow>,
-  // @ts-expect-error as is only article: a titled card is a section, an untitled one a div
-  r86: () => <ui.Card as="div">x</ui.Card>,
-  // @ts-expect-error dashed is gone: an EmptyState draws its own dashed frame
-  r87: () => <ui.Card dashed>x</ui.Card>,
+  // @ts-expect-error as is gone: a titled card is an article, an untitled one a div
+  r86: () => <ui.Card as="article">x</ui.Card>,
   // @ts-expect-error a Dialog's size is width
   r88: () => <ui.Dialog title="x" size="lg" onClose={() => undefined} />,
   // @ts-expect-error a Drawer's size is width

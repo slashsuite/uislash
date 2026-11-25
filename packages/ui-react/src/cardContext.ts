@@ -21,3 +21,26 @@ export function InCard({
 export function useInCard(): boolean {
   return useContext(CardContext);
 }
+
+/**
+ * Whether a card sits directly in a `CardGrid align="regions"`: it is then a subgrid of the cell's
+ * three rows. A card resets it to `false` for what it holds, so a nested card keeps its own layout.
+ * Internal: not exported from the package.
+ */
+const RegionsContext = createContext(false);
+
+/** Sets whether the cards in `children` line up their regions with their neighbours'. */
+export function InRegions({
+  value,
+  children,
+}: {
+  value: boolean;
+  children: ReactNode;
+}): ReactElement {
+  return createElement(RegionsContext.Provider, { value }, children);
+}
+
+/** `true` for a card directly in a `CardGrid align="regions"`. */
+export function useRegions(): boolean {
+  return useContext(RegionsContext);
+}

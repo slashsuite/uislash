@@ -58,7 +58,7 @@ export function ListPage({ isEmpty = false }: { isEmpty?: boolean }) {
       empty={<Text tone="muted">No quotes match these filters.</Text>}
     >
       {(isEmpty ? [] : quotes).map(([ref, name, premium, status]) => (
-        <Card key={ref} as="article">
+        <Card key={ref} aria-label={name}>
           <div className="flex items-center justify-between gap-4">
             <div className="min-w-0">
               <Text strong>{name}</Text>

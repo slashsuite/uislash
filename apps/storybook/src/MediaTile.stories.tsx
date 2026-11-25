@@ -30,6 +30,16 @@ export const LabelAndCaption: S = {
   ),
 };
 
+/** `badge` sets a short word in the top corner, on the dark scrim: "New", a count, a state. It moves to the left corner when the tile has a remove button. */
+export const Badge: S = {
+  render: () => (
+    <div className="flex items-start gap-4">
+      <MediaTile src={first.src} alt={first.alt} label="Anna" badge="New" href="#anna" />
+      <MediaTile src={second.src} alt={second.alt} badge="12 photos" onRemove={() => {}} />
+    </div>
+  ),
+};
+
 /** `video` draws a play mark on the thumbnail. */
 export const Video: S = {
   render: () => (
@@ -37,13 +47,14 @@ export const Video: S = {
   ),
 };
 
-/** `aspect` and `width` are `Image`'s: `sm`, `md` and `lg` cap the width, `full` fills the parent. */
+/** `aspect` and `width` are `Image`'s: `sm`, `md`, `lg` and `xl` cap the width, `full` fills the parent. */
 export const Shapes: S = {
   render: () => (
     <div className="flex items-start gap-4">
       <MediaTile src={first.src} alt="Square" aspect="square" width="sm" label="sm" />
       <MediaTile src={first.src} alt="4:3" aspect="4:3" width="md" label="md" />
       <MediaTile src={first.src} alt="16:9" aspect="16:9" width="lg" label="lg" />
+      <MediaTile src={first.src} alt="16:10" aspect="16:10" width="xl" label="xl" />
     </div>
   ),
 };

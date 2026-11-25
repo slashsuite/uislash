@@ -109,7 +109,7 @@
   outline-color: #fdfbf7; /* canvas: the accent is 2.4:1 on the scrim */
 }
 
-/* The media matte (Image framed): the white mat a QR code is scanned off. It stays white in every
+/* The media matte (Image `mat="white"`): the white mat a QR code is scanned off. It stays white in every
    theme, dark ones included, as the scrim above stays black. */
 .thrifty-paper .bg-white\/100 {
   background-color: #ffffff;
@@ -269,13 +269,11 @@
 
 /* Coloured callouts / chips: the soft fills, the full-strength text. */
 .thrifty-paper .bg-emerald-50,
-.thrifty-paper .bg-emerald-50\/60,
-.thrifty-paper .bg-emerald-100 {
+.thrifty-paper .bg-emerald-50\/60 {
   background-color: #ecfdf5; /* positive-soft */
 }
 .thrifty-paper .bg-amber-50,
-.thrifty-paper .bg-amber-50\/60,
-.thrifty-paper .bg-amber-100 {
+.thrifty-paper .bg-amber-50\/60 {
   background-color: #fffbeb; /* warn-soft */
 }
 .thrifty-paper .bg-blue-50 {
@@ -354,12 +352,10 @@
 .thrifty-paper .text-red-900 {
   color: #7a1220; /* danger */
 }
-.thrifty-paper .border-emerald-200,
-.thrifty-paper .border-emerald-300 {
+.thrifty-paper .border-emerald-200 {
   border-color: rgba(4, 120, 87, 0.3); /* positive */
 }
-.thrifty-paper .border-amber-200,
-.thrifty-paper .border-amber-300 {
+.thrifty-paper .border-amber-200 {
   border-color: rgba(180, 83, 9, 0.3); /* warn */
 }
 .thrifty-paper .border-amber-600 {
@@ -377,8 +373,7 @@
     0.7
   ); /* danger/70: an invalid field's edge, and an `aria-invalid` control's edge, 5.06:1 on white and 4.77:1 on subtle (danger/30 was 1.67:1) */
 }
-.thrifty-paper .border-blue-200,
-.thrifty-paper .border-blue-300 {
+.thrifty-paper .border-blue-200 {
   border-color: rgba(15, 118, 110, 0.3); /* note */
 }
 
@@ -406,4 +401,53 @@
 }
 .thrifty-paper .bg-rose-400\/25 {
   background-color: rgba(244, 194, 207, 0.26); /* blush */
+}
+
+/* Peer hues (Card hue): a set of peer cards, one hue each, told apart by hue, not status.
+   Each hue is this theme's own remap of the family's identity fill (bg-orange-600, bg-violet-600,
+   bg-sky-600, bg-emerald-600, bg-amber-600; blue is text-blue-700). The fill is 25% of it over
+   the card white (bg-white); the edge is it mixed 30% toward the ink (text-slate-900). sRGB mix.
+   A fill is lowered in 5% steps where the card's ink would miss 4.5:1 on it, and says so. The edge
+   is decoration (the contrast contract exempts it): the title and the fill carry the card. */
+.thrifty-paper .bg-orange-100 {
+  background-color: #eee6df; /* orange: bg-orange-600 #8c5a2b at 15%, lowered from 25% so the ink keeps 4.5:1 */
+}
+.thrifty-paper .bg-violet-100 {
+  background-color: #f6e3db; /* violet: bg-violet-600 #c2410c at 15%, lowered from 25% so the ink keeps 4.5:1 */
+}
+.thrifty-paper .bg-sky-100 {
+  background-color: #dde9ee; /* sky: bg-sky-600 #1e6a8f at 15%, lowered from 25% so the ink keeps 4.5:1 */
+}
+.thrifty-paper .bg-emerald-100 {
+  background-color: #d9ebe6; /* green: bg-emerald-600 #047857 at 15%, lowered from 25% so the ink keeps 4.5:1 */
+}
+.thrifty-paper .bg-amber-100 {
+  background-color: #e4e1d1; /* yellow: bg-amber-600 #7a6a1a at 20%, lowered from 25% so the ink keeps 4.5:1 */
+}
+.thrifty-paper .bg-blue-100 {
+  background-color: #cfe4e2; /* blue: text-blue-700 #0f766e at 20%, lowered from 25% so the ink keeps 4.5:1 */
+}
+.thrifty-paper .border-orange-300 {
+  border-color: #6a4725; /* orange */
+}
+.thrifty-paper .border-violet-300 {
+  border-color: #90350f; /* violet */
+}
+.thrifty-paper .border-sky-300 {
+  border-color: #1d526b; /* sky */
+}
+.thrifty-paper .border-emerald-300 {
+  border-color: #0b5c44; /* green */
+}
+.thrifty-paper .border-amber-300 {
+  border-color: #5e5219; /* yellow */
+}
+.thrifty-paper .border-blue-300 {
+  border-color: #135a54; /* blue */
+}
+
+/* The page mat (the media-mat role): the mat under a screenshot on a page, the theme's own ground.
+   The white media matte above stays white for a code. */
+.thrifty-paper .bg-zinc-50 {
+  background-color: #ffffff; /* the card white, so it looks as the mat always has */
 }

@@ -4,7 +4,8 @@ import type { Passthrough } from "./props.js";
 import { type LoadingProps, useLoading, WaitingBone } from "./skeleton.js";
 
 /**
- * A small red count, 10px, for sitting on an icon. An icon with a count is an `IconButton` with
+ * A small red count, 10px, for sitting on an icon. Its size is in rem and its height grows with
+ * its line, so it scales with the reader's text size instead of clipping. An icon with a count is an `IconButton` with
  * its `count`, which pins the Badge to its corner and puts the count in the button's name. A
  * count above 99 reads `99+`. While `loading` it is
  * a bone of its size: a count is a number, so 0 is a value and not a gap.
@@ -37,7 +38,7 @@ export function Badge({
     <span
       {...rest}
       className={cx(
-        "inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-semibold leading-none text-red-50",
+        "inline-flex min-h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[0.625rem]/[1.6] font-semibold text-red-50",
         corner && "absolute -end-1.5 -top-1.5",
       )}
     >

@@ -35,14 +35,14 @@ describe("a ListRow's form comes from what it does", () => {
 });
 
 describe("a Card's root comes from its title", () => {
-  it("an untitled card is no region", () => {
+  it("an untitled card is no article", () => {
     render(<Card>body</Card>);
-    expect(screen.queryByRole("region")).toBeNull();
+    expect(screen.queryByRole("article")).toBeNull();
   });
 
-  it("a titled card is a region named by its title", () => {
+  it("a titled card is an article named by its title", () => {
     render(<Card title="Billing">body</Card>);
-    expect(screen.getByRole("region", { name: "Billing" })).not.toBeNull();
+    expect(screen.getByRole("article", { name: "Billing" })).not.toBeNull();
   });
 });
 

@@ -283,7 +283,7 @@ export const CellTones: S = {
   ),
 };
 
-/** `lines={1}` caps a long value's width, ellipsises it on one line and puts the full text in a `title`. One width, no prop. */
+/** `lines={1}` caps a long value's width, ellipsises it on one line and, while it is cut, shows the full text in a tooltip on hover, focus or a tap. One width, no prop. */
 export const Truncate: S = {
   render: () => (
     <Table label="Branches">

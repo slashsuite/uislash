@@ -45,12 +45,15 @@ export const Fill: S = {
   ),
 };
 
-/** A plain `fill` card: the title stays put and the text scrolls under it. */
+/** A plain `fill` card: the title stays put and the text scrolls under it. A link at either edge of the scroller shows its whole focus ring. */
 export const FillPlain: S = {
   render: () => (
     <div className="h-100 max-w-md">
       <Card title="Notes" fill>
         <Stack>
+          <Text>
+            <TextLink href="#map">See the map</TextLink> for where each shop is.
+          </Text>
           {Array.from({ length: 8 }, (_, i) => (
             <Text key={i} tone="muted">
               Shops open at nine on weekdays and close early on Saturdays. Most take cards, a few

@@ -2,6 +2,7 @@ import type { ImgHTMLAttributes, ReactElement, ReactNode } from "react";
 import { cx } from "./cx.js";
 import { IMAGE_WIDTH, type ImageAspect, type ImageWidth } from "./Image.js";
 import type { Passthrough } from "./props.js";
+import type { Tone } from "./tone.js";
 import { type LoadingProps, passthroughOf, useLoading, WaitingBone } from "./skeleton.js";
 
 /** A box in a picture's own units (an image's pixels): its top-left corner and its size. */
@@ -12,18 +13,41 @@ const HATCH =
   "absolute inset-0 opacity-40 bg-[repeating-linear-gradient(45deg,currentColor_0_1px,transparent_1px_6px)]";
 
 /**
+ * An `OutlineRegion`'s colour: `accent` (the default), or the shared `Tone`s that have a strong
+ * edge, `positive`, `warn` and `danger`. `neutral` and `info` are left out: their edges are pale
+ * lines that would not stand out on a picture.
+ */
+export type OutlineRegionTone = "accent" | Extract<Tone, "positive" | "warn" | "danger">;
+
+/** Each tone's outline (with the hatch's colour) and its tag. */
+const REGION_TONE: Record<OutlineRegionTone, { box: string; tag: string }> = {
+  accent: { box: "border-violet-600 text-violet-600", tag: "bg-violet-600 text-violet-50" },
+  positive: { box: "border-emerald-600 text-emerald-700", tag: "bg-emerald-600 text-emerald-50" },
+  warn: { box: "border-amber-600 text-amber-700", tag: "bg-amber-50 text-amber-800" },
+  danger: { box: "border-red-600 text-red-700", tag: "bg-red-600 text-red-50" },
+};
+
+/**
  * An accent outline over one area of a picture, such as a screenshot's ignored or flagged region.
  * `rect` is in the picture's own units and `within` is the picture's full size in the same units;
  * the box is placed in percent of them, so it sits right at any scale. Put it in a `RegionFrame`,
  * over the picture. `label` is a small tag in its top-left
  * corner; `hatched` stripes the inside, for an area that is left out. It takes no pointer events,
  * so it never blocks the picture or a layer drawn over it.
+ *
+ * `tone` colours it by what the area is (`positive`, `warn`, `danger`; `accent` by default),
+ * `dashed` draws the edge dashed, for an area that is proposed or approximate, and `active` draws a
+ * thicker edge, for the one region the app has picked (the one hovered in a list beside the
+ * picture, say). The app sets `active`; the region has no hover state of its own.
  */
 export function OutlineRegion({
   rect,
   within,
   label,
   hatched = false,
+  tone = "accent",
+  dashed = false,
+  active = false,
   ...rest
 }: {
   /** The area, in the picture's own units. */
@@ -34,11 +58,32 @@ export function OutlineRegion({
   label?: ReactNode;
   /** Stripes the inside, for an area left out (ignored, masked). */
   hatched?: boolean | undefined;
+  /**
+   * The colour: `accent`, `positive`, `warn` or `danger`.
+   * @default accent
+   */
+  tone?: OutlineRegionTone | undefined;
+  /**
+   * Draws the edge dashed, for an area that is proposed or approximate.
+   * @default false
+   */
+  dashed?: boolean | undefined;
+  /**
+   * Draws a thicker edge, for the region the app has picked. The app sets it; there is no hover state.
+   * @default false
+   */
+  active?: boolean | undefined;
 } & Passthrough): ReactElement {
+  const colour = REGION_TONE[tone];
   return (
     <div
       {...rest}
-      className="pointer-events-none absolute border-2 border-violet-600 text-violet-600"
+      className={cx(
+        "pointer-events-none absolute",
+        active ? "border-4" : "border-2",
+        dashed && "border-dashed",
+        colour.box,
+      )}
       style={{
         left: `${(rect.x / within.width) * 100}%`,
         top: `${(rect.y / within.height) * 100}%`,
@@ -48,7 +93,7 @@ export function OutlineRegion({
     >
       {hatched && <span aria-hidden="true" className={HATCH} />}
       {label != null && (
-        <span className="absolute top-0 left-0 bg-violet-600 px-1 text-xs leading-tight text-violet-50">
+        <span className={cx("absolute top-0 left-0 px-1 text-xs leading-tight", colour.tag)}>
           {label}
         </span>
       )}
@@ -61,6 +106,7 @@ const FRAME_ASPECT: Record<ImageAspect, string> = {
   square: "aspect-square",
   "4:3": "aspect-[4/3]",
   "3:2": "aspect-[3/2]",
+  "16:10": "aspect-[16/10]",
   "16:9": "aspect-video",
   "3:4": "aspect-[3/4]",
   "9:16": "aspect-[9/16]",

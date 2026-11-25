@@ -111,9 +111,9 @@ describe.each(Object.entries(forms))("a linked %s", (_name, draw) => {
 describe("a linked ListRow and Card", () => {
   it.each([
     ["ListRow", forms.ListRow, /^Row\s*Inner link/],
-    ["Card", forms.Card, /^Card\s*Inner link/],
+    ["Card", forms.Card, "Card"],
   ])(
-    "a %s names the link by the row's own text, since the link itself is empty",
+    "a %s names its empty link by the row's own text, a card by its title",
     (_name, draw, name) => {
       draw();
       const link = rowLink();

@@ -133,6 +133,8 @@ const SPLIT = "inline-flex overflow-hidden border border-slate-200 font-medium";
 function pillClass({ tone, size, round, dot, labelled }: Look, interactive: boolean): string {
   return cx(
     round ? "rounded-full" : "rounded-md",
+    // A pill is one unit: its words never break onto a second line.
+    "whitespace-nowrap",
     TEXT[size],
     labelled ? SPLIT : cx("px-1.5 py-0.5 font-medium", PILL_TONES[tone]),
     dot && !labelled && "inline-flex items-center gap-1",
@@ -144,7 +146,7 @@ function pillClass({ tone, size, round, dot, labelled }: Look, interactive: bool
 function shellClass({ tone, size, round, labelled }: Look): string {
   return cx(
     round ? "rounded-full" : "rounded-md",
-    "inline-flex items-center font-medium",
+    "inline-flex items-center font-medium whitespace-nowrap",
     TEXT[size],
     labelled ? "overflow-hidden border border-slate-200" : PILL_TONES[tone],
   );
@@ -294,7 +296,8 @@ function RemoveShell({
  * a button, each with a hover dim and the focus ring. `onRemove` adds an x button after the text
  * (named by `removeLabel`, by default `Remove` and the pill's text), a separate button beside a link or button pill rather than nested in
  * it. `title` is its tooltip and description; a plain pill with one takes a tab stop. While
- * `loading` with no text yet it is a bone of its size.
+ * `loading` with no text yet it is a bone of its size. Its text never wraps: a pill is one unit,
+ * so keep it to a word or two.
  */
 export function Pill(props: PillProps): ReactElement {
   const size = useDensity(props.size);

@@ -22,9 +22,10 @@ const ITEM: Record<
     item: "grid grid-cols-[1.625rem_1fr] gap-3 [counter-increment:step]",
     number:
       "flex size-[1.625rem] items-center justify-center rounded-full bg-violet-50 text-xs font-semibold tabular-nums text-violet-600 before:content-[counter(step)]",
-    body: "min-w-0 pt-0.5",
-    title: "text-sm/5 font-medium text-slate-900",
-    detail: "mt-1 text-sm/5 text-slate-600",
+    // The 1.5rem first line sits centred on the 1.625rem number.
+    body: "min-w-0 pt-px",
+    title: "text-base/6 font-medium text-slate-900",
+    detail: "mt-1 text-base/6 text-slate-600",
   },
   lg: {
     item: "flex flex-col gap-4 [counter-increment:step]",

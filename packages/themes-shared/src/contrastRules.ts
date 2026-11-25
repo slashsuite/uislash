@@ -49,6 +49,16 @@ export const EXEMPTIONS: readonly Exemption[] = [
     why: "the white mat under a QR code or a logo: it carries no text, the picture on it is the consumer's own, and a scanner needs it white (themes.test.ts keeps it white in every theme)",
   },
   {
+    role: "media-mat",
+    match: /^/,
+    why: "the mat under a screenshot: it carries no text; the picture on it is the consumer's own",
+  },
+  {
+    role: "peer",
+    match: /^border-/,
+    why: "the edge of a peer hue card: decoration, the card's title and fill carry it (WCAG 1.4.11 binds the edge of a control, and a card is not one)",
+  },
+  {
     role: "ink",
     match: /^text-slate-300$/,
     why: "dimmed text of an inactive item (a calendar day outside the month, a disabled day): WCAG 1.4.3 exempts inactive components",
@@ -86,11 +96,12 @@ const roleOf = (palette: Palette, ...roles: string[]): string[] =>
 const stacks = (utilities: string[]): string[][] => utilities.map((utility) => [utility]);
 
 /**
- * The surfaces page content sits on. `inset` is a hover, pressed or active fill, so it carries
- * neutral ink (`wide`) but not tone text, muted text or a control edge (`narrow`).
+ * The surfaces page content sits on. `inset` is a hover, pressed or active fill, and `peer` the fill
+ * of a peer hue card, so each carries neutral ink (`wide`) but not tone text, muted text or a
+ * control edge (`narrow`).
  */
 function surfaces(palette: Palette) {
-  const wide = roleOf(palette, "canvas", "surface", "header", "subtle", "inset").filter(
+  const wide = roleOf(palette, "canvas", "surface", "header", "subtle", "inset", "peer").filter(
     isBackground,
   );
   const narrow = roleOf(palette, "canvas", "surface", "header", "subtle").filter(isBackground);

@@ -104,19 +104,23 @@ function CardActions({ children }: { children: ReactNode }) {
   return <div className="ml-auto flex items-center gap-2">{children}</div>;
 }
 
+/** A `dashed` card's bar has a dashed lower edge, like the card's own. */
 export function CardBar({
   heading,
   actions,
   size,
+  dashed,
 }: {
   heading: ReactNode;
   actions: ReactNode;
   size: Size;
+  dashed: boolean;
 }) {
   return (
     <div
       className={cx(
         "flex items-center justify-between gap-3 border-b border-slate-200/70 bg-slate-50",
+        dashed && "border-dashed",
         STRIP_PAD[size],
       )}
     >
@@ -154,5 +158,14 @@ export function CardHeader({
       {heading}
       <CardActions>{actions}</CardActions>
     </div>
+  );
+}
+
+/** A link card's "Read more" cue at its foot: a mark for the eye, as the link is named by the title. */
+export function CardMore({ children }: { children: ReactNode }) {
+  return (
+    <p aria-hidden="true" className="mt-3 text-sm font-medium text-violet-700">
+      {children} <span>→</span>
+    </p>
   );
 }

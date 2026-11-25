@@ -62,4 +62,15 @@ describe("MediaTile", () => {
     await user().click(screen.getByRole("button", { name: "Remove Photo" }));
     expect(onRemove).toHaveBeenCalledTimes(1);
   });
+  it("shows a badge on the picture, read as part of the tile's name", () => {
+    render(<MediaTile src="/a.jpg" alt="Shot of the home page" badge="New" href="/shots/1" />);
+    expect(screen.getByText("New")).toBeInstanceOf(HTMLElement);
+    // jsdom joins the name with no space (it lays nothing out).
+    expect(screen.getByRole("link", { name: /^Shot of the home page\s?New$/ })).not.toBeNull();
+  });
+
+  it("has no badge text without badge", () => {
+    render(<MediaTile src="/a.jpg" alt="Shot" href="/shots/1" />);
+    expect(screen.getByRole("link", { name: "Shot" })).not.toBeNull();
+  });
 });

@@ -47,12 +47,10 @@ export const FullPage = () => (
         </Fieldset>
       }
     >
-      <Card as="article">
-        <Text strong>Naledi Mokoena</Text>
+      <Card title="Naledi Mokoena" titleStyle="name">
         <Text>Q-1042 · R 1 240 / mo</Text>
       </Card>
-      <Card as="article">
-        <Text strong>Pieter van Wyk</Text>
+      <Card title="Pieter van Wyk" titleStyle="name">
         <Text>Q-1041 · R 860 / mo</Text>
       </Card>
     </ListLayout>
@@ -78,10 +76,10 @@ export const DoRows = () => (
       </Fieldset>
     }
   >
-    <Card as="article" title="Naledi Mokoena" status={<Pill tone="positive">Accepted</Pill>}>
+    <Card title="Naledi Mokoena" status={<Pill tone="positive">Accepted</Pill>}>
       <Text>Q-1042 · R 1 240 / mo</Text>
     </Card>
-    <Card as="article" title="Pieter van Wyk" status={<Pill tone="neutral">Sent</Pill>}>
+    <Card title="Pieter van Wyk" status={<Pill tone="neutral">Sent</Pill>}>
       <Text>Q-1041 · R 860 / mo</Text>
     </Card>
   </ListLayout>
@@ -91,7 +89,7 @@ export const DoRows = () => (
 export const DontRows = () => (
   <Stack>
     <PageHeader title="Quotes" description="Every quote you have sent." />
-    <Card as="article" title="Naledi Mokoena">
+    <Card title="Naledi Mokoena">
       <Text>Q-1042 · R 1 240 / mo</Text>
     </Card>
   </Stack>

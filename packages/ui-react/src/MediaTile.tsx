@@ -21,13 +21,19 @@ export type MediaTileProps = {
   /** Muted text under the picture, e.g. when. */
   caption?: ReactNode;
   /**
+   * A short word pinned to the picture's top-right corner on the media scrim: a count, "New" or a
+   * size. Text only; it is part of the tile's name. With `onRemove` the button takes that corner,
+   * so the badge sits top-left.
+   */
+  badge?: string | undefined;
+  /**
    * The shape of the thumbnail, as `Image`'s `aspect`; `natural` keeps the picture's own
    * proportions (a chat image) and crops nothing.
    * @default 3:4
    */
   aspect?: ImageAspect | undefined;
   /**
-   * `sm` 96px, `md` 160px or `lg` 256px wide; `full` fills the parent (a tile in a grid).
+   * `sm` 96px, `md` 160px, `lg` 256px or `xl` 448px wide; `full` fills the parent (a tile in a grid).
    * @default md
    */
   width?: ImageWidth | undefined;
@@ -72,7 +78,7 @@ export type MediaTileProps = {
  * `ScrollStrip` of media opens each item in a `Lightbox`. The label sits on the same near-black
  * media scrim as the Lightbox, in every theme. The thumbnail is cropped to fill its shape, or with
  * `aspect="natural"` shown whole. With `href` the whole tile is one link instead. `onRemove` adds a
- * remove button for a tile that can be taken back out.
+ * remove button for a tile that can be taken back out. `badge` pins a short word to a top corner.
  * While `loading` with no `src` yet the picture is a bone of its shape.
  */
 export function MediaTile({
@@ -80,6 +86,7 @@ export function MediaTile({
   alt,
   label,
   caption,
+  badge,
   aspect = "3:4",
   width = "md",
   video = false,
@@ -97,17 +104,7 @@ export function MediaTile({
     <LoadingScope loading={waiting}>
       <span className="relative block overflow-hidden rounded-lg">
         <Image src={src} alt={alt} aspect={aspect} />
-        {video && (
-          <span aria-hidden="true" className="absolute inset-0 grid place-items-center">
-            <span className="grid size-10 place-items-center rounded-full bg-black/90 text-white">
-              <Icon size="lg">
-                <svg viewBox="0 0 20 20" fill="currentColor">
-                  <path d={PLAY} />
-                </svg>
-              </Icon>
-            </span>
-          </span>
-        )}
+        <TileMarks video={video} badge={badge} badgeStart={onRemove !== undefined} />
         {label && (
           <span className="absolute inset-x-0 bottom-0 truncate bg-black/90 px-2 py-1 text-xs font-medium text-white">
             {label}
@@ -134,6 +131,44 @@ export function MediaTile({
       {tile}
       <RemoveButton label={removeLabel} alt={alt} onRemove={onRemove} />
     </div>
+  );
+}
+
+/** The marks laid over a tile's picture: the play mark for a video, and the badge in a top corner. */
+function TileMarks({
+  video,
+  badge,
+  badgeStart,
+}: {
+  video: boolean;
+  badge: string | undefined;
+  /** Puts the badge in the top-left corner, clear of the remove button. */
+  badgeStart: boolean;
+}): ReactElement {
+  return (
+    <>
+      {video && (
+        <span aria-hidden="true" className="absolute inset-0 grid place-items-center">
+          <span className="grid size-10 place-items-center rounded-full bg-black/90 text-white">
+            <Icon size="lg">
+              <svg viewBox="0 0 20 20" fill="currentColor">
+                <path d={PLAY} />
+              </svg>
+            </Icon>
+          </span>
+        </span>
+      )}
+      {badge && (
+        <span
+          className={cx(
+            "absolute top-1 truncate rounded bg-black/90 px-1.5 py-0.5 text-xs font-medium text-white",
+            badgeStart ? "left-1 max-w-[calc(100%-2.75rem)]" : "right-1 max-w-[calc(100%-0.5rem)]",
+          )}
+        >
+          {badge}
+        </span>
+      )}
+    </>
   );
 }
 

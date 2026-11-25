@@ -8,7 +8,10 @@ export function Chevron({ open }: { open: boolean }): ReactElement {
       aria-hidden="true"
       viewBox="0 0 20 20"
       fill="currentColor"
-      className={cx("h-4 w-4 shrink-0 text-slate-400", open && "rotate-90")}
+      className={cx(
+        "h-4 w-4 shrink-0 text-slate-400 motion-safe:transition-transform",
+        open && "rotate-90",
+      )}
     >
       <path
         fillRule="evenodd"

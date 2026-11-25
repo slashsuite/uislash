@@ -151,13 +151,13 @@ describe("every exported component passes id, data-* and aria-* through", () => 
     expect(link.hasAttribute("aria-describedby")).toBe(false);
   });
 
-  it("a Card with a title puts both on its section", () => {
+  it("a Card with a title puts both on its article", () => {
     mount(
       <ui.Card title="T" {...A}>
         x
       </ui.Card>,
     );
-    expect(screen.getByRole("region", { name: "T", description: "Read this" })).toBe(probe());
+    expect(screen.getByRole("article", { name: "T", description: "Read this" })).toBe(probe());
   });
 
   it("a static ListRow puts both on its row", () => {

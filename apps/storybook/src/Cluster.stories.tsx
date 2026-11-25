@@ -8,6 +8,7 @@ import {
   Pill,
   Stack,
   Text,
+  TextLink,
 } from "@slashsuite/ui-react";
 import * as examples from "../../../packages/ui-react/docs/examples/Cluster.examples.js";
 
@@ -72,7 +73,7 @@ export const GrowMinWidth: S = {
 export const Justify: S = {
   render: () => (
     <Stack>
-      {(["start", "between", "end"] as const).map((justify) => (
+      {(["start", "center", "between", "end"] as const).map((justify) => (
         <Cluster key={justify} justify={justify}>
           <Text as="span" strong>
             Invoice 1042
@@ -81,6 +82,17 @@ export const Justify: S = {
         </Cluster>
       ))}
     </Stack>
+  ),
+};
+
+/** `as="nav"` is a row of links: a `<nav>` named by its `aria-label`, around a list with each link in its own item. */
+export const Nav: S = {
+  render: () => (
+    <Cluster as="nav" aria-label="Footer" justify="center" gap="md">
+      <TextLink href="#terms">Terms</TextLink>
+      <TextLink href="#privacy">Privacy</TextLink>
+      <TextLink href="#contact">Contact</TextLink>
+    </Cluster>
   ),
 };
 

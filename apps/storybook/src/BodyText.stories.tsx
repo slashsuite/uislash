@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Caption, Lead, Overline, Stack, Text } from "@slashsuite/ui-react";
+import { Caption, Lead, Mark, Overline, Stack, Text } from "@slashsuite/ui-react";
 import * as examples from "../../../packages/ui-react/docs/examples/BodyText.examples.js";
 
 const meta: Meta = { title: "Text/Body text" };
@@ -140,6 +140,17 @@ export const DontEmptyView: S = {
 export const LeadStory: S = {
   name: "Lead",
   render: () => <Lead>The supporting sentence that sits under a Display heading.</Lead>,
+};
+
+/** `Mark` highlights the words a search matched, on the warn tint, inside the run around it. */
+export const MarkStory: S = {
+  name: "Mark",
+  render: () => (
+    <Text>
+      Naledi asked to move the <Mark>debit order</Mark> to the 25th, so the next{" "}
+      <Mark>debit order</Mark> runs then.
+    </Text>
+  ),
 };
 
 export const OverlineStory: S = {

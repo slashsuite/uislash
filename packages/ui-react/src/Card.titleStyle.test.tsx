@@ -7,8 +7,8 @@ import { render, screen, within } from "./render.harness.js";
 describe("Card titleStyle", () => {
   it("defaults to a level-2 heading that names the card", () => {
     render(<Card title="Corner Books">body</Card>);
-    const region = screen.getByRole("region", { name: "Corner Books" });
-    expect(within(region).getByRole("heading", { level: 2, name: "Corner Books" })).not.toBeNull();
+    const article = screen.getByRole("article", { name: "Corner Books" });
+    expect(within(article).getByRole("heading", { level: 2, name: "Corner Books" })).not.toBeNull();
   });
 
   it("name still names the card, and keeps count, status and actions", () => {
@@ -24,10 +24,10 @@ describe("Card titleStyle", () => {
         body
       </Card>,
     );
-    const region = screen.getByRole("region", { name: "Corner Books" });
-    expect(within(region).getByText("4")).not.toBeNull();
-    expect(within(region).getByText("Open")).not.toBeNull();
-    expect(within(region).getByRole("button", { name: "Edit" })).not.toBeNull();
+    const article = screen.getByRole("article", { name: "Corner Books" });
+    expect(within(article).getByText("4")).not.toBeNull();
+    expect(within(article).getByText("Open")).not.toBeNull();
+    expect(within(article).getByRole("button", { name: "Edit" })).not.toBeNull();
   });
 
   it("name works on a card that is a link", () => {

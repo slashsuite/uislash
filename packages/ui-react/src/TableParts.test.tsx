@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from "vitest";
-import { render, screen, within } from "./render.harness.js";
+import { render, screen, user, within } from "./render.harness.js";
 import {
   Table,
   TableBody,
@@ -10,6 +10,7 @@ import {
   TableHeaderCell,
   TableRow,
 } from "./Table.js";
+import { everyRunCut } from "./truncated.harness.js";
 
 /** One body cell in a bare table, so the cell is all there is to find. */
 const cell = (props: Parameters<typeof TableCell>[0]) =>
@@ -104,24 +105,39 @@ describe("TableCell colSpan", () => {
 });
 
 describe("TableCell lines={1}", () => {
-  it("puts the full text in a title", () => {
+  it("a run that fits is plain text: no title and no focus stop", async () => {
+    cell({ lines: 1, children: "Naledi" });
+    expect(screen.getByRole("cell", { name: "Naledi" })).not.toBeNull();
+    expect(screen.queryByTitle("Naledi")).toBeNull();
+    await user().tab();
+    expect(document.activeElement).toBe(document.body);
+  });
+});
+
+describe("TableCell lines={1}, cut", () => {
+  everyRunCut();
+
+  // jsdom has no anchor positioning, so the tooltip falls back to the native title: the title is
+  // where the whole text shows here, and since focus never shows a title, the run is no stop.
+  it("shows the full text in the title, and is no focus stop", async () => {
     cell({ lines: 1, mono: true, children: "feature/very-long-branch-name" });
-    expect(screen.getByTitle("feature/very-long-branch-name").textContent).toBe(
-      "feature/very-long-branch-name",
-    );
+    const run = screen.getByTitle("feature/very-long-branch-name");
+    expect(run.textContent).toBe("feature/very-long-branch-name");
+    await user().tab();
+    expect(document.activeElement).toBe(document.body);
   });
 
-  it("titles a number, end-aligned", () => {
+  it("shows a number, end-aligned", () => {
     cell({ lines: 1, align: "end", children: 12 });
     expect(screen.getByTitle("12").textContent).toBe("12");
   });
 
-  it("titles the joined text of mixed strings and numbers", () => {
+  it("shows the joined text of mixed strings and numbers", () => {
     cell({ lines: 1, children: ["R ", 12] });
     expect(screen.getByTitle("R 12")).not.toBeNull();
   });
 
-  it("titles nothing without it", () => {
+  it("shows nothing without it", () => {
     cell({ children: "x" });
     expect(screen.queryByTitle("x")).toBeNull();
   });
@@ -132,7 +148,7 @@ describe("TableCell lines={1}", () => {
     expect(screen.getByText("x")).not.toBeNull();
   });
 
-  it("keeps the second line outside the titled box", () => {
+  it("keeps the second line outside the cut run", () => {
     cell({ lines: 1, children: "Naledi", secondary: "second" });
     expect(screen.getByTitle("Naledi").textContent).toBe("Naledi");
     expect(within(screen.getByRole("cell")).getByText("second")).not.toBeNull();

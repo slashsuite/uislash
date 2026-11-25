@@ -57,3 +57,26 @@ describe("Cluster as a list", () => {
     },
   );
 });
+
+describe("Cluster as a nav", () => {
+  it("is a nav named by aria-label, around a list with each link in its own item", () => {
+    render(
+      <Cluster as="nav" aria-label="Footer">
+        <a href="#terms">Terms</a>
+        <a href="#privacy">Privacy</a>
+      </Cluster>,
+    );
+    const nav = screen.getByRole("navigation", { name: "Footer" });
+    const items = within(within(nav).getByRole("list")).getAllByRole("listitem");
+    expect(items.map((item) => within(item).getByRole("link").textContent)).toEqual([
+      "Terms",
+      "Privacy",
+    ]);
+  });
+
+  it("asks for aria-label", () => {
+    // @ts-expect-error a nav needs a name
+    const view = <Cluster as="nav">x</Cluster>;
+    expect(view).not.toBeNull();
+  });
+});

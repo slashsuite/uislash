@@ -5,6 +5,7 @@ import {
   samplePortrait,
   sampleScenes,
 } from "../../../packages/ui-react/docs/examples/sampleScene.js";
+import { sampleShot } from "../../../packages/ui-react/docs/examples/sampleShot.js";
 import * as examples from "../../../packages/ui-react/docs/examples/Image.examples.js";
 
 const meta: Meta = { title: "Content/Image" };
@@ -21,22 +22,22 @@ export const Default: S = {
   ),
 };
 
-/** `aspect` reserves the shape before the picture loads: square, 4:3, 3:2, 16:9, and the portrait 3:4 and 9:16. */
+/** `aspect` reserves the shape before the picture loads: square, 4:3, 3:2, 16:10, 16:9, and the portrait 3:4 and 9:16. */
 export const Aspects: S = {
   render: () => (
     <div className="grid grid-cols-3 items-end gap-4">
-      {(["square", "4:3", "3:2", "16:9", "3:4", "9:16"] as const).map((aspect) => (
+      {(["square", "4:3", "3:2", "16:10", "16:9", "3:4", "9:16"] as const).map((aspect) => (
         <Image key={aspect} src={harbour.src} alt={`Harbour, ${aspect}`} aspect={aspect} />
       ))}
     </div>
   ),
 };
 
-/** `sm` is 96px, `md` 160px and `lg` 256px wide; `full` fills its parent. */
+/** `sm` is 96px, `md` 160px, `lg` 256px and `xl` 448px wide; `full` fills its parent. */
 export const Widths: S = {
   render: () => (
     <div className="flex flex-col gap-3">
-      {(["sm", "md", "lg", "full"] as const).map((width) => (
+      {(["sm", "md", "lg", "xl", "full"] as const).map((width) => (
         <Image key={width} src={harbour.src} alt={`Harbour, ${width}`} width={width} />
       ))}
     </div>
@@ -53,11 +54,11 @@ export const Natural: S = {
   ),
 };
 
-/** `framed` sets a QR code on a white mat with padding. The mat stays white in every theme, so the code scans off a dark page. */
+/** `mat="white"` sets a QR code on a white mat with padding. The mat stays white in every theme, so the code scans off a dark page. */
 export const Framed: S = {
   render: () => (
     <div className="flex items-start gap-4">
-      <Image src={sampleCode} alt="Pairing code" aspect="square" width="md" framed />
+      <Image src={sampleCode} alt="Pairing code" aspect="square" width="md" mat="white" />
       <Image
         src={sampleCode}
         alt="Pairing code, unframed"
@@ -67,6 +68,44 @@ export const Framed: S = {
       />
     </div>
   ),
+};
+
+/** `mat="page"` sets a screenshot on a mat in the theme's page tone, with padding, so its own edge does not run into the page. */
+export const MatPage: S = {
+  render: () => (
+    <div className="flex items-start gap-4">
+      <Image src={sampleShot} alt="The settings page" aspect="16:10" width="lg" mat="page" />
+      <Image src={sampleShot} alt="The settings page, no mat" aspect="16:10" width="lg" />
+    </div>
+  ),
+};
+
+/** `crop="top"` keeps the top of a tall picture when `cover` crops it, as a page screenshot's header. */
+export const CropTop: S = {
+  render: () => (
+    <div className="flex items-start gap-4">
+      <Image src={samplePortrait.src} alt="Portrait, centre crop" aspect="16:10" width="lg" />
+      <Image
+        src={samplePortrait.src}
+        alt="Portrait, top crop"
+        aspect="16:10"
+        width="lg"
+        crop="top"
+      />
+    </div>
+  ),
+};
+
+/** `href` makes the picture a link that opens the full file in a new tab, named by `alt`. */
+export const Linked: S = {
+  render: () => (
+    <Image src={harbour.src} alt={harbour.alt} aspect="16:10" width="lg" href={harbour.src} />
+  ),
+};
+
+/** `priority` loads the picture first and at once, for the one picture above the fold; every other picture loads lazily. */
+export const Priority: S = {
+  render: () => <Image src={harbour.src} alt={harbour.alt} aspect="16:9" width="xl" priority />,
 };
 
 /** `cover` fills the shape and crops; `contain` shows the whole picture inside the shape. */

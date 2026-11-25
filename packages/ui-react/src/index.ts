@@ -1,4 +1,5 @@
-export { Card } from "./Card.js";
+export { Card, type CardHue } from "./Card.js";
+export { CardGridRow } from "./CardGrid.js";
 export { Pill, type PillTone } from "./Pill.js";
 export { Badge } from "./Badge.js";
 export { StatTile, type StatTileTone } from "./StatTile.js";
@@ -59,7 +60,7 @@ export {
   type DocsNavGroup,
   type DocsNeighbour,
 } from "./DocsLayout.js";
-export { SideColumn, type SideColumnWidth } from "./SideColumn.js";
+export { SideColumn, type SideColumnSide, type SideColumnWidth } from "./SideColumn.js";
 export { StickyBar } from "./StickyBar.js";
 export { ErrorPage, Forbidden, Maintenance, NotFound, Offline } from "./StatusPages.js";
 export {
@@ -93,7 +94,12 @@ export { Callout } from "./Callout.js";
 export { ToastRegion, type Toast } from "./ToastRegion.js";
 export { ListRow } from "./ListRow.js";
 export { SortableItem, SortableList, type SortableMove, SortableSection } from "./SortableList.js";
-export { OutlineRegion, RegionFrame, type RegionRect } from "./OutlineRegion.js";
+export {
+  OutlineRegion,
+  type OutlineRegionTone,
+  RegionFrame,
+  type RegionRect,
+} from "./OutlineRegion.js";
 export {
   type CellTone,
   Table,
@@ -174,10 +180,14 @@ export { NumberField } from "./NumberField.js";
 export { Slider } from "./Slider.js";
 export { Textarea } from "./Textarea.js";
 export { Video } from "./Video.js";
+export { Audio } from "./Audio.js";
+export { EmbedFrame } from "./EmbedFrame.js";
+export { ColourSwatch } from "./ColourSwatch.js";
 export { Image, type ImageAspect, type ImageWidth } from "./Image.js";
 export { MediaTile } from "./MediaTile.js";
 export { ScrollStrip } from "./ScrollStrip.js";
-export { TextLink, type TextLinkSize } from "./TextLink.js";
+export { TextLink, type TextLinkSize, type TextLinkTone } from "./TextLink.js";
+export { TableOfContents, type TableOfContentsItem } from "./TableOfContents.js";
 export {
   Caption,
   Display,
@@ -194,6 +204,7 @@ export {
   type TextMinWidth,
   type TextTone,
 } from "./typography.js";
+export { Mark } from "./Mark.js";
 export { DateField } from "./DateField.js";
 export { DateRangePicker, type DateRange, type DateRangePreset } from "./DateRangePicker.js";
 export { DateTimeField } from "./DateTimeField.js";

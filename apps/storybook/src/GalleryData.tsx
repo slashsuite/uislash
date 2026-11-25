@@ -22,7 +22,7 @@ import {
   Stack,
 } from "@slashsuite/ui-react";
 import { samplePhoto } from "./samplePhoto";
-import { InsetAndNested } from "./GalleryCardInset";
+import { InsetAndNested, PeerHues } from "./GalleryCardInset";
 import { DenseRows } from "./GalleryDenseRows";
 import { GallerySortableList } from "./GallerySortableList";
 import { GalleryTableOptions } from "./GalleryTableOptions";
@@ -86,6 +86,7 @@ export function GalleryData() {
       </Card>
       <Card tone="warn">A toned data panel.</Card>
       <InsetAndNested />
+      <PeerHues />
       <Card href="#shot" title="Dashboard" status={<Pill tone="warn">changed</Pill>}>
         A card that is one link.
       </Card>

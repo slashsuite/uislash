@@ -2,6 +2,7 @@ import { isValidElement, type ReactElement, type ReactNode } from "react";
 import { cx, focusRing } from "./cx.js";
 import { renderLink } from "./link.js";
 import type { Passthrough } from "./props.js";
+import { Truncated } from "./truncated.js";
 
 /** The classes of a crumb that links somewhere, for a router's own <Link>. */
 export const crumbLinkClass = cx("rounded hover:underline", focusRing);
@@ -19,6 +20,12 @@ export type Crumb = {
 
 function isCrumb(crumb: Crumb | ReactNode): crumb is Crumb {
   return typeof crumb === "object" && crumb !== null && !isValidElement(crumb) && "label" in crumb;
+}
+
+/** A crumb's words as plain text, for the tooltip of a cut parent; a node that is not text has none. */
+function crumbText(crumb: Crumb | ReactNode): string | undefined {
+  const label = isCrumb(crumb) ? crumb.label : crumb;
+  return typeof label === "string" || typeof label === "number" ? String(label) : undefined;
 }
 
 function CrumbContent({
@@ -41,7 +48,8 @@ function CrumbContent({
 /**
  * `org / project / build / snapshot`: the last crumb is the current page. A crumb is a node, or a
  * `Crumb` object when it links. A trail too long for its row wraps onto the next line; a long parent
- * truncates, and the current page is never cut: its words wrap instead.
+ * truncates, showing its whole label in a tooltip on hover, focus and a tap, and the current page is
+ * never cut: its words wrap instead.
  */
 export function Breadcrumbs({
   items,
@@ -74,15 +82,15 @@ export function Breadcrumbs({
                   /
                 </span>
               )}
-              <span
-                className={
-                  current
-                    ? "min-w-0 font-medium [overflow-wrap:anywhere] text-slate-900"
-                    : "max-w-48 min-w-0 truncate text-slate-500"
-                }
-              >
-                <CrumbContent crumb={crumb} current={current} />
-              </span>
+              {current ? (
+                <span className="min-w-0 font-medium [overflow-wrap:anywhere] text-slate-900">
+                  <CrumbContent crumb={crumb} current={current} />
+                </span>
+              ) : (
+                <Truncated text={crumbText(crumb)} className="max-w-48 min-w-0 text-slate-500">
+                  <CrumbContent crumb={crumb} current={current} />
+                </Truncated>
+              )}
             </li>
           );
         })}

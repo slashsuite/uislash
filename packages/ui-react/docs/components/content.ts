@@ -1,5 +1,6 @@
 import { chatPages } from "./chat";
 import { mediaPages } from "./media";
+import { outlineRegionPage } from "./outlineRegion";
 import type { ComponentSection } from "./types";
 
 export const content: ComponentSection = {
@@ -19,27 +20,29 @@ export const content: ComponentSection = {
         },
       ],
       pairs: ["Card/Status", "Card/Spacing"],
-      stories: ["CardBadge", "CardFill", "CardIcon", "CardInset", "CardTitle"],
+      stories: ["CardBadge", "CardFill", "CardForms", "CardIcon", "CardInset", "CardTitle"],
       usage: {
         do: [
           "Name the Card with `title`; add a `count` or a `status` and they sit beside the title.",
           '`titleStyle="name"` sets the title in sentence case and the primary ink, for a card that is a thing with a name (a shop, a listing, an event). The default `overline` is the small uppercase label of a panel (Status, Activity). Count, status, actions and `bar` work with both.',
           "`actions` sit at the far end of the header; use `bar` to put the header in a tinted strip.",
-          "Space several Cards with a `Stack` or a `CardGrid`; never stack them with nothing between.",
-          "`flush` is for a table that runs edge to edge, and it needs a `bar` for its title.",
-          "A Card with `href` is one link; a `TextLink` or `Button` inside it sits above that link and is clickable on its own, and a click elsewhere on the card follows the link.",
-          '`CardGrid` takes `columns` 2, 3 or 4, or `columns="auto"` with `minWidth` `sm` or `md` to fill by width; `align="start"` stops cards stretching to the tallest in their row.',
-          "An empty state is an `EmptyState`, inside the card or on its own, where it draws its own dashed frame.",
+          "Space several Cards with a `Stack` or a `CardGrid`, never with nothing between. An empty state is an `EmptyState`, inside the card or on its own, where it draws its own dashed frame.",
+          '`flush` is for a table that runs edge to edge, and it needs a `bar` for its title. `width="sm"` caps a card at a narrow width, for one card on its own in a wide column such as a sign-in form.',
+          "A Card with `href` is one link and one with `onPress` one button, for a card the user picks (pass `aria-pressed` when it stays picked). A `TextLink` or `Button` inside sits above it and is clickable on its own. `more` adds a Read more line at the foot of a link card; `moreLabel` sets its words.",
+          "`hue` paints a set of peer cards, one hue each, such as one card per product; it is not a status (that is `tone`), and the title still names each card. `dashed` draws a dashed edge for a card that stands for something not real yet, such as a plan beside a measured result; with `bar` the strip is dashed too.",
         ],
       },
       accessibility: [
-        'A titled Card is a `<section>` named by its `title` (`aria-labelledby` points at the heading), a card with only an `aria-label` a `<section>` named by it, and any other a `<div>`; `as="article"` makes it an `article`. Your own `aria-label` or `aria-labelledby` wins. The title is an `h2` on the page and an `h3` in a `Section`; `level` sets it by hand.',
-        "`id`, `data-*` and `aria-*` go on the root element. On a link card too: the link inside it keeps only its own `aria-label`, `aria-labelledby` and `aria-current`, and is named by the card's text.",
-        "On a link card the `badge` is inside the link, so it is part of the link's name; on a panel it is read after the content.",
+        "A panel Card (no `href` or `onPress`) with a `title` or an `aria-label` is an `<article>`, named by its title (`aria-labelledby` points at the heading) or by that label; any other is a `<div>`. Your own `aria-label` or `aria-labelledby` wins. The title is an `h2` on the page and an `h3` in a `Section`; `level` sets it by hand.",
+        "`id`, `data-*` and `aria-*` go on the root element. On a link card too: the link inside it keeps only its own `aria-label`, `aria-labelledby` and `aria-current`. It is named by the card's title, or by the card's text when it has none.",
+        "A card with `onPress` is one `<button>` named the same way; `aria-pressed` goes on that button.",
+        "The `more` line is `aria-hidden`: the link is already named by the title.",
+        "The `badge` is read after the content, and on a titled link card it is not part of the link's name, which is the title.",
         "`attention` is colour only: say why in the card's title or text.",
         "The `icon` is decorative and `aria-hidden`: the title says what the card is.",
       ],
       api: ["Card"],
+      types: ["CardHue"],
     },
     {
       slug: "avatar",
@@ -116,6 +119,7 @@ export const content: ComponentSection = {
         "A Badge is a `<span>` with the number as its text.",
         'Inside an `IconButton`, the Badge is `aria-hidden` and the count is part of the button\'s `aria-label` and `title` ("Alerts, 3"), so it is announced once.',
         "`corner` pins the Badge to its nearest positioned parent; `IconButton` already provides one.",
+        "It is sized in `rem` with a minimum height, so it grows with the reader's text size and the number never spills out.",
       ],
       api: ["Badge"],
     },
@@ -131,11 +135,11 @@ export const content: ComponentSection = {
           "Choose `tone` by meaning: `positive` for done or good, `warn` for waiting or at risk, `danger` for failed, `neutral` (the default) for a draft or no state, `info` for a note; `accent` for a kind or category that is none of those.",
           "`size` is `sm`, `md` (default) or `lg`; with none, a Pill takes the size of the `Card`, `ListRow` or `Table` it sits in.",
           "`dot` adds a leading dot in the Pill's colour; `round` swaps the rounded-square corners for a full pill shape. Use one look across a view.",
+          "A Pill's text never wraps onto a second line: keep it to a word or two, and let the row the Pills sit in wrap them.",
           '`name` makes a two-tone `name: value` pill (`<Pill name="Weight">72 kg</Pill>`): the name keeps the tone\'s tint and the children sit on the surface beside it. Keep the name to a word or two.',
           "`onRemove` adds an x button after the text, for a chip the reader can drop (an attachment, a filter); it is named `Remove` and the pill's text (`Remove invoice.pdf`) when that text is a string, and `removeLabel` replaces the whole name, for another wording or language. On a link or button Pill the x is a separate button beside it, never nested inside.",
           "A Pill that goes somewhere takes `href` (`external` for a new tab; an in-app one goes through your router's `Link` on `LinkProvider`); one that does something takes `onClick`.",
-          "A Pill beside a card's title is the Card's `status`, not a hand-built row.",
-          "A message to read is a `Callout`, and an action is a `Button`.",
+          "A Pill beside a card's title is the Card's `status`, not a hand-built row. A message to read is a `Callout`, and an action is a `Button`.",
         ],
         dont: [
           "Never make a row of clickable `Pill`s a filter: a filter is pressed `Button`s in a `Fieldset`.",
@@ -235,6 +239,7 @@ export const content: ComponentSection = {
         "The summary is a real `<button>` with `aria-expanded` and `aria-controls`; Enter and Space toggle it.",
         'The body is a `role="group"` named by the summary, and hidden from assistive tech while closed.',
         "The chevron is decorative. The focus ring comes from the component.",
+        "The body slides open and shut and the chevron turns; under `prefers-reduced-motion: reduce` it opens and closes at once. Find in page still finds text in a closed body and opens it.",
       ],
       api: ["Disclosure"],
     },
@@ -267,29 +272,6 @@ export const content: ComponentSection = {
     },
     ...mediaPages,
     ...chatPages,
-    {
-      slug: "outline-region",
-      name: "OutlineRegion",
-      summary: "An accent outline over one area of a picture, with an optional tag.",
-      whenToUse:
-        "Marking an area of a screenshot or an image: one that is ignored, flagged or picked.",
-      siblings: [{ slug: "image", when: "The picture is shown with nothing marked on it." }],
-      pairs: ["OutlineRegion/Label"],
-      usage: {
-        do: [
-          "Put the picture in a `RegionFrame` (`src`, `alt`, and any `<img>` prop such as `onLoad`) and the `OutlineRegion`s inside it; each region places itself over the picture.",
-          "`rect` is the area and `within` the picture's full size, both in the picture's own pixels (its natural size), so the box stays on its area at any width.",
-          "Size the frame as an `Image`: `width` (`full`, or `sm`, `md`, `lg`) and `aspect` (`natural`, its own proportions, or a shape that letterboxes the picture, never cropping it and never scaling it up). The regions stay on the picture, not the box. A shape also holds the frame's height before the picture loads.",
-          "`label` is a short tag in the top-left corner that says what the area is or where it came from. `hatched` stripes the inside, for an area that is left out.",
-          "The outline is the accent colour in every theme; do not draw a box of your own with a raw colour.",
-        ],
-      },
-      accessibility: [
-        "The region takes no pointer events, so it never blocks the picture or a layer drawn over it; the hatch is hidden from assistive tech.",
-        "A `label` is plain text and is read out; a region with no label says nothing to a screen reader, so name the areas in text as well when they matter.",
-      ],
-      api: ["RegionFrame", "OutlineRegion"],
-      types: ["RegionRect"],
-    },
+    outlineRegionPage,
   ],
 };

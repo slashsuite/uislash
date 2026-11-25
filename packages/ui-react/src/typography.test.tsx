@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import type { ComponentProps } from "react";
 import { describe, expect, expectTypeOf, it } from "vitest";
+import { Mark } from "./Mark.js";
 import { follows, render, screen } from "./render.harness.js";
 import {
   Caption,
@@ -137,5 +138,19 @@ describe("SectionHeading description", () => {
     render(<SectionHeading description={false}>Plan</SectionHeading>);
     expect(screen.getByRole("heading", { level: 2, name: "Plan" })).toBeTruthy();
     expect(screen.queryByRole("paragraph")).toBeNull();
+  });
+});
+
+describe("Mark", () => {
+  it("is a mark around its words, inside the run it highlights", () => {
+    render(
+      <Text>
+        Results for <Mark data-testid="hit">debit order</Mark> this month
+      </Text>,
+    );
+    const hit = screen.getByTestId("hit");
+    expect(hit.tagName).toBe("MARK");
+    expect(hit.textContent).toBe("debit order");
+    expect(screen.getByText(/Results for/).contains(hit)).toBe(true);
   });
 });

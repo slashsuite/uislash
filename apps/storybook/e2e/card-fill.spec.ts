@@ -15,6 +15,29 @@ async function tabTo(page: Page, name: string, max = 40): Promise<void> {
   throw new Error(`Tab never reached the link "${name}"`);
 }
 
+/**
+ * Whether the focused element's whole ring (2px out, 2px wide) lies inside the visible box of the
+ * scroller that holds it, so no edge of the ring is clipped.
+ */
+async function ringInsideScroller(page: Page): Promise<boolean> {
+  return page.evaluate(() => {
+    const focused = document.activeElement;
+    let box = focused?.parentElement ?? null;
+    // The scroller is the first ancestor whose content runs past its box.
+    while (box && box.scrollHeight <= box.clientHeight) box = box.parentElement;
+    if (!focused || !box) return false;
+    const ring = 4;
+    const a = focused.getBoundingClientRect();
+    const b = box.getBoundingClientRect();
+    return (
+      a.top - ring >= b.top &&
+      a.bottom + ring <= b.bottom &&
+      a.left - ring >= b.left &&
+      a.right + ring <= b.right
+    );
+  });
+}
+
 const cases = [
   { story: "content-card--fill", title: "Shops nearby", last: "Bric-a-brac" },
   { story: "content-card--fill-plain", title: "Notes", last: "read the hours" },
@@ -25,7 +48,7 @@ for (const { story, title, last } of cases) {
     page,
   }) => {
     await page.goto(`/iframe.html?id=${story}&viewMode=story`);
-    const card = page.getByRole("region", { name: title });
+    const card = page.getByRole("article", { name: title });
     await expect(card).toBeVisible();
     const link = card.getByRole("link", { name: last, exact: true });
     // Below the box's bottom edge before the body scrolls.
@@ -36,3 +59,13 @@ for (const { story, title, last } of cases) {
     await expect(card.getByRole("heading", { name: title })).toBeInViewport();
   });
 }
+
+test("content-card--fill-plain: a focused link at either edge of the scroller shows its whole ring", async ({
+  page,
+}) => {
+  await page.goto("/iframe.html?id=content-card--fill-plain&viewMode=story");
+  await tabTo(page, "See the map");
+  expect(await ringInsideScroller(page)).toBe(true);
+  await tabTo(page, "read the hours");
+  expect(await ringInsideScroller(page)).toBe(true);
+});

@@ -231,6 +231,65 @@ export const BackRestoresScrollAsync: S = {
   render: () => <RestoreShops name="restoreasync" restore="async" />,
 };
 
+/**
+ * The shops as a list, each card a Morph `as="li"` in a `Stack as="ul"`, under a featured copy of
+ * Shop A. The featured copy is `active={false}`, so only the listed card grows into the shop's page.
+ */
+function ListedShops() {
+  const [open, setOpen] = useState<Shop | undefined>(undefined);
+  const go = (next: Shop | undefined) => startPageTransition(() => setOpen(next));
+  const card = (shop: Shop, label: string) => (
+    <Card
+      title={shop.name}
+      footer={
+        <Button variant="outline" onClick={() => go(shop)}>
+          {label}
+        </Button>
+      }
+    >
+      <Text tone="muted">{shop.text}</Text>
+    </Card>
+  );
+  const featured = shops[0];
+  return (
+    <PageFade>
+      {open ? (
+        <Morph name="listed" item={open.id}>
+          <Card
+            title={open.name}
+            size="lg"
+            footer={
+              <Button variant="outline" onClick={() => go(undefined)}>
+                Back
+              </Button>
+            }
+          >
+            <Text>{open.text}</Text>
+          </Card>
+        </Morph>
+      ) : (
+        <Stack gap="md">
+          {featured && (
+            <Morph name="listed" item={featured.id} active={false}>
+              {card(featured, `Open featured ${featured.name}`)}
+            </Morph>
+          )}
+          <Stack as="ul" gap="md" aria-label="Shops">
+            {shops.map((shop) => (
+              <Morph key={shop.id} name="listed" item={shop.id} as="li">
+                {card(shop, `Open ${shop.name}`)}
+              </Morph>
+            ))}
+          </Stack>
+        </Stack>
+      )}
+    </PageFade>
+  );
+}
+
+/** A list of cards, each a list item, and a featured copy that does not morph. */
+export const InAList: S = { render: () => <ListedShops /> };
+
 export const DoUniqueName: S = {
   render: examples.DoUniqueName,
 };

@@ -57,6 +57,9 @@ export const navigation: ComponentSection = {
       summary: "Where this page sits in the hierarchy.",
       whenToUse:
         "A page several levels deep that needs a way back up: org, project, build, snapshot.",
+      siblings: [
+        { slug: "table-of-contents", when: "The reader moves between the sections of this page." },
+      ],
       pairs: ["Breadcrumbs/Trail", "Breadcrumbs/Hierarchy"],
       usage: {
         do: [
@@ -70,9 +73,38 @@ export const navigation: ComponentSection = {
         '`<nav aria-label="Breadcrumb">` around an ordered list.',
         'The last crumb is the current page: given an `href` it is a link to this page with `aria-current="page"`, else its item carries it.',
         "The `/` separators are `aria-hidden`.",
+        "A parent cut short shows its whole name in a tooltip on hover, a tap and keyboard focus: on its link, or on the crumb itself, which becomes a tab stop while it is cut. The tooltip is hidden from assistive tech, which reads the whole name already.",
       ],
       api: ["Breadcrumbs"],
       types: ["Crumb"],
+    },
+    {
+      slug: "table-of-contents",
+      name: "TableOfContents",
+      summary: "The headings of a long page as links, with the section being read marked.",
+      whenToUse:
+        "A long page of several sections, such as a guide or a reference, where a reader jumps to a section or checks where they are.",
+      siblings: [
+        { slug: "breadcrumbs", when: "The reader needs the way back up to a parent page." },
+      ],
+      pairs: ["TableOfContents/Current", "TableOfContents/Headings"],
+      usage: {
+        do: [
+          "Give `items` the page's `h2`s and `h3`s in order, each `{ id, label, level }`: `id` is the heading's anchor and `label` its words. A level 3 entry is indented under the entry before it.",
+          "`current` is the id of the section being read. The app tracks it, from the scroll position or the URL hash, and its link is marked in the accent; the rest are small and quiet.",
+          '`label` is the words over the list and the name of its landmark, "On this page" by default; set it for an app in another language.',
+          "Put it in a sticky `SideColumn` aside beside the page. `DocsLayout` draws its own, so a docs page passes its headings to the layout instead.",
+        ],
+        dont: [
+          "Never list links to other pages in it: those are `Tabs` of links or a `SidebarLayout` rail.",
+        ],
+      },
+      accessibility: [
+        'A `<nav>` named by `label`, around a list of links to `#id`. The current one has `aria-current="location"`.',
+        "The current link is told apart by more than colour: it is medium weight.",
+      ],
+      api: ["TableOfContents"],
+      types: ["TableOfContentsItem"],
     },
     {
       slug: "stepper",

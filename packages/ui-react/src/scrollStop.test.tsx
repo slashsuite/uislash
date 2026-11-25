@@ -63,7 +63,7 @@ describe("a sticky column's scroll stop", () => {
     overflowing(900, 400);
     summaryHidden();
     render(
-      <SideColumn aside="Just text" asideLabel="Reply agent" sticky>
+      <SideColumn aside="Just text" asideLabel="Reply agent" fold sticky>
         MAIN
       </SideColumn>,
     );
@@ -73,7 +73,7 @@ describe("a sticky column's scroll stop", () => {
   it("SideColumn without sticky gets no scroll stop, however tall", async () => {
     overflowing(900, 400);
     render(
-      <SideColumn aside="Just text" asideLabel="Reply agent">
+      <SideColumn aside="Just text" asideLabel="Reply agent" fold>
         MAIN
       </SideColumn>,
     );

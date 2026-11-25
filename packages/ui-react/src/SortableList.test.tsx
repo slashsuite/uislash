@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { SortableItem, SortableList, SortableSection } from "./index.js";
 import { act, render, screen, within } from "./render.harness.js";
 import { dropOperation, moveOf } from "./sortableDrop.js";
+import { everyRunCut } from "./truncated.harness.js";
 
 const noop = () => undefined;
 
@@ -234,5 +235,22 @@ describe("a move", () => {
     const { rerender } = render(ordered(["a", "b", "c"]));
     await reorder(rerender, ["b", "a", "c"]);
     expect(slides).toEqual([]);
+  });
+});
+
+describe("SortableList, a cut title", () => {
+  everyRunCut();
+
+  // jsdom has no anchor positioning, so the tooltip falls back to the native title.
+  it("shows the whole title of a cut row, and the row keeps it as its name", () => {
+    render(
+      <SortableList label="Queue" onReorder={noop}>
+        <SortableItem id="a" title="Write the brief for the whole quarter" />
+      </SortableList>,
+    );
+    expect(screen.getByTitle("Write the brief for the whole quarter")).not.toBeNull();
+    expect(
+      screen.getByRole("button", { name: "Reorder Write the brief for the whole quarter" }),
+    ).not.toBeNull();
   });
 });
