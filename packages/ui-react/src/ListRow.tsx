@@ -57,17 +57,15 @@ const HIGHLIGHTED = "bg-slate-100";
 const FOCUSED = "outline-2 -outline-offset-2 outline-violet-600";
 
 /**
- * A thumbnail's width, a step narrower in a row under 28rem (a phone), so the label keeps its room.
- * A direct-child image fills it.
+ * A thumbnail's width, a step narrower on a screen narrower than `sm` (a phone), so the label keeps
+ * its room. A direct-child image fills it. A viewport query, not a container query: a container has
+ * no width of its own, so a row in a box that sizes to its content would collapse to nothing.
  */
-const THUMBNAIL = "block w-24 @md:w-32 [&>img]:block [&>img]:h-auto [&>img]:w-full";
+const THUMBNAIL = "block w-32 max-sm:w-24 [&>img]:block [&>img]:h-auto [&>img]:w-full";
 
-/** A thumbnail row is the container its thumbnail and its lines measure. */
-const THUMBNAIL_ROW = "@container";
-
-/** A thumbnail row's label and `trailing`: side by side, and `trailing` under the label in a row under 28rem. */
+/** A thumbnail row's label and `trailing`: side by side, and `trailing` under the label on a phone. */
 const THUMBNAIL_LINES =
-  "flex min-w-0 flex-1 items-center gap-3 @max-md:flex-col @max-md:items-start @max-md:gap-1";
+  "flex min-w-0 flex-1 items-center gap-3 max-sm:flex-col max-sm:items-start max-sm:gap-1";
 
 const PAD: Record<Size, string> = { sm: "px-3 py-2", md: "px-4 py-3", lg: "px-5 py-4" };
 
@@ -118,7 +116,6 @@ function look(props: ListRowProps): string {
   return cx(
     rowBase(props),
     props.stripe !== undefined && "relative",
-    props.leadingWidth === "thumbnail" && THUMBNAIL_ROW,
     PAD[size],
     fillOf(props),
     isDisabled(props) && DISABLED,
