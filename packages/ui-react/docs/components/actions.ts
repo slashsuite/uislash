@@ -214,10 +214,11 @@ export const actions: ComponentSection = {
       usage: {
         do: [
           "Use one `ColourSchemeToggle` per site. It switches `<html>` between light and dark and remembers the choice in `localStorage`.",
+          "It follows the system until a click picks the other scheme; a click back to the system's scheme forgets the choice, so the page follows the system again. It also takes a choice made in another tab, and the system switching while nothing is stored.",
           "`size` is `sm`, `md` (default) or `lg`, the same squares as `IconButton`.",
           "Put `colourSchemeScript` inline in `<head>`, so the stored or system scheme is on `<html>` before first paint and neither scheme flashes the other. It knows only the `dark` class.",
           'A light theme with a class of its own passes `schemes`, as in `schemes={{ light: "my-light", dark: "dark" }}`; render the same class on `<html>` on the server with `schemeClass`, and leave the head script out.',
-          "An app that knows the scheme on the server (from a cookie) passes it as `defaultValue`, sets `store={false}` and persists from `onChange`. It then leaves the head script out.",
+          "An app that knows the scheme on the server (from a cookie) passes it as `defaultValue`, sets `store={false}` and persists from `onChange`, clearing the cookie when its `followsSystem` is true. It then leaves the head script out.",
         ],
         dont: [
           "Do not build a switch from your own buttons; the functions below are what the toggle itself calls.",
@@ -244,7 +245,7 @@ export const actions: ComponentSection = {
         },
         {
           name: "colourSchemeScript",
-          text: "A string of JavaScript to inline in `<head>` before first paint: applies the stored scheme, else the system one.",
+          text: "A string of JavaScript to inline in `<head>` before first paint: applies the stored scheme, else the system one, then follows another tab's choice and the system switching while nothing is stored.",
           example:
             "<head>\n  <script dangerouslySetInnerHTML={{ __html: colourSchemeScript }} />\n</head>",
         },
@@ -256,8 +257,9 @@ export const actions: ComponentSection = {
         },
         {
           name: "storeColourScheme",
-          text: "Remembers a scheme in `localStorage` for the next visit; a storage error is swallowed.",
-          example: "storeColourScheme(next); // read back on the next visit",
+          text: "Remembers a scheme in `localStorage` for the next visit, or with `system` forgets it so the page follows the system again; a storage error is swallowed.",
+          example:
+            'storeColourScheme(next); // read back on the next visit\nstoreColourScheme("system"); // follow the system again',
         },
       ],
     },

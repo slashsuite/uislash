@@ -59,7 +59,7 @@ export const LongToken: S = {
   ),
 };
 
-/** `overflow="scroll"` keeps each line whole and scrolls it sideways under a thin scrollbar in the theme's muted ink, for code whose layout matters. */
+/** `overflow="scroll"` keeps each line whole and scrolls it sideways under a scrollbar in the theme's muted ink, for code whose layout matters. */
 export const Scroll: S = {
   parameters: { layout: "padded" },
   render: () => (

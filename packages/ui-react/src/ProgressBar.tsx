@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import { cx } from "./cx.js";
+import { cx, forcedFill } from "./cx.js";
 import type { Passthrough } from "./props.js";
 import type { Size } from "./size.js";
 import { type LoadingProps, useLoading, WaitingBone } from "./skeleton.js";
@@ -109,9 +109,13 @@ export function ProgressBar({
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={announcedPercent(value, max)}
-      className={cx("overflow-hidden rounded-full bg-slate-100", BAR_TRACK[size])}
+      className={cx(
+        // In forced colours the track is the page's Canvas, so a border marks the bar's whole length.
+        "overflow-hidden rounded-full bg-slate-100 forced-colors:border",
+        BAR_TRACK[size],
+      )}
     >
-      <div className={cx("h-full", BAR_FILL[tone])} style={{ width: `${share}%` }} />
+      <div className={cx("h-full", BAR_FILL[tone], forcedFill)} style={{ width: `${share}%` }} />
     </div>
   );
 }

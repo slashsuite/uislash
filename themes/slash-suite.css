@@ -68,6 +68,14 @@
   --hc-cat-8: #b07704; /* text-yellow-600 */
 }
 
+/* Selected text: the primary fill under its own label, the pair the contrast contract already holds
+   to AA, so a highlight reads in the theme's accent rather than the browser's blue. */
+.slash-suite ::selection,
+.slash-suite::selection {
+  background-color: #fab387;
+  color: #080d1c;
+}
+
 /* The page canvas: AppShell paints it; white cards lift off the base. */
 .slash-suite .bg-gray-50 {
   background-color: #eef2f9; /* base */
@@ -256,7 +264,7 @@
   background-color: #389426; /* green #40a02b, one step darker; the dark label keeps 4.5:1 */
 }
 .slash-suite .text-emerald-50 {
-  color: #080d1c; /* Slash Night crust: dark ink on the green button, as on the peach one */
+  color: #080d1c; /* Slash Night crust: dark ink on the green button, as on the accent one */
 }
 .slash-suite .border-emerald-600 {
   border-color: #3c9827; /* green #40a02b, darkened: the edge needs 3:1 on white */
@@ -281,11 +289,11 @@
   color: #5b5e74; /* subtext0 */
 }
 
-/* Avatar identity colours: violet-600 is the peach accent above; the rest are Latte's own colours,
+/* Avatar identity colours: violet-600 is the accent above; the rest are Latte's own colours,
    on which the dark initials (text-violet-50) clear 4.5:1. Emerald is also the positive button and
    bar fill, amber the warn bar fill (ProgressBar), so they stay deep enough to read on the track. */
 .slash-suite .bg-orange-600 {
-  background-color: #dd7878; /* flamingo: peach is the accent's own fill */
+  background-color: #dd7878; /* flamingo */
 }
 .slash-suite .bg-cyan-600 {
   background-color: #209fb5; /* sapphire */
@@ -313,7 +321,7 @@
 
 /* Coloured callouts / chips: tint backgrounds, full-strength text & borders. The tints are light
    (0.06) so the tone text on them clears 4.5:1; the text tones are darkened from their Latte token
-   for the same bar on white, mantle and the tint. The peach tint is the pastel at 0.2. */
+   for the same bar on white, mantle and the tint. The accent tint is its pastel at 0.2. */
 .slash-suite .bg-emerald-50,
 .slash-suite .bg-emerald-50\/60 {
   background-color: rgba(64, 160, 43, 0.06); /* green tint */
@@ -346,7 +354,7 @@
 .slash-suite .text-red-700,
 .slash-suite .text-red-800,
 .slash-suite .text-red-900 {
-  color: #c2103d; /* red #d20f39, darkened and turned toward crimson: 0.09 apart from the deep peach link */
+  color: #c2103d; /* red #d20f39, darkened and turned toward crimson: 0.09 apart from the accent's link */
 }
 .slash-suite .text-blue-600,
 .slash-suite .text-blue-700,
@@ -362,7 +370,7 @@
   color: #046b96; /* sky #04a5e5 */
 }
 /* Chart-only tones (StackedBar, Legend): neutral is a grey apart from muted, violet is the deep
-   peach of the accent. */
+   tone of the accent. */
 .slash-suite .text-neutral-500 {
   color: #808397; /* overlay1 #85879c, darkened: a chart tone needs 3:1 */
 }
@@ -425,7 +433,7 @@
   border-color: rgba(30, 102, 245, 0.4);
 }
 
-/* Inline links: deep peach (green is reserved for positive values). Alias of @slashsuite/ui-react's
+/* Inline links: the accent's deep tone (green is reserved for positive values). Alias of @slashsuite/ui-react's
    TextLink (text-violet-600, hover:text-violet-700, remapped above), kept for consumers that still
    write class="link" on a bare <a>. */
 .slash-suite .link {
@@ -438,7 +446,7 @@
   color: #8a2e03; /* as hover:text-violet-700 above */
 }
 
-/* The hero glow (Hero): three ribbons behind a landing page's title, peach, teal and pink kept faint
+/* The hero glow (Hero): three ribbons behind a landing page's title, the accent, teal and pink kept faint
    on the light base. Decoration: the contrast contract holds the hero's text over all three at once. */
 .slash-suite .bg-indigo-400\/25 {
   background-color: rgba(250, 179, 135, 0.1); /* peach */

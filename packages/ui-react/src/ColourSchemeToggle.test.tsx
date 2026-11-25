@@ -3,7 +3,7 @@ import { hydrateRoot } from "react-dom/client";
 import { renderToString } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ColourScheme } from "./colourScheme.js";
-import { schemeClasses } from "./colourScheme.harness.js";
+import { schemeClasses, storageFromAnotherTab, stubSystemScheme } from "./colourScheme.harness.js";
 import { ColourSchemeToggle } from "./ColourSchemeToggle.js";
 import { act, render, screen, user } from "./render.harness.js";
 
@@ -21,13 +21,14 @@ const title = (): string | null => screen.getByRole("button").getAttribute("titl
 
 beforeEach(reset);
 afterEach(() => {
+  vi.unstubAllGlobals();
   vi.restoreAllMocks();
   reset();
 });
 
 describe("ColourSchemeToggle", () => {
   it("offers dark on a light page and flips the class, color-scheme and stored key on click", async () => {
-    const onChange = vi.fn<(scheme: ColourScheme) => void>();
+    const onChange = vi.fn<(scheme: ColourScheme, followsSystem: boolean) => void>();
     render(<ColourSchemeToggle onChange={onChange} />);
     expect(title()).toBe("Switch to dark theme");
 
@@ -35,15 +36,53 @@ describe("ColourSchemeToggle", () => {
     expect(schemeClasses().has("dark")).toBe(true);
     expect(root.style.colorScheme).toBe("dark");
     expect(localStorage.getItem(KEY)).toBe("dark");
-    expect(onChange).toHaveBeenLastCalledWith("dark");
+    expect(onChange).toHaveBeenLastCalledWith("dark", false);
     expect(title()).toBe("Switch to light theme");
 
     await user().click(screen.getByRole("button"));
     expect(schemeClasses().has("dark")).toBe(false);
     expect(root.style.colorScheme).toBe("light");
     expect(localStorage.getItem(KEY)).toBe("light");
-    expect(onChange).toHaveBeenLastCalledWith("light");
+    expect(onChange).toHaveBeenLastCalledWith("light", false);
     expect(title()).toBe("Switch to dark theme");
+  });
+
+  // The two states of the Chrome guide's toggle: the system's scheme, with nothing stored, and the other one, stored.
+  it("forgets the stored choice when a click lands on the system's scheme, and stores the other one", async () => {
+    stubSystemScheme(vi.stubGlobal, true);
+    schemeClasses().add("dark");
+    const onChange = vi.fn<(scheme: ColourScheme, followsSystem: boolean) => void>();
+    render(<ColourSchemeToggle onChange={onChange} />);
+
+    await user().click(screen.getByRole("button"));
+    expect(localStorage.getItem(KEY)).toBe("light");
+    expect(onChange).toHaveBeenLastCalledWith("light", false);
+
+    await user().click(screen.getByRole("button"));
+    expect(schemeClasses().has("dark")).toBe(true);
+    expect(localStorage.getItem(KEY)).toBeNull();
+    expect(onChange).toHaveBeenLastCalledWith("dark", true);
+  });
+
+  it("follows the system switching while nothing is stored, and not once a choice is", async () => {
+    const system = stubSystemScheme(vi.stubGlobal, false);
+    render(<ColourSchemeToggle />);
+    await act(async () => system.flip(true));
+    expect(title()).toBe("Switch to light theme");
+
+    await user().click(screen.getByRole("button"));
+    expect(localStorage.getItem(KEY)).toBe("light");
+    await act(async () => system.flip(false));
+    await act(async () => system.flip(true));
+    expect(title()).toBe("Switch to dark theme");
+  });
+
+  it("with store={false} follows neither the system nor another tab: the app owns the choice", async () => {
+    const system = stubSystemScheme(vi.stubGlobal, false);
+    render(<ColourSchemeToggle store={false} />);
+    await act(async () => system.flip(true));
+    await act(async () => storageFromAnotherTab(KEY, "dark"));
+    expect(schemeClasses().has("dark")).toBe(false);
   });
 
   it("agrees with the dark class the head script left on <html> when it mounts", () => {
@@ -79,7 +118,7 @@ describe("ColourSchemeToggle", () => {
     await user().click(screen.getByRole("button"));
     expect(schemeClasses().list()).toEqual(["dark"]);
     expect(root.style.colorScheme).toBe("dark");
-    expect(onChange).toHaveBeenLastCalledWith("dark");
+    expect(onChange).toHaveBeenLastCalledWith("dark", false);
     expect(title()).toBe("Switch to light theme");
 
     await user().click(screen.getByRole("button"));
@@ -99,11 +138,11 @@ describe("ColourSchemeToggle", () => {
 
   it("with store={false} switches and calls onChange but writes no localStorage", async () => {
     const setItem = vi.spyOn(Storage.prototype, "setItem");
-    const onChange = vi.fn<(scheme: ColourScheme) => void>();
+    const onChange = vi.fn<(scheme: ColourScheme, followsSystem: boolean) => void>();
     render(<ColourSchemeToggle store={false} onChange={onChange} />);
     await user().click(screen.getByRole("button"));
     expect(schemeClasses().has("dark")).toBe(true);
-    expect(onChange).toHaveBeenLastCalledWith("dark");
+    expect(onChange).toHaveBeenLastCalledWith("dark", false);
     expect(setItem).not.toHaveBeenCalled();
     expect(localStorage.getItem(KEY)).toBeNull();
   });

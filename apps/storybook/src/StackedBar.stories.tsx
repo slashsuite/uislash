@@ -50,6 +50,23 @@ export const BuildMix: S = {
   ),
 };
 
+/** The remainder that matters least is `quiet`: no fill, the track showing through, and always the key under it. */
+export const QuietRemainder: S = {
+  render: () => (
+    <div className="max-w-md">
+      <StackedBar
+        items={[
+          { label: "Changed", value: 4, tone: "warn" },
+          { label: "Failed", value: 2, tone: "danger" },
+          { label: "Same", value: 132, tone: "muted" },
+          { label: "Not measured", value: 31, tone: "quiet" },
+        ]}
+        label="Build by status"
+      />
+    </div>
+  ),
+};
+
 export const Sizes: S = {
   render: () => (
     <div className="flex max-w-md flex-col gap-3">

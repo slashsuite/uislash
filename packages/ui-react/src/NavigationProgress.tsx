@@ -1,4 +1,5 @@
 import type { ReactElement } from "react";
+import { forcedFill } from "./cx.js";
 import { BAR_FILL } from "./ProgressBar.js";
 import type { Passthrough } from "./props.js";
 
@@ -47,7 +48,10 @@ export function NavigationProgress({
         data-navigation-progress=""
         className="pointer-events-none fixed inset-x-0 top-0 z-50 h-[3px] overflow-hidden"
       >
-        <div data-navigation-progress-bar="" className={`h-full ${BAR_FILL.accent}`} />
+        <div
+          data-navigation-progress-bar=""
+          className={`h-full ${BAR_FILL.accent} ${forcedFill}`}
+        />
       </div>
     </>
   );

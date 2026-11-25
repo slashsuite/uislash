@@ -52,6 +52,14 @@
   --hc-cat-8: #ffebb9; /* text-yellow-600 */
 }
 
+/* Selected text: the primary fill under its own label, the pair the contrast contract already holds
+   to AA, so a highlight reads in the theme's accent rather than the browser's blue. */
+.dark ::selection,
+.dark::selection {
+  background-color: #cba6f7;
+  color: #11111b;
+}
+
 /* The page canvas: AppShell paints it, so cards (base) lift off it. */
 .dark .bg-gray-50 {
   background-color: #181825; /* mantle */

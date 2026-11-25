@@ -36,7 +36,7 @@ export const SideBySide: S = {
   ),
 };
 
-/** A long line of code scrolls sideways inside the frame, under a thin themed scrollbar; it does not wrap or widen the page. */
+/** A long line of code scrolls sideways inside the frame, under a themed scrollbar; it does not wrap or widen the page. */
 export const LongCode: S = {
   parameters: { layout: "padded" },
   render: () => (

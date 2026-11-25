@@ -1,0 +1,19 @@
+$schema: "../../.moon/cache/schemas/project.json"
+
+# The theme builder. Each task runs the package.json script of its name. It reads the base themes
+# and writes the generated ones in themes/, measures them with themes-shared's contracts and reads
+# ui-react's palette, so the typecheck and the test list those files.
+tasks:
+  typecheck:
+    command: "bun run typecheck"
+    inputs: ["**/*", "/packages/themes-shared/src/**/*"]
+  lint:
+    command: "bun run lint"
+    inputs: ["**/*"]
+  test:
+    command: "bun run test"
+    inputs:
+      - "**/*"
+      - "/themes/*.css"
+      - "/packages/themes-shared/src/**/*"
+      - "/packages/ui-react/palette.json"

@@ -58,6 +58,14 @@
   --hc-cat-8: #ffebb9; /* text-yellow-600 */
 }
 
+/* Selected text: the primary fill under its own label, the pair the contrast contract already holds
+   to AA, so a highlight reads in the theme's accent rather than the browser's blue. */
+.slash-suite-dark ::selection,
+.slash-suite-dark::selection {
+  background-color: #fab387;
+  color: #080d1c;
+}
+
 /* The page canvas: AppShell paints it, so cards (base) lift off it. */
 .slash-suite-dark .bg-gray-50 {
   background-color: #0d1326; /* mantle */
@@ -276,9 +284,9 @@
   color: #b1b8d0; /* overlay2 */
 }
 
-/* Avatar identity colours: violet-600 is the peach accent above; the rest sit on the theme. */
+/* Avatar identity colours: violet-600 is the accent above; the rest sit on the theme. */
 .slash-suite-dark .bg-orange-600 {
-  background-color: #cba6f7; /* mauve: peach is the accent's own fill */
+  background-color: #cba6f7; /* mauve */
 }
 .slash-suite-dark .bg-cyan-600 {
   background-color: #74c7ec; /* sapphire */
@@ -352,8 +360,8 @@
 .slash-suite-dark .text-sky-700 {
   color: #89dceb; /* sky */
 }
-/* Chart-only tones (StackedBar, Legend): neutral is a grey apart from muted, violet is the peach
-   of the accent. */
+/* Chart-only tones (StackedBar, Legend): neutral is a grey apart from muted, violet is the accent's
+   pastel. */
 .slash-suite-dark .text-neutral-500 {
   color: #7f849c; /* overlay1: overlay0 is under 3:1 on surface0, and a chart mark needs 3:1 */
 }
@@ -413,7 +421,7 @@
   border-color: rgba(137, 180, 250, 0.4);
 }
 
-/* Inline links: peach (green is reserved for positive values). Alias of @slashsuite/ui-react's
+/* Inline links: the accent (green is reserved for positive values). Alias of @slashsuite/ui-react's
    TextLink (text-violet-600, hover:text-violet-700, remapped above), kept for consumers that still
    write class="link" on a bare <a>. */
 .slash-suite-dark .link {
@@ -426,8 +434,8 @@
   color: #fdc9a8; /* peach, lifted: the hovered link */
 }
 
-/* The hero glow (Hero): three ribbons behind a landing page's title, a soft wash of peach, teal and
-   pink on the mantle. Decoration: the contrast contract holds the hero's text over all three at once. */
+/* The hero glow (Hero): three ribbons behind a landing page's title, a soft wash of the accent, teal
+   and pink on the mantle. Decoration: the contrast contract holds the hero's text over all three at once. */
 .slash-suite-dark .bg-indigo-400\/25 {
   background-color: rgba(250, 179, 135, 0.09); /* peach */
 }

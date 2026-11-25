@@ -15,7 +15,7 @@ function takesStop(measured: boolean, stop: boolean): boolean {
  * it that copies `code` exactly as given (wrapping is CSS, so it adds no characters), except in a
  * `console` block, where it copies only the commands (see `consoleCommands`). `wrap` wraps
  * long lines at whitespace only (a flag with hyphens stays whole; a word wider than the box still
- * breaks inside itself); without it they scroll sideways under a themed thin scrollbar. The button's column has
+ * breaks inside itself); without it they scroll sideways under a themed scrollbar. The button's column has
  * a fixed width, so "copy" turning into "copied" never rewraps the code beside it. The button needs
  * client JS, which is why it is opt-in: a page rendered to static HTML needs `copyScript` inlined
  * or the button is dead.
@@ -59,7 +59,7 @@ export function CodeBody({
       >
         <pre
           className={cx(
-            "px-3 py-2.5 font-mono text-[12.5px] leading-normal text-slate-900",
+            "px-3 py-2.5 font-mono text-[0.78125rem] leading-normal text-slate-900",
             wrap ? "break-words whitespace-pre-wrap" : "w-max min-w-full whitespace-pre",
           )}
         >

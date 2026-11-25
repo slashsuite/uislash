@@ -9,6 +9,7 @@ export {
   Legend,
   StackedBar,
   type LegendItem,
+  type SegmentTone,
   type StackedSegment,
   type VizTone,
   type CategoryTone,

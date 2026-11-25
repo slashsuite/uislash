@@ -58,6 +58,41 @@ file here. Run it with `bunx moon run themes:test`. The repo's
 `bg-white/95` is the app header's ground: map it to your card colour, or to your canvas if the
 header sits on the page ground.
 
+## Make a brand theme
+
+A brand theme is an existing theme with its accent swapped. The one way to make one is a spec and
+the theme builder, never a copied CSS file edited by hand. Write a spec in
+`tools/theme-builder/specs/` that names a base theme in this folder and the accent's six colours:
+
+| Field | What it paints |
+| --- | --- |
+| `fill` | the primary button, the selected tab and chip, the selection highlight |
+| `fillHover` | the primary button under the pointer |
+| `label` | the text on the fill |
+| `text` | the accent text and inline links (`--hc-accent`) |
+| `textHover` | that text under the pointer |
+| `edge` | the accent border, the checkbox, the focus ring |
+
+`name` names the hue in the generated comments. Then run:
+
+```sh
+bun tools/theme-builder/src/cli.ts tools/theme-builder/specs/<brand>.json
+```
+
+It rewrites only the accent and the theme's id, scope and header, measures the result against the
+same contrast, distinction, coverage and selection contracts as `themes.test.ts`, and writes
+`themes/<id>.css` only when every theme in the spec passes; otherwise it names each failure and
+writes nothing. It also reports how close the accent sits to the status colours (info, positive,
+warn, danger): an accent under 0.09 in OKLab from a status text, or under 0.12 from a status fill,
+reads as that status, so pick another tone. `theme-builder:test` fails when a committed file is not
+what its spec builds.
+
+Do: start from the base whose canvas and ink you want, and let the builder find the failing pair,
+then deepen or lift that one colour.
+
+Don't: copy a theme file and change its accent by hand. Nothing measures it until the suite runs,
+and the next change to the base never reaches it.
+
 ## Colours for chrome the kit cannot draw
 
 Some third-party DOM is not made of `@slashsuite/ui-react` parts, so it cannot take a utility: a

@@ -95,7 +95,7 @@ const PILL_TONES: Record<PillTone, string> = {
 };
 
 /** The text size of each step: `md` is the pill as it has always been. */
-const TEXT: Record<Size, string> = { sm: "text-[11px]", md: "text-xs", lg: "text-sm" };
+const TEXT: Record<Size, string> = { sm: "text-[0.6875rem]", md: "text-xs", lg: "text-sm" };
 
 /** A loading pill's height at each step: the pill's own line box. */
 const BONE_HEIGHT: Record<Size, string> = { sm: "h-4", md: "h-5", lg: "h-6" };

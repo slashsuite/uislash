@@ -15,6 +15,7 @@ projects:
   storybook: "apps/storybook"
   ui-review: "tools/ui-review"
   codemod: "tools/codemod"
+  theme-builder: "tools/theme-builder"
   docs: "tools/docs"
   oxlint-testing: "packages/oxlint-testing"
   scripts: "scripts"

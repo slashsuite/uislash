@@ -27,7 +27,7 @@ import {
   tailKey,
 } from "./sortableDrop.js";
 import { useSlide } from "./sortableSlide.js";
-import { cx, focusRing } from "./cx.js";
+import { cx, focusRing, forcedFill } from "./cx.js";
 import { ItemTitle } from "./sortableTitle.js";
 import { dataAttributes } from "./link.js";
 import type { Passthrough } from "./props.js";
@@ -174,7 +174,7 @@ export function SortableList({
             aria-hidden="true"
             className={cx(
               "absolute inset-x-0 -top-px z-10 block h-0.5",
-              isDropTarget && "bg-violet-600",
+              isDropTarget && cx("bg-violet-600", forcedFill),
             )}
           />
         )}

@@ -18,7 +18,7 @@ export type ScrollStripProps = {
 
 /**
  * A single row of items that scrolls sideways when it runs past the width of its parent, with a
- * thin themed scrollbar and the items snapping into place: a strip of `MediaTile`s or `Avatar`s.
+ * themed scrollbar and the items snapping into place: a strip of `MediaTile`s or `Avatar`s.
  * Items never shrink or wrap. The strip takes the keyboard focus, so the arrow keys scroll it
  * without a pointer. A grid that wraps is a `CardGrid` or a `Cluster`.
  */

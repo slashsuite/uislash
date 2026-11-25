@@ -5,25 +5,24 @@ import {
   appliedColourScheme,
   applyColourScheme,
   colourSchemeScript,
+  followColourScheme,
   readColourScheme,
   schemeClass,
   storeColourScheme,
   type ColourScheme,
 } from "./colourScheme.js";
-import { schemeClasses } from "./colourScheme.harness.js";
+import { schemeClasses, storageFromAnotherTab, stubSystemScheme } from "./colourScheme.harness.js";
 
 const KEY = "hackcove:colour-scheme";
 const root = document.documentElement;
 
 /** jsdom has no matchMedia: answer the dark query with `dark`, or remove matchMedia when undefined. */
-function systemPrefers(dark: boolean | undefined): void {
+function systemPrefers(dark: boolean | undefined): { flip: (dark: boolean) => void } {
   if (dark === undefined) {
     vi.stubGlobal("matchMedia", undefined);
-    return;
+    return { flip: () => {} };
   }
-  vi.stubGlobal("matchMedia", (query: string) => ({
-    matches: query === "(prefers-color-scheme: dark)" && dark,
-  }));
+  return stubSystemScheme(vi.stubGlobal, dark);
 }
 
 function resetRoot(): void {
@@ -36,17 +35,25 @@ function reset(): void {
   resetRoot();
 }
 
-/** Run the head script as a browser would, against this document, storage and (stubbed) matchMedia. */
+/** The window listeners the head script added in this test, taken off again after it. */
+const scriptListeners: [string, EventListener][] = [];
+
+/** Run the head script as a browser would, against this document, storage, window events and (stubbed) matchMedia. */
 function runScript(): void {
   runInNewContext(colourSchemeScript, {
     document,
     localStorage,
     matchMedia: Reflect.get(globalThis, "matchMedia"),
+    addEventListener: (type: string, listener: EventListener) => {
+      scriptListeners.push([type, listener]);
+      addEventListener(type, listener);
+    },
   });
 }
 
 beforeEach(reset);
 afterEach(() => {
+  for (const [type, listener] of scriptListeners.splice(0)) removeEventListener(type, listener);
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
   reset();
@@ -144,11 +151,71 @@ describe("storeColourScheme", () => {
     expect(localStorage.getItem(KEY)).toBe("dark");
   });
 
+  it("with `system` forgets the choice, so the page follows the system again", () => {
+    systemPrefers(true);
+    storeColourScheme("light");
+    storeColourScheme("system");
+    expect(localStorage.getItem(KEY)).toBeNull();
+    expect(readColourScheme()).toBe("dark");
+  });
+
   it("swallows a storage error", () => {
+    vi.spyOn(Storage.prototype, "removeItem").mockImplementation(() => {
+      throw new Error("denied");
+    });
+    expect(() => storeColourScheme("system")).not.toThrow();
     vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
       throw new Error("quota");
     });
     expect(() => storeColourScheme("dark")).not.toThrow();
+  });
+});
+
+describe("followColourScheme", () => {
+  let stop: (() => void) | undefined;
+  afterEach(() => {
+    stop?.();
+    stop = undefined;
+  });
+
+  it("follows the system switching while nothing is stored", () => {
+    const system = systemPrefers(false);
+    stop = followColourScheme();
+    system.flip(true);
+    expect(schemeClasses().has("dark")).toBe(true);
+    expect(root.style.colorScheme).toBe("dark");
+    system.flip(false);
+    expect(schemeClasses().has("dark")).toBe(false);
+  });
+
+  it("keeps a stored choice when the system switches", () => {
+    const system = systemPrefers(false);
+    storeColourScheme("light");
+    applyColourScheme("light");
+    stop = followColourScheme();
+    system.flip(true);
+    expect(schemeClasses().has("dark")).toBe(false);
+  });
+
+  it("takes a choice made or cleared in another tab", () => {
+    systemPrefers(false);
+    stop = followColourScheme(root, paper);
+    storageFromAnotherTab(KEY, "dark");
+    expect(appliedColourScheme(root, paper)).toBe("dark");
+    storageFromAnotherTab(KEY, null);
+    expect(appliedColourScheme(root, paper)).toBe("light");
+    expect(schemeClasses().has("my-light")).toBe(true);
+  });
+
+  it("ignores another key, and stops when told", () => {
+    const system = systemPrefers(false);
+    stop = followColourScheme();
+    storageFromAnotherTab("other", "dark");
+    expect(schemeClasses().has("dark")).toBe(false);
+    stop();
+    system.flip(true);
+    storageFromAnotherTab(KEY, "dark");
+    expect(schemeClasses().has("dark")).toBe(false);
   });
 });
 
@@ -185,6 +252,23 @@ describe("colourSchemeScript", () => {
       expect(fromScript).toEqual(fromApi);
     },
   );
+
+  it("then follows the system switching while nothing is stored, as followColourScheme does", () => {
+    const system = systemPrefers(false);
+    runScript();
+    system.flip(true);
+    expect(schemeClasses().has("dark")).toBe(true);
+    expect(root.style.colorScheme).toBe("dark");
+  });
+
+  it("then takes a choice made or cleared in another tab", () => {
+    systemPrefers(true);
+    runScript();
+    storageFromAnotherTab(KEY, "light");
+    expect(schemeClasses().has("dark")).toBe(false);
+    storageFromAnotherTab(KEY, null);
+    expect(schemeClasses().has("dark")).toBe(true);
+  });
 
   it("uses the system preference when storage throws", () => {
     systemPrefers(true);

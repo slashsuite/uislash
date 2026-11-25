@@ -231,6 +231,7 @@ export const data: ComponentSection = {
           "`items` are `{ label, value, tone }` in the order to draw; `tone` is `muted`, `positive`, `warn`, `danger`, `info`, `neutral` (a grey apart from `muted`) or `accent`, and you map your own roles onto them. Five distinguishable parts are `warn`, `info`, `danger`, `neutral` and `muted`.",
           "Categories with no meaning (shops by kind, spend by group) take the categorical scale, `cat1` to `cat8`, from `cat1` upwards in order; good and bad take the meaning tones; never both in one chart. Each theme publishes the same eight as `--hc-cat-1` to `--hc-cat-8`, so a map pin can match its `Legend`.",
           "Set `legend` so every colour is named in words under the bar, with its value.",
+          "The part that matters least (not measured, not counted) is `quiet`: no fill, so the bar's track shows through and the part reads as the bar's empty end. Put it last. It is under the contrast a chart mark needs, so a bar with a `quiet` part always draws its `Legend`, where the value is named.",
           '`Legend` alone is the key for colours drawn elsewhere, such as a `TableRow` `stripe`. An item with `swatch: "dashed"` is a dashed ring with no fill, the key for an outline drawn over the chart.',
           "`size` is `sm`, `md` (default) or `lg`. A part with no value is zero wide.",
           "Two parties are a `SplitBar`; progress toward a total is a `ProgressBar`.",
@@ -241,7 +242,7 @@ export const data: ComponentSection = {
         "A `Legend` is a list. Its swatches are hidden from assistive tech and its labels are always drawn, so colour is never the only signal.",
       ],
       api: ["StackedBar", "Legend"],
-      types: ["CategoryTone", "LegendItem", "StackedSegment", "VizTone"],
+      types: ["CategoryTone", "LegendItem", "SegmentTone", "StackedSegment", "VizTone"],
     },
     {
       slug: "trend-chart",

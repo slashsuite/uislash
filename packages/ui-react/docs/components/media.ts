@@ -172,7 +172,7 @@ export const mediaPages: ComponentPage[] = [
       do: [
         "Put `MediaTile`s or `Avatar`s as the children and name the strip with `label`. They keep their own width and never shrink or wrap.",
         "`gap` is a `Cluster`'s: `xs`, `sm` (the default) or `md`; the `Size` type lists every default that is not `md`.",
-        "It scrolls only when the items run past its width, with a thin themed scrollbar, and the items snap to the start edge.",
+        "It scrolls only when the items run past its width, with a themed scrollbar, and the items snap to the start edge.",
       ],
       dont: [
         "Do not use it for a few items that fit: that is a `Cluster`. A grid that wraps is a `CardGrid`.",

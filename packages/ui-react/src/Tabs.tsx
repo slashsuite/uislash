@@ -1,6 +1,6 @@
 import { type ReactElement, type ReactNode, useEffect, useId, useRef, useState } from "react";
 import { hasReason } from "./blocked.js";
-import { cx, focusRing } from "./cx.js";
+import { cx, focusRing, forcedFill } from "./cx.js";
 import { controlText, type TypeStep, useTypeStep } from "./density.js";
 import { useScrollEdges } from "./scrollEdges.js";
 import type { Size } from "./size.js";
@@ -23,13 +23,16 @@ export type Tab = TabButton | SwitchLink;
 // focus ring is drawn inside the tab, since the row scrolls and would clip one drawn outside.
 const BASE =
   "border-b-2 px-1 py-2 font-medium transition focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-violet-600";
-const ON = "border-violet-600 text-violet-700";
-const OFF = "border-transparent text-slate-600";
+// In forced colours a transparent border is painted in the text colour, so every tab would look
+// underlined: the others take the page's Canvas, and the current one the system's Highlight. The
+// rule under the row takes Canvas too, or it shows in the gaps between the tabs.
+const ON = "border-violet-600 text-violet-700 forced-colors:border-[color:Highlight]!";
+const OFF = "border-transparent text-slate-600 forced-colors:border-[color:Canvas]!";
 const OFF_LIVE = "hover:text-violet-700";
 
 // The rule under the row; the tab list inside it sits over the rule by a pixel, so the current
 // tab's underline covers it.
-const UNDERLINE_RULE = "border-b border-slate-200";
+const UNDERLINE_RULE = "border-b border-slate-200 forced-colors:border-[color:Canvas]!";
 // One line that never wraps: a row wider than its box scrolls sideways, with no scrollbar, and
 // fades out on the side that has more (a mask, so it follows any theme; it flips right to left).
 // While the keyboard's focus is in the row the fade is off, so a focused tab at an edge stays whole.
@@ -63,7 +66,16 @@ export function pillTabClass(
     PILL_SIZE[size],
     controlText(size, step, false),
     "font-medium",
-    active ? "border-slate-300 bg-slate-100 text-slate-900" : "border-transparent text-slate-600",
+    active
+      ? cx(
+          "border-slate-300 bg-slate-100 text-slate-900",
+          // Forced colours paint every pill's fill the page's Canvas and its border the text
+          // colour, so the current one is the system's Highlight, as a selected option is there. It
+          // names only system colours, so it opts out of the backplate drawn behind text there.
+          forcedFill,
+          "forced-colors:border-[color:Highlight]! forced-colors:text-[color:HighlightText]! forced-color-adjust-none",
+        )
+      : "border-transparent text-slate-600",
     !active && !disabled && "hover:bg-slate-100",
   );
 }

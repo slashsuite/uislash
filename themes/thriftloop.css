@@ -28,6 +28,14 @@
   --hc-cat-8: #946231; /* text-yellow-600 */
 }
 
+/* Selected text: the primary fill under its own label, the pair the contrast contract already holds
+   to AA, so a highlight reads in the theme's accent rather than the browser's blue. */
+.thriftloop ::selection,
+.thriftloop::selection {
+  background-color: #c2410c;
+  color: #ffffff;
+}
+
 .thriftloop :is(h1, h2, h3, .font-heading) {
   font-family: var(--font-heading);
 }

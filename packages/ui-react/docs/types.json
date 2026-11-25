@@ -237,7 +237,7 @@
   "LegendItem": {
     "name": "LegendItem",
     "description": "One entry of a `Legend`: the `label` the colour stands for, its swatch, and an optional `detail` (a count, a share) after it.",
-    "definition": "{ label: string; tone: VizTone; swatch?: \"solid\" | \"dashed\"; detail?: string | number }"
+    "definition": "{ label: string; tone: SegmentTone; swatch?: \"solid\" | \"dashed\"; detail?: string | number }"
   },
   "LinkAdapter": {
     "name": "LinkAdapter",
@@ -294,6 +294,11 @@
     "description": "One option of a SegmentedControl: a button with a `value`, or a link with an `href`; never both kinds in one group.",
     "definition": "SwitchButton | SwitchLink"
   },
+  "SegmentTone": {
+    "name": "SegmentTone",
+    "description": "The colour of a `StackedBar` part or a `Legend` swatch: a `VizTone`, or `quiet`, the remainder that\nmatters least (not measured, not counted). A quiet part has no fill, so the bar's track shows\nthrough and the part reads as the empty end of the bar, quieter than `neutral` in every theme;\nput it last, where the bar ends.\nIt sits under the 3:1 a chart mark needs, so its value is always named in words: a bar with a\nquiet part draws its `Legend`, and the key's quiet swatch is the track colour with an edge.",
+    "definition": "VizTone | \"quiet\""
+  },
   "SelectItem": {
     "name": "SelectItem",
     "description": "One choice of a `Select`.",
@@ -337,7 +342,7 @@
   "StackedSegment": {
     "name": "StackedSegment",
     "description": "One part of a `StackedBar`: its `label`, its `value` (its share is `value` over the sum) and its colour.",
-    "definition": "{ label: string; value: number; tone: VizTone }"
+    "definition": "{ label: string; value: number; tone: SegmentTone }"
   },
   "StackGap": {
     "name": "StackGap",
