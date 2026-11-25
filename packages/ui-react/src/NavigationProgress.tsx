@@ -6,12 +6,13 @@ import type { Passthrough } from "./props.js";
 // `@keyframes`. Nothing here is a timer in script: the 150ms wait is the opacity animation's own
 // delay (backwards fill, so the bar is invisible until it ends), and a navigation that finishes
 // first removes the bar before it ever showed. A segment slides across the bar; under reduced
-// motion it is a still, full-width bar. No colour in it, which the bar's own class carries.
+// motion it slides slowly and evenly, still a segment, since a still full-width bar reads as done.
+// No colour in it, which the bar's own class carries.
 const css = `@keyframes hc-navigation-progress-in{from{opacity:0}to{opacity:1}}
 @keyframes hc-navigation-progress{from{transform:translateX(-100%)}to{transform:translateX(250%)}}
 [data-navigation-progress]{animation:hc-navigation-progress-in .01s linear 150ms backwards}
 [data-navigation-progress-bar]{width:40%;animation:hc-navigation-progress 1.4s ease-in-out infinite}
-@media (prefers-reduced-motion:reduce){[data-navigation-progress-bar]{width:100%;animation:none}}`;
+@media (prefers-reduced-motion:reduce){[data-navigation-progress-bar]{animation-duration:4s;animation-timing-function:linear}}`;
 
 /**
  * A thin indeterminate bar along the top edge of the viewport, in the accent tone, for a route
@@ -19,8 +20,8 @@ const css = `@keyframes hc-navigation-progress-in{from{opacity:0}to{opacity:1}}
  * and render it once per app, beside the page frame. It draws exactly what `loading` says: the bar
  * while it is true and nothing while it is false. The stylesheet holds it invisible for the first
  * 150ms, so a fast navigation shows nothing. It is fixed to the viewport and overlays the top of
- * the header, so nothing on the page moves. Under `prefers-reduced-motion: reduce` it is a still
- * bar.
+ * the header, so nothing on the page moves. Under `prefers-reduced-motion: reduce` the segment
+ * slides slowly and evenly instead: a still, full bar would read as finished.
  */
 export function NavigationProgress({
   loading,

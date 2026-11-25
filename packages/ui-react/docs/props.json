@@ -4667,7 +4667,7 @@
   },
   "NavigationProgress": {
     "name": "NavigationProgress",
-    "description": "A thin indeterminate bar along the top edge of the viewport, in the accent tone, for a route\nchange that is under way and has no known length. Pass `loading` from the router's pending state\nand render it once per app, beside the page frame. It draws exactly what `loading` says: the bar\nwhile it is true and nothing while it is false. The stylesheet holds it invisible for the first\n150ms, so a fast navigation shows nothing. It is fixed to the viewport and overlays the top of\nthe header, so nothing on the page moves. Under `prefers-reduced-motion: reduce` it is a still\nbar.",
+    "description": "A thin indeterminate bar along the top edge of the viewport, in the accent tone, for a route\nchange that is under way and has no known length. Pass `loading` from the router's pending state\nand render it once per app, beside the page frame. It draws exactly what `loading` says: the bar\nwhile it is true and nothing while it is false. The stylesheet holds it invisible for the first\n150ms, so a fast navigation shows nothing. It is fixed to the viewport and overlays the top of\nthe header, so nothing on the page moves. Under `prefers-reduced-motion: reduce` the segment\nslides slowly and evenly instead: a still, full bar would read as finished.",
     "props": [
       {
         "name": "id",

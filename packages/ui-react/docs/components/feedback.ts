@@ -182,7 +182,7 @@ export const feedback: ComponentSection = {
       },
       accessibility: [
         'While shown it is `role="progressbar"` named by `label` ("Loading page" by default) and has no `aria-valuenow`, so it reads as an indeterminate progress bar. When hidden it is not in the page.',
-        "Under `prefers-reduced-motion: reduce` it is a still, full-width bar with no slide.",
+        "Under `prefers-reduced-motion: reduce` the segment slides slowly and evenly rather than stopping: a still, full-width bar would read as finished.",
         "It takes no pointer events, so it never covers a control in the header.",
       ],
       api: ["NavigationProgress"],
