@@ -14,16 +14,16 @@
   "dependencies": {
     "@slashsuite/themes-shared": "workspace:*",
     "@slashsuite/ui-react": "workspace:*",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react": "catalog:react",
+    "react-dom": "catalog:react"
   },
   "devDependencies": {
-    "@types/bun": "1.4.4",
-    "@types/react": "^19.2.0",
-    "@types/react-dom": "^19.2.0",
+    "@types/bun": "catalog:",
+    "@types/react": "catalog:react",
+    "@types/react-dom": "catalog:react",
     "react-docgen-typescript": "^2.4.0",
-    "typescript": "5.9.3",
-    "vitest": "5.1.0"
+    "typescript": "catalog:typescript-api",
+    "vitest": "catalog:"
   },
   "nx": {
     "name": "docs"

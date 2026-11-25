@@ -19,9 +19,9 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@types/bun": "1.4.4",
-    "vite": "^8.3.4",
-    "vitest": "5.1.0"
+    "@types/bun": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
   },
   "nx": {
     "name": "themes-shared"

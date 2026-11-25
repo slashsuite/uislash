@@ -8,7 +8,7 @@
         "@moonrepo/cli": "2.6.5",
         "@nx/js": "24.0.6",
         "@playwright/test": "1.65.1",
-        "@types/bun": "1.4.4",
+        "@types/bun": "catalog:",
         "eslint-plugin-playwright": "2.12.2",
         "eslint-plugin-testing-library": "7.16.2",
         "nx": "24.0.6",
@@ -16,7 +16,7 @@
         "oxlint": "1.94.0",
         "oxlint-tsgolint": "7.0.2007",
         "typescript": "7.0.2",
-        "vitest": "5.1.0",
+        "vitest": "catalog:",
       },
     },
     "apps/storybook": {
@@ -25,19 +25,19 @@
       "dependencies": {
         "@slashsuite/themes-shared": "workspace:*",
         "@slashsuite/ui-react": "workspace:*",
-        "react": "^19.3.1",
-        "react-dom": "^19.3.1",
+        "react": "catalog:react",
+        "react-dom": "catalog:react",
       },
       "devDependencies": {
         "@storybook/react-vite": "^10.6.7",
         "@tailwindcss/vite": "^4.3.5",
-        "@types/bun": "1.4.4",
-        "@types/react": "^19.3.0",
-        "@types/react-dom": "^19.3.0",
+        "@types/bun": "catalog:",
+        "@types/react": "catalog:react",
+        "@types/react-dom": "catalog:react",
         "storybook": "^10.6.7",
-        "tailwindcss": "^4.3.5",
-        "vite": "^8.3.4",
-        "vitest": "5.1.0",
+        "tailwindcss": "catalog:",
+        "vite": "catalog:",
+        "vitest": "catalog:",
       },
     },
     "packages/oxlint-testing": {
@@ -50,16 +50,27 @@
       "peerDependencies": {
         "eslint-plugin-playwright": "2.12.2",
         "eslint-plugin-testing-library": "7.16.2",
-        "oxlint": "1.89.0",
+        "oxlint": "1.94.0",
+      },
+    },
+    "packages/oxlint-ui": {
+      "name": "@slashsuite/oxlint-ui",
+      "version": "0.1.0",
+      "devDependencies": {
+        "@types/bun": "1.4.4",
+        "vitest": "5.1.0",
+      },
+      "peerDependencies": {
+        "oxlint": "1.94.0",
       },
     },
     "packages/themes-shared": {
       "name": "@slashsuite/themes-shared",
       "version": "0.0.0",
       "devDependencies": {
-        "@types/bun": "1.4.4",
-        "vite": "^8.3.4",
-        "vitest": "5.1.0",
+        "@types/bun": "catalog:",
+        "vite": "catalog:",
+        "vitest": "catalog:",
       },
     },
     "packages/ui-react": {
@@ -111,9 +122,9 @@
       "name": "@slashsuite/codemod",
       "version": "0.0.0",
       "devDependencies": {
-        "@types/bun": "1.4.4",
-        "typescript": "5.9.3",
-        "vitest": "5.1.0",
+        "@types/bun": "catalog:",
+        "typescript": "catalog:typescript-api",
+        "vitest": "catalog:",
       },
     },
     "tools/docs": {
@@ -122,34 +133,51 @@
       "dependencies": {
         "@slashsuite/themes-shared": "workspace:*",
         "@slashsuite/ui-react": "workspace:*",
-        "react": "^19.2.0",
-        "react-dom": "^19.2.0",
+        "react": "catalog:react",
+        "react-dom": "catalog:react",
       },
       "devDependencies": {
-        "@types/bun": "1.4.4",
-        "@types/react": "^19.2.0",
-        "@types/react-dom": "^19.2.0",
+        "@types/bun": "catalog:",
+        "@types/react": "catalog:react",
+        "@types/react-dom": "catalog:react",
         "react-docgen-typescript": "^2.4.0",
-        "typescript": "5.9.3",
-        "vitest": "5.1.0",
+        "typescript": "catalog:typescript-api",
+        "vitest": "catalog:",
       },
     },
     "tools/theme-builder": {
       "name": "@slashsuite/theme-builder",
       "version": "0.0.0",
       "devDependencies": {
-        "@types/bun": "1.4.4",
-        "typescript": "5.9.3",
-        "vitest": "5.1.0",
+        "@types/bun": "catalog:",
+        "typescript": "catalog:typescript-api",
+        "vitest": "catalog:",
       },
     },
     "tools/ui-review": {
       "name": "@slashsuite/ui-review",
       "version": "0.0.0",
       "devDependencies": {
-        "@types/bun": "1.4.4",
-        "vitest": "5.1.0",
+        "@types/bun": "catalog:",
+        "vitest": "catalog:",
       },
+    },
+  },
+  "catalog": {
+    "@types/bun": "1.4.4",
+    "tailwindcss": "^4.3.5",
+    "vite": "^8.3.4",
+    "vitest": "5.1.0",
+  },
+  "catalogs": {
+    "react": {
+      "@types/react": "^19.3.0",
+      "@types/react-dom": "^19.3.0",
+      "react": "^19.3.1",
+      "react-dom": "^19.3.1",
+    },
+    "typescript-api": {
+      "typescript": "5.9.3",
     },
   },
   "packages": {
@@ -730,6 +758,8 @@
     "@slashsuite/docs": ["@slashsuite/docs@workspace:tools/docs"],
 
     "@slashsuite/oxlint-testing": ["@slashsuite/oxlint-testing@workspace:packages/oxlint-testing"],
+
+    "@slashsuite/oxlint-ui": ["@slashsuite/oxlint-ui@workspace:packages/oxlint-ui"],
 
     "@slashsuite/storybook": ["@slashsuite/storybook@workspace:apps/storybook"],
 

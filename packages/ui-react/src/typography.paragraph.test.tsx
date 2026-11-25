@@ -50,6 +50,7 @@ describe("Callout icon", () => {
         Saved.
       </Callout>,
     );
+    // A Callout has no role or name of its own; its pass-through test id finds it.
     expect(screen.getByTestId("notice").textContent).toBe("Saved.");
     expect(screen.queryByRole("img")).toBeNull();
   });

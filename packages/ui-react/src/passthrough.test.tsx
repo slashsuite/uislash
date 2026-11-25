@@ -25,6 +25,7 @@ function mount(node: ReactElement): void {
 
 /** The one element that carries the probe's attributes. */
 function probe(): HTMLElement {
+  // The test id is the pass-through under test: it reaches exactly one element.
   expect(screen.getAllByTestId("probe")).toHaveLength(1);
   return screen.getByTestId("probe");
 }
@@ -226,6 +227,7 @@ describe("an item's data-* goes on its own option, and no other", () => {
         ]}
       />,
     );
+    // The test id is the pass-through under test: it reaches the option itself.
     expect(screen.getAllByTestId("range-day")).toEqual([screen.getByRole(role, { name: "Daily" })]);
   });
 
@@ -239,6 +241,7 @@ describe("an item's data-* goes on its own option, and no other", () => {
         ]}
       />,
     );
+    // The test id is the pass-through under test: it reaches the link itself.
     expect(screen.getAllByTestId("tab-map")).toEqual([screen.getByRole("link", { name: "Map" })]);
   });
 });

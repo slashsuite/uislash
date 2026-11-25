@@ -1,3 +1,29 @@
 {
-  "extends": ["../../.oxlintrc.json", "../../packages/oxlint-testing/.oxlintrc.json"]
+  "extends": ["../../.oxlintrc.json", "../../packages/oxlint-testing/.oxlintrc.json"],
+  "overrides": [
+    {
+      // These specs measure layout or walk the DOM, and predate UI testing rules 1, 2 and 7. Moving
+      // each one's check to the visual check is its own change; a spec not listed here is held to
+      // the rules, so the list only shrinks.
+      "files": [
+        "e2e/appshell-phone.spec.ts",
+        "e2e/bottom-sheet.spec.ts",
+        "e2e/card-fill.spec.ts",
+        "e2e/card-under-sticky-bars.spec.ts",
+        "e2e/checkbox.spec.ts",
+        "e2e/control-heights.spec.ts",
+        "e2e/date-range-picker.spec.ts",
+        "e2e/input-icon-in-card.spec.ts",
+        "e2e/meta-list.spec.ts",
+        "e2e/modal-exit.spec.ts",
+        "e2e/navigation-progress.spec.ts",
+        "e2e/site-search.spec.ts"
+      ],
+      "rules": {
+        "no-restricted-properties": "off",
+        "ui-testing/no-node-access": "off",
+        "ui-testing/no-raised-timeout": "off"
+      }
+    }
+  ]
 }

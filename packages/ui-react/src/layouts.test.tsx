@@ -139,6 +139,7 @@ describe("Container", () => {
   it("ref reaches the rendered element", () => {
     const ref = createRef<HTMLElement>();
     render(<Container as="main" ref={ref} data-testid="c" />);
+    // A Container has no role or name of its own; its pass-through test id finds it.
     expect(ref.current).toBe(screen.getByTestId("c"));
   });
 });

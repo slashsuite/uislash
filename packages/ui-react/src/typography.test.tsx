@@ -148,6 +148,7 @@ describe("Mark", () => {
         Results for <Mark data-testid="hit">debit order</Mark> this month
       </Text>,
     );
+    // A mark has no role or name to find it by; its pass-through test id finds it.
     const hit = screen.getByTestId("hit");
     expect(hit.tagName).toBe("MARK");
     expect(hit.textContent).toBe("debit order");

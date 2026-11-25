@@ -1,0 +1,26 @@
+{
+  "jsPlugins": ["./plugin.js"],
+  "rules": {
+    "uislash/style-block": "error",
+    "uislash/raw-colour": "error",
+    "uislash/dark-variant": "error",
+    "uislash/styling-prop": "error",
+    "uislash/duplicate-component": "error",
+    "uislash/inline-colour": "error",
+    "uislash/raw-element": "error"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.*", "**/*.spec.*", "**/*.d.ts"],
+      "rules": {
+        "uislash/style-block": "off",
+        "uislash/raw-colour": "off",
+        "uislash/dark-variant": "off",
+        "uislash/styling-prop": "off",
+        "uislash/duplicate-component": "off",
+        "uislash/inline-colour": "off",
+        "uislash/raw-element": "off"
+      }
+    }
+  ]
+}

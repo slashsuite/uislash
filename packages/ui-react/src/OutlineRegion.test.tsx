@@ -28,6 +28,7 @@ describe("OutlineRegion", () => {
 
   it("takes a data attribute, and has no tag without a label", () => {
     render(<OutlineRegion rect={rect} within={within} data-testid="region" />);
+    // With no label the region has no accessible name, which is what this checks.
     expect(screen.getByTestId("region").textContent).toBe("");
   });
 });

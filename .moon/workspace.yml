@@ -18,6 +18,7 @@ projects:
   theme-builder: "tools/theme-builder"
   docs: "tools/docs"
   oxlint-testing: "packages/oxlint-testing"
+  oxlint-ui: "packages/oxlint-ui"
   scripts: "scripts"
 
 vcs:

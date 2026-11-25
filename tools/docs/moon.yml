@@ -49,6 +49,7 @@ tasks:
         "@group(deps)",
         "/packages/oxlint-testing/.oxlintrc.json",
         "/packages/oxlint-testing/plugin.js",
+        "/packages/oxlint-testing/rules/**/*",
       ]
     deps: ["~:props", "^:build"]
   # test/loading.test.ts and test/docs.test.ts import the built @slashsuite/ui-react. It also

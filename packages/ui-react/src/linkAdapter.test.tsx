@@ -190,6 +190,7 @@ describe("LinkProvider", () => {
     );
     expect(screen.getByRole("link", { name: "Shots" }).getAttribute("aria-current")).toBe("page");
     expect(screen.getByRole("link", { name: "Builds" }).hasAttribute("aria-current")).toBe(false);
+    // The test ids are the pass-through under test: they reach the rendered anchor.
     expect(screen.getByTestId("shots-tab").getAttribute("href")).toBe("/shots");
     expect(screen.getByTestId("quotes").getAttribute("href")).toBe("/quotes");
   });

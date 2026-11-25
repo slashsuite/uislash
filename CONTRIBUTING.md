@@ -41,6 +41,7 @@ themes** shows every component in every theme on one page.
 | `packages/ui-react` | `@slashsuite/ui-react` | The components. Builds to `dist/` (ESM + `.d.ts`). Peers: react, react-dom, tailwindcss v4. No theme CSS. |
 | `themes` | `@slashsuite/themes` | One CSS file per theme, `<id>.css`, shipped as-is. |
 | `packages/oxlint-testing` | `@slashsuite/oxlint-testing` | The shared oxlint config and plugin for UI tests. Its fixture suite is its `test`; `bun run lint:testing` reports what it finds in this repo. |
+| `packages/oxlint-ui` | `@slashsuite/oxlint-ui` | The oxlint config and plugin that hold an app to `@slashsuite/ui-react`, the same rules as `ui-review`'s layer 1. Its fixture and parity suites are its `test`. |
 | `apps/storybook` | (private) | Storybook and the Playwright e2e. |
 | `packages/themes-shared` | (private) | How Storybook and the docs find the themes: the `themes/*.css` glob, the theme ids and each theme's scope class. |
 | `tools/docs` | (private) | The component docs' tooling: `bunx moon run docs:props` regenerates `packages/ui-react/docs/props.json` and `types.json`, `docs:llms` writes `tools/docs/dist/llms.txt`, and its tests check the docs data. The docs site is built outside this repo. |

@@ -7,6 +7,7 @@ import { render, screen } from "./render.harness.js";
 describe("ColourSwatch", () => {
   it("says the colour in text: its label and its hex value", () => {
     render(<ColourSwatch value="#1E293B" label="Background" data-testid="swatch" />);
+    // A swatch has no role or name of its own; its pass-through test id finds it.
     expect(screen.getByTestId("swatch").textContent).toBe("Background#1e293b");
     expect(screen.getByText("Background")).toBeInstanceOf(HTMLElement);
     expect(screen.getByText("#1e293b")).toBeInstanceOf(HTMLElement);
@@ -29,6 +30,7 @@ describe("ColourSwatch", () => {
       const html = renderToStaticMarkup(<ColourSwatch value={value} label="Accent" />); // markup read as data
       expect(html).not.toContain("style=");
       render(<ColourSwatch value={value} label="Accent" data-testid="swatch" />);
+      // A swatch has no role or name of its own; its pass-through test id finds it.
       expect(screen.getByTestId("swatch").textContent).toBe("Accent");
     },
   );
