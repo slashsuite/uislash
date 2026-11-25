@@ -19,7 +19,7 @@ It is a moon + Bun-workspaces monorepo. Every package here is published on its o
 | `themes` | `@slashsuite/themes` | Every theme, one CSS file each, remapping those utilities: `catppuccin-mocha.css` (dark, scope `.dark`), `catppuccin-latte.css` (light, scope `.latte`), `thrifty-paper.css` (light, scope `.thrifty-paper`), `thriftloop.css` (light, scope `.thriftloop`), `thriftloop-dark.css` (dark, scope `.thriftloop-dark`), `slash-suite.css` (light, scope `.slash-suite`) and `slash-suite-dark.css` (dark, scope `.slash-suite-dark`). |
 | `packages/oxlint-testing` | `@slashsuite/oxlint-testing` | A shared oxlint config and plugin for UI tests (Playwright, Testing Library, Vitest): elements found the way a user does, waits on a state, behaviour asserted rather than look, one Playwright config shape. |
 | `apps/storybook` | (private) | Storybook for the components, with a toolbar theme switcher that lists every CSS file in `themes/`. |
-| `apps/hack-cove-site` | (private) | The hack-cove.com website (Astro), built on the workspace components and the Mocha theme. |
+| `tools/docs` | (private) | The component docs' tooling: the generated props reference, `llms.txt` and the agent docs `@slashsuite/ui-react` ships. The docs site, hack-cove.com/ui/, is built outside this repo from `packages/ui-react/docs`. |
 
 Each theme scopes under its own class, which goes on `<html>`: `.dark` for Mocha,
 `.latte` for Latte, `.thrifty-paper` for Thrifty Paper, `.thriftloop` for Thriftloop,
@@ -235,7 +235,7 @@ Locally, `tools/ui-review` is dev tooling only (no published package depends on 
 ```bash
 bun tools/ui-review/src/check.ts --base origin/main --hackcove .            # the rules
 bun tools/ui-review/src/review.ts --base origin/main --hackcove . \
-  --llms apps/hack-cove-site/dist/ui/llms.txt --dry-run                     # prints the prompt, sends nothing
+  --llms tools/docs/dist/llms.txt --dry-run                                 # prints the prompt, sends nothing (bunx moon run docs:llms writes it)
 ```
 
 ## Publish
@@ -256,9 +256,7 @@ bunx moon run :typecheck :lint :test :build      # the gate
 bun run format:check                             # oxfmt, workspace-wide
 bunx moon run :pack-check                        # npm pack --dry-run per package; ui-react also typechecks its tarball in a consumer app
 bunx moon run storybook:e2e                      # Playwright over the built Storybook, in Chromium (first time: bunx playwright install chromium)
-bunx moon run hack-cove-site:e2e                 # Playwright over the built site: the /ui/ pages under every theme
 bunx moon run storybook:storybook                # http://localhost:6006
-bunx moon run hack-cove-site:dev                 # the website, http://localhost:4321
 ```
 
 Contributing? Start with [`CONTRIBUTING.md`](CONTRIBUTING.md).

@@ -59,12 +59,11 @@ const UI_REACT = new Set(["@slashsuite/ui-react", "@hackcove/ui-react"]);
 
 const VIOLET = /(?<![\w-])violet(?![\w-])/i;
 const VIOLET_RULE = '"violet" in prose; the palette calls it accent';
-/** The component docs, the site's words and any package README: prose a reader takes the palette's names from. */
+/** The component docs (their words included) and any package README: prose a reader takes the palette's names from. */
 const isDocsProse = (path: string, pkg: string): boolean =>
   path === "README.md" ||
   path.endsWith("/README.md") ||
-  (UI_REACT.has(pkg) && path.startsWith("docs/")) ||
-  (pkg === "hack-cove-site" && path.startsWith("src/content/"));
+  (UI_REACT.has(pkg) && path.startsWith("docs/"));
 const outsideBackticks = (line: string): string => line.replace(/`[^`]*`/g, "``");
 
 const isTest = (path: string): boolean =>

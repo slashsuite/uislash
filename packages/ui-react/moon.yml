@@ -5,8 +5,8 @@ $schema: "../../.moon/cache/schemas/project.json"
 # typecheck read all of it; pack-check reads docs/components (scripts/pack-docs.ts checks the tarball
 # holds one agent-docs page per docs page);
 # build and test leave it out of their hash. agent-docs/ ships in the package and is never
-# committed: the agent-docs task writes it (the renderer is the site's, from the same sources as
-# /ui/llms.txt), and `prepack` runs it, so npm publish packs a fresh copy.
+# committed: the agent-docs task writes it (the renderer is tools/docs, from the same sources as
+# llms.txt), and `prepack` runs it, so npm publish packs a fresh copy.
 tasks:
   build:
     command: "bun run build"
@@ -23,11 +23,10 @@ tasks:
   test:
     command: "bun run test"
     inputs: ["**/*", "!docs/**/*", "!agent-docs/**/*"]
-  # Reads the built dist through the examples, so it runs after build. Never cached: it reads the
-  # site's docs, the examples and the themes, too many sources to list as inputs, and takes seconds.
+  # Never cached: it reads tools/docs, the docs data, the examples and the themes, too many sources
+  # to list as inputs, and takes seconds.
   agent-docs:
     command: "bun run agent-docs"
-    deps: ["~:build"]
     options:
       cache: false
   pack-check:

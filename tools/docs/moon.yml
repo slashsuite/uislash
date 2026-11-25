@@ -1,0 +1,59 @@
+$schema: "../../.moon/cache/schemas/project.json"
+
+# The component docs' tooling (@slashsuite/docs): the generated reference
+# (packages/ui-react/docs/props.json and types.json, committed), the agent docs ui-react ships and
+# llms.txt, all from the same sources. Each task runs the package.json script of its name.
+dependsOn:
+  - "ui-react"
+  - "themes-shared"
+
+# moon does not hash a dependency's files, so they are listed here (node_modules, dist and the
+# other build output are left out by .moon/tasks/all.yml). The ui-react glob takes in the docs data
+# and the examples the renderer reads; the themes glob the theme list.
+fileGroups:
+  deps:
+    - "/packages/ui-react/**/*"
+    - "/themes/**/*"
+    - "/packages/themes-shared/**/*"
+
+tasks:
+  # packages/ui-react/docs/props.json and types.json from ui-react's source. Never cached; it
+  # rewrites the same bytes when nothing changed, so the tasks after it still hit the cache, and CI
+  # fails when the committed copy differs from what it writes.
+  props:
+    command: "bun run props"
+    inputs:
+      - "scripts/**/*"
+      - "src/types.ts"
+      - "/packages/ui-react/src/**/*"
+      - "/packages/ui-react/tsconfig*.json"
+    outputs: ["/packages/ui-react/docs/props.json", "/packages/ui-react/docs/types.json"]
+    options:
+      cache: false
+  # dist/llms.txt: the whole reference as one file (the ui-review workflow's build-rubric).
+  llms:
+    command: "bun run llms"
+    inputs: ["**/*", "@group(deps)"]
+    outputs: ["dist"]
+    deps: ["~:props"]
+  typecheck:
+    command: "bun run typecheck"
+    inputs: ["**/*", "@group(deps)"]
+    deps: ["~:props", "^:build"]
+  lint:
+    command: "bun run lint"
+    # The testing config this project's .oxlintrc.json extends: another project's files.
+    inputs:
+      [
+        "**/*",
+        "@group(deps)",
+        "/packages/oxlint-testing/.oxlintrc.json",
+        "/packages/oxlint-testing/plugin.js",
+      ]
+    deps: ["~:props", "^:build"]
+  # test/loading.test.ts and test/docs.test.ts import the built @slashsuite/ui-react. It also
+  # writes llms.txt, so the gate runs the llms script.
+  test:
+    command: "bun run test"
+    inputs: ["**/*", "@group(deps)"]
+    deps: ["~:props", "~:llms", "^:build"]

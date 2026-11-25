@@ -64,7 +64,7 @@ jobs:
 
       # The gate above ran the props task, which rewrites packages/ui-react/docs/props.json and
       # types.json from this commit's source. A diff means the committed copy is stale: run
-      # `bunx moon run hack-cove-site:props` and commit what it writes.
+      # `bunx moon run docs:props` and commit what it writes.
       - name: Committed props data is current
         run: git diff --exit-code packages/ui-react/docs
 

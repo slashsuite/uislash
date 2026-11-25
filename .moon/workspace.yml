@@ -13,9 +13,9 @@ projects:
   themes-shared: "packages/themes-shared"
   themes: "themes"
   storybook: "apps/storybook"
-  hack-cove-site: "apps/hack-cove-site"
   ui-review: "tools/ui-review"
   codemod: "tools/codemod"
+  docs: "tools/docs"
   oxlint-testing: "packages/oxlint-testing"
   scripts: "scripts"
 
