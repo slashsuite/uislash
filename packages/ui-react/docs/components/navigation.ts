@@ -74,6 +74,28 @@ export const navigation: ComponentSection = {
       types: ["Crumb"],
     },
     {
+      slug: "stepper",
+      name: "Stepper",
+      summary: "Where the reader is in a fixed run of steps.",
+      whenToUse:
+        "A flow of a few steps taken in order, such as checkout or setting up an account, where the reader should see what is done and what is left.",
+      pairs: ["Stepper/Progress"],
+      usage: {
+        do: [
+          "Give every step's name in order, one or two words each, and `current`, the step in progress, from 1. Past the last step, every step is done.",
+          '`label` names the list ("Checkout progress"), and `doneLabel` is the word a screen reader hears after a done step, for an app in another language.',
+          "It shows progress and does not navigate: the flow's own buttons move between steps.",
+          "Put it above the step's form, once per page.",
+        ],
+      },
+      accessibility: [
+        'An ordered list named by `label`; the current step has `aria-current="step"`.',
+        'A done step says so in words after its name ("Cart (done)"), not only with its tick; the numbers, the tick and the lines between steps are `aria-hidden`.',
+        "The current step is told apart by more than colour: its marker is outlined and its name is medium weight.",
+      ],
+      api: ["Stepper"],
+    },
+    {
       slug: "pagination",
       name: "Pagination",
       summary: "Page links for a long list.",

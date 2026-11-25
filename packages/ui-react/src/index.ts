@@ -86,6 +86,7 @@ export { type LinkAdapter, type LinkAdapterProps, LinkProvider } from "./link.js
 export { Avatar, type AvatarShape, type AvatarSize } from "./Avatar.js";
 export { AvatarStack, type AvatarStackPerson } from "./AvatarStack.js";
 export { Breadcrumbs, type Crumb } from "./Breadcrumbs.js";
+export { Stepper } from "./Stepper.js";
 export { Pagination } from "./Pagination.js";
 export { BulletItem, BulletList } from "./BulletList.js";
 export { Callout } from "./Callout.js";

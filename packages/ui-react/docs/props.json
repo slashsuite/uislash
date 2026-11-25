@@ -6905,6 +6905,48 @@
       }
     ]
   },
+  "Stepper": {
+    "name": "Stepper",
+    "description": "Where the reader is in a fixed run of steps (checkout, a setup flow): each step done, current\nor still to come. An ordered list named by `label`, across from `sm` and down on a phone.\n`current` is the step in progress, from 1; past the last step every step is done. It shows\nprogress and does not navigate: the flow's own buttons move between steps.",
+    "props": [
+      {
+        "name": "current",
+        "type": "number",
+        "required": true,
+        "description": "The step in progress, from 1. Past the last step, every step is done.",
+        "native": false
+      },
+      {
+        "name": "doneLabel",
+        "type": "string",
+        "required": false,
+        "default": "done",
+        "description": "What a screen reader hears after a done step's name, for an app in another language.",
+        "native": false
+      },
+      {
+        "name": "id",
+        "type": "string",
+        "required": false,
+        "description": "The root element's `id`: an anchor, or the target of a `for` or an `aria-describedby`.",
+        "native": false
+      },
+      {
+        "name": "label",
+        "type": "string",
+        "required": true,
+        "description": "The list's accessible name: \"Checkout progress\".",
+        "native": false
+      },
+      {
+        "name": "steps",
+        "type": "readonly string[]",
+        "required": true,
+        "description": "The steps' names, in order: \"Cart\", \"Shipping\", \"Payment\", \"Review\". Short, one or two words.",
+        "native": false
+      }
+    ]
+  },
   "Steps": {
     "name": "Steps",
     "description": "A numbered list of things to do, in order: a `title` and, under it, a line of `children`. The\nnumbers are counted by CSS, so `Step`s can sit in a fragment or behind a condition and still run\n1, 2, 3. For the way into a product (\"install, log in, run\"), not for progress: nothing here is\ndone or current. A wizard's progress indicator is a different part.\n\n`size=\"lg\"` is the steps across a landing page: from `md` they sit side by side in equal columns,\neach number at feature size over a large title; below `md` they stack. Use it for two to four\nsteps.",
