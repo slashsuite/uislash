@@ -3,8 +3,16 @@ import { FlowView, type ViewNode, type ViewTone } from "./FlowDiagram.js";
 import { Pill, type PillTone } from "./Pill.js";
 import type { Passthrough } from "./props.js";
 import { Bone, BusyLabel, busy, type LoadingProps, useLoading } from "./skeleton.js";
-import { dotArea, dotLayer, placeOf, slotsFor, UNPLACED, useMoves } from "./stateMachineDots.js";
-import { useFlowLayout } from "./useFlowLayout.js";
+import {
+  boxContentSize,
+  dotArea,
+  dotLayer,
+  placeOf,
+  slotsFor,
+  UNPLACED,
+  useMoves,
+} from "./stateMachineDots.js";
+import { type SizedNode, useFlowLayout } from "./useFlowLayout.js";
 
 /**
  * What a state is: `initial` (where things start), `normal`, `human` (waiting on a person),
@@ -124,13 +132,14 @@ function boxesFor(
   states: readonly StateMachineState[],
   inBox: ReadonlyMap<string, readonly StateMachineItem[]>,
   open: ReadonlySet<string>,
-): ViewNode[] {
+): (ViewNode & SizedNode)[] {
   const slots = (id: string) => slotsFor(inBox.get(id)?.length ?? 0, open.has(id));
-  const boxes: ViewNode[] = states.map((s) => ({
+  const boxes: (ViewNode & SizedNode)[] = states.map((s) => ({
     id: s.id,
     label: s.label,
     tone: KIND_TONE[s.kind ?? "normal"],
     content: boxContent(s, inBox.get(s.id)?.length ?? 0, slots(s.id)),
+    contentSize: boxContentSize(slots(s.id)),
   }));
   const unplaced = inBox.get(UNPLACED)?.length ?? 0;
   if (unplaced === 0) return boxes;
@@ -141,6 +150,7 @@ function boxesFor(
       label: "Not in any state",
       tone: "warn",
       content: boxContent(null, unplaced, slots(UNPLACED)),
+      contentSize: boxContentSize(slots(UNPLACED)),
     },
   ];
 }

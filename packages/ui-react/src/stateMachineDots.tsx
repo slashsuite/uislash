@@ -121,8 +121,23 @@ export function dotArea(slots: number): { width: number; height: number } {
   return { width: COLS * SLOT_W, height: rowsFor(slots) * SLOT_H };
 }
 
+/** A box's tag row: one small pill's height. */
+export const TAG_ROW = 20;
+/** The gap between the tag row and the dot area (`mt-1`). */
+export const TAG_GAP = 4;
+
+/**
+ * The size of what a box holds under its label: its tag row, then its dot area. The layout takes
+ * it before the box can be measured (a server render), so the dots, placed up from the box's
+ * bottom, already sit under the tags and never on them.
+ */
+export function boxContentSize(slots: number): { width: number; height: number } {
+  const area = dotArea(slots);
+  return { width: area.width, height: TAG_ROW + TAG_GAP + area.height };
+}
+
 /** Where slot `i` of `slots` sits in `box`: its left edge and its vertical centre, on the box's fixed grid. */
-function slotAt(box: FlowNodeBox, i: number, slots: number): { left: number; y: number } {
+export function slotAt(box: FlowNodeBox, i: number, slots: number): { left: number; y: number } {
   const top = box.y + box.height - BOX_INSET - rowsFor(slots) * SLOT_H;
   return {
     left: box.x + box.width / 2 - (COLS * SLOT_W) / 2 + (i % COLS) * SLOT_W,

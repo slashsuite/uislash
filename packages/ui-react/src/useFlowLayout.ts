@@ -20,21 +20,31 @@ const NODE_PAD_X = 26;
 const NODE_PAD_Y = 18;
 const NODE_LINE = 20;
 const CONTENT_GUESS = 32;
+/** The gap between a box's label and its content (`mt-2`). */
+const CONTENT_GAP = 8;
 const EDGE_CHAR = 6.6;
 const EDGE_PAD = 8;
 const EDGE_LINE = 16;
 
 type Size = { width: number; height: number };
 
-/** What the layout reads from a node. */
-type SizedNode = Pick<FlowNode, "id" | "label" | "group" | "content">;
+/**
+ * What the layout reads from a node. A caller that knows its content's size (`StateMachine`, whose
+ * boxes are a fixed size) gives it as `contentSize`, so the first layout, the one a server render
+ * shows, already has each box at its drawn size.
+ */
+export type SizedNode = Pick<FlowNode, "id" | "label" | "group" | "content"> & {
+  contentSize?: Size | undefined;
+};
 
-function guessNode(node: SizedNode): Size {
+export function guessNode(node: SizedNode): Size {
   const text = Math.ceil(node.label.length * NODE_CHAR);
   const lines = Math.max(1, Math.ceil(text / (NODE_MAX - NODE_PAD_X)));
+  const content = node.contentSize ?? { width: 0, height: CONTENT_GUESS - CONTENT_GAP };
   return {
-    width: Math.min(NODE_MAX, text + NODE_PAD_X),
-    height: lines * NODE_LINE + NODE_PAD_Y + (node.content == null ? 0 : CONTENT_GUESS),
+    width: Math.min(NODE_MAX, Math.max(text, content.width) + NODE_PAD_X),
+    height:
+      lines * NODE_LINE + NODE_PAD_Y + (node.content == null ? 0 : CONTENT_GAP + content.height),
   };
 }
 
