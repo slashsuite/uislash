@@ -17,8 +17,8 @@ export type PlannedGroup = {
 
 /**
  * `.pixelslash/plan.json`. `sha` is the base the plan compares against; `head` is the commit it was
- * planned on, so a group run on another commit is refused. `all` is whether it took every group
- * whole (`--all`, or an upload). `mode` is the upload's: the branch
+ * planned on, so a group run on another commit is refused. `all` is whether `--all` (or
+ * `VISUAL_ALL=1`) asked for every group whole. `mode` is the upload's: the branch
  * alone, or this commit as `main`; absent for a local run.
  */
 export type SavedPlan = {

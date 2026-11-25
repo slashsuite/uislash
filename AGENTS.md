@@ -166,18 +166,19 @@ that touches only `packages/ui-react` bumps `@slashsuite/ui-react`, and nothing 
 uislash lands through pull requests (Jacobus, 2026-10-27). Who opens and who merges is the
 global rule; what is particular to uislash:
 
-- **Shots before the merge.** The `Visual` workflow uploads the PR's head commit, every
-  group whole, each to its own subproject of `uislash` (`uislash/<section>`), and the server diffs it
+- **Shots before the merge.** The `Visual` workflow uploads the PR's head commit: each
+  group the change reaches (and Overview, always), whole, each to its own subproject of `uislash` (`uislash/<section>`), and the server diffs it
   against the `main` build that subproject already holds. The server posts one GitHub status for the
   project, `PixelSlash / uislash`, on the head; the architect reads it, and opens the report for any
-  section that changed. A PR
+  section that changed. A group the change does not reach is skipped, named in the job's log, and has
+  no build on the head; the status counts only the groups that have one. A PR
   behind origin/main's tip needs no rebase for it: the server diffs it against the `main` build at its
   merge-base (or the nearest ancestor that has one), so it shows only the PR's own changes. A
   subproject that holds `main` builds but none at the merge-base or an ancestor fails the job, named;
   one that holds no `main` build at all is new, and its build reads every shot as new until the merge
   sets its baseline. Nobody uploads a PR by hand.
 - **Shots after the merge.** The `Visual` run on the push to `main` uploads the merge
-  commit as `main`, which the server takes as the baseline for the next branch. Nobody uploads it
+  commit as `main`, every group, which the server takes as the baseline for the next branch. Nobody uploads it
   by hand. A release commit that `publish.yml` pushes needs no upload of its own: the server picks
   its parent's build. That release push starts no `Visual` run, so a release dispatched while the
   merge's `Visual` run is still going moves `main` past it, and the run fails with "on origin/main,

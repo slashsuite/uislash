@@ -1,7 +1,8 @@
 name: Visual
 
-# The visual check: captures every story and uploads every group to its project on the project's
-# own PixelSlash server, which diffs it against main. The server's address is the PIXELSLASH_SERVER
+# The visual check: captures the stories and uploads each group to its subproject on the project's
+# own PixelSlash server, which diffs it against main. A pull request uploads only the groups its
+# change reaches, each whole; a push to main uploads every group. The server's address is the PIXELSLASH_SERVER
 # secret, so it is never written in this public repo. A pull
 # request uploads its head commit on its own branch; a push to main uploads main, which the server
 # takes as the new baseline. It uses the plain `pull_request` trigger, so a fork's pull request runs

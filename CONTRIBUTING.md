@@ -163,12 +163,16 @@ it to contribute**: it runs from a separate checkout of PixelSlash.
 
 **CI uploads every pull request and every push to `main`.** The `Visual` workflow
 (`.github/workflows/visual.yml`) checks out the pull request's head commit (never GitHub's merge
-commit) and PixelSlash at a pinned commit, runs `storybook:visual-upload`, and sends every group to
+commit) and PixelSlash at a pinned commit, runs `storybook:visual-upload`, and sends the groups to
 the maintainers' PixelSlash server, whose address is the `PIXELSLASH_SERVER` secret. The server diffs
 a pull request against the `main` build it holds, one subproject of the `uislash` project per section,
 and posts one GitHub status for the project (`PixelSlash / uislash`) on the head commit; the
 maintainers review the result there, and a push to `main` becomes the next baseline. A fork's pull request gets no secrets, so the job skips with a notice and the maintainers
-check its visuals. A pull request behind `main`'s tip needs no rebase for this: the server diffs it
+check its visuals. A pull request uploads only the groups its change reaches (as in the affected mode
+below), each one whole, and Overview, which is always captured; the log names each group it skipped.
+A skipped group has no build on the commit, and the status counts only the groups that have one. A
+change that reaches everything uploads every group, and a push to `main` always does, so each group
+keeps a baseline near `main`'s tip. A pull request behind `main`'s tip needs no rebase for this: the server diffs it
 against the `main` build at its merge-base, so it shows only its own changes.
 A local `bunx moon run storybook:visual` is your own check and needs no server. A manual
 `visual-upload` to that server (with `PIXELSLASH_SERVER` and `PIXELSLASH_TOKEN`) is only for re-seeding `main`, and
@@ -206,7 +210,9 @@ The check runs in one of two modes:
   `package.json`, the visual scripts) or a diff that cannot be read captures everything. The run
   says at the top what it picked and why, how much it skipped, and the shots per theme.
 - **Everything** (`bunx moon run storybook:visual -- --all`, or
-  `VISUAL_ALL=1 bunx moon run storybook:visual`): every group whole. An upload (`visual-upload`) is always this mode.
+  `VISUAL_ALL=1 bunx moon run storybook:visual`): every group whole. An upload (`visual-upload`) on `main` is always this mode; on a pull request it
+  takes the groups the affected mode reaches, each one whole, since the server reads a story missing
+  from a build as removed.
 
 **A run can be split into steps.** A bare run plans, runs every group and totals them in one
 process. The same three steps run one at a time, so a full check fits a machine that limits how

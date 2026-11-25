@@ -2,7 +2,14 @@ import { globSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { themeFiles } from "@slashsuite/themes-shared/files";
 import { describe, expect, it } from "vitest";
-import { GALLERY_TITLE, groupStories, planCapture, readRepo } from "./visual-plan.js";
+import {
+  GALLERY_TITLE,
+  groupStories,
+  planCapture,
+  readRepo,
+  uploadPlan,
+  wholeGroups,
+} from "./visual-plan.js";
 import { referenceOf } from "./theme-reach.js";
 import { grouping, repo, storyFiles } from "./visual-plan.fixture.js";
 import { sidebarOrder, titleOf } from "./sidebar-order.js";
@@ -205,6 +212,52 @@ describe("planCapture", () => {
     expect(result.notes).toContain(
       "nothing a component story shows changed: only Overview is captured",
     );
+  });
+});
+
+const whole = (changed: string[]) => wholeGroups(plan(changed), repo.themes);
+
+describe("wholeGroups", () => {
+  it("takes each group the change reaches whole, and skips the rest", () => {
+    expect(capturesOf(plan(["apps/storybook/src/sample.ts"])).content).toEqual([
+      [["Card"], [reference]],
+    ]);
+    const result = whole(["apps/storybook/src/sample.ts"]);
+    expect(capturesOf(result)).toEqual({
+      content: [[["Card", "CardBadge"], [reference]]],
+      overview: overviewEverywhere,
+    });
+    expect(result.skipped.map((g) => g.slug)).toEqual(["layout", "actions"]);
+    expect(result.picked[0]?.why).toEqual(["apps/storybook/src/sample.ts → Card"]);
+  });
+
+  it("takes the Gallery sections in every theme when one theme changed", () => {
+    expect(capturesOf(whole(["themes/theme-c.css"]))).toEqual({ overview: overviewEverywhere });
+  });
+
+  it("leaves a plan of everything as it is", () => {
+    const all = plan(["bun.lock"]);
+    expect(wholeGroups(all, repo.themes)).toBe(all);
+  });
+});
+
+describe("uploadPlan", () => {
+  const changed = ["apps/storybook/src/sample.ts"];
+
+  it("on a branch takes the reached groups whole", () => {
+    expect(uploadPlan("branch", plan(changed), repo.themes)).toEqual(whole(changed));
+  });
+
+  it("on main takes the plan of everything, and says why", () => {
+    const result = uploadPlan("main", plan(changed, true), repo.themes);
+    expect(result.all).toBe(true);
+    expect(result.skipped).toEqual([]);
+    expect(result.notes.join(" ")).toContain("main uploads every group");
+  });
+
+  it("leaves a local compare's plan as it is", () => {
+    const local = plan(changed);
+    expect(uploadPlan(null, local, repo.themes)).toBe(local);
   });
 });
 
