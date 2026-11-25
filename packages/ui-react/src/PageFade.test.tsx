@@ -1,8 +1,10 @@
 // @vitest-environment jsdom
 import { renderToStaticMarkup } from "react-dom/server"; // markup read as data, below
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { useState } from "react";
 import { PageFade, startPageTransition } from "./PageFade.js";
-import { render, screen } from "./render.harness.js";
+import { SegmentedControl } from "./SegmentedControl.js";
+import { render, screen, user } from "./render.harness.js";
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -89,5 +91,68 @@ describe("startPageTransition", () => {
     const update = vi.fn<() => void>();
     startPageTransition(update);
     expect(update).toHaveBeenCalledOnce();
+  });
+});
+
+/** A page with a nav button outside its view and a SegmentedControl inside it, both changing the view. */
+function Site() {
+  const [page, setPage] = useState("one");
+  return (
+    <>
+      <button type="button" onClick={() => startPageTransition(() => setPage("two"))}>
+        Go to page two
+      </button>
+      <PageFade name="aside">aside</PageFade>
+      <PageFade>
+        {`page ${page}`}
+        <SegmentedControl
+          label="View"
+          items={[
+            { value: "one", label: "One" },
+            { value: "three", label: "Three" },
+          ]}
+          value={page}
+          onChange={(next) => startPageTransition(() => setPage(next))}
+        />
+      </PageFade>
+    </>
+  );
+}
+
+describe("startPageTransition focus", () => {
+  it("moves the focus to the page's view, the unnamed PageFade, after the change", async () => {
+    stubMotion(false);
+    render(<Site />);
+    await user().click(screen.getByRole("button", { name: "Go to page two" }));
+    const view = screen.getByText("page two");
+    expect(document.activeElement).toBe(view);
+    expect(view.getAttribute("tabindex")).toBe("-1");
+  });
+
+  it("moves it the same under reduced motion", async () => {
+    stubMotion(true);
+    render(<Site />);
+    await user().click(screen.getByRole("button", { name: "Go to page two" }));
+    expect(document.activeElement).toBe(screen.getByText("page two"));
+  });
+
+  it("moves it inside a view transition, once the new view is in the page", async () => {
+    stubMotion(false);
+    Reflect.set(document, "startViewTransition", (run: () => void) => {
+      run();
+      return { ready: Promise.resolve() };
+    });
+    render(<Site />);
+    await user().click(screen.getByRole("button", { name: "Go to page two" }));
+    expect(document.activeElement).toBe(screen.getByText("page two"));
+  });
+
+  it("leaves the focus on a radio or tab, which switches the view in place", async () => {
+    stubMotion(false);
+    render(<Site />);
+    const three = screen.getByRole("radio", { name: "Three" });
+    await user().click(three);
+    expect(screen.getByText("page three")).not.toBeNull();
+    expect(document.activeElement).toBe(three);
   });
 });
