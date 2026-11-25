@@ -15,7 +15,7 @@
     "packageManager": "npm"
   },
   "release": {
-    "projects": ["ui-react", "themes", "oxlint-testing", "oxlint-ui", "core"],
+    "projects": ["ui-react", "themes", "oxlint-testing", "oxlint-ui"],
     "projectsRelationship": "independent",
     "releaseTag": {
       "pattern": "{projectName}@{version}"

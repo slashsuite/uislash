@@ -15,6 +15,6 @@ ones draw the same thing from the same data. Pure TypeScript with no runtime dep
   `<id>.native.json` that `@slashsuite/themes` ships beside it.
 
 `@slashsuite/ui-react` vendors the parts it uses into its own `dist`, so an app on the web does not
-install this package. It is for a renderer, not for an app.
+install this package. It is for a renderer, not for an app, and is private: it is not published.
 
-Status: `0.x`. License: MIT.
+License: MIT.
