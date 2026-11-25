@@ -1,0 +1,21 @@
+$schema: "../../.moon/cache/schemas/project.json"
+
+# @slashsuite/ui-react-native: the components for React Native, drawn from core's token tables and
+# each theme's generated <id>.native.json. Its tests read every theme's native JSON and core's
+# source, so both are inputs; its lint runs the native rules (scripts/native-lint.ts).
+fileGroups:
+  shared:
+    - "/packages/core/src/**/*"
+    - "/themes/*.native.json"
+    - "/packages/ui-react/palette.json"
+
+tasks:
+  typecheck:
+    command: "bun run typecheck"
+    inputs: ["**/*", "@group(shared)"]
+  lint:
+    command: "bun run lint"
+    inputs: ["**/*", "@group(shared)"]
+  test:
+    command: "bun run test"
+    inputs: ["**/*", "@group(shared)"]

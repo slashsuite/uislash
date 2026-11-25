@@ -12,6 +12,7 @@ projects:
   ui-react: "packages/ui-react"
   themes-shared: "packages/themes-shared"
   core: "packages/core"
+  ui-react-native: "packages/ui-react-native"
   themes: "themes"
   storybook: "apps/storybook"
   ui-review: "tools/ui-review"
