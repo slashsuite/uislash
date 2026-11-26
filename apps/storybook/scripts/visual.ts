@@ -340,9 +340,10 @@ const atOnce = (plan: SavedPlan, parallel: number) =>
 
 /**
  * The plan, then each group, then the summary: what the moon task runs. The local compare takes one
- * group at a time (they build and capture the base under one lock); an upload takes
- * `VISUAL_PARALLEL` at once, each writing its own `.pixelslash/<slug>/` and uploading to its own
- * subproject. A failed group does not stop the others; the summary runs only when none failed.
+ * group at a time (they build and capture the base under one lock); an upload the server renders
+ * sends every group at once, and one captured here (`VISUAL_RENDER=client`) takes `VISUAL_PARALLEL`
+ * at once, each writing its own `.pixelslash/<slug>/` and uploading to its own subproject. A failed
+ * group does not stop the others; the summary runs only when none failed.
  *
  * The split run takes the same three steps one invocation at a time: `--plan-only` writes the plan
  * (and, for a local compare, builds the base, which starts no browser), `--group <slug>` runs the
