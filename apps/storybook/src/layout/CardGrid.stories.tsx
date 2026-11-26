@@ -94,6 +94,28 @@ export const AutoFill: S = { render: () => <Shots /> };
 /** `minWidth="sm"` (12rem) fits more, smaller cards per row. */
 export const AutoFillSmall: S = { render: () => <Shots minWidth="sm" /> };
 
+/** A long unbroken title wraps inside its card, in `sm` cells, instead of running into the next one. */
+export const AutoFillLongTitle: S = {
+  render: () => (
+    <DemoShell>
+      <PageHeader title="Items" description="Sorted by estimated value." />
+      <CardGrid columns="auto" minWidth="sm">
+        {[
+          "Vintage_Hand_Painted_Ceramic_Serving_Platter_Collection",
+          "Mid-century teak sideboard with sliding doors",
+          "Lamp",
+          "Rug",
+          "Chair",
+        ].map((title) => (
+          <Card key={title} title={title} titleStyle="name">
+            <p className="text-sm text-slate-700">R 1 200</p>
+          </Card>
+        ))}
+      </CardGrid>
+    </DemoShell>
+  ),
+};
+
 /** `align="start"` keeps each card its own height instead of stretching to the tallest in the row. */
 export const AlignStart: S = { render: () => <Shots align="start" /> };
 

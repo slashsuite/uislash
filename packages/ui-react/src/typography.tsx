@@ -437,7 +437,8 @@ export function CardOverline({
   id?: string | undefined;
   children?: ReactNode;
 }): ReactElement {
-  return pinned(`h${level}`, OVERLINE, faint ? "faint" : "tertiary", props);
+  // break-words: a word too long for the card wraps inside it; a CardGrid lets the title shrink to its cell.
+  return pinned(`h${level}`, `${OVERLINE} break-words`, faint ? "faint" : "tertiary", props);
 }
 
 /** A fixed width for a run of text: `amount` is a money figure, right-aligned, at a width that lines a column up. */
