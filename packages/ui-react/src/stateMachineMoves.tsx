@@ -80,6 +80,28 @@ export function moveOf(was: Seat, now: Seat, seq: number, fromSlots: number): Mo
 }
 
 /**
+ * The moves after the seats change from `was` to `now`: each dot that changed seat gets a new move,
+ * and a move under way is kept while its dot keeps its seat.
+ */
+function nextMoves(
+  was: ReadonlyMap<string, Seat>,
+  now: ReadonlyMap<string, Seat>,
+  moves: ReadonlyMap<string, Move>,
+): Map<string, Move> {
+  const slotsNow = new Map([...now.values()].map((seat) => [seat.box, seat.slots]));
+  const next = new Map<string, Move>();
+  for (const [id, seat] of now) {
+    const from = was.get(id);
+    if (!from) continue;
+    const going = moves.get(id);
+    const move = moveOf(from, seat, (going?.seq ?? 0) + 1, slotsNow.get(from.box) ?? 0);
+    if (move) next.set(id, move);
+    else if (going && from.box === seat.box && from.slot === seat.slot) next.set(id, going);
+  }
+  return next;
+}
+
+/**
  * Remembers where every dot sat, and when the seats change records each dot's move, during render
  * (React's "adjust state when a prop changes"), so the re-render that measures the boxes does not
  * lose it. A move ends on its animation's `animationend` (`done`). A change of seats records its own
@@ -99,18 +121,8 @@ export function useMoves(
   const [moves, setMoves] = useState<ReadonlyMap<string, Move>>(new Map());
   // Compared by value: a caller's `items` is often a new array on every render.
   if (seen.key !== key) {
-    const slotsNow = new Map([...now.values()].map((seat) => [seat.box, seat.slots]));
-    const next = new Map<string, Move>();
-    for (const [id, seat] of now) {
-      const was = seen.seats.get(id);
-      if (!was) continue;
-      const going = moves.get(id);
-      const move = moveOf(was, seat, (going?.seq ?? 0) + 1, slotsNow.get(was.box) ?? 0);
-      if (move) next.set(id, move);
-      else if (going && was.box === seat.box && was.slot === seat.slot) next.set(id, going);
-    }
     setSeen({ key, seats: now });
-    setMoves(next);
+    setMoves(nextMoves(seen.seats, now, moves));
   }
   const done = (id: string, seq: number) =>
     setMoves((current) => {
