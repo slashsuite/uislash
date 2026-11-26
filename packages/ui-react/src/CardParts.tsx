@@ -27,7 +27,7 @@ function NameTitle({
 }) {
   const Tag = `h${level}` as const;
   return (
-    <Tag id={id} className="text-base font-semibold text-slate-900 wrap-anywhere">
+    <Tag id={id} className="text-base font-semibold text-slate-900 break-words">
       {children}
     </Tag>
   );

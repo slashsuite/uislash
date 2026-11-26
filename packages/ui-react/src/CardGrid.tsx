@@ -130,7 +130,9 @@ export function CardGrid({
         {...wait.attrs}
         {...(Tag === "ul" ? { role: "list" } : {})}
         className={cx(
-          "grid gap-4 *:min-w-0",
+          // A card title shrinks to its fixed-width cell and wraps there (its own break-words);
+          // outside a grid it keeps its longest word's width, so a card sized by its content stays wide enough.
+          "grid gap-4 *:min-w-0 [&_:is(h2,h3,h4,h5,h6)]:min-w-0",
           gridColumns(columns, minWidth, minColumns),
           ALIGN[align],
         )}
