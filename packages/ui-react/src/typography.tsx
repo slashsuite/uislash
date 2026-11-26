@@ -437,7 +437,8 @@ export function CardOverline({
   id?: string | undefined;
   children?: ReactNode;
 }): ReactElement {
-  return pinned(`h${level}`, OVERLINE, faint ? "faint" : "tertiary", props);
+  // wrap-anywhere: a long unbroken title wraps inside the card instead of running past it.
+  return pinned(`h${level}`, `${OVERLINE} wrap-anywhere`, faint ? "faint" : "tertiary", props);
 }
 
 /** A fixed width for a run of text: `amount` is a money figure, right-aligned, at a width that lines a column up. */
