@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import role from "../../../apps/storybook/src/role-state-machine.json";
 import { type FlowLayout, layoutFlow } from "./flowLayout.js";
-import { boxContentSize, MACHINE_SPACING, slotsFor } from "./stateMachineDots.js";
+import { boxContentSize, MACHINE_SPACING, slotsFor } from "./stateMachineGrid.js";
 import { type SizedNode, uniformSizes } from "./useFlowLayout.js";
 
 /**

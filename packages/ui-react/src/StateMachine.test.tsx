@@ -15,7 +15,7 @@ import {
   slotsFor,
   TAG_GAP,
   TAG_ROW,
-} from "./stateMachineDots.js";
+} from "./stateMachineGrid.js";
 import { contentKey, uniformSizes } from "./useFlowLayout.js";
 
 const states: StateMachineState[] = [

@@ -6,16 +6,16 @@ import type { Passthrough } from "./props.js";
 import { Bone, BusyLabel, busy, type LoadingProps, useLoading } from "./skeleton.js";
 import { type CategoryTone, Legend, VIZ_TONE } from "./StackedBar.js";
 import { moverOf, toneByRole } from "./stateMachineRoles.js";
+import { dotLayer } from "./stateMachineDots.js";
 import {
   boxContentSize,
   MACHINE_SPACING,
   dotArea,
-  dotLayer,
   placeOf,
   slotsFor,
   UNPLACED,
-  useMoves,
-} from "./stateMachineDots.js";
+} from "./stateMachineGrid.js";
+import { useMoves } from "./stateMachineMoves.js";
 import { type SizedNode, useFlowLayout } from "./useFlowLayout.js";
 
 /**
@@ -193,10 +193,9 @@ function boxesFor(
 }
 
 /** Which boxes show all their dots, and the switch that opens or closes one. */
-function useOpenBoxes(opened: () => void): [ReadonlySet<string>, (id: string) => void] {
+function useOpenBoxes(): [ReadonlySet<string>, (id: string) => void] {
   const [open, setOpen] = useState<ReadonlySet<string>>(new Set());
   const toggle = (id: string) => {
-    opened();
     setOpen((current) => {
       const next = new Set(current);
       if (!next.delete(id)) next.add(id);
@@ -223,8 +222,10 @@ function useOpenBoxes(opened: () => void): [ReadonlySet<string>, (id: string) =>
  * counts them; a box shows up to six and a `+N` for the rest. The dot's name and tooltip is its
  * full `label`, and with an `href` it is a link. An item whose state is not in the machine goes in
  * a box of its own, "Not in any state", so nothing is dropped. When an item's state changes, its
- * dot runs along the arrow between the two (straight across when there is none); with reduced
- * motion it moves at once. `active` rings the one state that is current.
+ * dot runs from its slot along the arrow between the two, in the arrow's colour (straight across,
+ * in the colour of the old state's owner, when there is none), into its new slot, and the dots
+ * that stay slide into the slots it freed; with reduced motion every dot moves at once. `active`
+ * rings the one state that is current.
  *
  * `fromXState` makes `states` and `transitions` from an xstate machine.
  */
@@ -258,8 +259,8 @@ export function StateMachine({
   Passthrough): ReactElement {
   const { loading: waiting, owner } = useLoading(loading);
   const known = new Set(states.map((s) => s.id));
-  const { moves, done, clear } = useMoves(items, known);
-  const [open, toggle] = useOpenBoxes(clear);
+  const [open, toggle] = useOpenBoxes();
+  const { moves, done } = useMoves(items, known, open);
   const inBox = itemsByBox(items, known);
   const tones = toneByRole(states, transitions, pinned);
   const nodes = boxesFor(states, inBox, open, tones);
@@ -268,6 +269,13 @@ export function StateMachine({
     const tone = tones.get(moverOf(t, owners) ?? "");
     return { from: t.from, to: t.to, label: t.event, ...(tone ? { colour: VIZ_TONE[tone] } : {}) };
   });
+  // A run takes its arrow's colour; with no arrow, the colour of the role that owns the state it leaves.
+  const runColour = (from: string, to: string) => {
+    const edge = edges.find((e) => e.from === from && e.to === to);
+    if (edge) return edge.colour;
+    const tone = tones.get(owners.get(from) ?? "");
+    return tone ? VIZ_TONE[tone] : undefined;
+  };
   const { canvas, drawn } = useFlowLayout(nodes, edges, "down", {
     uniform: true,
     spacing: MACHINE_SPACING,
@@ -290,7 +298,7 @@ export function StateMachine({
         nodes={nodes}
         edges={edges}
         active={active}
-        layer={(layout) => dotLayer(layout, { inBox, names, open, toggle, moves, done })}
+        layer={(layout) => dotLayer(layout, { inBox, names, open, toggle, moves, done, runColour })}
         canvas={canvas}
         drawn={drawn}
         fit

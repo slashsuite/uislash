@@ -1,27 +1,12 @@
-import { type ReactElement, useState } from "react";
+import type { AnimationEvent, ReactElement } from "react";
 import { cx, focusRing } from "./cx.js";
-import type { FlowLayout, FlowNodeBox, FlowSpacing } from "./flowLayout.js";
+import type { FlowLayout, FlowNodeBox } from "./flowLayout.js";
 import { renderLink } from "./link.js";
 import { type CategoryTone, VIZ_TONE } from "./StackedBar.js";
 import type { StateMachineItem } from "./StateMachine.js";
+import { DOT_X, LIMIT, SLOT_W, slotAt, slotsFor } from "./stateMachineGrid.js";
+import { type Move, moveCss, Travel } from "./stateMachineMoves.js";
 import { useTooltip } from "./Tooltip.js";
-
-/**
- * The box items whose `state` is no state of the machine go in. Printable, since it reaches the DOM
- * (a box's `data-measure`), where a server render would turn a control character into U+FFFD.
- */
-export const UNPLACED = "hc-sm:unplaced";
-
-/** A dot's slot in its box: three to a row, each wide enough for a short ref. */
-export const SLOT_W = 76;
-export const SLOT_H = 22;
-export const COLS = 3;
-/** Up to this many dots show in a box; past it, one fewer and a `+N` that shows the rest. */
-const LIMIT = 6;
-/** From a box's bottom edge to its dots' bottom: its border and its bottom padding. */
-const BOX_INSET = 9;
-/** From a slot's left edge to its dot's centre: the chip's inset, its padding and half the dot. */
-const DOT_X = 2 + 4 + 5;
 
 const CATEGORIES: readonly CategoryTone[] = [
   "cat1",
@@ -41,116 +26,6 @@ function colourOf(id: string): string {
   return VIZ_TONE[CATEGORIES[sum % CATEGORIES.length] ?? "cat1"];
 }
 
-// The move is CSS: a dot runs along the arrow's path (`offset-path`) in 600ms while the dot at
-// its new place waits hidden for the same time. Nothing is timed in script: the run ends on its
-// own `animationend`. With reduced motion the run is hidden and over at once (so it still ends),
-// and the dot is in its new place at once.
-const css = `[data-hc-sm-travel]{offset-anchor:center;offset-rotate:0deg;animation:hc-sm-travel .6s ease-in-out forwards}[data-hc-sm-arrive]{animation:hc-sm-arrive .6s linear}@keyframes hc-sm-travel{from{offset-distance:0%}to{offset-distance:100%}}@keyframes hc-sm-arrive{from,to{visibility:hidden}}@media (prefers-reduced-motion:reduce){[data-hc-sm-travel]{visibility:hidden;animation-duration:1ms}[data-hc-sm-arrive]{animation:none}}`;
-
-/** An item on its way from one state to another; `seq` restarts the run when it moves again. */
-type Move = { from: string; to: string; seq: number };
-
-/** Which box each item sits in: its state's, else the unplaced box. */
-export function placeOf(
-  items: readonly StateMachineItem[],
-  known: ReadonlySet<string>,
-): Map<string, string> {
-  return new Map(items.map((i) => [i.id, known.has(i.state) ? i.state : UNPLACED]));
-}
-
-/**
- * Remembers where every item was, and when one's place changes records the move, during render
- * (React's "adjust state when a prop changes"), so the re-render that measures the boxes does not
- * lose it. A move ends on its run's `animationend` (`done`), at the next change of places (which
- * records only its own moves), or on `clear` (a box opened, which would start a run long over).
- */
-export function useMoves(
-  items: readonly StateMachineItem[],
-  known: ReadonlySet<string>,
-): {
-  moves: ReadonlyMap<string, Move>;
-  done: (id: string, seq: number) => void;
-  clear: () => void;
-} {
-  const now = placeOf(items, known);
-  const key = JSON.stringify([...now]);
-  const [seen, setSeen] = useState({ key, places: now });
-  const [moves, setMoves] = useState<ReadonlyMap<string, Move>>(new Map());
-  // Compared by value: a caller's `items` is often a new array on every render.
-  if (seen.key !== key) {
-    const next = new Map<string, Move>();
-    for (const [id, to] of now) {
-      const from = seen.places.get(id);
-      if (from !== undefined && from !== to) {
-        next.set(id, { from, to, seq: (moves.get(id)?.seq ?? 0) + 1 });
-      }
-    }
-    setSeen({ key, places: now });
-    setMoves(next);
-  }
-  const done = (id: string, seq: number) =>
-    setMoves((current) => {
-      if (current.get(id)?.seq !== seq) return current;
-      const next = new Map(current);
-      next.delete(id);
-      return next;
-    });
-  return { moves, done, clear: () => setMoves(new Map()) };
-}
-
-/** How many slots a box with `count` items draws: all of them, or the first few and a `+N`; one more for "fewer" when open. */
-export function slotsFor(count: number, open: boolean): number {
-  if (count <= LIMIT) return count;
-  return open ? count + 1 : LIMIT;
-}
-
-/**
- * The rows a box reserves for its dots, whatever its count: the six it shows (the `+N` included),
- * or the rows of an open box's full list. A box with few or no items reserves the same rows, so
- * its size does not depend on how many items it holds.
- */
-export function rowsFor(slots: number): number {
-  return Math.ceil(Math.max(LIMIT, slots) / COLS);
-}
-
-/**
- * The room a box reserves under its tags for `slots` dots: the full grid's width and `rowsFor`'s
- * height, so it is the same at 0, 1, 6 or 12 items (closed) and grows only when a box is opened.
- */
-export function dotArea(slots: number): { width: number; height: number } {
-  return { width: COLS * SLOT_W, height: rowsFor(slots) * SLOT_H };
-}
-
-/**
- * A machine's gaps, closer than `FlowDiagram`'s: its boxes are all one size, and every gap between
- * two ranks also holds a rank of arrow labels, so the loose gaps leave wide empty bands.
- */
-export const MACHINE_SPACING: FlowSpacing = { node: 24, rank: 32, edge: 8 };
-
-/** A box's tag row: one small pill's height. */
-export const TAG_ROW = 20;
-/** The gap between the tag row and the dot area (`mt-1`). */
-export const TAG_GAP = 4;
-
-/**
- * The size of what a box holds under its label: its tag row, then its dot area. The layout takes
- * it before the box can be measured (a server render), so the dots, placed up from the box's
- * bottom, already sit under the tags and never on them.
- */
-export function boxContentSize(slots: number): { width: number; height: number } {
-  const area = dotArea(slots);
-  return { width: area.width, height: TAG_ROW + TAG_GAP + area.height };
-}
-
-/** Where slot `i` of `slots` sits in `box`: its left edge and its vertical centre, on the box's fixed grid. */
-export function slotAt(box: FlowNodeBox, i: number, slots: number): { left: number; y: number } {
-  const top = box.y + box.height - BOX_INSET - rowsFor(slots) * SLOT_H;
-  return {
-    left: box.x + box.width / 2 - (COLS * SLOT_W) / 2 + (i % COLS) * SLOT_W,
-    y: top + Math.floor(i / COLS) * SLOT_H + SLOT_H / 2,
-  };
-}
-
 /** One dot: its colour, its short ref, its full label as name and tooltip, a link when it has `href`. */
 function Dot({
   item,
@@ -158,12 +33,17 @@ function Dot({
   left,
   y,
   arriving,
+  shift,
+  shifted,
 }: {
   item: StateMachineItem;
   where: string;
   left: number;
   y: number;
   arriving: boolean;
+  /** Its slide from its old slot, when it has just changed slot in its box. */
+  shift: Extract<Move, { kind: "shift" }> | undefined;
+  shifted: () => void;
 }): ReactElement {
   const { props, tooltip } = useTooltip<HTMLElement>(
     item.label,
@@ -174,7 +54,13 @@ function Dot({
     "pointer-events-auto absolute flex h-5 items-center gap-1 rounded px-1 text-xs text-slate-700",
     focusRing,
   );
-  const position = { ...props.style, left: left + 2, top: y - 10, width: SLOT_W - 4 };
+  const position = {
+    ...props.style,
+    left: left + 2,
+    top: y - 10,
+    width: SLOT_W - 4,
+    ...(shift ? { "--hc-sm-dx": `${shift.dx}px`, "--hc-sm-dy": `${shift.dy}px` } : {}),
+  };
   const body = (
     <>
       <span
@@ -191,6 +77,12 @@ function Dot({
     style: position,
     "aria-label": `${item.label}, in ${where}`,
     ...(arriving ? { "data-hc-sm-arrive": "" } : {}),
+    ...(shift ? { "data-hc-sm-shift": shift.seq % 2 === 0 ? "b" : "a" } : {}),
+    onAnimationEnd: (event: AnimationEvent<HTMLElement>) => {
+      if (event.target === event.currentTarget && event.animationName.startsWith("hc-sm-shift")) {
+        shifted();
+      }
+    },
   };
   return (
     <>
@@ -208,38 +100,6 @@ function Dot({
       )}
       {tooltip}
     </>
-  );
-}
-
-/** The dot that runs from an item's old box to its new one: along the arrow between them, else straight. */
-function Travel({
-  item,
-  move,
-  drawn,
-  to,
-  done,
-}: {
-  item: StateMachineItem;
-  move: Move;
-  drawn: FlowLayout;
-  to: { x: number; y: number };
-  done: () => void;
-}): ReactElement | null {
-  const from = drawn.nodes.find((n) => n.id === move.from);
-  if (!from) return null;
-  const start = slotAt(from, 0, 1);
-  const x0 = start.left + DOT_X;
-  const edge = drawn.edges.find((e) => e.from === move.from && e.to === move.to);
-  const via = edge ? ` L${edge.path.slice(1)}` : "";
-  const d = `M${x0},${start.y}${via} L${to.x},${to.y}`;
-  return (
-    <span
-      aria-hidden="true"
-      data-hc-sm-travel=""
-      onAnimationEnd={done}
-      className={cx("absolute left-0 top-0 size-2.5 rounded-full bg-current", colourOf(item.id))}
-      style={{ offsetPath: `path("${d}")` }}
-    />
   );
 }
 
@@ -276,7 +136,7 @@ function MoreToggle({
   );
 }
 
-/** What the dot layer draws from: the items in each box, the boxes' names, which boxes are open, and the moves. */
+/** What the dot layer draws from: the items in each box, the boxes' names, which boxes are open, the moves, and each run's colour. */
 type DotPlaces = {
   inBox: ReadonlyMap<string, readonly StateMachineItem[]>;
   names: ReadonlyMap<string, string>;
@@ -284,10 +144,35 @@ type DotPlaces = {
   toggle: (id: string) => void;
   moves: ReadonlyMap<string, Move>;
   done: (id: string, seq: number) => void;
+  /** The text colour utility of a run from one box to another, if its move has a role. */
+  runColour: (from: string, to: string) => string | undefined;
 };
 
 /** The drawn diagram, with what the dot layer draws over it. */
 type DotScene = DotPlaces & { layout: FlowLayout };
+
+/** The run of an item that has just come into `box`, ending at `end`, if it has one. */
+function runInto(
+  item: StateMachineItem,
+  box: FlowNodeBox,
+  end: { left: number; y: number },
+  places: DotScene,
+): ReactElement | null {
+  const move = places.moves.get(item.id);
+  // A run needs the box it leaves; with that box gone (the last unplaced item placed) it just lands.
+  if (move?.kind !== "travel" || move.to !== box.id) return null;
+  if (!places.layout.nodes.some((n) => n.id === move.from)) return null;
+  return (
+    <Travel
+      key={`${item.id}:${move.seq}`}
+      move={move}
+      drawn={places.layout}
+      to={{ x: end.left + DOT_X, y: end.y }}
+      colour={places.runColour(move.from, move.to) ?? colourOf(item.id)}
+      done={() => places.done(item.id, move.seq)}
+    />
+  );
+}
 
 /** One item's dot in `box`, and its run there when it has just moved in. */
 function placeDot(
@@ -297,8 +182,7 @@ function placeDot(
   places: DotScene,
 ): ReactElement[] {
   const move = places.moves.get(item.id);
-  // A run needs the box it leaves; with that box gone (the last unplaced item placed) it just lands.
-  const arriving = move?.to === box.id && places.layout.nodes.some((n) => n.id === move.from);
+  const run = runInto(item, box, at, places);
   const dot = (
     <Dot
       key={`${item.id}:${box.id}`}
@@ -306,24 +190,18 @@ function placeDot(
       where={places.names.get(box.id) ?? box.id}
       left={at.left}
       y={at.y}
-      arriving={arriving}
+      arriving={run !== null}
+      shift={move?.kind === "shift" ? move : undefined}
+      shifted={() => move && places.done(item.id, move.seq)}
     />
   );
-  if (!move || !arriving) return [dot];
-  return [
-    dot,
-    <Travel
-      key={`${item.id}:${move.seq}`}
-      item={item}
-      move={move}
-      drawn={places.layout}
-      to={{ x: at.left + DOT_X, y: at.y }}
-      done={() => places.done(item.id, move.seq)}
-    />,
-  ];
+  return run ? [dot, run] : [dot];
 }
 
-/** A box's dots: every item, or the first few and the `+N` that shows the rest. */
+/**
+ * A box's dots: every item, or the first few and the `+N` that shows the rest. An item that comes
+ * in behind the `+N` runs to it.
+ */
 function boxDots(box: FlowNodeBox, places: DotScene): ReactElement[] {
   const here = places.inBox.get(box.id) ?? [];
   const open = places.open.has(box.id);
@@ -332,8 +210,10 @@ function boxDots(box: FlowNodeBox, places: DotScene): ReactElement[] {
   const dots = shown.flatMap((item, i) => placeDot(item, slotAt(box, i, count), box, places));
   if (here.length <= LIMIT) return dots;
   const at = slotAt(box, count - 1, count);
+  const behind = here.slice(shown.length).flatMap((item) => runInto(item, box, at, places) ?? []);
   return [
     ...dots,
+    ...behind,
     <MoreToggle
       key={`more:${box.id}`}
       hidden={here.length - shown.length}
@@ -350,7 +230,7 @@ function boxDots(box: FlowNodeBox, places: DotScene): ReactElement[] {
 export function dotLayer(layout: FlowLayout, places: DotPlaces): ReactElement {
   return (
     <>
-      <style>{css}</style>
+      <style>{moveCss}</style>
       {layout.nodes.flatMap((box) => boxDots(box, { ...places, layout }))}
     </>
   );

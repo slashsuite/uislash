@@ -169,6 +169,56 @@ function Moving() {
 
 export const Play: S = { render: () => <Moving /> };
 
+const before: StateMachineItem[] = [
+  { id: "A-1", label: "Spring launch post", state: "review" },
+  { id: "A-2", label: "Pricing page rewrite", state: "review" },
+  { id: "A-3", label: "Team interview", state: "review" },
+  { id: "A-4", label: "Old changelog", state: "draft" },
+];
+/**
+ * A-1 is approved and A-2 sent back, each along its arrow (the send back bends round the boxes),
+ * A-4 goes from draft to rejected, where no arrow joins them, so it runs straight across, and A-3,
+ * left in review, slides into the slot A-1 freed.
+ */
+const after: StateMachineItem[] = [
+  { id: "A-1", label: "Spring launch post", state: "published" },
+  { id: "A-2", label: "Pricing page rewrite", state: "draft" },
+  { id: "A-3", label: "Team interview", state: "review" },
+  { id: "A-4", label: "Old changelog", state: "rejected" },
+];
+
+/** Three items change state at once on the press: each dot runs along its arrow in its colour. */
+function MoveAlong() {
+  const [moved, setMoved] = useState(false);
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex gap-2">
+        <Button onClick={() => setMoved(!moved)}>
+          {moved ? "Move them back" : "Move three items"}
+        </Button>
+      </div>
+      <StateMachine
+        label="Article flow"
+        states={states}
+        transitions={transitions}
+        items={moved ? after : before}
+      />
+    </div>
+  );
+}
+
+/**
+ * The interaction: the play presses the button, so the story ends with the dots in their new boxes.
+ * It clicks in one step, not through `userEvent`'s awaited pointer steps, so the visual check,
+ * which shoots once the story renders, always shoots the moved state.
+ */
+export const MoveAlongArrows: S = {
+  render: () => <MoveAlong />,
+  play: ({ canvas }) => {
+    canvas.getByRole("button", { name: "Move three items" }).click();
+  },
+};
+
 const queued: StateMachineState[] = [
   { id: "queued", label: "Queued" },
   { id: "done", label: "Done", kind: "terminal" },
