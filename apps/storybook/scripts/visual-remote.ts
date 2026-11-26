@@ -216,9 +216,10 @@ async function requireBaselines(subprojects: string[], mergeBase: string) {
 const POLL_TIMEOUT_MS = 5 * 60_000;
 /**
  * A server render waits its turn: the server renders one build at a time, and a main upload sends
- * every group at once (about 2600 shots, some 15 minutes at three a second).
+ * every group at once (about 2600 shots, some 35 minutes at about 0.8 s a shot), so the last group
+ * waits for all the others.
  */
-const RENDER_TIMEOUT_MS = 40 * 60_000;
+const RENDER_TIMEOUT_MS = 60 * 60_000;
 const POLL_INTERVAL_MS = 3000;
 
 /**
