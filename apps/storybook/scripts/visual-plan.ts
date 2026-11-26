@@ -5,7 +5,8 @@
  * A group is a section of the component docs (`componentSections` on the site), holding every story
  * file a page in it names (`pairs`, `fullPage`, `stories`). A file named by pages in two sections
  * goes to the first in rail order, so every file is in exactly one group. Storybook's Overview is a
- * group of its own and is always captured. A story file no page names is unsectioned: a test fails
+ * group of its own: a local compare always captures it, a branch upload only when the change
+ * reaches it (`uploadPlan`). A story file no page names is unsectioned: a test fails
  * on it, and so does the run.
  *
  * Every story is shot in the reference theme, the first theme file in sorted order (`themeFiles`),
@@ -20,7 +21,8 @@
  * captured in the reference theme, and when the Gallery sections are among the files reached, they
  * are captured in every other theme too. A change to the reference theme's CSS file reaches every
  * group in that theme; to another theme's CSS file, `themes/<id>.css`, only the Gallery sections in
- * that theme (Overview is always captured, and its All themes sections show every theme); to any
+ * that theme (Overview is always captured in a local compare, and its All themes sections show
+ * every theme, so a branch upload takes Overview for any theme change); to any
  * other file in the themes package, every theme. A change to shared ground (the palette,
  * Storybook's config and what it imports, a manifest or the lockfile, the visual tooling) or a diff
  * that cannot be read reaches everything.
@@ -252,13 +254,25 @@ function reachedWhy(files: StoryFile[], reach: Reach): string[] {
   return [...stems].map(([path, reached]) => `${path} → ${list(reached)}`);
 }
 
-/** One group's captures under `reach`, or `undefined` when the change does not reach it. */
-function pickOf(group: Group, reach: Reach, themes: string[]): GroupPick | undefined {
+/**
+ * One group's captures under `reach`, or `undefined` when the change does not reach it. With
+ * `overviewAlways` (the local compare), Overview is captured whatever the change; without it (a
+ * branch upload), only when the change reaches one of its story files or any theme, since its All
+ * themes sections show every theme.
+ */
+function pickOf(
+  group: Group,
+  reach: Reach,
+  themes: string[],
+  overviewAlways: boolean,
+): GroupPick | undefined {
   const reference = referenceOf(themes);
   const others = themes.slice(1);
   const reached = group.files.filter((file) => reach.reached.has(file.path));
   const overview = group.slug === OVERVIEW;
-  // The reference theme's own change shows in every story; Overview is always captured.
+  const overviewReached = overview && (reached.length > 0 || reach.themed.length > 0);
+  if (overview && !overviewAlways && !overviewReached) return undefined;
+  // The reference theme's own change shows in every story; Overview is captured whole.
   const referenceChanged = reference !== undefined && reach.themed.includes(reference);
   const whole = overview || referenceChanged;
   // A story change in the Gallery sections shows in every theme; another theme's own change, in it.
@@ -279,11 +293,19 @@ function pickOf(group: Group, reach: Reach, themes: string[]): GroupPick | undef
   const themed = new Set(pick.captures.flatMap((c) => c.themes));
   const changed = reach.themed.filter((id) => themed.has(id));
   if (changed.length > 0) why.push(`theme ${changed.join(", ")} changed`);
-  if (overview) why.push("always captured");
+  if (overview && overviewAlways) why.push("always captured");
   return { ...pick, why };
 }
 
-export function planCapture({ repo, grouping, changed, everything }: PlanInput): Plan {
+/**
+ * What a change captures. `overviewAlways` (the default, the local compare) captures Overview
+ * whatever the change; a branch upload turns it off, so a change that reaches no Overview story
+ * and no theme sends nothing for Overview.
+ */
+export function planCapture(
+  { repo, grouping, changed, everything }: PlanInput,
+  { overviewAlways = true }: { overviewAlways?: boolean } = {},
+): Plan {
   const full = (notes: string[]): Plan => ({
     all: true,
     notes,
@@ -303,11 +325,12 @@ export function planCapture({ repo, grouping, changed, everything }: PlanInput):
   const picked: GroupPick[] = [];
   const skipped: Group[] = [];
   for (const group of grouping.groups) {
-    const pick = pickOf(group, reach, repo.themes);
+    const pick = pickOf(group, reach, repo.themes, overviewAlways);
     if (pick === undefined) skipped.push(group);
     else picked.push(pick);
   }
-  if (picked.every((group) => group.slug === OVERVIEW) && reach.themed.length === 0)
+  if (picked.length === 0) notes.push("nothing a story shows changed: nothing is captured");
+  else if (picked.every((group) => group.slug === OVERVIEW) && reach.themed.length === 0)
     notes.push("nothing a component story shows changed: only Overview is captured");
   return { all: false, notes, picked, skipped };
 }
@@ -335,8 +358,10 @@ function wholeGroups(plan: Plan, themes: string[]): Plan {
  * (a group main skipped for long would leave its branches with no baseline in reach). A branch sends
  * each group the change reaches, whole, and nothing for the rest: the server reads a story missing
  * from a build as removed, but a subproject with no build on the commit as not run, and the
- * project's status counts only the subprojects that have one. A local compare (`mode` null) takes
- * what `planCapture` picks.
+ * project's status counts only the subprojects that have one. Overview is one of those groups on a
+ * branch, not always sent: it is the slowest to render (its All themes sections draw every theme),
+ * and a change that reaches none of its stories and no theme cannot change it. A local compare
+ * (`mode` null) takes what `planCapture` picks, Overview always.
  */
 export function uploadPlan(mode: UploadMode | null, input: PlanInput): Plan {
   if (mode === "main")
@@ -346,7 +371,7 @@ export function uploadPlan(mode: UploadMode | null, input: PlanInput): Plan {
         "main uploads every group: it is the baseline each group's next branch diffs against",
       ],
     };
-  const plan = planCapture(input);
+  const plan = planCapture(input, { overviewAlways: mode !== "branch" });
   return mode === "branch" ? wholeGroups(plan, input.repo.themes) : plan;
 }
 

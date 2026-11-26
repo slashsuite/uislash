@@ -212,21 +212,38 @@ const branch = (changed: string[]) =>
   uploadPlan("branch", { repo, grouping, changed, everything: false });
 
 describe("uploadPlan", () => {
-  it("on a branch takes each group the change reaches whole, and skips the rest", () => {
+  it("on a branch takes each group the change reaches whole, and skips the rest, Overview too", () => {
     expect(capturesOf(plan(["apps/storybook/src/sample.ts"])).content).toEqual([
       [["Card"], [reference]],
     ]);
     const result = branch(["apps/storybook/src/sample.ts"]);
-    expect(capturesOf(result)).toEqual({
-      content: [[["Card", "CardBadge"], [reference]]],
-      overview: overviewEverywhere,
-    });
-    expect(result.skipped.map((g) => g.slug)).toEqual(["layout", "actions"]);
+    expect(capturesOf(result)).toEqual({ content: [[["Card", "CardBadge"], [reference]]] });
+    expect(result.skipped.map((g) => g.slug)).toEqual(["layout", "actions", "overview"]);
     expect(result.picked[0]?.why).toEqual(["apps/storybook/src/sample.ts → Card"]);
   });
 
+  it("on a branch takes Overview whole when a component change reaches the Gallery sections", () => {
+    const result = branch(["packages/ui-react/src/focus.ts"]);
+    expect(capturesOf(result)).toEqual({
+      actions: [[["Button"], [reference]]],
+      overview: overviewEverywhere,
+    });
+    expect(result.picked[1]?.why).toEqual([
+      "packages/ui-react/src/focus.ts → overview, GallerySections",
+    ]);
+  });
+
+  it("on a branch whose change reaches no story uploads nothing, and says so", () => {
+    const result = branch(["AGENTS.md", "docs/releasing.md"]);
+    expect(result.picked).toEqual([]);
+    expect(result.skipped.map((g) => g.slug)).toEqual(["layout", "content", "actions", "overview"]);
+    expect(result.notes).toContain("nothing a story shows changed: nothing is captured");
+  });
+
   it("on a branch takes the Gallery sections in every theme when one theme changed", () => {
-    expect(capturesOf(branch(["themes/theme-c.css"]))).toEqual({ overview: overviewEverywhere });
+    const result = branch(["themes/theme-c.css"]);
+    expect(capturesOf(result)).toEqual({ overview: overviewEverywhere });
+    expect(result.picked[0]?.why).toEqual(["theme theme-c changed"]);
   });
 
   it("on a branch whose change reaches everything takes every group", () => {
