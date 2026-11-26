@@ -56,7 +56,7 @@ export const diagramPages: ComponentPage[] = [
         "`owner` is the role that acts in a state, and a transition's `actor` the role that makes a move its from-state's owner does not. Each role has its own colour, the same for the same machine: on its tag, its boxes, its arrows and the legend. `roleTones` pins one.",
         "Keep a state's `label` short: every box is drawn one size, so the boxes line up, and a long label wraps inside it and makes every box a line taller.",
         "An item's `id` is its short ref, shown by its dot; its `label` is the full name, its tooltip and what a screen reader says. Give `href` and the dot is a link.",
-        "Change an item's `state` and its dot runs along the arrow to its new box; there is nothing to call.",
+        "Change an item's `state` and its dot runs from its slot along the arrow, in the arrow's colour, into its new box (straight across when no arrow joins the two), while the dots it leaves slide into its place; there is nothing to call.",
         "`active` rings the one state that is current, for a machine with one thing in it.",
         "Made with xstate? `fromXState(machine)` gives `states` and `transitions`; its `state` option maps your own `meta` onto `kind` and `owner`.",
       ],
@@ -70,7 +70,7 @@ export const diagramPages: ComponentPage[] = [
       "The drawing is an image named by `label`, with the count of states and transitions; the box round it is a group named by `label`, and takes the keyboard focus so a machine that scrolls can be scrolled with the arrow keys.",
       "Each dot is named by its item's label and its state (`Fix the login, in Review`), and takes the focus; one with `href` is a link. A box with more than six shows a `+N` button that shows the rest.",
       "A visually hidden list after it carries every state, its tags and the transitions out of it, as `FlowDiagram`'s does. A role is always named in words, on its tag and in the legend, never by colour alone.",
-      "With reduced motion a dot moves to its new state at once, with no run.",
+      "With reduced motion every dot moves to its new place at once, with no run and no slide.",
     ],
     api: ["StateMachine"],
     types: [

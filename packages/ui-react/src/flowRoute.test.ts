@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { type FlowBox, type FlowEdgePath, type FlowLayout, layoutFlow } from "./flowLayout.js";
 import { squarePath } from "./flowRoute.js";
-import { boxContentSize } from "./stateMachineDots.js";
+import { boxContentSize } from "./stateMachineGrid.js";
 import { guessNode } from "./useFlowLayout.js";
 
 /**
