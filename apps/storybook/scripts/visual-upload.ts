@@ -314,3 +314,12 @@ export function uploadTotalLine(results: GroupResult[], mode: UploadMode | null)
   }
   return `total: ${countsLine(total)}`;
 }
+
+/**
+ * The build id `pixelslash upload --bundle` prints (`build: <id> (<sha7> on <branch>)`), or
+ * `undefined` when it printed none. A bundle upload writes no `build.json`: it sends the Storybook
+ * build as it is, and writing into it would change the next bundle.
+ */
+export function bundleBuildId(stdout: string): string | undefined {
+  return /^build: (\S+) \(/m.exec(stdout)?.[1];
+}

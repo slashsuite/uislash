@@ -19,7 +19,7 @@ export type { Counts };
 export const appDir = join(import.meta.dirname, "..");
 export const repoRoot = join(appDir, "..", "..");
 export const out = join(appDir, ".pixelslash");
-const config = join(appDir, "pixelslash.config.ts");
+export const config = join(appDir, "pixelslash.config.ts");
 const pixelslashDir = resolve(
   process.env["PIXELSLASH_DIR"] ?? join(homedir(), "dev", "pixelslash"),
 );
@@ -67,7 +67,7 @@ const OUTPUT_TAIL = 16_384;
  * `run`, with the child's output still going to the terminal (stderr, as `run` sends it) and its
  * last few KB kept, so a caller can read what the child said when it failed.
  */
-async function runTeed(cmd: string[], cwd: string, env: Record<string, string>) {
+export async function runTeed(cmd: string[], cwd: string, env: Record<string, string>) {
   const proc = Bun.spawn(cmd, {
     cwd,
     env: { ...process.env, ...env },

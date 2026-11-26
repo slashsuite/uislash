@@ -105,22 +105,28 @@ run takes the plan's own `--all` and `--upload`, and refuses a missing plan, a p
 flags, a `HEAD` that moved since the plan, and an unknown slug. A bare `--run` still does all three in one process
 (`CONTRIBUTING.md`, "The visual check").
 
-**CI uploads the shots.** `.github/workflows/visual.yml` runs `storybook:visual-upload` on every
+**CI uploads, and the server renders.** `.github/workflows/visual.yml` runs `storybook:visual-upload` on every
 pull request's head commit and on every push to `main`, against the maintainers' PixelSlash server
-(its address is the `PIXELSLASH_SERVER` secret), which builds one subproject of `uislash` per
-section. It posts one GitHub status for the whole project (`PixelSlash / uislash`) on the head
+(its address is the `PIXELSLASH_SERVER` secret). The upload sends the Storybook build
+(`pixelslash upload --bundle`) and the server renders each group into one subproject of `uislash`
+per section, so the runner installs no browser. A render takes one set of stories in one set of
+themes, so Overview is two subprojects: `overview` (its stories in the reference theme) and
+`overview-themes` (the Gallery sections in every other theme). It posts one GitHub status for the whole project (`PixelSlash / uislash`) on the head
 commit; each section's build is read on the server.
 A local `storybook:visual` is the contributor's own check and needs no server. A manual
 `visual-upload` to that server (with `PIXELSLASH_SERVER` and `PIXELSLASH_TOKEN`) is only for re-seeding `main`, and never mixes a local capture into a
 pull request's build.
 
-**Uploads run their groups in parallel; the local compare does not.** `scripts/visual.ts --run`
-plans, runs each group and totals them in one process. `visual-upload` runs `VISUAL_PARALLEL`
-groups at once (default 1), as `VISUAL_PARALLEL=3 bunx moon run storybook:visual-upload`; a bare
-upload takes one at a time. `visual` stays serial, since it builds and captures the base under the
-baseline lock. Each group takes `max(1, min(10, floor(cpus / VISUAL_PARALLEL)))` capture workers,
-`cpus` from `os.availableParallelism()`, so never set `VISUAL_PARALLEL` above the CPUs: groups times
-workers must fit. `CONTRIBUTING.md`, "The visual check", has the rest, including the port retry.
+**An upload sends every group at once; the local compare runs them one at a time.**
+`scripts/visual.ts --run` plans, runs each group and totals them in one process. A server-rendered
+upload sends every group at once and the server takes them in turn. `visual` stays serial, since it
+builds and captures the base under the baseline lock. `VISUAL_RENDER=client` is the fallback upload:
+it captures here (Chromium from the PixelSlash checkout's `packages/engine`), Overview whole to
+`overview`, `VISUAL_PARALLEL` groups at once (default 1), each with
+`max(1, min(10, floor(cpus / VISUAL_PARALLEL)))` capture workers, so never set `VISUAL_PARALLEL`
+above the CPUs. The server reads the two renders as different environments and refuses a branch
+build against `main` baselines made the other way, so a switch either way starts with a `main`
+re-seed made the new way. `CONTRIBUTING.md`, "The visual check", has the rest.
 
 **A shot may not pass PixelSlash's 24.5 Mpx limit** (19140px tall at 1280 wide; PS-323 ends a build
 at errored on one). The two one-page Overviews, **Gallery** and **All themes**, are for people and are not

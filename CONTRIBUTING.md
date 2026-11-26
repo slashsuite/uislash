@@ -166,8 +166,9 @@ it to contribute**: it runs from a separate checkout of PixelSlash.
 
 **CI uploads every pull request and every push to `main`.** The `Visual` workflow
 (`.github/workflows/visual.yml`) checks out the pull request's head commit (never GitHub's merge
-commit) and PixelSlash at a pinned commit, runs `storybook:visual-upload`, and sends the groups to
-the maintainers' PixelSlash server, whose address is the `PIXELSLASH_SERVER` secret. The server diffs
+commit) and PixelSlash at a pinned commit, runs `storybook:visual-upload`, and sends the Storybook
+build to the maintainers' PixelSlash server, whose address is the `PIXELSLASH_SERVER` secret. The
+server renders each group's stories itself, so the job installs no browser. It diffs
 a pull request against the `main` build it holds, one subproject of the `uislash` project per section,
 and posts one GitHub status for the project (`PixelSlash / uislash`) on the head commit; the
 maintainers review the result there, and a push to `main` becomes the next baseline. A fork's pull request gets no secrets, so the job skips with a notice and the maintainers
@@ -239,14 +240,14 @@ most, so each can be wrapped in whatever limits a browser run on your machine.
 
 The local run (`visual`) builds the merge-base's Storybook in a shared worktree, captures it and
 writes one report per group to `apps/storybook/.pixelslash/<slug>/report/index.html`. An upload
-(`VISUAL_PARALLEL=3 bunx moon run storybook:visual-upload`, which needs `PIXELSLASH_SERVER` and a token;
-see "Uploads can run side by side" below) builds and
+(`bunx moon run storybook:visual-upload`, which needs `PIXELSLASH_SERVER` and a token; see "The
+server renders an upload" below) builds and
 captures no base at all. It has two modes, picked from the checkout:
 
-- **A branch**, on origin/main's tip or behind it, captures the branch only and uploads it. The
+- **A branch**, on origin/main's tip or behind it, uploads the branch only. The
   server diffs it against the newest `main` build at its merge-base or an ancestor, so the run's summary prints the server's counts against main
   (changed and new, and how many shots are to review, with the build's status) and the
-  build's page. Before any capture it checks that each project holds a `main` build at the
+  build's page. Before any upload it checks that each project holds a `main` build at the
   merge-base or an ancestor, and fails naming the project when none does.
 - **A checkout at origin/main's tip** (clean; a detached HEAD in a throwaway worktree counts)
   uploads that commit as branch `main` and compares nothing. The `Visual` run on a push to `main`
@@ -254,26 +255,28 @@ captures no base at all. It has two modes, picked from the checkout:
   and so is a commit already on origin/main but behind its tip (a `main` run that a later push
   overtook): re-seed `main` from its tip instead.
 
-**Uploads can run side by side.** The groups of an upload each write their own
-`.pixelslash/<section>/` and send to their own PixelSlash project, so the run can take several at
-once, and the slowest group, not the sum, then sets the wall time. `VISUAL_PARALLEL` (a whole
-number, default 1) is how many groups run at once:
+**The server renders an upload.** An upload sends the built Storybook and each group's stories and
+themes (`pixelslash upload --bundle`), and the server captures them in its own browser: nothing is
+captured on your machine or the CI runner. Every group is sent at once; the server renders them in
+turn, and the run waits for each build's diff. One render takes one set of stories in one set of
+themes, so Overview goes in two subprojects: `uislash/overview` holds its stories in the reference
+theme, and `uislash/overview-themes` the Gallery sections in every other theme.
+
+`VISUAL_RENDER=client` is the fallback: the upload captures here and sends the shots, Overview whole
+to `uislash/overview`, as it did before the server rendered. It needs Chromium (`bunx playwright
+install chromium` in the PixelSlash checkout's `packages/engine`), and `VISUAL_PARALLEL` (a whole
+number, default 1) sets how many groups capture at once:
 
 ```bash
-VISUAL_PARALLEL=3 bunx moon run storybook:visual-upload
+VISUAL_RENDER=client VISUAL_PARALLEL=3 bunx moon run storybook:visual-upload
 ```
 
-A bare `bunx moon run storybook:visual-upload` takes one group at a time. Only an upload reads
-`VISUAL_PARALLEL`. Each
-group's capture then takes `max(1, min(10, floor(cpus / VISUAL_PARALLEL)))` workers, where `cpus` is
-what `os.availableParallelism()` reports (the CPUs the process may use, so a CPU-limited scope
-counts its own), and ten is PixelSlash's own ceiling. Three groups on 12 CPUs take 4 workers each;
-with the default of 1 a group takes PixelSlash's own `min(10, cpus)`. Groups times workers stays
-within the CPUs, so a `VISUAL_PARALLEL` above the CPU count is refused. The run logs
-`capturing with N workers` for each group. A capture's port is picked free and bound a moment
-later, so two groups can pick the same one; the one that finds it taken picks another and tries
-again, up to 3 times. The local compare (`visual`) stays serial: it builds and captures the base
-under one lock.
+Each group's capture then takes `max(1, min(10, floor(cpus / VISUAL_PARALLEL)))` workers, where
+`cpus` is what `os.availableParallelism()` reports, and a `VISUAL_PARALLEL` above the CPU count is
+refused. The server tells the two apart (a different browser and fonts), and it refuses a pull
+request build made one way against `main` baselines made the other, so switching between them
+starts with a `main` upload made the new way. The local compare (`visual`) always captures here,
+serially: it builds and captures the base under one lock.
 
 PixelSlash ends a build at errored on a shot over 24.5 Mpx (19140px tall at 1280 wide), so the
 one-page **Overview / Gallery** and **Overview / All themes** are not shot whole: the run shoots
