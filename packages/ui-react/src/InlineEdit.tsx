@@ -93,8 +93,10 @@ export function InlineEdit({
       ref={trigger}
       type="button"
       onClick={() => setPhase("open")}
+      // decoration-1: the font's own underline thickness is a fraction of a pixel, and Chromium
+      // anti-aliases the dots' edges differently from one paint to the next when the table scrolls.
       className={cx(
-        "-mx-2 -my-1 block w-[calc(100%+1rem)] cursor-pointer rounded-md px-2 py-1 [text-align:inherit] underline decoration-dotted underline-offset-4 transition hover:bg-slate-100",
+        "-mx-2 -my-1 block w-[calc(100%+1rem)] cursor-pointer rounded-md px-2 py-1 [text-align:inherit] underline decoration-dotted decoration-1 underline-offset-4 transition hover:bg-slate-100",
         focusRing,
       )}
     >
