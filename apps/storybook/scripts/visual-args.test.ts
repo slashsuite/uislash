@@ -1,11 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { pickGroups, savedPlanFrom, stepFrom, type SavedPlan } from "./visual-args.js";
+import {
+  bundleGroups,
+  pickGroups,
+  renderFrom,
+  savedPlanFrom,
+  stepFrom,
+  type SavedPlan,
+} from "./visual-args.js";
 
 const plan: SavedPlan = {
   id: "plan-1",
   upload: false,
   all: true,
   mode: null,
+  bundle: false,
   sha: "b".repeat(40),
   head: "a".repeat(40),
   groups: ["overview", "actions", "forms"].map((slug) => ({
@@ -58,6 +66,11 @@ describe("savedPlanFrom", () => {
     const { head: _, ...old } = plan;
     expect(() => savedPlanFrom(old)).toThrow("no saved plan");
   });
+
+  it("refuses a plan that does not say whether the server renders it", () => {
+    const { bundle: _, ...old } = plan;
+    expect(() => savedPlanFrom(old)).toThrow("no saved plan");
+  });
 });
 
 describe("pickGroups", () => {
@@ -94,5 +107,51 @@ describe("pickGroups", () => {
     expect(() => pickGroups(plan, { ...run, slugs: ["forms", "nope"] })).toThrow(
       "the saved plan has no group nope; its groups are overview, actions, forms",
     );
+  });
+});
+
+describe("renderFrom", () => {
+  it("renders on the server unless VISUAL_RENDER says client", () => {
+    expect(renderFrom(undefined)).toBe("server");
+    expect(renderFrom("")).toBe("server");
+    expect(renderFrom("server")).toBe("server");
+    expect(renderFrom("client")).toBe("client");
+  });
+
+  it("refuses any other value", () => {
+    expect(() => renderFrom("local")).toThrow("VISUAL_RENDER is server or client, not local");
+  });
+});
+
+describe("bundleGroups", () => {
+  const reference = {
+    titles: ["Overview/Palette", "Overview/Gallery sections"],
+    themes: ["latte"],
+  };
+  const gallery = { titles: ["Overview/Gallery sections"], themes: ["mocha", "paper"] };
+
+  it("sends Overview's Gallery sections in the other themes to a subproject of their own", () => {
+    expect(
+      bundleGroups([{ slug: "overview", skipped: false, captures: [reference, gallery] }]),
+    ).toEqual([
+      { slug: "overview", skipped: false, captures: [reference] },
+      { slug: "overview-themes", skipped: false, captures: [gallery] },
+    ]);
+  });
+
+  it("keeps a group of one capture, or none, as it is", () => {
+    const groups = [
+      { slug: "forms", skipped: false, captures: [{ titles: ["Forms/Input"], themes: ["latte"] }] },
+      { slug: "actions", skipped: true, captures: [] },
+    ];
+    expect(bundleGroups(groups)).toEqual(groups);
+  });
+
+  it("drops a capture in no theme, so a one-theme repo keeps one Overview", () => {
+    expect(
+      bundleGroups([
+        { slug: "overview", skipped: false, captures: [reference, { ...gallery, themes: [] }] },
+      ]),
+    ).toEqual([{ slug: "overview", skipped: false, captures: [reference] }]);
   });
 });

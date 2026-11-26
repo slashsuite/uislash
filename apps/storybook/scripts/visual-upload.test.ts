@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildIn,
+  bundleBuildId,
   decideUpload,
   readBuild,
   settle,
@@ -270,5 +271,18 @@ describe("the upload summary lines", () => {
       "total: 4 changed, 10 unchanged, 2 new, 8 removed",
     );
     expect(uploadTotalLine([bare], null)).toBe("total: 2 changed, 5 unchanged, 1 new, 4 removed");
+  });
+});
+
+describe("bundleBuildId", () => {
+  it("reads the build id the bundle upload prints", () => {
+    const stdout =
+      "pixelslash: sent a bundle of 412 stories (96 files, 2581831 bytes); the server renders it\n" +
+      "build: 0b5e6c1a-2f7e-4c55-9d1e-7a1b2c3d4e5f (379fbb5 on main)\n";
+    expect(bundleBuildId(stdout)).toBe("0b5e6c1a-2f7e-4c55-9d1e-7a1b2c3d4e5f");
+  });
+
+  it("is undefined when it printed none", () => {
+    expect(bundleBuildId("pixelslash: upload failed\n")).toBeUndefined();
   });
 });

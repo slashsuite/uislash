@@ -16,10 +16,24 @@ import {
   type LookupMiss,
   type LookupResult,
 } from "./visual-lookup.js";
-import { VisualError, git, log, pixelslashCli, repoRoot, run } from "./visual-tools.js";
+import {
+  VisualError,
+  branchStatic,
+  config,
+  git,
+  log,
+  pixelslashCli,
+  repoRoot,
+  run,
+  runTeed,
+  stepFailure,
+  type Selection,
+} from "./visual-tools.js";
+import { indexOf } from "./visual-index.js";
 import {
   baselineFailure,
   buildIn,
+  bundleBuildId,
   decideUpload,
   settle,
   shasOf,
@@ -200,6 +214,11 @@ async function requireBaselines(subprojects: string[], mergeBase: string) {
 }
 
 const POLL_TIMEOUT_MS = 5 * 60_000;
+/**
+ * A server render waits its turn: the server renders one build at a time, and a main upload sends
+ * every group at once (about 2600 shots, some 15 minutes at three a second).
+ */
+const RENDER_TIMEOUT_MS = 40 * 60_000;
 const POLL_INTERVAL_MS = 3000;
 
 /**
@@ -227,33 +246,16 @@ function recordedBuild(dir: string): string {
   return id;
 }
 
-/**
- * The group's capture sent to its subproject: on the branch, or as `main` in main mode. Then
- * waits for the server to finish diffing it and returns the build, whose counts and page are the
- * result. Nothing about main is built or captured here: the server holds the baseline.
- */
-export async function uploadGroup(subproject: string, dir: string, mode: UploadMode) {
-  const snapshots = join(dir, "branch");
+/** Waits for the server to finish diffing build `id` of `subproject`, and returns it. */
+async function settled(subproject: string, id: string, timeoutMs: number): Promise<BuildState> {
   const target = `${PIXELSLASH_PROJECT}/${subproject}`;
-  log(
-    mode === "main"
-      ? `uploading this commit to ${target} as main`
-      : `uploading the branch to ${target}`,
-  );
-  await uploadSnapshots(
-    snapshots,
-    repoRoot,
-    subproject,
-    ...(mode === "main" ? ["--branch", "main"] : []),
-  );
-  const id = recordedBuild(snapshots);
   let build: BuildState;
   try {
     build = await settle(id, {
       read: () => readBuildState(subproject, id),
       sleep: (ms) => Bun.sleep(ms),
       now: Date.now,
-      timeoutMs: POLL_TIMEOUT_MS,
+      timeoutMs,
       intervalMs: POLL_INTERVAL_MS,
     });
   } catch (error) {
@@ -262,4 +264,61 @@ export async function uploadGroup(subproject: string, dir: string, mode: UploadM
   }
   log(build.url ? `build: ${build.url}` : `uploaded ${target} build ${id}, which lists no page`);
   return build;
+}
+
+const sendLine = (target: string, mode: UploadMode) =>
+  mode === "main" ? `uploading this commit to ${target} as main` : `uploading the branch to ${target}`;
+
+/**
+ * The group's capture sent to its subproject: on the branch, or as `main` in main mode. Then
+ * waits for the server to finish diffing it and returns the build, whose counts and page are the
+ * result. Nothing about main is built or captured here: the server holds the baseline.
+ */
+export async function uploadGroup(subproject: string, dir: string, mode: UploadMode) {
+  const snapshots = join(dir, "branch");
+  log(sendLine(`${PIXELSLASH_PROJECT}/${subproject}`, mode));
+  await uploadSnapshots(
+    snapshots,
+    repoRoot,
+    subproject,
+    ...(mode === "main" ? ["--branch", "main"] : []),
+  );
+  return settled(subproject, recordedBuild(snapshots), POLL_TIMEOUT_MS);
+}
+
+/**
+ * The Storybook build sent to the subproject for the server to render (`pixelslash upload
+ * --bundle`): the config's render plan, narrowed to `selection` as a capture is, on the branch or
+ * as `main`. Then waits for the server to render and diff it, and returns the build. Nothing is
+ * captured here; a story the build does not have is left out, as a capture leaves it.
+ */
+export async function uploadBundle(subproject: string, selection: Selection, mode: UploadMode) {
+  const present = indexOf(branchStatic);
+  const include = selection.titles.filter((title) => present.has(title));
+  if (include.length === 0) throw new VisualError(`${subproject}: no story of it is in the build`);
+  log(sendLine(`${PIXELSLASH_PROJECT}/${subproject}`, mode));
+  const cmd = [
+    "bun",
+    pixelslashCli,
+    "upload",
+    "--bundle",
+    branchStatic,
+    "--config",
+    config,
+    "--project",
+    PIXELSLASH_PROJECT,
+    "--subproject",
+    subproject,
+    ...tokenPathFlags(),
+    ...(mode === "main" ? ["--branch", "main"] : []),
+  ];
+  const { exitCode, signal, tail } = await runTeed(cmd, repoRoot, {
+    VISUAL_INCLUDE: JSON.stringify(include),
+    VISUAL_THEMES: JSON.stringify(selection.themes),
+  });
+  if (exitCode !== 0) throw new VisualError(stepFailure(cmd.join(" "), repoRoot, signal));
+  const id = bundleBuildId(tail);
+  if (id === undefined)
+    throw new VisualError(`${subproject}: \`pixelslash upload --bundle\` printed no build id`);
+  return settled(subproject, id, RENDER_TIMEOUT_MS);
 }

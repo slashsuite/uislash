@@ -14,7 +14,8 @@
  *   group the plan skipped does nothing. It fails, naming the shot, when a branch shot is over
  *   PixelSlash's 24.5 Mpx limit (`visual-shots.ts`; the Overview pages are shot in slices for that
  *   reason). The local compare runs its groups one at a time, since they build and capture the base
- *   under one lock; an upload runs `VISUAL_PARALLEL` of them at once (default 1).
+ *   under one lock; an upload the server renders sends every group at once, and one captured here
+ *   (`VISUAL_RENDER=client`) runs `VISUAL_PARALLEL` of them at once (default 1).
  * - The summary reads every group's result and totals them. It runs only when every group passed.
  *
  * Each step can also run on its own, so a full check splits into short runs (`visual-args.ts`):
@@ -32,8 +33,15 @@
  * moved since stays out of the diff); `VISUAL_BASE` names another ref. It is built in a shared
  * worktree and captured, and `pixelslash compare` writes the local report.
  *
- * `--upload` builds and captures no base at all. It captures the working tree and sends it to the
- * group's PixelSlash subproject on `PIXELSLASH_SERVER`, in one of two modes (`visual-upload.ts`):
+ * `--upload` builds and captures no base at all. It sends the group to its PixelSlash subproject on
+ * `PIXELSLASH_SERVER`. By default the server renders it: the upload sends the Storybook build and
+ * the group's stories and themes (`pixelslash upload --bundle`), and nothing is captured here, so
+ * every group is sent at once and the server takes them in turn. A render takes one set of stories
+ * in one set of themes, so Overview's Gallery sections in the themes other than the reference go to
+ * their own subproject, `overview-themes` (`bundleGroups`). `VISUAL_RENDER=client` is the fallback:
+ * it captures the working tree here, `VISUAL_PARALLEL` groups at once, and sends the shots, Overview
+ * whole to `overview`. The two read as different environments on the server, so a switch between
+ * them re-seeds main first. Either way it uploads in one of two modes (`visual-upload.ts`):
  *
  * - On a branch (on origin/main's tip or behind it), it uploads the branch and the server diffs it
  *   against the main build at its merge-base or nearest ancestor. It first checks that each subproject holds one at the merge-base or
@@ -84,14 +92,16 @@ import {
   type Selection,
 } from "./visual-tools.js";
 import {
+  bundleGroups,
   pickGroups,
+  renderFrom,
   savedPlanFrom,
   stepFrom,
   type PlannedGroup,
   type SavedPlan,
 } from "./visual-args.js";
 import { eachAtOnce, parallelFrom, uploadWorkers } from "./visual-parallel.js";
-import { checkSubprojects, uploadGroup, uploadMode } from "./visual-remote.js";
+import { checkSubprojects, uploadBundle, uploadGroup, uploadMode } from "./visual-remote.js";
 import { readResult } from "./visual-result.js";
 import { uploadSummaryLine, uploadTotalLine, type GroupResult } from "./visual-upload.js";
 
@@ -178,29 +188,33 @@ async function planMode(): Promise<SavedPlan> {
   const mode = upload ? await uploadMode() : null;
   const changed = await changedSince(base.sha);
   const plan = uploadPlan(mode, { repo, grouping, changed, everything });
-  if (mode !== null)
-    await checkSubprojects(
-      mode,
-      plan.picked.map((g) => g.slug),
-    );
+  const bundle = mode !== null && renderFrom(process.env["VISUAL_RENDER"]) === "server";
   const picked = new Map(plan.picked.map((g) => [g.slug, g]));
-  const groups = grouping.groups.map((group) => {
+  const planned = grouping.groups.map((group) => {
     const pick = picked.get(group.slug);
     const captures = titlesOf(pick?.captures ?? []);
     return { slug: group.slug, skipped: !pick, captures };
   });
+  const groups = bundle ? bundleGroups(planned) : planned;
+  if (mode !== null)
+    await checkSubprojects(
+      mode,
+      groups.filter((g) => !g.skipped).map((g) => g.slug),
+    );
   const head = await git(repoRoot, "rev-parse", "HEAD");
   const saved: SavedPlan = {
     id: randomUUID(),
     upload,
     all: everything,
     mode,
+    bundle,
     sha: base.sha,
     head,
     groups,
   };
   mkdirSync(out, { recursive: true });
   writeFileSync(planPath, `${JSON.stringify(saved, null, 2)}\n`);
+  if (bundle) log("the server renders the shots from this Storybook build (VISUAL_RENDER=server)");
   if (mode === "main")
     log(`main: uploading ${base.sha.slice(0, 7)} as the baseline, nothing compared`);
   else if (mode === "branch") log("branch: the server diffs it against the main build it holds");
@@ -253,6 +267,18 @@ async function groupMode(plan: SavedPlan, group: PlannedGroup) {
     return;
   }
   const started = Date.now();
+  if (plan.bundle && plan.mode !== null) {
+    // The server renders the group from the Storybook build: nothing is captured here.
+    const [selection] = group.captures;
+    if (selection === undefined) throw new VisualError(`${slug}: the plan gives it no capture`);
+    const build = await uploadBundle(slug, selection, plan.mode);
+    log(`${slug}: done in ${Math.round((Date.now() - started) / 1000)}s`);
+    writeFileSync(
+      result,
+      `${JSON.stringify({ id: plan.id, slug, skipped: false, counts: build.counts, status: build.status, url: build.url })}\n`,
+    );
+    return;
+  }
   await capture(
     branchStatic,
     join(dir, "branch"),
@@ -302,6 +328,13 @@ function summaryMode(plan: SavedPlan) {
 }
 
 /**
+ * How many groups run at once. A server render sends every group at once: nothing runs here but the
+ * upload and the wait, and the server takes the builds in turn, so it is never idle between two.
+ */
+const atOnce = (plan: SavedPlan, parallel: number) =>
+  plan.bundle && plan.mode !== null ? plan.groups.length : parallel;
+
+/**
  * The plan, then each group, then the summary: what the moon task runs. The local compare takes one
  * group at a time (they build and capture the base under one lock); an upload takes
  * `VISUAL_PARALLEL` at once, each writing its own `.pixelslash/<slug>/` and uploading to its own
@@ -332,7 +365,7 @@ async function main() {
       slugs: step.slugs,
     });
     await ensurePixelslashInstall();
-    await eachAtOnce(groups, parallel, (group) => groupMode(plan, group));
+    await eachAtOnce(groups, atOnce(plan, parallel), (group) => groupMode(plan, group));
     return;
   }
   const plan = await planMode();
@@ -346,7 +379,7 @@ async function main() {
     log("then total them with --summary-only");
     return;
   }
-  await eachAtOnce(plan.groups, parallel, (group) => groupMode(plan, group));
+  await eachAtOnce(plan.groups, atOnce(plan, parallel), (group) => groupMode(plan, group));
   summaryMode(plan);
 }
 

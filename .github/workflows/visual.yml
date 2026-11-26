@@ -1,7 +1,8 @@
 name: Visual
 
-# The visual check: captures the stories and uploads each group to its subproject on the project's
-# own PixelSlash server, which diffs it against main. A pull request uploads only the groups its
+# The visual check: sends the Storybook build to the project's own PixelSlash server, which renders
+# each group's stories into its subproject and diffs them against main (`pixelslash upload --bundle`;
+# nothing is captured on the runner, so no browser is installed). A pull request uploads only the groups its
 # change reaches, each whole; a push to main uploads every group. The server's address is the PIXELSLASH_SERVER
 # secret, so it is never written in this public repo. A pull
 # request uploads its head commit on its own branch; a push to main uploads main, which the server
@@ -45,15 +46,15 @@ jobs:
           persist-credentials: false
 
       # pixelslash is not published; the upload runs its CLI from this checkout. It runs with the
-      # org token in its env, so it is pinned to a commit (pixelslash main, 2026-11-15), never a
-      # branch. Bumping it is a deliberate change of this one line. It sits beside hackcove, not in
+      # org token in its env, so it is pinned to a commit (pixelslash main, 2026-11-26, the first
+      # with the server render), never a branch. Bumping it is a deliberate change of this one line. It sits beside hackcove, not in
       # it, because the upload refuses a dirty tree.
       - name: Check out pixelslash
         if: env.PIXELSLASH_TOKEN != ''
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: madangryscientist/pixelslash
-          ref: a191bd0490168e0906367273a895d20dd0bc5e89
+          ref: a4c2eae25979f4705ba026185c1a650842b7eba4
           path: pixelslash
           persist-credentials: false
 
@@ -87,22 +88,16 @@ jobs:
         working-directory: pixelslash
         run: bun install --frozen-lockfile
 
-      # The browser pixelslash's capture launches: its engine declares the Playwright version, so the
-      # browser is installed from there, not from hackcove's lockfile.
-      - name: Install Chromium for the capture
-        if: env.PIXELSLASH_TOKEN != ''
-        working-directory: pixelslash/packages/engine
-        run: bunx playwright install --with-deps chromium
-
-      # Two groups at once on a 4-CPU runner, each with 2 capture workers. The task is never cached,
-      # so the remote cache is not used here. MOON_BASE is HEAD for the reason ci.yml gives: moon
-      # diffs a pull request against its base before any task runs.
+      # Every group is sent at once and the server renders them in turn; the job waits for each
+      # build's diff. VISUAL_RENDER=client in this step's env is the fallback (capture here, which
+      # needs Chromium installed from pixelslash/packages/engine), and switching to it re-seeds main
+      # first. The task is never cached, so the remote cache is not used here. MOON_BASE is HEAD for
+      # the reason ci.yml gives: moon diffs a pull request against its base before any task runs.
       - name: Upload the visual check
         if: env.PIXELSLASH_TOKEN != ''
         working-directory: hackcove
         env:
           PIXELSLASH_SERVER: ${{ secrets.PIXELSLASH_SERVER }}
           PIXELSLASH_DIR: ${{ github.workspace }}/pixelslash
-          VISUAL_PARALLEL: 2
           MOON_BASE: HEAD
         run: bunx moon run storybook:visual-upload
