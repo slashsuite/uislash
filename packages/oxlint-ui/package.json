@@ -45,8 +45,8 @@
     "prepack": "bun scripts/data.ts"
   },
   "devDependencies": {
-    "@types/bun": "1.4.4",
-    "vitest": "5.1.0"
+    "@types/bun": "1.4.5",
+    "vitest": "5.1.1"
   },
   "peerDependencies": {
     "oxlint": "1.94.0"
