@@ -12,11 +12,14 @@ const ALIGN: Record<TextAlign, string> = {
   end: "text-end",
 };
 
-/** A run clamped to 2, 3 or 4 lines: `line-clamp` is a box of its own. */
+/**
+ * A run clamped to 2, 3 or 4 lines: `line-clamp` is a box of its own. It wraps even inside a box
+ * that keeps its text on one line (a `MediaTile` caption), or it would never reach its second line.
+ */
 const CLAMP: Record<Exclude<TextLines, 1>, string> = {
-  2: "line-clamp-2",
-  3: "line-clamp-3",
-  4: "line-clamp-4",
+  2: "line-clamp-2 whitespace-normal",
+  3: "line-clamp-3 whitespace-normal",
+  4: "line-clamp-4 whitespace-normal",
 };
 
 /**
