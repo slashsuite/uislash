@@ -40,7 +40,7 @@ export const Empty: S = {
   render: () => <StateMachine label="Roles" {...roleMachine} />,
 };
 
-/** Many items: a full box packs nine slots and a `+N` that shows the rest. */
+/** Many items: a full box packs six slots and a `+N` that shows the rest. */
 export const Busy: S = {
   render: () => (
     <StateMachine
@@ -50,7 +50,7 @@ export const Busy: S = {
         ...many("B", 14, "building"),
         ...many("R", 4, "reviewing"),
         ...many("Q", 6, "queued"),
-        ...many("N", 2, "needs_human"),
+        ...many("N", 2, "owner_call"),
         ...many("C", 3, "closed"),
         { id: "F-1", label: "Import retried past its cap", state: "failed" },
       ]}
@@ -99,7 +99,7 @@ export const Active: S = {
 };
 
 const start: StateMachineItem[] = [
-  { id: "T-1", label: "Add the dark theme", state: "idea" },
+  { id: "T-1", label: "Add the dark theme", state: "exploring" },
   { id: "T-2", label: "Fix the date picker", state: "queued" },
   { id: "T-3", label: "Speed up the gate", state: "building" },
   { id: "T-4", label: "Rename the pill tones", state: "reviewing" },
@@ -151,11 +151,11 @@ const queued: StateMachineState[] = [
 ];
 const finish: StateMachineTransition[] = [{ from: "queued", to: "done", event: "finish" }];
 
-/** Four machines, one queued box each, holding 0, 1, 9 and 12 items: each box keeps its size. */
+/** Four machines, one queued box each, holding 0, 1, 6 and 12 items: each box keeps its size. */
 export const BoxSizes: S = {
   render: () => (
     <div className="flex flex-wrap items-start gap-6">
-      {[0, 1, 9, 12].map((n) => (
+      {[0, 1, 6, 12].map((n) => (
         <StateMachine
           key={n}
           label={`${n} items`}

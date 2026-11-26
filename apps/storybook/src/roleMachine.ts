@@ -11,7 +11,7 @@ function kindOf(state: (typeof role.states)[number]): StateMachineKind {
   return state.human_required ? "human" : "normal";
 }
 
-/** A real role machine (26 states, 44 transitions), from a public repo's docs, as a definition. */
+/** A real role machine (20 states, 38 transitions), from a public repo's docs, as a definition. */
 export const roleMachine: StateMachineDefinition = {
   states: role.states.map((s): StateMachineState => ({
     id: s.id,

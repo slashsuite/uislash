@@ -64,6 +64,10 @@ const NODE_GAP = 32;
 const RANK_GAP = 48;
 const EDGE_GAP = 16;
 
+/** The gaps dagre keeps: between boxes in a rank, between ranks, and between arrows in a rank. */
+export type FlowSpacing = { node: number; rank: number; edge: number };
+const LOOSE: FlowSpacing = { node: NODE_GAP, rank: RANK_GAP, edge: EDGE_GAP };
+
 /** A group's dagre id, kept apart from every node id. */
 const groupKey = (name: string): string => `\u0000group:${name}`;
 
@@ -98,6 +102,7 @@ export function layoutFlow(
   nodes: readonly LayoutNode[],
   edges: readonly LayoutEdge[],
   direction: FlowDirection,
+  spacing: FlowSpacing = LOOSE,
 ): FlowLayout {
   const groups = [...new Set(nodes.flatMap((n) => (n.group ? [n.group] : [])))];
   const g = new Graph<GraphMeta, NodeMeta, EdgeMeta>({
@@ -106,9 +111,9 @@ export function layoutFlow(
   });
   g.setGraph({
     rankdir: direction === "right" ? "LR" : "TB",
-    nodesep: NODE_GAP,
-    ranksep: RANK_GAP,
-    edgesep: EDGE_GAP,
+    nodesep: spacing.node,
+    ranksep: spacing.rank,
+    edgesep: spacing.edge,
     marginx: MARGIN,
     marginy: MARGIN,
   });
