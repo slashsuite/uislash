@@ -5,6 +5,7 @@ import {
   CardGrid,
   CardGridRow,
   EmptyState,
+  MediaTile,
   PageHeader,
   StatTile,
   Text,
@@ -109,6 +110,26 @@ export const AutoFillLongTitle: S = {
         ].map((title) => (
           <Card key={title} title={title} titleStyle="name">
             <p className="text-sm text-slate-700">R 1 200</p>
+          </Card>
+        ))}
+      </CardGrid>
+    </DemoShell>
+  ),
+};
+
+/** A long title as a `Text lines={2}` caption under a `MediaTile` wraps to two lines, then ends in an ellipsis. */
+export const AutoFillMediaCaption: S = {
+  render: () => (
+    <DemoShell>
+      <PageHeader title="Hymn books" description="Scanned this week." />
+      <CardGrid columns="auto" minWidth="sm">
+        {[
+          "2. Hymns of the Cape, volume two, with the full orchestral settings and the choir parts",
+          "Psalms",
+          "Songs of praise for the evening service",
+        ].map((title) => (
+          <Card key={title}>
+            <MediaTile alt={title} width="full" caption={<Text lines={2}>{title}</Text>} />
           </Card>
         ))}
       </CardGrid>
