@@ -109,8 +109,17 @@ export function FlowDiagram({
 /** A box's tone in the internal view: the public tones, and `muted` for a box that is over. */
 export type ViewTone = Tone | "muted";
 
-/** A box of the internal view: a `FlowNode` that may also be `muted`. */
-export type ViewNode = Omit<FlowNode, "tone"> & { tone?: ViewTone | undefined };
+/**
+ * A box of the internal view: a `FlowNode` that may also be `muted`, and may carry an `accent`, a
+ * text colour utility painted as a bar across its top (a `StateMachine` state's role).
+ */
+export type ViewNode = Omit<FlowNode, "tone"> & {
+  tone?: ViewTone | undefined;
+  accent?: string | undefined;
+};
+
+/** An arrow of the internal view: a `FlowEdge` that may carry a `colour`, the text colour utility its line and head are drawn in. */
+export type ViewEdge = FlowEdge & { colour?: string | undefined };
 
 /**
  * The laid-out diagram, drawn: `FlowDiagram` without its loading bone, and with `layer`, which
@@ -137,7 +146,7 @@ export function FlowView({
 }: {
   label: string;
   nodes: readonly ViewNode[];
-  edges: readonly FlowEdge[];
+  edges: readonly ViewEdge[];
   active: string | undefined;
   overlay?: ((layout: FlowLayout) => ReactNode) | undefined;
   layer?: ((layout: FlowLayout) => ReactNode) | undefined;
@@ -214,7 +223,7 @@ function FlowCanvas({
 }: {
   drawn: FlowLayout;
   nodes: readonly ViewNode[];
-  edges: readonly { edge: FlowEdge; index: number }[];
+  edges: readonly { edge: ViewEdge; index: number }[];
   active: string | undefined;
   uniform: boolean;
 }): ReactElement {
@@ -232,7 +241,11 @@ function FlowCanvas({
           <span className="absolute left-3 top-1 text-xs font-medium text-slate-500">{g.name}</span>
         </div>
       ))}
-      <FlowArrows drawn={drawn} marker={marker} />
+      <FlowArrows
+        drawn={drawn}
+        marker={marker}
+        colours={new Map(edges.map(({ edge, index }) => [index, edge.colour]))}
+      />
       {edges.map(({ edge, index }) => {
         const at = paths.get(index)?.labelAt;
         return edge.label && at ? (
@@ -256,38 +269,59 @@ function FlowCanvas({
   );
 }
 
-/** Every arrow as an SVG path, with its arrowhead. */
-function FlowArrows({ drawn, marker }: { drawn: FlowLayout; marker: string }): ReactElement {
+/** The default arrow colour, for an arrow with no `colour`. */
+const ARROW = "text-slate-400";
+
+/**
+ * Every arrow as an SVG path, with its arrowhead, each in its `colours` entry or the default grey.
+ * A marker's fill follows the colour where the marker is defined, not the path that uses it, so
+ * each colour gets its own arrowhead.
+ */
+function FlowArrows({
+  drawn,
+  marker,
+  colours,
+}: {
+  drawn: FlowLayout;
+  marker: string;
+  colours: ReadonlyMap<number, string | undefined>;
+}): ReactElement {
+  const used = [...new Set([ARROW, ...colours.values()].filter((c) => c !== undefined))];
+  const headOf = (colour: string) => `${marker}-${used.indexOf(colour)}`;
   return (
-    <svg
-      width={drawn.width}
-      height={drawn.height}
-      className="absolute inset-0 overflow-visible text-slate-400"
-    >
+    <svg width={drawn.width} height={drawn.height} className="absolute inset-0 overflow-visible">
       <defs>
-        <marker
-          id={marker}
-          viewBox="0 0 10 10"
-          refX="9"
-          refY="5"
-          markerWidth="8"
-          markerHeight="8"
-          markerUnits="userSpaceOnUse"
-          orient="auto-start-reverse"
-        >
-          <path d="M0,0L10,5L0,10z" fill="currentColor" />
-        </marker>
+        {used.map((colour) => (
+          <marker
+            key={colour}
+            id={headOf(colour)}
+            className={colour}
+            viewBox="0 0 10 10"
+            refX="9"
+            refY="5"
+            markerWidth="8"
+            markerHeight="8"
+            markerUnits="userSpaceOnUse"
+            orient="auto-start-reverse"
+          >
+            <path d="M0,0L10,5L0,10z" fill="currentColor" />
+          </marker>
+        ))}
       </defs>
-      {drawn.edges.map((e) => (
-        <path
-          key={e.index}
-          d={e.path}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={1.5}
-          markerEnd={`url(#${marker})`}
-        />
-      ))}
+      {drawn.edges.map((e) => {
+        const colour = colours.get(e.index) ?? ARROW;
+        return (
+          <path
+            key={e.index}
+            d={e.path}
+            className={colour}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={1.5}
+            markerEnd={`url(#${headOf(colour)})`}
+          />
+        );
+      })}
     </svg>
   );
 }

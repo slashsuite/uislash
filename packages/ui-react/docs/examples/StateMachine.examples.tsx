@@ -1,6 +1,6 @@
 import { StateMachine } from "@slashsuite/ui-react";
 
-/** One state waits on a person, and only it is `human`: it stands out, and its tag says so. */
+/** One state waits on a person, and only it is `human`: its tag says so, and its owner's colour says who. */
 export const DoKind = () => (
   <StateMachine
     label="Article flow"
@@ -18,7 +18,7 @@ export const DoKind = () => (
   />
 );
 
-/** Every state marked `human`: nothing stands out, and the tags say nothing. */
+/** Every state marked `human`: the tags say nothing. */
 export const DontKind = () => (
   <StateMachine
     label="Article flow"

@@ -1,8 +1,11 @@
 import { type ReactElement, type ReactNode, useState } from "react";
-import { FlowView, type ViewNode, type ViewTone } from "./FlowDiagram.js";
+import { cx } from "./cx.js";
+import { FlowView, type ViewEdge, type ViewNode, type ViewTone } from "./FlowDiagram.js";
 import { Pill, type PillTone } from "./Pill.js";
 import type { Passthrough } from "./props.js";
 import { Bone, BusyLabel, busy, type LoadingProps, useLoading } from "./skeleton.js";
+import { type CategoryTone, Legend, VIZ_TONE } from "./StackedBar.js";
+import { moverOf, toneByRole } from "./stateMachineRoles.js";
 import {
   boxContentSize,
   MACHINE_SPACING,
@@ -27,12 +30,24 @@ export type StateMachineState = {
   label: string;
   /** @default normal */
   kind?: StateMachineKind | undefined;
-  /** The role or lane that acts in this state (`reviewer`, `billing`), shown as a tag on it. */
+  /**
+   * The role or lane that acts in this state (`reviewer`, `billing`): a tag on it in the role's
+   * colour, and a bar of that colour across the box's top.
+   */
   owner?: string | undefined;
 };
 
-/** One move between states, with the `event` that makes it, shown on the arrow. */
-export type StateMachineTransition = { from: string; to: string; event?: string | undefined };
+/**
+ * One move between states, with the `event` that makes it, shown on the arrow, and the `actor`,
+ * the role that makes the move, whose colour the arrow is drawn in.
+ */
+export type StateMachineTransition = {
+  from: string;
+  to: string;
+  event?: string | undefined;
+  /** The role that makes this move. Left out, it is the `owner` of the `from` state. */
+  actor?: string | undefined;
+};
 
 /** The machine: its states and the transitions between them. `fromXState` makes one from an xstate machine. */
 export type StateMachineDefinition = {
@@ -55,14 +70,14 @@ export type StateMachineItem = {
 const KIND_TONE: Record<StateMachineKind, ViewTone> = {
   initial: "neutral",
   normal: "neutral",
-  human: "warn",
+  human: "neutral",
   terminal: "muted",
   failed: "danger",
 };
 const KIND_TAG: Record<StateMachineKind, { text: string; tone: PillTone } | null> = {
   initial: { text: "start", tone: "neutral" },
   normal: null,
-  human: { text: "human", tone: "warn" },
+  human: { text: "human", tone: "neutral" },
   terminal: { text: "end", tone: "neutral" },
   failed: { text: "failed", tone: "danger" },
 };
@@ -74,7 +89,7 @@ const KIND_TAG: Record<StateMachineKind, { text: string; tone: PillTone } | null
  */
 function boxTags(
   tag: { text: string; tone: PillTone } | null,
-  owner: string | undefined,
+  owner: { role: string; tone: CategoryTone } | undefined,
   count: number,
 ): ReactNode {
   return (
@@ -84,7 +99,17 @@ function boxTags(
           {tag.text}
         </Pill>
       )}
-      {owner && <Pill size="sm">{owner}</Pill>}
+      {owner && (
+        <Pill size="sm">
+          <span className="inline-flex items-center gap-1">
+            <span
+              aria-hidden="true"
+              className={cx("size-2 shrink-0 rounded-full bg-current", VIZ_TONE[owner.tone])}
+            />
+            {owner.role}
+          </span>
+        </Pill>
+      )}
       {count > 0 ? (
         <Pill size="sm" tone="accent" dot>
           {count === 1 ? "1 item" : `${count} items`}
@@ -104,8 +129,14 @@ function boxTags(
  * What a box holds under its label: its tags, and the dot area it always reserves (the full grid,
  * even empty), so a box keeps its size whatever its item count.
  */
-function boxContent(state: StateMachineState | null, count: number, slots: number): ReactNode {
-  const tags = boxTags(state ? KIND_TAG[state.kind ?? "normal"] : null, state?.owner, count);
+function boxContent(
+  state: StateMachineState | null,
+  tone: CategoryTone | undefined,
+  count: number,
+  slots: number,
+): ReactNode {
+  const owner = state?.owner && tone ? { role: state.owner, tone } : undefined;
+  const tags = boxTags(state ? KIND_TAG[state.kind ?? "normal"] : null, owner, count);
   return (
     <>
       {tags}
@@ -133,15 +164,20 @@ function boxesFor(
   states: readonly StateMachineState[],
   inBox: ReadonlyMap<string, readonly StateMachineItem[]>,
   open: ReadonlySet<string>,
+  tones: ReadonlyMap<string, CategoryTone>,
 ): (ViewNode & SizedNode)[] {
   const slots = (id: string) => slotsFor(inBox.get(id)?.length ?? 0, open.has(id));
-  const boxes: (ViewNode & SizedNode)[] = states.map((s) => ({
-    id: s.id,
-    label: s.label,
-    tone: KIND_TONE[s.kind ?? "normal"],
-    content: boxContent(s, inBox.get(s.id)?.length ?? 0, slots(s.id)),
-    contentSize: boxContentSize(slots(s.id)),
-  }));
+  const boxes: (ViewNode & SizedNode)[] = states.map((s) => {
+    const tone = s.owner ? tones.get(s.owner) : undefined;
+    return {
+      id: s.id,
+      label: s.label,
+      tone: KIND_TONE[s.kind ?? "normal"],
+      ...(tone ? { accent: VIZ_TONE[tone] } : {}),
+      content: boxContent(s, tone, inBox.get(s.id)?.length ?? 0, slots(s.id)),
+      contentSize: boxContentSize(slots(s.id)),
+    };
+  });
   const unplaced = inBox.get(UNPLACED)?.length ?? 0;
   if (unplaced === 0) return boxes;
   return [
@@ -150,7 +186,7 @@ function boxesFor(
       id: UNPLACED,
       label: "Not in any state",
       tone: "warn",
-      content: boxContent(null, unplaced, slots(UNPLACED)),
+      content: boxContent(null, undefined, unplaced, slots(UNPLACED)),
       contentSize: boxContentSize(slots(UNPLACED)),
     },
   ];
@@ -172,10 +208,16 @@ function useOpenBoxes(opened: () => void): [ReadonlySet<string>, (id: string) =>
 
 /**
  * A state machine, drawn, with the things moving through it: each state a box, each transition an
- * arrow named by its event, laid out like a `FlowDiagram`. A state's `kind` sets its look and a tag
- * that says it: `human` takes the warn tone, `failed` the danger tone, `terminal` is muted, and
- * `initial` is tagged start. Its `owner` is a tag beside it. Every box is one size, the label wrapping
- * inside it, and the boxes sit close.
+ * arrow named by its event, laid out like a `FlowDiagram`. A state's `kind` is a tag that says it:
+ * `human`, `failed` (which also takes the danger tone), `terminal` (muted) and `initial` (start).
+ * Every box is one size, the label wrapping inside it, and the boxes sit close.
+ *
+ * Each role gets its own colour from the categorical scale (`cat1` to `cat8`, remapped by every
+ * theme): a state's `owner` is a tag with its role's colour, and a bar of it across the box's top. A
+ * transition's arrow is drawn in its `actor`'s colour, else in the colour of the role that owns the
+ * state it leaves. The roles take the colours in order, the states' owners first, so the same
+ * machine always gets the same colours; `roleTones` pins a role to one. A legend under the machine
+ * names each role and its colour.
  *
  * Each of the `items` is a coloured dot with its short `id`, in the box of its `state`, which
  * counts them; a box shows up to six and a `+N` for the rest. The dot's name and tooltip is its
@@ -192,6 +234,7 @@ export function StateMachine({
   transitions,
   items = [],
   active,
+  roleTones: pinned,
   loading,
   loadingLabel,
   ...rest
@@ -206,6 +249,11 @@ export function StateMachine({
   items?: readonly StateMachineItem[] | undefined;
   /** The `id` of the one state to ring as current. */
   active?: string | undefined;
+  /**
+   * Pins a role to a colour (`{ owner: "cat2" }`). A role left out takes the next colour in order
+   * that no role is pinned to.
+   */
+  roleTones?: Readonly<Record<string, CategoryTone>> | undefined;
 } & LoadingProps &
   Passthrough): ReactElement {
   const { loading: waiting, owner } = useLoading(loading);
@@ -213,8 +261,13 @@ export function StateMachine({
   const { moves, done, clear } = useMoves(items, known);
   const [open, toggle] = useOpenBoxes(clear);
   const inBox = itemsByBox(items, known);
-  const nodes = boxesFor(states, inBox, open);
-  const edges = transitions.map((t) => ({ from: t.from, to: t.to, label: t.event }));
+  const tones = toneByRole(states, transitions, pinned);
+  const nodes = boxesFor(states, inBox, open, tones);
+  const owners = new Map(states.map((s) => [s.id, s.owner]));
+  const edges = transitions.map((t): ViewEdge => {
+    const tone = tones.get(moverOf(t, owners) ?? "");
+    return { from: t.from, to: t.to, label: t.event, ...(tone ? { colour: VIZ_TONE[tone] } : {}) };
+  });
   const { canvas, drawn } = useFlowLayout(nodes, edges, "down", {
     uniform: true,
     spacing: MACHINE_SPACING,
@@ -231,17 +284,26 @@ export function StateMachine({
 
   const names = new Map(nodes.map((n) => [n.id, n.label]));
   return (
-    <FlowView
-      {...rest}
-      label={label}
-      nodes={nodes}
-      edges={edges}
-      active={active}
-      layer={(layout) => dotLayer(layout, { inBox, names, open, toggle, moves, done })}
-      canvas={canvas}
-      drawn={drawn}
-      fit
-      uniform
-    />
+    <div {...rest} className="flex min-w-0 flex-col gap-2">
+      <FlowView
+        label={label}
+        nodes={nodes}
+        edges={edges}
+        active={active}
+        layer={(layout) => dotLayer(layout, { inBox, names, open, toggle, moves, done })}
+        canvas={canvas}
+        drawn={drawn}
+        fit
+        uniform
+      />
+      {tones.size > 0 && (
+        <div className="flex justify-center">
+          <Legend
+            items={[...tones].map(([role, tone]) => ({ label: role, tone }))}
+            aria-label={`${label}: roles`}
+          />
+        </div>
+      )}
+    </div>
   );
 }

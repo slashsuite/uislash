@@ -20,6 +20,26 @@ const NODE_INK: Record<ViewTone, string> = {
   muted: "text-slate-500",
 };
 
+/** A bar of `colour` (a text colour utility) across a box's top edge. */
+function AccentBar({ colour }: { colour: string }): ReactElement {
+  return (
+    <span aria-hidden="true" className={cx("absolute inset-x-0 top-0 h-1 bg-current", colour)} />
+  );
+}
+
+/** A box's frame: its tone's surface and ink, its size, the ring when `active`, and room for its accent bar. */
+function frameClass(node: ViewNode, active: boolean, uniform: boolean): string {
+  const tone = node.tone ?? "neutral";
+  return cx(
+    "rounded-lg border px-3 py-2 text-sm",
+    node.accent && "relative overflow-hidden",
+    uniform ? "flex size-full flex-col" : "w-max max-w-72 shrink-0",
+    NODE_TONE[tone],
+    NODE_INK[tone],
+    active && "outline-2 outline-offset-2 outline-violet-600",
+  );
+}
+
 /**
  * One box, placed: its label and content, sized by them, centred in the slot the layout gave it.
  * A `uniform` box fills its slot instead, its label measured alone and wrapped to the box's width,
@@ -36,7 +56,6 @@ export function FlowBoxView({
   active: boolean;
   uniform: boolean;
 }): ReactElement {
-  const tone = node.tone ?? "neutral";
   return (
     <div
       className="absolute flex items-center justify-center"
@@ -44,14 +63,9 @@ export function FlowBoxView({
     >
       <div
         {...(uniform ? {} : { "data-measure": nodeKey(box.id) })}
-        className={cx(
-          "rounded-lg border px-3 py-2 text-sm",
-          uniform ? "flex size-full flex-col" : "w-max max-w-72 shrink-0",
-          NODE_TONE[tone],
-          NODE_INK[tone],
-          active && "outline-2 outline-offset-2 outline-violet-600",
-        )}
+        className={frameClass(node, active, uniform)}
       >
+        {node.accent && <AccentBar colour={node.accent} />}
         <div
           {...(uniform ? { "data-measure": labelKey(box.id) } : {})}
           className={cx("font-medium", uniform && "break-words")}

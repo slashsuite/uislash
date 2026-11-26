@@ -3821,7 +3821,7 @@
   },
   "fromXState": {
     "name": "fromXState",
-    "description": "Turns an xstate v5 machine (the machine, or its config) into a `StateMachine` definition: one\nstate per top-level state node, one transition per target in each node's `on`.\n\n- A state's `label` is its `meta.label`, else its key; its `owner` is `meta.owner`; its `kind`\n  is `meta.kind` when that is one of the five, else `terminal` for a `type: \"final\"` node,\n  `initial` for the machine's `initial`, and `normal` for the rest.\n- Each `on` event, `always`, each `after` delay and each `invoke`'s `onDone` and `onError` is a\n  transition. Its `event` is its `meta.label`, else the event's name (`always`, `after 500`,\n  `done`, `error`). A transition with no target\n  (it stays where it is), one that stays inside its own state, or one whose target is not a\n  top-level state is left out.\n- `state` adjusts each state, for a machine whose meta says it another way: return the state to\n  draw, given its key, its config and the state the rules above made of it.\n\nOnly the top level is read: a nested state is drawn as its parent.",
+    "description": "Turns an xstate v5 machine (the machine, or its config) into a `StateMachine` definition: one\nstate per top-level state node, one transition per target in each node's `on`.\n\n- A state's `label` is its `meta.label`, else its key; its `owner` is `meta.owner`; its `kind`\n  is `meta.kind` when that is one of the five, else `terminal` for a `type: \"final\"` node,\n  `initial` for the machine's `initial`, and `normal` for the rest.\n- Each `on` event, `always`, each `after` delay and each `invoke`'s `onDone` and `onError` is a\n  transition. Its `event` is its `meta.label`, else the event's name (`always`, `after 500`,\n  `done`, `error`), and its `actor` its `meta.actor`. A transition with no target\n  (it stays where it is), one that stays inside its own state, or one whose target is not a\n  top-level state is left out.\n- `state` adjusts each state, for a machine whose meta says it another way: return the state to\n  draw, given its key, its config and the state the rules above made of it.\n\nOnly the top level is read: a nested state is drawn as its parent.",
     "signature": "fromXState(machine: XStateMachineLike, options?: { state?: ((input: XStateStateInput) => StateMachineState) | undefined; }): StateMachineDefinition",
     "props": []
   },
@@ -7461,7 +7461,7 @@
   },
   "StateMachine": {
     "name": "StateMachine",
-    "description": "A state machine, drawn, with the things moving through it: each state a box, each transition an\narrow named by its event, laid out like a `FlowDiagram`. A state's `kind` sets its look and a tag\nthat says it: `human` takes the warn tone, `failed` the danger tone, `terminal` is muted, and\n`initial` is tagged start. Its `owner` is a tag beside it. Every box is one size, the label wrapping\ninside it, and the boxes sit close.\n\nEach of the `items` is a coloured dot with its short `id`, in the box of its `state`, which\ncounts them; a box shows up to six and a `+N` for the rest. The dot's name and tooltip is its\nfull `label`, and with an `href` it is a link. An item whose state is not in the machine goes in\na box of its own, \"Not in any state\", so nothing is dropped. When an item's state changes, its\ndot runs along the arrow between the two (straight across when there is none); with reduced\nmotion it moves at once. `active` rings the one state that is current.\n\n`fromXState` makes `states` and `transitions` from an xstate machine.",
+    "description": "A state machine, drawn, with the things moving through it: each state a box, each transition an\narrow named by its event, laid out like a `FlowDiagram`. A state's `kind` is a tag that says it:\n`human`, `failed` (which also takes the danger tone), `terminal` (muted) and `initial` (start).\nEvery box is one size, the label wrapping inside it, and the boxes sit close.\n\nEach role gets its own colour from the categorical scale (`cat1` to `cat8`, remapped by every\ntheme): a state's `owner` is a tag with its role's colour, and a bar of it across the box's top. A\ntransition's arrow is drawn in its `actor`'s colour, else in the colour of the role that owns the\nstate it leaves. The roles take the colours in order, the states' owners first, so the same\nmachine always gets the same colours; `roleTones` pins a role to one. A legend under the machine\nnames each role and its colour.\n\nEach of the `items` is a coloured dot with its short `id`, in the box of its `state`, which\ncounts them; a box shows up to six and a `+N` for the rest. The dot's name and tooltip is its\nfull `label`, and with an `href` it is a link. An item whose state is not in the machine goes in\na box of its own, \"Not in any state\", so nothing is dropped. When an item's state changes, its\ndot runs along the arrow between the two (straight across when there is none); with reduced\nmotion it moves at once. `active` rings the one state that is current.\n\n`fromXState` makes `states` and `transitions` from an xstate machine.",
     "props": [
       {
         "name": "active",
@@ -7505,6 +7505,13 @@
         "required": false,
         "default": "Loading",
         "description": "What a screen reader hears while this part is loading, when its own `loading` is set.",
+        "native": false
+      },
+      {
+        "name": "roleTones",
+        "type": "Readonly<Record<string, CategoryTone>>",
+        "required": false,
+        "description": "Pins a role to a colour (`{ owner: \"cat2\" }`). A role left out takes the next colour in order\nthat no role is pinned to.",
         "native": false
       },
       {

@@ -386,8 +386,8 @@
   },
   "StateMachineTransition": {
     "name": "StateMachineTransition",
-    "description": "One move between states, with the `event` that makes it, shown on the arrow.",
-    "definition": "{ from: string; to: string; event?: string }"
+    "description": "One move between states, with the `event` that makes it, shown on the arrow, and the `actor`,\nthe role that makes the move, whose colour the arrow is drawn in.",
+    "definition": "{ from: string; to: string; event?: string; actor?: string }"
   },
   "StatTileTone": {
     "name": "StatTileTone",

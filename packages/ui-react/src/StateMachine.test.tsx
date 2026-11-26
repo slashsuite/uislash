@@ -219,4 +219,27 @@ describe("StateMachine", () => {
     render(<StateMachine label="Articles" states={[]} transitions={[]} loading />);
     expect(screen.getByRole("figure", { name: "Articles" }).getAttribute("aria-busy")).toBe("true");
   });
+
+  describe("roles", () => {
+    it("names each role in a legend, the states' owners first, then the actors", () => {
+      render(
+        <StateMachine
+          label="Articles"
+          states={states}
+          transitions={[...transitions, { from: "review", to: "published", actor: "lead" }]}
+        />,
+      );
+      const legend = screen.getByRole("list", { name: "Articles: roles" });
+      expect(
+        within(legend)
+          .getAllByRole("listitem")
+          .map((li) => li.textContent),
+      ).toEqual(["writer", "editor", "lead"]);
+    });
+
+    it("draws no legend for a machine with no roles", () => {
+      render(<StateMachine label="Plain" states={[{ id: "a", label: "A" }]} transitions={[]} />);
+      expect(screen.queryByRole("list", { name: "Plain: roles" })).toBeNull();
+    });
+  });
 });
