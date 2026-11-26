@@ -256,22 +256,15 @@ function reachedWhy(files: StoryFile[], reach: Reach): string[] {
 
 /**
  * One group's captures under `reach`, or `undefined` when the change does not reach it. With
- * `overviewAlways` (the local compare), Overview is captured whatever the change; without it (a
+ * `always` (the local compare), Overview is captured whatever the change; without it (a
  * branch upload), only when the change reaches one of its story files or any theme, since its All
  * themes sections show every theme.
  */
-function pickOf(
-  group: Group,
-  reach: Reach,
-  themes: string[],
-  overviewAlways: boolean,
-): GroupPick | undefined {
+function pickOf(group: Group, reach: Reach, themes: string[], always: boolean) {
   const reference = referenceOf(themes);
   const others = themes.slice(1);
   const reached = group.files.filter((file) => reach.reached.has(file.path));
   const overview = group.slug === OVERVIEW;
-  const overviewReached = overview && (reached.length > 0 || reach.themed.length > 0);
-  if (overview && !overviewAlways && !overviewReached) return undefined;
   // The reference theme's own change shows in every story; Overview is captured whole.
   const referenceChanged = reference !== undefined && reach.themed.includes(reference);
   const whole = overview || referenceChanged;
@@ -289,12 +282,25 @@ function pickOf(
     galleryThemes.length > 0 ? galleryThemes : undefined,
   );
   if (pick.captures.length === 0) return undefined;
+  return { ...pick, why: pickWhy(pick, reached, reach, overview && always) };
+}
+
+/** Why a group was picked: the files that reach it, the themes it shows that changed, or always. */
+function pickWhy(pick: GroupPick, reached: StoryFile[], reach: Reach, always: boolean): string[] {
   const why = reachedWhy(reached, reach);
   const themed = new Set(pick.captures.flatMap((c) => c.themes));
   const changed = reach.themed.filter((id) => themed.has(id));
   if (changed.length > 0) why.push(`theme ${changed.join(", ")} changed`);
-  if (overview && overviewAlways) why.push("always captured");
-  return { ...pick, why };
+  if (always) why.push("always captured");
+  return why;
+}
+
+/** The note a plan carries when what it picked is nothing, or Overview alone. */
+function pickedNote(picked: GroupPick[], reach: Reach): string[] {
+  if (picked.length === 0) return ["nothing a story shows changed: nothing is captured"];
+  if (picked.every((group) => group.slug === OVERVIEW) && reach.themed.length === 0)
+    return ["nothing a component story shows changed: only Overview is captured"];
+  return [];
 }
 
 /**
@@ -324,15 +330,18 @@ export function planCapture(
   const notes = reach.unreached.length > 0 ? [`reach no story: ${list(reach.unreached)}`] : [];
   const picked: GroupPick[] = [];
   const skipped: Group[] = [];
+  // Without overviewAlways, Overview is taken only when the change reaches its stories or a theme.
+  const skips = (group: Group) =>
+    !overviewAlways &&
+    group.slug === OVERVIEW &&
+    reach.themed.length === 0 &&
+    !group.files.some((file) => reach.reached.has(file.path));
   for (const group of grouping.groups) {
-    const pick = pickOf(group, reach, repo.themes, overviewAlways);
+    const pick = skips(group) ? undefined : pickOf(group, reach, repo.themes, overviewAlways);
     if (pick === undefined) skipped.push(group);
     else picked.push(pick);
   }
-  if (picked.length === 0) notes.push("nothing a story shows changed: nothing is captured");
-  else if (picked.every((group) => group.slug === OVERVIEW) && reach.themed.length === 0)
-    notes.push("nothing a component story shows changed: only Overview is captured");
-  return { all: false, notes, picked, skipped };
+  return { all: false, notes: [...notes, ...pickedNote(picked, reach)], picked, skipped };
 }
 
 /**

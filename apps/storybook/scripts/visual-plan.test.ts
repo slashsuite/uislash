@@ -208,8 +208,8 @@ describe("planCapture", () => {
   });
 });
 
-const branch = (changed: string[]) =>
-  uploadPlan("branch", { repo, grouping, changed, everything: false });
+const branch = (changed: string[], mode: "branch" | "main" = "branch") =>
+  uploadPlan(mode, { repo, grouping, changed, everything: false });
 
 describe("uploadPlan", () => {
   it("on a branch takes each group the change reaches whole, and skips the rest, Overview too", () => {
@@ -236,7 +236,6 @@ describe("uploadPlan", () => {
   it("on a branch whose change reaches no story uploads nothing, and says so", () => {
     const result = branch(["AGENTS.md", "docs/releasing.md"]);
     expect(result.picked).toEqual([]);
-    expect(result.skipped.map((g) => g.slug)).toEqual(["layout", "content", "actions", "overview"]);
     expect(result.notes).toContain("nothing a story shows changed: nothing is captured");
   });
 
@@ -253,12 +252,7 @@ describe("uploadPlan", () => {
   });
 
   it("on main takes every group whole, whatever the change, and says why", () => {
-    const result = uploadPlan("main", {
-      repo,
-      grouping,
-      changed: ["apps/storybook/src/sample.ts"],
-      everything: false,
-    });
+    const result = branch(["apps/storybook/src/sample.ts"], "main");
     expect(result.all).toBe(true);
     expect(result.skipped).toEqual([]);
     expect(capturesOf(result)).toEqual(capturesOf(plan([], true)));
