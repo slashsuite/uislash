@@ -1,6 +1,6 @@
 {
   "name": "@slashsuite/oxlint-ui",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "An oxlint config and plugin that holds an app to building its UI from @slashsuite/ui-react: no <style>, no raw colour, no dark: variant, no styling prop, no look-alike component, no inline colour and no raw element that has a part.",
   "keywords": [
     "design-system",
