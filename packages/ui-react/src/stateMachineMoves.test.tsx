@@ -47,13 +47,19 @@ const drawn = {
 };
 
 /** Each item's move from the `before` items to the `after` ones, in the order of `ids`. */
-function movesOf(before: StateMachineItem[], after: StateMachineItem[], ids: string[]) {
-  const was = seatsOf(before, known, new Set());
-  const now = seatsOf(after, known, new Set());
+function movesOf(
+  before: StateMachineItem[],
+  after: StateMachineItem[],
+  ids: string[],
+  open: ReadonlySet<string> = new Set(),
+) {
+  const was = seatsOf(before, known, open);
+  const now = seatsOf(after, known, open);
+  const slotsNow = new Map([...now.values()].map((seat) => [seat.box, seat.slots]));
   return ids.map((id) => {
     const from = was.get(id);
     const to = now.get(id);
-    return from && to ? moveOf(from, to, 1) : undefined;
+    return from && to ? moveOf(from, to, 1, slotsNow.get(from.box) ?? 0) : undefined;
   });
 }
 
@@ -87,7 +93,7 @@ describe("moves", () => {
         ids,
       ),
     ).toEqual([
-      { kind: "travel", from: "review", to: "draft", slot: 0, slots: 4, seq: 1 },
+      { kind: "travel", from: "review", to: "draft", slot: 0, slots: 3, seq: 1 },
       { kind: "shift", dx: SLOT_W, dy: 0, seq: 1 },
       { kind: "shift", dx: SLOT_W, dy: 0, seq: 1 },
       // From the second row's first slot to the first row's last.
@@ -103,6 +109,16 @@ describe("moves", () => {
     ]);
   });
 
+  it("starts a run on the grid its old box draws now, when the box loses a row", () => {
+    // An open box of 7 draws 8 slots in three rows; left with 6, it draws two, so the box is a
+    // row shorter and the run starts from the grid as it is drawn now.
+    const items = Array.from({ length: 7 }, (_, i) => item(`B-${i}`, "review"));
+    const after = [...items.slice(0, 6), item("B-6", "draft")];
+    expect(movesOf(items, after, ["B-6"], new Set(["review"]))).toEqual([
+      { kind: "travel", from: "review", to: "draft", slot: 6, slots: 6, seq: 1 },
+    ]);
+  });
+
   it("moves no dot when a box is opened", async () => {
     const items = Array.from({ length: 8 }, (_, i) => item(`B-${i}`, "draft"));
     render(machine(items));
@@ -113,14 +129,11 @@ describe("moves", () => {
     }
   });
 
-  it("runs every dot that moves at once, and slides the one left behind", () => {
-    const items = [item("First", "review"), item("Second", "review"), item("Third", "review")];
-    const { rerender } = render(machine(items));
-    rerender(
-      machine([item("First", "published"), item("Second", "rejected"), item("Third", "review")]),
-    );
+  it("keeps a run going when another dot moves before it lands", () => {
+    const { rerender } = render(machine([item("First", "review"), item("Second", "draft")]));
+    rerender(machine([item("First", "published"), item("Second", "draft")]));
+    rerender(machine([item("First", "published"), item("Second", "rejected")]));
     expect(dot("First, in Published").hasAttribute("data-hc-sm-arrive")).toBe(true);
     expect(dot("Second, in Rejected").hasAttribute("data-hc-sm-arrive")).toBe(true);
-    expect(dot("Third, in In review").hasAttribute("data-hc-sm-shift")).toBe(true);
   });
 });

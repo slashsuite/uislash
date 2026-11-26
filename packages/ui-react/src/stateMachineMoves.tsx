@@ -63,11 +63,15 @@ export function seatsOf(
   return seats;
 }
 
-/** The move from `was` to `now`, if the item moved: a run between boxes, or a slide between two shown slots of one. */
-export function moveOf(was: Seat, now: Seat, seq: number): Move | null {
+/**
+ * The move from `was` to `now`, if the item moved: a run between boxes, or a slide between two
+ * shown slots of one. A run starts from its old slot in the grid its old box draws now
+ * (`fromSlots`), since the run is drawn on the new layout.
+ */
+export function moveOf(was: Seat, now: Seat, seq: number, fromSlots: number): Move | null {
   if (was.box !== now.box) {
     const slot = was.slot ?? LIMIT - 1;
-    return { kind: "travel", from: was.box, to: now.box, slot, slots: was.slots, seq };
+    return { kind: "travel", from: was.box, to: now.box, slot, slots: fromSlots, seq };
   }
   if (was.slot === null || now.slot === null || was.slot === now.slot) return null;
   const dx = ((was.slot % COLS) - (now.slot % COLS)) * SLOT_W;
@@ -78,8 +82,8 @@ export function moveOf(was: Seat, now: Seat, seq: number): Move | null {
 /**
  * Remembers where every dot sat, and when the seats change records each dot's move, during render
  * (React's "adjust state when a prop changes"), so the re-render that measures the boxes does not
- * lose it. A move ends on its animation's `animationend` (`done`), or at the next change of seats,
- * which records only its own moves (opening a box changes no shown slot, so it records none).
+ * lose it. A move ends on its animation's `animationend` (`done`). A change of seats records its own
+ * moves and keeps the ones under way whose dot kept its seat (opening a box records none).
  */
 export function useMoves(
   items: readonly StateMachineItem[],
@@ -95,11 +99,15 @@ export function useMoves(
   const [moves, setMoves] = useState<ReadonlyMap<string, Move>>(new Map());
   // Compared by value: a caller's `items` is often a new array on every render.
   if (seen.key !== key) {
+    const slotsNow = new Map([...now.values()].map((seat) => [seat.box, seat.slots]));
     const next = new Map<string, Move>();
     for (const [id, seat] of now) {
       const was = seen.seats.get(id);
-      const move = was && moveOf(was, seat, (moves.get(id)?.seq ?? 0) + 1);
+      if (!was) continue;
+      const going = moves.get(id);
+      const move = moveOf(was, seat, (going?.seq ?? 0) + 1, slotsNow.get(was.box) ?? 0);
       if (move) next.set(id, move);
+      else if (going && was.box === seat.box && was.slot === seat.slot) next.set(id, going);
     }
     setSeen({ key, seats: now });
     setMoves(next);

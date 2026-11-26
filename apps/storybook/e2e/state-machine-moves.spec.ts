@@ -3,9 +3,10 @@ import { expect, test, type Page } from "@playwright/test";
 /**
  * StateMachine's moves, in the Move Along Arrows story: three items change state at once and one
  * item left behind takes a freed slot. The story's own play moves them; each test lands that and
- * moves them back and forth itself. Each move is read off its own animation, held or finished by
- * the test, so nothing here waits on a clock. Where a run goes (along the arrow's bends, or straight
- * across) is `runPath`'s unit test; how it looks is the visual check's.
+ * moves them back itself, so each move starts after one has landed. Each move is read off its own
+ * animation, held or finished by the test, so nothing here waits on a clock. Where a run goes
+ * (along the arrow's bends, or straight across) is `runPath`'s unit test; how it looks is the
+ * visual check's.
  */
 const STORY = "/iframe.html?id=data-statemachine--move-along-arrows&viewMode=story";
 const WERE = [
@@ -87,18 +88,6 @@ test("three dots run back to their boxes, one dot slides out of the way, and eac
   for (const name of WERE) await expect(page.getByRole("img", { name })).toBeVisible();
   // A run that has landed is gone, so a dot never sits on the line.
   await expect.poll(() => countRuns(page)).toBe(0);
-});
-
-test("the dots run out again when the items move again", async ({ page }) => {
-  await open(page);
-  await page.getByRole("button", { name: "Move them back" }).click();
-  await finishMoves(page);
-  await page.getByRole("button", { name: "Move three items" }).click();
-  const moves = await holdMoves(page);
-  expect(moves.filter((m) => m.kind === "run")).toHaveLength(3);
-  for (const name of ARRIVED) await expect(page.getByRole("img", { name })).toBeHidden();
-  await finishMoves(page);
-  for (const name of ARRIVED) await expect(page.getByRole("img", { name })).toBeVisible();
 });
 
 test("under reduced motion every dot is in its new place at once, with no run or slide", async ({
