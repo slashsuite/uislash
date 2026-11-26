@@ -268,7 +268,9 @@ async function settled(subproject: string, id: string, timeoutMs: number): Promi
 }
 
 const sendLine = (target: string, mode: UploadMode) =>
-  mode === "main" ? `uploading this commit to ${target} as main` : `uploading the branch to ${target}`;
+  mode === "main"
+    ? `uploading this commit to ${target} as main`
+    : `uploading the branch to ${target}`;
 
 /**
  * The group's capture sent to its subproject: on the branch, or as `main` in main mode. Then
