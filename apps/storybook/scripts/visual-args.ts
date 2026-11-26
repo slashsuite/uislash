@@ -136,16 +136,13 @@ export function savedPlanFrom(raw: unknown): SavedPlan {
  * another browser with other fonts, so the server reads them as another environment than the main
  * builds a server render left: going back to it means re-seeding main with it first.
  */
-export type Render = "server" | "client";
+type Render = "server" | "client";
 
 export function renderFrom(raw: string | undefined): Render {
   if (raw === undefined || raw === "" || raw === "server") return "server";
   if (raw === "client") return "client";
   throw new VisualError(`VISUAL_RENDER is server or client, not ${raw}`);
 }
-
-/** The subproject a group's other-theme Gallery sections go to in a server render. */
-export const themesSlug = (slug: string) => `${slug}-themes`;
 
 /**
  * An upload's groups as the server renders them: one selection each, since a render plan is one
@@ -163,7 +160,7 @@ export function bundleGroups(groups: PlannedGroup[]): PlannedGroup[] {
     if (first === undefined || second === undefined) return [{ ...group, captures }];
     return [
       { ...group, captures: [first] },
-      { slug: themesSlug(group.slug), skipped: group.skipped, captures: [second] },
+      { slug: `${group.slug}-themes`, skipped: group.skipped, captures: [second] },
     ];
   });
 }

@@ -103,7 +103,12 @@ import {
 import { eachAtOnce, parallelFrom, uploadWorkers } from "./visual-parallel.js";
 import { checkSubprojects, uploadBundle, uploadGroup, uploadMode } from "./visual-remote.js";
 import { readResult } from "./visual-result.js";
-import { uploadSummaryLine, uploadTotalLine, type GroupResult } from "./visual-upload.js";
+import {
+  uploadSummaryLine,
+  uploadTotalLine,
+  type GroupResult,
+  type UploadMode,
+} from "./visual-upload.js";
 
 const upload = process.argv.includes("--upload");
 const everything = process.argv.includes("--all") || process.env["VISUAL_ALL"] === "1";
@@ -256,6 +261,22 @@ async function captureBase(dir: string, sha: string, captures: Selection[]) {
 const skippedWhy = (plan: SavedPlan) =>
   `skipped, no changed file reaches it${plan.mode === null ? "" : "; nothing uploaded"}`;
 
+/**
+ * Uploads one group: the server renders it from the Storybook build (`plan.bundle`), or it is
+ * captured here and its shots are sent.
+ */
+async function uploadOne(plan: SavedPlan, group: PlannedGroup, dir: string, mode: UploadMode) {
+  if (plan.bundle) {
+    const [selection] = group.captures;
+    if (selection === undefined)
+      throw new VisualError(`${group.slug}: the plan gives it no capture`);
+    return uploadBundle(group.slug, selection, mode);
+  }
+  await capture(branchStatic, join(dir, "branch"), group.captures, uploadWorkers());
+  checkShotSizes(join(dir, "branch"), group.slug);
+  return uploadGroup(group.slug, dir, mode);
+}
+
 async function groupMode(plan: SavedPlan, group: PlannedGroup) {
   const { slug } = group;
   const dir = join(out, slug);
@@ -267,28 +288,9 @@ async function groupMode(plan: SavedPlan, group: PlannedGroup) {
     return;
   }
   const started = Date.now();
-  if (plan.bundle && plan.mode !== null) {
-    // The server renders the group from the Storybook build: nothing is captured here.
-    const [selection] = group.captures;
-    if (selection === undefined) throw new VisualError(`${slug}: the plan gives it no capture`);
-    const build = await uploadBundle(slug, selection, plan.mode);
-    log(`${slug}: done in ${Math.round((Date.now() - started) / 1000)}s`);
-    writeFileSync(
-      result,
-      `${JSON.stringify({ id: plan.id, slug, skipped: false, counts: build.counts, status: build.status, url: build.url })}\n`,
-    );
-    return;
-  }
-  await capture(
-    branchStatic,
-    join(dir, "branch"),
-    group.captures,
-    plan.mode === null ? undefined : uploadWorkers(),
-  );
-  checkShotSizes(join(dir, "branch"), slug);
   if (plan.mode !== null) {
     // An upload builds and captures nothing of main: the server holds the baseline and diffs.
-    const build = await uploadGroup(slug, dir, plan.mode);
+    const build = await uploadOne(plan, group, dir, plan.mode);
     log(`${slug}: done in ${Math.round((Date.now() - started) / 1000)}s`);
     writeFileSync(
       result,
@@ -296,6 +298,8 @@ async function groupMode(plan: SavedPlan, group: PlannedGroup) {
     );
     return;
   }
+  await capture(branchStatic, join(dir, "branch"), group.captures);
+  checkShotSizes(join(dir, "branch"), slug);
   await captureBase(dir, plan.sha, group.captures);
   const report = join(dir, "report");
   const counts = await compare(join(dir, "main"), join(dir, "branch"), report);
