@@ -173,8 +173,11 @@ a pull request against the `main` build it holds, one subproject of the `uislash
 and posts one GitHub status for the project (`PixelSlash / uislash`) on the head commit; the
 maintainers review the result there, and a push to `main` becomes the next baseline. A fork's pull request gets no secrets, so the job skips with a notice and the maintainers
 check its visuals. A pull request uploads only the groups its change reaches (as in the affected mode
-below), each one whole, and Overview, which is always captured; the log names each group it skipped.
-A skipped group has no build on the commit, and the status counts only the groups that have one. A
+below), each one whole; the log names each group it skipped. Overview is one of those groups
+here: it goes up only when the change reaches one of its stories (a component change reaches the
+Gallery sections) or any theme (its All themes sections show every theme), since it is the slowest
+group to render. A skipped group has no build on the commit, and the status counts only the groups
+that have one; a pull request that reaches no group uploads nothing and gets no status. A
 change that reaches everything uploads every group, and a push to `main` always does, so each group
 keeps a baseline near `main`'s tip. A pull request behind `main`'s tip needs no rebase for this: the server diffs it
 against the `main` build at its merge-base, so it shows only its own changes.
@@ -210,7 +213,8 @@ The check runs in one of two modes:
   every story in it and the Gallery sections in every other theme (the file may be a new theme that
   took the reference over); a change to another theme's CSS file, only the Gallery sections in that
   theme.
-  Overview is always captured. Anything shared (the palette, Storybook's config, the lockfile, a
+  Overview is always captured here (a pull request's upload takes it only when the change reaches
+  it). Anything shared (the palette, Storybook's config, the lockfile, a
   `package.json`, the visual scripts) or a diff that cannot be read captures everything. The run
   says at the top what it picked and why, how much it skipped, and the shots per theme.
 - **Everything** (`bunx moon run storybook:visual -- --all`, or

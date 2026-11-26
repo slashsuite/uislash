@@ -88,7 +88,8 @@ names, so a new theme needs no test edit.
 **The visual check** (PixelSlash, `CONTRIBUTING.md`, "The visual check") is split into one group
 per section of the site's component docs, read from `componentSections`: one `.pixelslash/<section>/` folder
 and one PixelSlash subproject `<section>` each, under the one project `uislash`, plus Overview,
-which is always captured. Every story is shot in the reference theme, the first theme file
+which a local compare always captures and a pull request's upload only when the change reaches it
+(one of its stories, or any theme). Every story is shot in the reference theme, the first theme file
 in sorted order (`themeFiles`), read from `themes/`, never named in code. Every other theme is shot
 in **Overview / Gallery sections** only, which must render every component `index.ts` exports
 (`visual-shots.test.ts`), so a theme added costs one Gallery, not every story. A theme whose file
@@ -177,11 +178,11 @@ uislash lands through pull requests (Jacobus, 2026-10-27). Who opens and who mer
 global rule; what is particular to uislash:
 
 - **Shots before the merge.** The `Visual` workflow uploads the PR's head commit: each
-  group the change reaches (and Overview, always), whole, each to its own subproject of `uislash` (`uislash/<section>`), and the server diffs it
+  group the change reaches (Overview included, when the change reaches one of its stories or any theme), whole, each to its own subproject of `uislash` (`uislash/<section>`), and the server diffs it
   against the `main` build that subproject already holds. The server posts one GitHub status for the
   project, `PixelSlash / uislash`, on the head; the architect reads it, and opens the report for any
   section that changed. A group the change does not reach is skipped, named in the job's log, and has
-  no build on the head; the status counts only the groups that have one. A PR
+  no build on the head; the status counts only the groups that have one, and a PR that reaches no group gets no status. A PR
   behind origin/main's tip needs no rebase for it: the server diffs it against the `main` build at its
   merge-base (or the nearest ancestor that has one), so it shows only the PR's own changes. A
   subproject that holds `main` builds but none at the merge-base or an ancestor fails the job, named;

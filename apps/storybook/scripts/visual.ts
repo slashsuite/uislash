@@ -54,8 +54,8 @@
  * Either way it waits for the server to finish diffing and takes the counts and the build's page
  * from the server. An upload takes a group whole or not at all (every story in the reference theme,
  * the Gallery sections in the others; `visual-plan.ts`), since a partial capture would read as
- * removals. A branch uploads only the groups its change reaches, plus Overview, which is always
- * captured; main uploads every group (`uploadPlan`).
+ * removals. A branch uploads only the groups its change reaches, Overview among them only when the
+ * change reaches one of its stories or a theme; main uploads every group (`uploadPlan`).
  */
 import { randomUUID } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
