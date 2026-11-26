@@ -144,7 +144,7 @@ function targets(config: XStateTransitionConfig): {
  *   `initial` for the machine's `initial`, and `normal` for the rest.
  * - Each `on` event, `always`, each `after` delay and each `invoke`'s `onDone` and `onError` is a
  *   transition. Its `event` is its `meta.label`, else the event's name (`always`, `after 500`,
- *   `done`, `error`). A transition with no target
+ *   `done`, `error`), and its `actor` its `meta.actor`. A transition with no target
  *   (it stays where it is), one that stays inside its own state, or one whose target is not a
  *   top-level state is left out.
  * - `state` adjusts each state, for a machine whose meta says it another way: return the state to
@@ -180,10 +180,16 @@ export function fromXState(
       listOf(on).flatMap((one) => {
         const { to, meta } = targets(one);
         const name = text(meta?.["label"]) ?? event;
+        const actor = text(meta?.["actor"]);
         return to
           .map((t) => targetState(t, from, ids))
           .filter((t) => t !== from && keys.has(t))
-          .map((t): StateMachineTransition => ({ from, to: t, event: name }));
+          .map((t): StateMachineTransition => ({
+            from,
+            to: t,
+            event: name,
+            ...(actor === undefined ? {} : { actor }),
+          }));
       }),
     ),
   );

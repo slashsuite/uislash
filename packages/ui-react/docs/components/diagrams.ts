@@ -51,9 +51,9 @@ export const diagramPages: ComponentPage[] = [
     pairs: ["StateMachine/Kind"],
     usage: {
       do: [
-        "Give it `states` (`{ id, label, kind, owner }`), `transitions` (`{ from, to, event }`) and `items` (`{ id, label, state, href }`), plain data with no layout: it is drawn like a `FlowDiagram`.",
-        "`kind` says what a state is: `human` for a state waiting on a person (the warn tone), `failed` for an error (danger), `terminal` for done (muted), `initial` for the start. Each is also a tag in words. Leave the rest `normal`.",
-        "`owner` is the role or lane that acts in a state, a tag on its box.",
+        "Give it `states` (`{ id, label, kind, owner }`), `transitions` (`{ from, to, event, actor }`) and `items` (`{ id, label, state, href }`), plain data with no layout: it is drawn like a `FlowDiagram`.",
+        "`kind` says what a state is: `human` for a state waiting on a person, `failed` for an error (danger), `terminal` for done (muted), `initial` for the start. Each is a tag in words. Leave the rest `normal`.",
+        "`owner` is the role that acts in a state, and a transition's `actor` the role that makes a move its from-state's owner does not. Each role has its own colour, the same for the same machine: on its tag, its boxes, its arrows and the legend. `roleTones` pins one.",
         "Keep a state's `label` short: every box is drawn one size, so the boxes line up, and a long label wraps inside it and makes every box a line taller.",
         "An item's `id` is its short ref, shown by its dot; its `label` is the full name, its tooltip and what a screen reader says. Give `href` and the dot is a link.",
         "Change an item's `state` and its dot runs along the arrow to its new box; there is nothing to call.",
@@ -63,12 +63,13 @@ export const diagramPages: ComponentPage[] = [
       dont: [
         'Do not leave an item out because its state is unknown: it goes in the "Not in any state" box, where someone sees it.',
         "Do not mark every state `human` or `failed`: the one that needs a person no longer stands out.",
+        "Do not give a machine more than eight roles: the colours repeat past the eighth.",
       ],
     },
     accessibility: [
       "The drawing is an image named by `label`, with the count of states and transitions; the box round it is a group named by `label`, and takes the keyboard focus so a machine that scrolls can be scrolled with the arrow keys.",
       "Each dot is named by its item's label and its state (`Fix the login, in Review`), and takes the focus; one with `href` is a link. A box with more than six shows a `+N` button that shows the rest.",
-      "A visually hidden list after it carries every state, its tags and the transitions out of it, as `FlowDiagram`'s does.",
+      "A visually hidden list after it carries every state, its tags and the transitions out of it, as `FlowDiagram`'s does. A role is always named in words, on its tag and in the legend, never by colour alone.",
       "With reduced motion a dot moves to its new state at once, with no run.",
     ],
     api: ["StateMachine"],

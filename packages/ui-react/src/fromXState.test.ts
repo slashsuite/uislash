@@ -46,6 +46,14 @@ describe("fromXState", () => {
     expect(out.states.filter((s) => s.kind === "initial").map((s) => s.id)).toEqual(["paying"]);
   });
 
+  it("reads a transition's actor from its `meta.actor`", () => {
+    const out = fromXState({
+      initial: "a",
+      states: { a: { on: { GO: { target: "b", meta: { actor: "owner" } }, BACK: "b" } }, b: {} },
+    });
+    expect(out.transitions.map((t) => t.actor)).toEqual(["owner", undefined]);
+  });
+
   it("lets `state` adjust each state it reads", () => {
     const out = fromXState(config, {
       state: ({ id, node, state }) => ({ ...state, label: `${id}:${String(node.type)}` }),

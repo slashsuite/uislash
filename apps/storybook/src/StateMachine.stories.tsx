@@ -40,6 +40,30 @@ export const Empty: S = {
   render: () => <StateMachine label="Roles" {...roleMachine} />,
 };
 
+/**
+ * Each role in its own colour: the owner's tag and the bar on its boxes, and every arrow out of a
+ * state it owns. `owner` is pinned to `cat2`, so it keeps that colour whatever roles the machine has.
+ */
+export const Roles: S = {
+  render: () => <StateMachine label="Roles" {...roleMachine} roleTones={{ owner: "cat2" }} />,
+};
+
+/** A transition's `actor` colours its arrow, over the owner of the state it leaves. */
+export const Actors: S = {
+  render: () => (
+    <StateMachine
+      label="Article flow"
+      states={states}
+      transitions={[
+        { from: "draft", to: "review", event: "submit" },
+        { from: "review", to: "draft", event: "send back" },
+        { from: "review", to: "published", event: "approve", actor: "lead" },
+        { from: "review", to: "rejected", event: "reject", actor: "lead" },
+      ]}
+    />
+  ),
+};
+
 /** Many items: a full box packs six slots and a `+N` that shows the rest. */
 export const Busy: S = {
   render: () => (

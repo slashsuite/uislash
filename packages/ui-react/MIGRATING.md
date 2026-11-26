@@ -1,5 +1,13 @@
 # Migrating @slashsuite/ui-react
 
+## 0.13 to 0.14: StateMachine roles have colours
+
+No code has to change. `StateMachine` now gives each role (a state's `owner`, or a transition's new
+`actor`) its own colour, on the state's role tag, the box's top edge and the lines that role moves, and
+draws a legend of the roles under the diagram. A `human` state no longer takes the warn tone: its tag and
+box are neutral, and the role colour says who acts. To keep a role on one colour across diagrams, pin it
+with `roleTones` (`roleTones={{ owner: "cat2" }}`).
+
 ## @hackcove is now @slashsuite: the npm scope moves
 
 If the app is still on 0.10, run the codemod (below, "Running the codemod") first: the 0.10 to 0.11

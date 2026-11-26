@@ -150,7 +150,7 @@ function GalleryFlow() {
   );
 }
 
-/** The StateMachine row of the Gallery: every kind of state, an owner, items, and one unplaced. */
+/** The StateMachine row of the Gallery: every kind of state, two owners and an actor in their colours, items, and one unplaced. */
 function GalleryStateMachine() {
   return (
     <StateMachine
@@ -165,7 +165,7 @@ function GalleryStateMachine() {
       transitions={[
         { from: "draft", to: "review", event: "submit" },
         { from: "review", to: "draft", event: "send back" },
-        { from: "review", to: "published", event: "approve" },
+        { from: "review", to: "published", event: "approve", actor: "lead" },
         { from: "review", to: "rejected", event: "reject" },
       ]}
       items={[
