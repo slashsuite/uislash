@@ -96,7 +96,7 @@ export function Table({
   // Once it fits, it clips instead: a clipping box is no scroll container, so the head can stick.
   const fits = measured && !overflows;
   return (
-    <TableContext.Provider value={{ plain, size, numeric, columns, announce, stack, titles }}>
+    <TableContext.Provider value={{ plain, fits, size, numeric, columns, announce, stack, titles }}>
       <DensityProvider size={size}>
         <div
           ref={attach}
@@ -140,20 +140,22 @@ function tableWider(box: HTMLElement): boolean {
 /**
  * The `<thead>`: small uppercase column titles, on a tinted strip unless the table is in a card.
  * Holds one `TableRow` of `TableHeaderCell`s. Unless the table is in a card, it stays in view under
- * the `AppShell` header while the page scrolls past the rows, as long as the table fits its box.
+ * the `AppShell` header while the page scrolls past the rows, once the table is measured and fits
+ * its box; before that, and while the table is wider than its box, it stays at the top of the table.
  */
 export function TableHead({
   children,
   ...rest
 }: { children: ReactNode } & Rest<"thead">): ReactElement {
-  const { plain, stack } = useContext(TableContext);
+  const { plain, fits, stack } = useContext(TableContext);
   return (
     <thead
       {...rest}
       {...stackRole(stack, "rowgroup")}
       className={cx(
         "text-sm uppercase tracking-wide text-slate-500",
-        !plain && "sticky top-[var(--app-header,0px)] z-1 bg-slate-50",
+        !plain && "bg-slate-50",
+        !plain && fits && "sticky top-[var(--app-header,0px)] z-1",
         stack && STACK.head,
       )}
     >

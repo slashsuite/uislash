@@ -8174,7 +8174,7 @@
   },
   "TableHead": {
     "name": "TableHead",
-    "description": "The `<thead>`: small uppercase column titles, on a tinted strip unless the table is in a card.\nHolds one `TableRow` of `TableHeaderCell`s. Unless the table is in a card, it stays in view under\nthe `AppShell` header while the page scrolls past the rows, as long as the table fits its box.",
+    "description": "The `<thead>`: small uppercase column titles, on a tinted strip unless the table is in a card.\nHolds one `TableRow` of `TableHeaderCell`s. Unless the table is in a card, it stays in view under\nthe `AppShell` header while the page scrolls past the rows, once the table is measured and fits\nits box; before that, and while the table is wider than its box, it stays at the top of the table.",
     "props": []
   },
   "TableHeaderCell": {

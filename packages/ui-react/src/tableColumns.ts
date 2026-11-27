@@ -15,6 +15,12 @@ import type { Size } from "./size.js";
  */
 type TableSetting = {
   plain: boolean;
+  /**
+   * Whether the table was measured and fits its box. Only then does the box clip instead of
+   * scroll, so only then can the head stick to the page: inside a box that scrolls sideways a
+   * sticky head sticks to that box, pushed down over the rows by the app header's height.
+   */
+  fits: boolean;
   size: Size;
   numeric: readonly boolean[];
   /** How many columns the head declares, or `undefined` with no `TableHead`. */
@@ -29,6 +35,7 @@ type TableSetting = {
 
 export const TableContext = createContext<TableSetting>({
   plain: false,
+  fits: false,
   size: "sm",
   numeric: [],
   columns: undefined,

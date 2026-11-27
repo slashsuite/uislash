@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
+  AppShell,
+  AppShellBrand,
   Button,
   Code,
   Pill,
@@ -59,31 +61,48 @@ export const RowHeaders: S = {
   ),
 };
 
+function Flags() {
+  return (
+    <Table label="Flags">
+      <TableHead>
+        <TableRow>
+          <TableHeaderCell>Flag</TableHeaderCell>
+          <TableHeaderCell>Note</TableHeaderCell>
+          <TableHeaderCell numeric>Uses</TableHeaderCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {flags.map((flag) => (
+          <TableRow key={flag.key}>
+            <TableCell>
+              <TextLink href={`#${flag.key}`}>{flag.name}</TextLink> <Code>{flag.key}</Code>
+            </TableCell>
+            <TableCell>{flag.note}</TableCell>
+            <TableCell>{flag.uses}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}
+
 /** On a phone: a link, a key and a figure never break; prose wraps to its floor, and the table scrolls in its card. */
 export const NarrowScroll: S = {
   render: () => (
     <div className="max-w-[390px]">
-      <Table label="Flags">
-        <TableHead>
-          <TableRow>
-            <TableHeaderCell>Flag</TableHeaderCell>
-            <TableHeaderCell>Note</TableHeaderCell>
-            <TableHeaderCell numeric>Uses</TableHeaderCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {flags.map((flag) => (
-            <TableRow key={flag.key}>
-              <TableCell>
-                <TextLink href={`#${flag.key}`}>{flag.name}</TextLink> <Code>{flag.key}</Code>
-              </TableCell>
-              <TableCell>{flag.note}</TableCell>
-              <TableCell>{flag.uses}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <Flags />
     </div>
+  ),
+};
+
+/** The same table under an `AppShell`: while it scrolls sideways its head stays at its top, not pushed down over the rows by the header's height. */
+export const NarrowScrollInAppShell: S = {
+  render: () => (
+    <AppShell brand={<AppShellBrand href="#" label="Flags" />}>
+      <div className="max-w-[390px]">
+        <Flags />
+      </div>
+    </AppShell>
   ),
 };
 
