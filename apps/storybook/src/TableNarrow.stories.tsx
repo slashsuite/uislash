@@ -106,6 +106,51 @@ export const NarrowScrollInAppShell: S = {
   ),
 };
 
+const settings = [
+  {
+    key: "PIXELSLASH_DATA",
+    note: (
+      <>
+        Where shots and baselines are kept. Defaults to <Code>./data</Code> beside the server; see{" "}
+        <TextLink href="#storage">Storage</TextLink> for a bucket instead.
+      </>
+    ),
+  },
+  {
+    key: "PIXELSLASH_TOKEN",
+    note: (
+      <>
+        The token an upload sends. Make one with <Code>pixelslash token new</Code> and keep it out
+        of the repo.
+      </>
+    ),
+  },
+];
+
+/** A sentence with a link or a code in it is prose too: it wraps, so the table fits its box instead of running one long line. */
+export const NarrowInlineProse: S = {
+  render: () => (
+    <div className="max-w-[390px]">
+      <Table label="Settings">
+        <TableHead>
+          <TableRow>
+            <TableHeaderCell>Setting</TableHeaderCell>
+            <TableHeaderCell>What it does</TableHeaderCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {settings.map((s) => (
+            <TableRow key={s.key}>
+              <TableCell mono>{s.key}</TableCell>
+              <TableCell>{s.note}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  ),
+};
+
 function Builds() {
   return (
     <Table label="Builds" narrow="stack">

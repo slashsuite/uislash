@@ -21,8 +21,10 @@ const INLINE = /(\*\*[^*]+\*\*|!?\[[^\]]*\]\([^)\s]*\))/g;
 const LINK = /^\[([^\]]*)\]\(([^)\s]*)\)$/;
 const IMAGE = /^!\[([^\]]*)\]\(([^)\s]*)\)$/;
 
+/** A line's inline parts; plain words stay plain text, so a table cell of them reads as prose and wraps. */
 function inline(text: string): ReactNode[] {
-  return text.split(INLINE).map((p, i) => {
+  return text.split(INLINE).flatMap((p, i) => {
+    if (p === "") return [];
     if (p.startsWith("**") && p.endsWith("**") && p.length > 4) {
       return (
         <strong key={i} className="font-semibold text-slate-900">
@@ -33,14 +35,14 @@ function inline(text: string): ReactNode[] {
     const link = LINK.exec(p);
     if (link) {
       const [, words = "", href = ""] = link;
-      if (!SAFE_HREF.test(href)) return <span key={i}>{words}</span>;
+      if (!SAFE_HREF.test(href)) return words;
       return (
         <TextLink key={i} href={href} underline>
           {words}
         </TextLink>
       );
     }
-    return <span key={i}>{p}</span>;
+    return p;
   });
 }
 
