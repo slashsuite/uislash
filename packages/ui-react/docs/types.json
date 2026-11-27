@@ -11,7 +11,7 @@
   },
   "AvatarSize": {
     "name": "AvatarSize",
-    "description": "An Avatar's size: `xs` 16px, `sm` 24px, `md` 32px, `lg` 40px, `xl` 56px, `2xl` 64px, `3xl` 96px.",
+    "description": "An Avatar's size: `xs` 16px (one initial, since two at 14px do not fit), `sm` 24px, `md` 32px, `lg` 40px, `xl` 56px, `2xl` 64px, `3xl` 96px.",
     "definition": "\"sm\" | \"md\" | \"lg\" | \"xs\" | \"xl\" | \"2xl\" | \"3xl\""
   },
   "AvatarStackPerson": {

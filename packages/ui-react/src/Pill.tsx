@@ -94,11 +94,11 @@ const PILL_TONES: Record<PillTone, string> = {
   accent: "bg-violet-50 text-violet-700",
 };
 
-/** The text size of each step: `md` is the pill as it has always been. */
-const TEXT: Record<Size, string> = { sm: "text-[0.6875rem]", md: "text-xs", lg: "text-sm" };
+/** The text size of each step: 14px at every step, since no text is smaller. */
+const TEXT: Record<Size, string> = { sm: "text-sm", md: "text-sm", lg: "text-sm" };
 
 /** A loading pill's height at each step: the pill's own line box. */
-const BONE_HEIGHT: Record<Size, string> = { sm: "h-4", md: "h-5", lg: "h-6" };
+const BONE_HEIGHT: Record<Size, string> = { sm: "h-6", md: "h-6", lg: "h-6" };
 
 const INTERACTIVE = cx("transition hover:opacity-80", focusRing);
 
@@ -288,8 +288,8 @@ function RemoveShell({
 
 /**
  * A small tinted label whose `tone` says what it means; `dot` adds a leading dot in the pill's own
- * text colour, `round` swaps the rounded-md corners for a full pill shape, and `size` steps the
- * text (with none, it takes its container's). `name` makes it two-tone, `name: value`: the name
+ * text colour, `round` swaps the rounded-md corners for a full pill shape, and `size` is the
+ * step (with none, it takes its container's); its text is 14px at every step. `name` makes it two-tone, `name: value`: the name
  * keeps the tone's tint and the children, the value, sit on the surface beside it. `href` makes it
  * a link (the app's router link through `LinkProvider` for an in-app path, else a plain `<a>`;
  * `external` opens a new tab) and `onClick` makes it

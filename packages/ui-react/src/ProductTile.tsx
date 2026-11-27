@@ -82,7 +82,7 @@ export function ProductTile({
       {status && (
         <span
           className={cx(
-            "absolute top-2 left-2 max-w-[calc(100%-1rem)] truncate rounded px-1.5 py-0.5 text-xs font-semibold",
+            "absolute top-2 left-2 max-w-[calc(100%-1rem)] truncate rounded px-1.5 py-0.5 text-sm font-semibold",
             STATUS_LOOK[status],
           )}
         >

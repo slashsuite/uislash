@@ -99,7 +99,7 @@ describe("resolve", () => {
     expect(staticUtility("px-4")).toEqual({ paddingHorizontal: 16 });
     expect(staticUtility("gap-1.5")).toEqual({ gap: 6 });
     expect(staticUtility("min-h-4")).toEqual({ minHeight: 16 });
-    expect(staticUtility("text-[0.625rem]/[1.4]")).toEqual({ fontSize: 10, lineHeight: 14 });
+    expect(staticUtility("text-sm/5")).toEqual({ fontSize: 14, lineHeight: 20 });
     expect(staticUtility("leading-5")).toEqual({ lineHeight: 20 });
     expect(staticUtility("tabular-nums")).toEqual({ fontVariant: "tabular-nums" });
     expect(staticUtility("grid")).toBeNull();

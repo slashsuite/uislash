@@ -10,7 +10,7 @@ export const Default: S = {
   render: () => (
     <div className="max-w-sm">
       <SplitBar a={35} b={65} label="Pot split" names={["Debt", "Renos"]} />
-      <div className="mt-1 flex justify-between text-xs text-slate-500">
+      <div className="mt-1 flex justify-between text-sm text-slate-500">
         <span>Debt 35%</span>
         <span>Renos 65%</span>
       </div>

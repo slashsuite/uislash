@@ -849,7 +849,7 @@
   },
   "Caption": {
     "name": "Caption",
-    "description": "Fine print / metadata. A paragraph (`p`; `as=\"span\"` inline), text-sm/5 normal, tertiary\n(text-xs/4 under an `AppShell density=\"compact\"`). Takes `tone`,\n`numeric`, `mono`, `lines` and `align` like `Text`, and `italic` for a muted hint and `breakWords`\nfor a long unbroken string such as a URL.",
+    "description": "Fine print / metadata. A paragraph (`p`; `as=\"span\"` inline), text-sm/5 normal, tertiary, at\nboth type steps: text is never under 14px. Takes `tone`,\n`numeric`, `mono`, `lines` and `align` like `Text`, and `italic` for a muted hint and `breakWords`\nfor a long unbroken string such as a URL.",
     "props": [
       {
         "name": "align",
@@ -1506,7 +1506,7 @@
   },
   "Checkbox": {
     "name": "Checkbox",
-    "description": "A checkbox with its label. It is a real `<input type=\"checkbox\">`, drawn by the library (an\nempty outlined box, then a filled accent one with a check mark) so it reads the same in every\ntheme and browser. Every prop but the label goes on the input, and `ref` reaches it.\n`size=\"sm\"` is `text-xs` and a smaller box, for a dense row; `size=\"lg\"` is `text-base` and a\nlarger box. Leave `label` out for a bare box in a table cell, and name it with `aria-label`. The\nbox sits on the label's first line, so a label that wraps reads from the box. `hint` is a muted\nline under the label that says more, like a `Field`'s; `error` adds a red line under it, with an alert\nicon, and makes the box `aria-invalid` and red-edged. The note is the box's `aria-describedby`.\n`onChange` gets the new checked state; take `checked` with it, or `defaultChecked` alone.\n`indeterminate` draws a dash for a select-all box over a partly chosen list. `variant=\"card\"`\ndraws it as an option card: a bordered box with the label as its title and the hint under it. Under a finger the\nhit area grows to 44px.\nWhile `loading` the label is drawn and the box is a bone of its size.",
+    "description": "A checkbox with its label. It is a real `<input type=\"checkbox\">`, drawn by the library (an\nempty outlined box, then a filled accent one with a check mark) so it reads the same in every\ntheme and browser. Every prop but the label goes on the input, and `ref` reaches it.\n`size=\"sm\"` is `text-sm` and a smaller box, for a dense row; `size=\"lg\"` is `text-base` and a\nlarger box. Leave `label` out for a bare box in a table cell, and name it with `aria-label`. The\nbox sits on the label's first line, so a label that wraps reads from the box. `hint` is a muted\nline under the label that says more, like a `Field`'s; `error` adds a red line under it, with an alert\nicon, and makes the box `aria-invalid` and red-edged. The note is the box's `aria-describedby`.\n`onChange` gets the new checked state; take `checked` with it, or `defaultChecked` alone.\n`indeterminate` draws a dash for a select-all box over a partly chosen list. `variant=\"card\"`\ndraws it as an option card: a bordered box with the label as its title and the hint under it. Under a finger the\nhit area grows to 44px.\nWhile `loading` the label is drawn and the box is a bone of its size.",
     "props": [
       {
         "name": "disabledReason",
@@ -5512,7 +5512,7 @@
   },
   "Overline": {
     "name": "Overline",
-    "description": "Small all-caps label above a group. `span`, text-xs semibold uppercase, tertiary. `tone`,\n`numeric`, `mono` and `align` are opt-in, as on `Text`.",
+    "description": "Small all-caps label above a group. `span`, text-sm semibold uppercase, tertiary. `tone`,\n`numeric`, `mono` and `align` are opt-in, as on `Text`.",
     "props": [
       {
         "name": "align",
@@ -5758,7 +5758,7 @@
   },
   "Pill": {
     "name": "Pill",
-    "description": "A small tinted label whose `tone` says what it means; `dot` adds a leading dot in the pill's own\ntext colour, `round` swaps the rounded-md corners for a full pill shape, and `size` steps the\ntext (with none, it takes its container's). `name` makes it two-tone, `name: value`: the name\nkeeps the tone's tint and the children, the value, sit on the surface beside it. `href` makes it\na link (the app's router link through `LinkProvider` for an in-app path, else a plain `<a>`;\n`external` opens a new tab) and `onClick` makes it\na button, each with a hover dim and the focus ring. `onRemove` adds an x button after the text\n(named by `removeLabel`, by default `Remove` and the pill's text), a separate button beside a link or button pill rather than nested in\nit. `title` is its tooltip and description; a plain pill with one takes a tab stop. While\n`loading` with no text yet it is a bone of its size. Its text never wraps: a pill is one unit,\nso keep it to a word or two.",
+    "description": "A small tinted label whose `tone` says what it means; `dot` adds a leading dot in the pill's own\ntext colour, `round` swaps the rounded-md corners for a full pill shape, and `size` is the\nstep (with none, it takes its container's); its text is 14px at every step. `name` makes it two-tone, `name: value`: the name\nkeeps the tone's tint and the children, the value, sit on the surface beside it. `href` makes it\na link (the app's router link through `LinkProvider` for an in-app path, else a plain `<a>`;\n`external` opens a new tab) and `onClick` makes it\na button, each with a hover dim and the focus ring. `onRemove` adds an x button after the text\n(named by `removeLabel`, by default `Remove` and the pill's text), a separate button beside a link or button pill rather than nested in\nit. `title` is its tooltip and description; a plain pill with one takes a tab stop. While\n`loading` with no text yet it is a bone of its size. Its text never wraps: a pill is one unit,\nso keep it to a word or two.",
     "props": [
       {
         "name": "children",
@@ -6406,7 +6406,7 @@
         "type": "\"sm\" | \"md\" | \"lg\"",
         "required": false,
         "default": "md",
-        "description": "The size of every radio in the group: `sm` is `text-xs` and a smaller circle, `lg` `text-base`\nand a larger one.",
+        "description": "The size of every radio in the group: `sm` is `text-sm` and a smaller circle, `lg` `text-base`\nand a larger one.",
         "native": false
       },
       {
@@ -8570,7 +8570,7 @@
         "name": "size",
         "type": "\"sm\" | \"md\" | \"lg\"",
         "required": false,
-        "description": "The link's own type size: `sm` is `text-xs`, `md` `text-sm` and `lg` `text-base`. Left out, it\ntakes the size of the text around it: a link inside prose has no default size.",
+        "description": "The link's own type size: `sm` is `text-sm`, `md` `text-sm` and `lg` `text-base`. Left out, it\ntakes the size of the text around it: a link inside prose has no default size.",
         "native": false
       },
       {

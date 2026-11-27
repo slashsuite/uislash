@@ -332,7 +332,7 @@ function piecesOf(props: ListRowProps, labelId?: string): Pieces {
     <div id={labelId} className="min-w-0 flex-1">
       {children}
       {secondary != null && secondary !== false && (
-        <div className="text-xs font-normal text-slate-500">{secondary}</div>
+        <div className="text-sm font-normal text-slate-500">{secondary}</div>
       )}
     </div>
   );

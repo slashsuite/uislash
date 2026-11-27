@@ -204,7 +204,7 @@ export const Footer: S = {
       >
         <SampleTable />
       </Card>
-      <Card size="sm" footer={<span className="text-xs text-slate-500">Dense</span>}>
+      <Card size="sm" footer={<span className="text-sm text-slate-500">Dense</span>}>
         <p className="text-sm text-slate-700">The same strip at the dense padding.</p>
       </Card>
     </div>

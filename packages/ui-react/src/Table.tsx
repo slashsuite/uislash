@@ -152,7 +152,7 @@ export function TableHead({
       {...rest}
       {...stackRole(stack, "rowgroup")}
       className={cx(
-        "text-xs uppercase tracking-wide text-slate-500",
+        "text-sm uppercase tracking-wide text-slate-500",
         !plain && "sticky top-[var(--app-header,0px)] z-1 bg-slate-50",
         stack && STACK.head,
       )}

@@ -21,7 +21,7 @@ const ITEM: Record<
   md: {
     item: "grid grid-cols-[1.625rem_1fr] gap-3 [counter-increment:step]",
     number:
-      "flex size-[1.625rem] items-center justify-center rounded-full bg-violet-50 text-xs font-semibold tabular-nums text-violet-600 before:content-[counter(step)]",
+      "flex size-[1.625rem] items-center justify-center rounded-full bg-violet-50 text-sm font-semibold tabular-nums text-violet-600 before:content-[counter(step)]",
     // The 1.5rem first line sits centred on the 1.625rem number.
     body: "min-w-0 pt-px",
     title: "text-base/6 font-medium text-slate-900",

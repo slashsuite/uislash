@@ -91,7 +91,7 @@ export const BUTTON_TOGGLE_OFF: ButtonLook = {
 // on every variant and tone and needs no palette entry. The size is a Badge's: rem text and a
 // min-height, so the chip grows with the reader's text size.
 export const BUTTON_COUNT =
-  "inline-flex min-h-4 min-w-4 items-center justify-center rounded-full border border-current px-1 text-[0.625rem]/[1.4] font-semibold tabular-nums";
+  "inline-flex min-h-5 min-w-5 items-center justify-center rounded-full border border-current px-1.5 text-sm/5 font-semibold tabular-nums";
 
 // Blocked replaces the variant's colour and hover rather than overriding them, so no `!` is needed.
 export const BUTTON_BLOCKED = "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400";

@@ -109,7 +109,7 @@ export const STACK = {
   row: "max-sm:block max-sm:py-2",
   cell: "max-sm:flex max-sm:min-w-0 max-sm:items-baseline max-sm:justify-between max-sm:gap-4 max-sm:whitespace-normal max-sm:py-1",
   block: "max-sm:block max-sm:min-w-0 max-sm:whitespace-normal max-sm:py-1",
-  label: "hidden shrink-0 text-xs font-medium uppercase tracking-wide text-slate-500 max-sm:block",
+  label: "hidden shrink-0 text-sm font-medium uppercase tracking-wide text-slate-500 max-sm:block",
   value: "min-w-0 max-sm:text-right",
 } as const;
 

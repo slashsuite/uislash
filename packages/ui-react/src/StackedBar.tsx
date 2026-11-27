@@ -89,7 +89,7 @@ export function Legend({
     <ul
       {...rest}
       {...busy(owner, waiting)}
-      className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-600"
+      className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-600"
     >
       {waiting && items.length === 0 && <LegendBones />}
       {owner && waiting && (

@@ -81,7 +81,7 @@ export function RadioGroup({
   /** Marks the choice required: a red asterisk after the label, the group is `aria-required`, and a form will not submit with no option chosen. */
   required?: boolean | undefined;
   /**
-   * The size of every radio in the group: `sm` is `text-xs` and a smaller circle, `lg` `text-base`
+   * The size of every radio in the group: `sm` is `text-sm` and a smaller circle, `lg` `text-base`
    * and a larger one.
    * @default md
    */

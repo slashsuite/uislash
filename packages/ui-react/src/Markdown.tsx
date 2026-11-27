@@ -178,7 +178,7 @@ function single(block: Block, key: number, h: Headings, label: string): ReactNod
       return (
         <h.H2
           key={key}
-          className="mt-4 text-xs font-semibold uppercase tracking-wide text-slate-400 first:mt-0"
+          className="mt-4 text-sm font-semibold uppercase tracking-wide text-slate-400 first:mt-0"
         >
           {block.text}
         </h.H2>

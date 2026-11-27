@@ -198,7 +198,7 @@ function Item({ item }: { item: MenuAction }): ReactElement {
           {item.label}
         </AriaText>
         {hasReason(item.disabledReason) ? (
-          <AriaText slot="description" className="text-xs text-slate-500">
+          <AriaText slot="description" className="text-sm text-slate-500">
             {item.disabledReason}
           </AriaText>
         ) : null}

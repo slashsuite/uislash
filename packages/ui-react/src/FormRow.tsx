@@ -101,7 +101,7 @@ export function FormRowField({
       {...busy(owner, waiting)}
       className={cx("flex min-w-0 flex-col gap-1", SPAN[span])}
     >
-      <label htmlFor={htmlFor} className="text-xs font-medium text-slate-700">
+      <label htmlFor={htmlFor} className="text-sm font-medium text-slate-700">
         {label}
       </label>
       {waiting ? <ControlBone /> : children}

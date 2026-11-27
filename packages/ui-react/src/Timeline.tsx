@@ -102,7 +102,7 @@ export function TimelineItem({
         <span className={cx("text-sm font-medium text-slate-900", bone && "w-1/3")}>
           {bone ? <BoneLines count={1} /> : title}
         </span>
-        {time != null && <span className="text-xs tabular-nums text-slate-500">{time}</span>}
+        {time != null && <span className="text-sm tabular-nums text-slate-500">{time}</span>}
       </div>
       {children != null && <div className="mt-1 text-sm text-slate-700">{children}</div>}
       <BusyLabel owner={owner} loading={waiting} label={loadingLabel} />

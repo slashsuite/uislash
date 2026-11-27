@@ -162,14 +162,6 @@ const RULES: Rule[] = [
       return { fontSize: size, lineHeight: m[2] === undefined ? line : space(m[2]) };
     },
   ],
-  // An arbitrary rem size with a unitless line height: `text-[0.625rem]/[1.4]`.
-  [
-    /^text-\[(\d+(?:\.\d+)?)rem\]\/\[(\d+(?:\.\d+)?)\]$/,
-    (m) => {
-      const size = Number(at(m, 1)) * ROOT_PX;
-      return { fontSize: size, lineHeight: Math.round(size * Number(at(m, 2))) };
-    },
-  ],
   [/^leading-(\d+)$/, (m) => ({ lineHeight: space(at(m, 1)) })],
   [/^font-(normal|medium|semibold|bold)$/, (m) => ({ fontWeight: WEIGHT[at(m, 1)] ?? "400" })],
   [/^tracking-(tight|normal|wide)$/, (m) => ({ letterSpacingEm: TRACKING[at(m, 1)] ?? 0 })],

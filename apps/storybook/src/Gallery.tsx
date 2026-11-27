@@ -33,7 +33,7 @@ import { GalleryButtons } from "./GalleryButtons";
 import { GalleryBottomSheet } from "./GalleryBottomSheet";
 import { GalleryChat } from "./GalleryChat";
 import { GalleryChoice } from "./GalleryChoice";
-import { GalleryData } from "./GalleryData";
+import { GalleryData, GalleryDataTables } from "./GalleryData";
 import { GalleryKeyValues } from "./GalleryKeyValues";
 import { GalleryForm, GalleryNameField, GalleryNotes } from "./GalleryForm";
 import { GalleryContainer, GalleryLayout } from "./GalleryLayout";
@@ -140,6 +140,7 @@ export const gallerySections: GallerySection[] = [
       </>
     ),
   },
+  { id: "tables", title: "Tables", render: () => <GalleryDataTables /> },
   {
     id: "buttons",
     title: "Buttons and avatars",

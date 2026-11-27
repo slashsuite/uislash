@@ -17,16 +17,16 @@ const COLOUR_CLASSES = [
 ] as const;
 
 const SIZE_CLASSES = {
-  xs: "size-4 text-[0.5rem]",
-  sm: "size-6 text-xs",
-  md: "size-8 text-xs",
+  xs: "size-4 text-sm/4",
+  sm: "size-6 text-sm",
+  md: "size-8 text-sm",
   lg: "size-10 text-base",
   xl: "size-14 text-xl",
   "2xl": "size-16 text-2xl",
   "3xl": "size-24 text-3xl",
 } as const;
 
-/** An Avatar's size: `xs` 16px, `sm` 24px, `md` 32px, `lg` 40px, `xl` 56px, `2xl` 64px, `3xl` 96px. */
+/** An Avatar's size: `xs` 16px (one initial, since two at 14px do not fit), `sm` 24px, `md` 32px, `lg` 40px, `xl` 56px, `2xl` 64px, `3xl` 96px. */
 export type AvatarSize = keyof typeof SIZE_CLASSES;
 
 /** `round` for a person, `square` (rounded corners that grow with the size) for an org or a team. */
@@ -175,7 +175,7 @@ export function AvatarMark({
         )}
         {...markProps}
       >
-        {initialsOf(name)}
+        {size === "xs" ? initialsOf(name).slice(0, 1) : initialsOf(name)}
       </span>
     );
   return framed({ name, href, external, onClick, rest, mark, corners });

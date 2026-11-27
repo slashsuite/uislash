@@ -49,7 +49,7 @@ function GalleryCalloutActions() {
   );
 }
 
-/** The Card variants (flush, header bar, dense, toned), a standalone EmptyState, the Callout actions (info and danger), banner and link, the ListRow set (a dense row and a compact bordered list of `size="sm"` rows with no action, a row with leading, selected and hover actions), a SortableList with an empty section, a link Card, a Table with a stretched row link and toned rows, a Table with a group row, cell tones, a truncated cell and a totals foot, a Table in a Card (plain) with a second-line cell and a `label` actions column and a Timeline. */
+/** The Card variants (flush, header bar, dense, toned), a standalone EmptyState, the Callout actions (info and danger), banner and link, the ListRow set (a dense row and a compact bordered list of `size="sm"` rows with no action, a row with leading, selected and hover actions), a SortableList with an empty section and a link Card. The tables and the Timeline are `GalleryDataTables`. */
 export function GalleryData() {
   return (
     <div className="flex flex-col gap-4">
@@ -110,6 +110,14 @@ export function GalleryData() {
         Centred, as a success state.
       </Callout>
       <GalleryCalloutActions />
+    </div>
+  );
+}
+
+/** The Tables (a stretched row link and toned rows, a group row with cell tones, a truncated cell and a foot, the table options, a Table in a Card) and a Timeline: the second half of the data section, split off so its All themes shot stays under PixelSlash's limit. */
+export function GalleryDataTables() {
+  return (
+    <div className="flex flex-col gap-4">
       <GalleryTables />
       <Timeline label="Status history">
         <TimelineItem

@@ -219,12 +219,46 @@ describe("slopRules: a component's classes", () => {
   });
 
   it("fails a font size in px, and passes rem and em", () => {
-    expect(slopRules("src/Pill.tsx", `"text-[11px]"`, ui)).toEqual([
+    expect(slopRules("src/Pill.tsx", `"text-[18px]"`, ui)).toEqual([
       "src/Pill.tsx:1: a font size in px; use rem, so the text grows with the reader's text size",
     ]);
-    expect(slopRules("src/Pill.tsx", `"sm:text-[12.5px]"`, ui)).toHaveLength(1);
-    expect(slopRules("src/Pill.tsx", `"text-[0.6875rem] text-[0.9em] w-[11px]"`, ui)).toEqual([]);
-    expect(slopRules("src/Pill.test.tsx", `"text-[11px]"`, ui)).toEqual([]);
+    expect(slopRules("src/Pill.tsx", `"sm:text-[16.5px]"`, ui)).toHaveLength(1);
+    expect(slopRules("src/Pill.tsx", `"text-[0.875rem] text-[0.9em] w-[11px]"`, ui)).toEqual([]);
+    expect(slopRules("src/Pill.test.tsx", `"text-[18px]"`, ui)).toEqual([]);
+  });
+
+  it("fails text under 14px in a component or core's tables, and passes 14px and up", () => {
+    const small = "text under 14px; text-sm (0.875rem) is the smallest size";
+    const core = "@slashsuite/core";
+    // The Pill's `sm` step before 0.16.
+    expect(
+      slopRules(
+        "src/Pill.tsx",
+        `const TEXT: Record<Size, string> = { sm: "text-[0.6875rem]", md: "text-xs", lg: "text-sm" };`,
+        ui,
+      ),
+    ).toEqual([`src/Pill.tsx:1: ${small}`]);
+    expect(slopRules("src/TextLink.tsx", `"text-xs/4"`, ui)).toHaveLength(1);
+    expect(slopRules("src/Input.tsx", `"md:text-xs"`, ui)).toHaveLength(1);
+    expect(slopRules("src/Badge.tsx", `"text-2xs"`, ui)).toHaveLength(1);
+    expect(slopRules("src/Code.tsx", `"text-[.78125rem]"`, ui)).toHaveLength(1);
+    expect(slopRules("src/Pill.tsx", `"text-[13px]"`, ui)).toEqual([
+      `src/Pill.tsx:1: ${small}`,
+      "src/Pill.tsx:1: a font size in px; use rem, so the text grows with the reader's text size",
+    ]);
+    expect(slopRules("src/button.ts", `"px-1 text-[0.625rem]/[1.4]"`, core)).toEqual([
+      `src/button.ts:1: ${small}`,
+    ]);
+    expect(
+      slopRules(
+        "src/Pill.tsx",
+        `"text-sm text-sm/5 text-[0.875rem] text-[1rem] text-[0.9em] text-xs-x"`,
+        ui,
+      ),
+    ).toEqual([]);
+    expect(slopRules("src/Pill.test.tsx", `"text-xs"`, ui)).toEqual([]);
+    expect(slopRules("src/button.test.ts", `"text-xs"`, core)).toEqual([]);
+    expect(slopRules("src/Pill.tsx", `"text-xs"`, "@slashsuite/other")).toEqual([]);
   });
 
   it("fails a thin scrollbar", () => {

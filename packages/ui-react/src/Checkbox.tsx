@@ -159,7 +159,7 @@ type CheckboxProps = {
  * A checkbox with its label. It is a real `<input type="checkbox">`, drawn by the library (an
  * empty outlined box, then a filled accent one with a check mark) so it reads the same in every
  * theme and browser. Every prop but the label goes on the input, and `ref` reaches it.
- * `size="sm"` is `text-xs` and a smaller box, for a dense row; `size="lg"` is `text-base` and a
+ * `size="sm"` is `text-sm` and a smaller box, for a dense row; `size="lg"` is `text-base` and a
  * larger box. Leave `label` out for a bare box in a table cell, and name it with `aria-label`. The
  * box sits on the label's first line, so a label that wraps reads from the box. `hint` is a muted
  * line under the label that says more, like a `Field`'s; `error` adds a red line under it, with an alert
