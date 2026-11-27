@@ -1666,7 +1666,7 @@
   },
   "Code": {
     "name": "Code",
-    "description": "Inline code: mono, on a subtle inset background. It takes the surrounding text colour and size (a\ntouch smaller, for the mono face). `lines={1}` keeps a long value (a hash, a path) on one line,\ncut with an ellipsis, and shows its whole text in a tooltip while it is cut; `breakWords` instead breaks a long unbroken\nvalue at the edge of its box, as `Text` does.",
+    "description": "Inline code: mono, on a subtle inset background. It takes the surrounding text colour and size (a\ntouch smaller, for the mono face, and never under 14px). `lines={1}` keeps a long value (a hash, a path) on one line,\ncut with an ellipsis, and shows its whole text in a tooltip while it is cut; `breakWords` instead breaks a long unbroken\nvalue at the edge of its box, as `Text` does.",
     "props": [
       {
         "name": "breakWords",
