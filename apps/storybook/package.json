@@ -21,12 +21,12 @@
   },
   "devDependencies": {
     "@slashsuite/core": "workspace:*",
-    "@storybook/react-vite": "^10.6.7",
+    "@storybook/react-vite": "^10.6.8",
     "@tailwindcss/vite": "^4.3.5",
     "@types/bun": "catalog:",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
-    "storybook": "^10.6.7",
+    "storybook": "^10.6.8",
     "tailwindcss": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
