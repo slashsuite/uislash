@@ -103,7 +103,8 @@ export function AvatarStack({
           className={cx(
             "inline-grid shrink-0 place-items-center bg-slate-100 font-semibold text-slate-700 tabular-nums",
             RING,
-            avatarSizeClass(size),
+            // At 16px "+N" at 14px does not fit a square, so the xs chip widens to its count.
+            size === "xs" ? "h-4 min-w-4 px-1 text-sm/4" : avatarSizeClass(size),
             avatarShapeClass(shape, size),
             shown.length > 0 && overlap,
           )}

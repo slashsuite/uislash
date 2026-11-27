@@ -88,7 +88,7 @@ export function StatTile({
       </p>
       <BusyLabel owner={owner} loading={loading} label={loadingLabel} />
       {trend !== undefined && trend.length > 0 && <Sparkline values={trend} tone={tone} />}
-      {hint != null && <p className="mt-1 text-xs text-slate-500">{hint}</p>}
+      {hint != null && <p className="mt-1 text-sm text-slate-500">{hint}</p>}
     </div>
   );
 }

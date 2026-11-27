@@ -30,14 +30,14 @@ const ICON_MD: Record<ControlSize, string> = {
 
 /** The prefix text's inset and size, by the control's size. */
 const PREFIX: Record<ControlSize, string> = {
-  sm: "pl-2 text-xs",
+  sm: "pl-2 text-sm",
   md: "pl-3 text-sm",
   lg: "pl-4 text-base",
 };
 
 /** `PREFIX` from the `md` breakpoint up. */
 const PREFIX_MD: Record<ControlSize, string> = {
-  sm: "md:pl-2 md:text-xs",
+  sm: "md:pl-2 md:text-sm",
   md: "md:pl-3 md:text-sm",
   lg: "md:pl-4 md:text-base",
 };

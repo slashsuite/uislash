@@ -29,8 +29,8 @@ export function Badge({
         own={ownLoading}
         label={loadingLabel}
         attrs={rest}
-        root={cx("inline-flex", corner && "absolute -end-1.5 -top-1.5")}
-        shape="inline-block h-4 w-5 rounded-full"
+        root={cx("inline-flex", corner && "absolute -end-2 -top-2")}
+        shape="inline-block h-5 w-6 rounded-full"
       />
     );
   }
@@ -38,8 +38,8 @@ export function Badge({
     <span
       {...rest}
       className={cx(
-        "inline-flex min-h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[0.625rem]/[1.6] font-semibold text-red-50",
-        corner && "absolute -end-1.5 -top-1.5",
+        "inline-flex min-h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1.5 text-sm/5 font-semibold text-red-50",
+        corner && "absolute -end-2 -top-2",
       )}
     >
       {count > 99 ? "99+" : count}

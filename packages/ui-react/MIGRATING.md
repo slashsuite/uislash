@@ -1,5 +1,26 @@
 # Migrating @slashsuite/ui-react
 
+## 0.15 to 0.16: no text is under 14px
+
+No code has to change. 16px stays the baseline, and 14px (`text-sm`) is now the smallest text any
+component draws: every 12px (`text-xs`) and smaller size is gone. What reads larger:
+
+- Small print and labels: `Caption` (also under `AppShell density="compact"`), `Overline`, a
+  `Table` header, `Tooltip`, `Kbd`, a `StatTile` hint, `ListRow` and table cell secondary lines, a
+  `FormRowField` label, `Menu` item descriptions, `MediaTile` and `ProductTile` labels, the
+  `CodeBlock` and `CopyLine` code (12.5px before) and every chart's axis and legend text.
+- `Pill` `sm` and `md` are 14px, like `lg`.
+- `Badge` is a 20px circle with 14px digits (16px with 10px digits before); on a corner it sits
+  0.5rem out (0.375rem before). A `Button`'s `count` chip is the same size.
+- `Avatar` `sm` and `md` draw their initials at 14px; `xs` (16px) draws one initial instead of two,
+  and an `AvatarStack`'s `xs` "+N" chip widens to its count.
+- `TextLink size="sm"` is 14px, like `md` (12px before), and `Price size="sm"`'s was price is 14px,
+  the same size as the price (12px before).
+- Under `AppShell density="compact"`, a `sm` control and a field's hint and error are 14px (12px
+  before).
+
+Check any layout that fit these to a fixed width or height, such as a row of pills or a dense table.
+
 ## 0.13 to 0.14: StateMachine roles have colours
 
 No code has to change. `StateMachine` now gives each role (a state's `owner`, or a transition's new
@@ -193,10 +214,10 @@ else sets the step, and no component takes a type size of its own.
 | | 0.10 | 0.11 | 0.11 under `AppShell density="compact"` |
 | --- | --- | --- | --- |
 | `Text` | 14px (`text-sm/5`) | 16px (`text-base/6`) | 14px |
-| `Caption` | 12px | 14px | 12px |
+| `Caption` | 12px | 14px | 14px (12px before 0.16) |
 | `SectionHeading` | 16px | 20px | 16px |
 | `SubsectionHeading` `sm`, `md`, `lg` | 14, 16, 18px | 16, 18, 20px | 14, 16, 18px |
-| `Input`, `Select`, `Textarea`, `DateField`, `Button` `sm`, `md`, `lg` | 12, 14, 16px | 14, 16, 18px | 12, 14, 16px |
+| `Input`, `Select`, `Textarea`, `DateField`, `Button` `sm`, `md`, `lg` | 12, 14, 16px | 14, 16, 18px | 14, 14, 16px (12, 14, 16px before 0.16) |
 
 TypeScript does not flag these, since no name changes:
 

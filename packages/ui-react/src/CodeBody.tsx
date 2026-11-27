@@ -59,7 +59,7 @@ export function CodeBody({
       >
         <pre
           className={cx(
-            "px-3 py-2.5 font-mono text-[0.78125rem] leading-normal text-slate-900",
+            "px-3 py-2.5 font-mono text-sm leading-normal text-slate-900",
             wrap ? "break-words whitespace-pre-wrap" : "w-max min-w-full whitespace-pre",
           )}
         >

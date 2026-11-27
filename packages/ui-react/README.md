@@ -281,8 +281,8 @@ import {
   the toggle its square. `printChrome={false}` is opt-in: the header and footer are hidden in print and main
   drops its padding (the page margin is then your `@page`); without it a print is unchanged. `bleed` drops main's `Container` for a full-bleed
   page; the header keeps its own, so put a `Container` back around anything that should line up. `density="compact"`, set once here and nowhere else,
-  puts the whole app one type step down: `Text` 14px, `Caption` 12px, the headings and the controls one
-  step smaller. Left out, text is 16px, as a site's.
+  puts the whole app one type step down: `Text` 14px, the headings and the controls one
+  step smaller. Nothing goes under 14px, so `Caption` and a `sm` control stay at 14px. Left out, text is 16px, as a site's.
 - **`AppShellBrand`** is the `brand` slot as one link: `logo` and `label` inside the same `<a>`, so
   the whole brand goes home (the label names the link; the logo is hidden from assistive tech).
   `logoSize` is `sm` (20px), `md` (24px, the default, an `Avatar size="sm"`) or `lg` (32px); an
@@ -340,7 +340,7 @@ import {
   `width` and a column has no `align` or `justify`.
 - **`FormGrid`** is the two-column form: `Field`s in two columns once the grid is 36rem wide (its own width, not the viewport's), one below. A `Field`
   with `span="full"` (a textarea, a long hint) runs across both. **`FormRow`** is an inline-edit
-  row of **`FormRowField`**s (a compact `text-xs` label over a control; `span` 1, 2, 3 or 4 is its
+  row of **`FormRowField`**s (a compact `text-sm` label over a control; `span` 1, 2, 3 or 4 is its
   share of the row, so 2, 1 and 1 give a half and two quarters) with optional `actions` after
   them (a save button, kept at its own width). Every control sits on the bottom edge, so the actions
   line up with them, and narrower than 36rem (its own width) the fields and the actions stack. A `FormRow` is always the full

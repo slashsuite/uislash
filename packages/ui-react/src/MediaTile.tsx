@@ -106,12 +106,12 @@ export function MediaTile({
         <Image src={src} alt={alt} aspect={aspect} />
         <TileMarks video={video} badge={badge} badgeStart={onRemove !== undefined} />
         {label && (
-          <span className="absolute inset-x-0 bottom-0 truncate bg-black/90 px-2 py-1 text-xs font-medium text-white">
+          <span className="absolute inset-x-0 bottom-0 truncate bg-black/90 px-2 py-1 text-sm font-medium text-white">
             {label}
           </span>
         )}
       </span>
-      {caption && <span className="mt-1 block truncate text-xs text-slate-600">{caption}</span>}
+      {caption && <span className="mt-1 block truncate text-sm text-slate-600">{caption}</span>}
       <BusyLabel owner={owner} loading={waiting} label={loadingLabel} />
     </LoadingScope>
   );
@@ -161,7 +161,7 @@ function TileMarks({
       {badge && (
         <span
           className={cx(
-            "absolute top-1 truncate rounded bg-black/90 px-1.5 py-0.5 text-xs font-medium text-white",
+            "absolute top-1 truncate rounded bg-black/90 px-1.5 py-0.5 text-sm font-medium text-white",
             badgeStart ? "left-1 max-w-[calc(100%-2.75rem)]" : "right-1 max-w-[calc(100%-0.5rem)]",
           )}
         >

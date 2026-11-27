@@ -238,7 +238,7 @@ function FlowCanvas({
           className="absolute rounded-xl border border-dashed border-slate-300"
           style={{ left: g.x, top: g.y, width: g.width, height: g.height }}
         >
-          <span className="absolute left-3 top-1 text-xs font-medium text-slate-500">{g.name}</span>
+          <span className="absolute left-3 top-1 text-sm font-medium text-slate-500">{g.name}</span>
         </div>
       ))}
       <FlowArrows
@@ -252,7 +252,7 @@ function FlowCanvas({
           <span
             key={index}
             data-measure={edgeKey(index)}
-            className="absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded bg-white px-1 text-xs text-slate-600"
+            className="absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded bg-white px-1 text-sm text-slate-600"
             style={{ left: at.x, top: at.y }}
           >
             {edge.label}

@@ -72,7 +72,7 @@ export function CardHeading({
           {title}
         </CardOverline>
       )}
-      {count !== undefined && <span className={cx("text-xs font-medium", ink)}>{count}</span>}
+      {count !== undefined && <span className={cx("text-sm font-medium", ink)}>{count}</span>}
       {status}
     </div>
   );

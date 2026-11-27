@@ -69,6 +69,17 @@ const CONTENT_EDGE = /max-w-6xl|px-4 sm:px-6/;
 // through `<meta name="text-scale">`); a component sizes text in rem, or em relative to its parent.
 const PX_TEXT = /(?<![\w-])(?:[a-z-]+:)*text-\[\d+(?:\.\d+)?px\]/;
 
+// 16px is the baseline and 14px (`text-sm`) the one step down; nothing is smaller. An arbitrary size
+// is read in rem or px (16px to the rem) and held to 0.875rem.
+const TINY_TEXT = /(?<![\w-])(?:[a-z-]+:)*text-(?:xs|2xs)(?![\w-])/;
+const ARBITRARY_TEXT = /(?<![\w-])(?:[a-z-]+:)*text-\[(\d+(?:\.\d+)?|\.\d+)(rem|px)\]/g;
+const SMALL_TEXT_RULE = "text under 14px; text-sm (0.875rem) is the smallest size";
+const hasSmallText = (line: string): boolean =>
+  TINY_TEXT.test(line) ||
+  [...line.matchAll(ARBITRARY_TEXT)].some(
+    ([, size = "", unit]) => Number(size) * (unit === "px" ? 1 : 16) < 14,
+  );
+
 // A thin scrollbar is hard to grab with a mouse or a finger; a themed one keeps the native width.
 const THIN_SCROLLBAR = /scrollbar-width:\s*thin/;
 
@@ -103,6 +114,8 @@ type FileKind = {
   component: boolean;
   /** The palette to hold a component's `.tsx` to; undefined when the palette rule does not apply. */
   palette: ReadonlySet<string> | undefined;
+  /** One of core's token tables (`src/*.ts` in `@slashsuite/core`, not a test). */
+  tables: boolean;
   /** A component that imports `@slashsuite/core`, which takes every token from there. */
   onCore: boolean;
   prose: boolean;
@@ -123,9 +136,16 @@ function tokenHits(line: string, file: FileKind): string[] {
   return hits;
 }
 
-/** A component's tokens and content edge. */
+/** A component's (or core table's) tokens and type size, then its layout. */
 function componentHits(line: string, file: FileKind): string[] {
   const hits = tokenHits(line, file);
+  if ((file.component || file.tables) && hasSmallText(line)) hits.push(SMALL_TEXT_RULE);
+  return [...hits, ...layoutHits(line, file)];
+}
+
+/** A component's content edge, px text and scrollbar. */
+function layoutHits(line: string, file: FileKind): string[] {
+  const hits: string[] = [];
   if (file.component && file.path !== "src/Container.tsx" && CONTENT_EDGE.test(line))
     hits.push("the content width and side padding are Container's; render a Container");
   if (file.component && PX_TEXT.test(line))
@@ -181,6 +201,7 @@ export function slopRules(
     code: /\.tsx?$/.test(path),
     test,
     component,
+    tables,
     palette: (component && path.endsWith(".tsx")) || tables ? palette : undefined,
     onCore: component && IMPORTS_CORE.test(text),
     prose: isDocsProse(path, pkg),

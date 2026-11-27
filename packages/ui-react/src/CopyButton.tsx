@@ -2,7 +2,7 @@ import { type ComponentPropsWithoutRef, type MouseEvent, type ReactElement } fro
 import { focusRing } from "./cx.js";
 import type { Unstyled } from "./props.js";
 
-const BASE = `min-h-6 min-w-6 shrink-0 cursor-pointer rounded px-1.5 py-0.5 font-sans text-xs text-slate-400 hover:bg-slate-100 disabled:pointer-events-none disabled:opacity-50 ${focusRing}`;
+const BASE = `min-h-6 min-w-6 shrink-0 cursor-pointer rounded px-1.5 py-0.5 font-sans text-sm text-slate-400 hover:bg-slate-100 disabled:pointer-events-none disabled:opacity-50 ${focusRing}`;
 
 /** The labels share one grid cell, centred, so the button is as wide as the longest and never resizes. */
 const CELL = "col-start-1 row-start-1";

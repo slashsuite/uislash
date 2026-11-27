@@ -10,9 +10,9 @@ const SIZE: Record<Size, string> = {
   lg: "text-2xl/8",
 };
 
-/** The was price is a step smaller than the price it sits beside. */
+/** The was price is a step smaller than the price it sits beside, except at `sm`, where both are 14px: no text is smaller. */
 const WAS_SIZE: Record<Size, string> = {
-  sm: "text-xs/5",
+  sm: "text-sm/5",
   md: "text-sm/6",
   lg: "text-base/8",
 };

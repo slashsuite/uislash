@@ -51,7 +51,7 @@ function Dot({
     {},
   );
   const className = cx(
-    "pointer-events-auto absolute flex h-5 items-center gap-1 rounded px-1 text-xs text-slate-700",
+    "pointer-events-auto absolute flex h-5 items-center gap-1 rounded px-1 text-sm text-slate-700",
     focusRing,
   );
   const position = {
@@ -126,7 +126,7 @@ function MoreToggle({
       aria-label={open ? `Show fewer in ${where}` : `Show ${hidden} more in ${where}`}
       onClick={toggle}
       className={cx(
-        "pointer-events-auto absolute flex h-5 cursor-pointer items-center rounded px-1 text-xs font-medium text-violet-600 hover:text-violet-700",
+        "pointer-events-auto absolute flex h-5 cursor-pointer items-center rounded px-1 text-sm font-medium text-violet-600 hover:text-violet-700",
         focusRing,
       )}
       style={{ left: left + 2, top: y - 10 }}

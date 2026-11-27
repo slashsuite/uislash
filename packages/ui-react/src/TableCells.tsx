@@ -167,7 +167,7 @@ function spansColumns(span: "full" | undefined, colSpan: number | undefined): bo
  */
 function figureClass(numeric: boolean, mono: boolean, prose: boolean): string {
   if (!numeric && !mono) return prose ? "min-w-48" : "whitespace-nowrap";
-  return cx("whitespace-nowrap", numeric && "tabular-nums", mono && "font-mono text-xs");
+  return cx("whitespace-nowrap", numeric && "tabular-nums", mono && "font-mono text-sm");
 }
 
 /** The widest a `lines={1}` cell grows. */
@@ -380,7 +380,7 @@ function CellBody({
         children
       )}
       {secondary != null && secondary !== false && (
-        <div className="text-xs font-normal text-slate-500">{secondary}</div>
+        <div className="text-sm font-normal text-slate-500">{secondary}</div>
       )}
     </>
   );

@@ -207,7 +207,7 @@ function MonthGrid({
     <CalendarGrid weekdayStyle="short">
       <CalendarGridHeader>
         {(day) => (
-          <CalendarHeaderCell className="pb-1 text-xs font-medium text-slate-500">
+          <CalendarHeaderCell className="pb-1 text-sm font-medium text-slate-500">
             {day}
           </CalendarHeaderCell>
         )}

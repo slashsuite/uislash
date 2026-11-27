@@ -49,14 +49,14 @@ const ICON = "ms-1 inline-block size-[0.875em] align-[-0.125em] [&>svg]:size-ful
 export type TextLinkSize = Size;
 
 const SIZE: Record<TextLinkSize, string> = {
-  sm: "text-xs/4",
+  sm: "text-sm/5",
   md: "text-sm/5",
   lg: "text-base/6",
 };
 
 type TextLinkProps = {
   /**
-   * The link's own type size: `sm` is `text-xs`, `md` `text-sm` and `lg` `text-base`. Left out, it
+   * The link's own type size: `sm` is `text-sm`, `md` `text-sm` and `lg` `text-base`. Left out, it
    * takes the size of the text around it: a link inside prose has no default size.
    */
   size?: TextLinkSize | undefined;

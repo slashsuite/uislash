@@ -11,7 +11,7 @@ export type ControlTypeStep = "default" | "compact";
 /** A control's type size at each step: `md` is 16px at the default step, and `compact` is one step down. */
 export const CONTROL_TEXT: Record<ControlTypeStep, Record<ButtonSize, string>> = {
   default: { sm: "text-sm", md: "text-base", lg: "text-lg" },
-  compact: { sm: "text-xs", md: "text-sm", lg: "text-base" },
+  compact: { sm: "text-sm", md: "text-sm", lg: "text-base" },
 };
 
 /**

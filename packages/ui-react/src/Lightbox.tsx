@@ -141,7 +141,7 @@ export function Lightbox({
       <header data-scrim="" className="flex shrink-0 items-start justify-between gap-3 p-3">
         <div className="min-w-0 px-2 py-1.5">
           {title && <div className="text-sm font-semibold">{title}</div>}
-          {meta && <div className="text-xs text-white/70">{meta}</div>}
+          {meta && <div className="text-sm text-white/70">{meta}</div>}
         </div>
         <ScrimButton label={closeLabel} path={CLOSE} onClick={close} />
       </header>

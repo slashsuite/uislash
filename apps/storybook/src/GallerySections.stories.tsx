@@ -25,6 +25,7 @@ export const TypeSteps = slice("type-steps");
 export const PillsAndBars = slice("pills-and-bars");
 export const Loading = slice("loading");
 export const Data = slice("data");
+export const Tables = slice("tables");
 export const Buttons = slice("buttons");
 export const Fields = slice("fields");
 export const Choices = slice("choices");

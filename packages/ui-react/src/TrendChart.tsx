@@ -67,7 +67,7 @@ export function TrendChart({
   const ticks = [max, max / 2, 0];
   return (
     <figure {...rest} {...busy(owner, waiting)} aria-label={label} className="flex flex-col gap-3">
-      <div aria-hidden="true" className="flex gap-2 pt-2 text-xs tabular-nums text-slate-500">
+      <div aria-hidden="true" className="flex gap-2 pt-2 text-sm tabular-nums text-slate-500">
         <YAxis ticks={waiting ? [] : ticks} max={max} />
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
           {waiting ? (

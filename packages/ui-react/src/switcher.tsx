@@ -114,7 +114,7 @@ function Label({ item }: { item: SwitchItem }): ReactElement {
   if (item.count === undefined) return <>{item.label}</>;
   return (
     <>
-      {item.label} <span className="ml-0.5 text-xs tabular-nums opacity-70">{item.count}</span>
+      {item.label} <span className="ml-0.5 text-sm tabular-nums opacity-70">{item.count}</span>
     </>
   );
 }

@@ -26,7 +26,7 @@ import {
 const css = `[data-hc-tooltip]{position:fixed;inset:auto;margin:0;border:0;padding:.375rem 0;background:transparent;overflow:visible;width:max-content;max-width:min(20rem,calc(100vw - 2rem));position-area:top;position-try-fallbacks:flip-block}[data-hc-tooltip][data-via=pointer]{animation:hc-tooltip-in .01s linear .5s backwards}@keyframes hc-tooltip-in{from,to{visibility:hidden}}`;
 
 const CHIP =
-  "block rounded-md border border-slate-200 bg-white px-2 py-1 text-xs text-slate-900 shadow-lg whitespace-normal break-words";
+  "block rounded-md border border-slate-200 bg-white px-2 py-1 text-sm text-slate-900 shadow-lg whitespace-normal break-words";
 
 type Via = "pointer" | "focus" | "tap";
 

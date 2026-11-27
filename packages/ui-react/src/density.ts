@@ -73,7 +73,7 @@ export function useTypeStep(): TypeStep | undefined {
 /** `CONTROL_TEXT` from the `md` breakpoint up, for a responsive size. */
 const CONTROL_TEXT_MD: Record<"default" | TypeStep, Record<Size, string>> = {
   default: { sm: "md:text-sm", md: "md:text-base", lg: "md:text-lg" },
-  compact: { sm: "md:text-xs", md: "md:text-sm", lg: "md:text-base" },
+  compact: { sm: "md:text-sm", md: "md:text-sm", lg: "md:text-base" },
 };
 
 /**
@@ -129,7 +129,7 @@ export function controlText(
  */
 const FIELD_TYPE: Record<"default" | TypeStep, { label: string; note: string; line: string }> = {
   default: { label: "text-base", note: "text-sm", line: "h-5" },
-  compact: { label: "text-sm", note: "text-xs", line: "h-4" },
+  compact: { label: "text-sm", note: "text-sm", line: "h-5" },
 };
 
 /** The field type table, for the data test. */

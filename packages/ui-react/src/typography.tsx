@@ -415,10 +415,10 @@ export function SubsectionHeading<E extends ElementType = "h3">({
 
 // --- Inline roles -------------------------------------------------------------
 
-const OVERLINE = "text-xs font-semibold uppercase tracking-wide";
+const OVERLINE = "text-sm font-semibold uppercase tracking-wide";
 
 /**
- * Small all-caps label above a group. `span`, text-xs semibold uppercase, tertiary. `tone`,
+ * Small all-caps label above a group. `span`, text-sm semibold uppercase, tertiary. `tone`,
  * `numeric`, `mono` and `align` are opt-in, as on `Text`.
  */
 export const Overline = inlineRole("Overline", "span", OVERLINE, "tertiary");
@@ -513,8 +513,8 @@ function textVariant(
 }
 
 /**
- * Fine print / metadata. A paragraph (`p`; `as="span"` inline), text-sm/5 normal, tertiary
- * (text-xs/4 under an `AppShell density="compact"`). Takes `tone`,
+ * Fine print / metadata. A paragraph (`p`; `as="span"` inline), text-sm/5 normal, tertiary, at
+ * both type steps: text is never under 14px. Takes `tone`,
  * `numeric`, `mono`, `lines` and `align` like `Text`, and `italic` for a muted hint and `breakWords`
  * for a long unbroken string such as a URL.
  */
@@ -523,10 +523,9 @@ export function Caption<E extends ElementType = "p">({
   breakWords,
   ...props
 }: InlineTypographyProps<E> & RunOwnProps): ReactElement {
-  const size = useTypeStep() === "compact" ? "text-xs/4" : "text-sm/5";
   return pinned(
     "p",
-    cx(size, "font-normal", italic && "italic", breakWords && "break-words"),
+    cx("text-sm/5", "font-normal", italic && "italic", breakWords && "break-words"),
     "tertiary",
     props,
   );

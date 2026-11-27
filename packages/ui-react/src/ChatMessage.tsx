@@ -53,7 +53,7 @@ export function ChatMessage({
       className={cx("flex w-full min-w-0 flex-col gap-1", look.side)}
     >
       <span className="sr-only">{author}</span>
-      {meta && <div className="text-xs text-slate-500">{meta}</div>}
+      {meta && <div className="text-sm text-slate-500">{meta}</div>}
       <div className={cx(BUBBLE, look.bubble, "wrap-anywhere whitespace-pre-wrap")}>
         {children}
         {streaming && (

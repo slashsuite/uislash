@@ -57,7 +57,7 @@ export const WithPrefix: S = {
     </div>
   ),
 };
-/** `sm` is compact: `text-xs`, less padding. For dense forms and table rows. */
+/** `sm` is compact: `text-sm`, less padding. For dense forms and table rows. */
 export const Small: S = {
   render: () => <Input size="sm" placeholder="Qty" />,
 };

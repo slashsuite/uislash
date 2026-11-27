@@ -93,7 +93,7 @@ export function OutlineRegion({
     >
       {hatched && <span aria-hidden="true" className={HATCH} />}
       {label != null && (
-        <span className={cx("absolute top-0 left-0 px-1 text-xs leading-tight", colour.tag)}>
+        <span className={cx("absolute top-0 left-0 px-1 text-sm leading-tight", colour.tag)}>
           {label}
         </span>
       )}

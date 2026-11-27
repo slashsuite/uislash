@@ -48,7 +48,7 @@ const AFTER_ROW = "border-slate-200/70 [[role=row]+&]:border-t";
 const AFTER_SECTION = "border-slate-200/70 [[role=rowgroup]+&]:border-t";
 
 const HEADING =
-  "flex items-center justify-between gap-3 bg-slate-50 px-4 py-2 text-xs font-medium tracking-wide text-slate-600 uppercase";
+  "flex items-center justify-between gap-3 bg-slate-50 px-4 py-2 text-sm font-medium tracking-wide text-slate-600 uppercase";
 
 const ITEM =
   "flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-slate-900 outline-none hover:bg-slate-50";
@@ -341,7 +341,7 @@ export function SortableItem({
       <div className="min-w-0 flex-1">
         <ItemTitle title={title} />
         {children != null && (
-          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+          <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-500">
             {children}
           </div>
         )}

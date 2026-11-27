@@ -9,7 +9,7 @@ export function Kbd({
   children: ReactNode;
 } & Passthrough): ReactElement {
   return (
-    <kbd {...rest} className="rounded border border-current/30 px-1 font-mono text-xs leading-4">
+    <kbd {...rest} className="rounded border border-current/30 px-1 font-mono text-sm leading-4">
       {children}
     </kbd>
   );

@@ -61,12 +61,12 @@ export function CodeBlock({
   return (
     <figure
       {...rest}
-      className="overflow-hidden rounded-lg border border-slate-200 bg-slate-50 font-mono text-[0.78125rem] leading-normal text-slate-900"
+      className="overflow-hidden rounded-lg border border-slate-200 bg-slate-50 font-mono text-sm leading-normal text-slate-900"
     >
       {label && (
         <figcaption
           id={captionId}
-          className="border-b border-slate-200 px-3 py-1.5 text-xs text-slate-500"
+          className="border-b border-slate-200 px-3 py-1.5 text-sm text-slate-500"
         >
           {label}
         </figcaption>
