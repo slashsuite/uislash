@@ -1,4 +1,11 @@
-import { Children, type ReactElement, type ReactNode, useContext } from "react";
+import {
+  Children,
+  Fragment,
+  isValidElement,
+  type ReactElement,
+  type ReactNode,
+  useContext,
+} from "react";
 import { cx } from "./cx.js";
 import type { Size } from "./size.js";
 import { TableContext, useNumericColumn, useStackLabel } from "./tableColumns.js";
@@ -159,11 +166,11 @@ function spansColumns(span: "full" | undefined, colSpan: number | undefined): bo
 }
 
 /**
- * The wrapping rule, one for every cell: prose (plain text and nothing else) wraps, down to
- * `min-w-48`; everything else stays on one line at its content's width: a figure, a code, and a cell
- * that holds an element (a link, a `Pill`, a `Switch`, a `Button`). So a column of short controls is
- * only as wide as they are, and a link's words never break one per line on a phone: the table
- * scrolls instead.
+ * The wrapping rule, one for every cell: prose (words, alone or with inline parts among them, such as
+ * a sentence with a link or a code in it) wraps, down to `min-w-48`; everything else stays on one line
+ * at its content's width: a figure, a code, and a cell of elements alone (a link, a `Pill`, a
+ * `Switch`, a `Button`). So a column of short controls is only as wide as they are, and a link's words
+ * never break one per line on a phone: the table scrolls instead.
  */
 function figureClass(numeric: boolean, mono: boolean, prose: boolean): string {
   if (!numeric && !mono) return prose ? "min-w-48" : "whitespace-nowrap";
@@ -193,9 +200,10 @@ const INDENT: Record<Size, Record<Indent, string>> = {
  * A `<td>`. `tone` is the text weight and colour (see `CellTone`; in a `TableFoot` it defaults to
  * `strong`); `numeric` sets end alignment and tabular figures (a cell under a `numeric` head cell is
  * numeric already), `mono` a small mono face. `secondary` is a second,
- * muted line under the content. One rule for wrapping: prose (a cell of plain text) wraps onto more
- * lines (never narrower than `min-w-48`, so it scrolls the table before it becomes a sliver); any
- * other cell stays on one line at its content's width: one that holds a control or a link, and a
+ * muted line under the content. One rule for wrapping: prose (a cell with words in it, plain or with a
+ * link or a code among them) wraps onto more lines (never narrower than `min-w-48`, so it scrolls the
+ * table before it becomes a sliver); any other cell stays on one line at its content's width: one that
+ * holds only a control or a link, and a
  * `numeric` or `mono` cell (a figure, a code, a type). `lines={1}` caps a long value's width, cuts it with
  * an ellipsis on one line and, while it is cut, shows the full text in a tooltip on hover, focus and a
  * tap; the content is then plain text (strings and numbers), since that is what the tooltip shows. `colSpan` passes through: a cell that
@@ -239,9 +247,9 @@ export function TableCell({
    * `1` caps the width and cuts a long value with an ellipsis on one line; while it is cut, the full
    * text shows in a tooltip on hover, keyboard focus and a tap. Plain text content only.
    *
-   * Without it, a prose cell wraps down to a floor so it never becomes a sliver, and any other cell
-   * (a `Pill`, a `Switch`, a `Button`, a `TextLink`, a `numeric` or `mono` value) stays on one line
-   * at its content's width.
+   * Without it, a prose cell (words, with or without a link or a code among them) wraps down to a
+   * floor so it never becomes a sliver, and any other cell (a `Pill`, a `Switch`, a `Button`, a
+   * `TextLink` alone, a `numeric` or `mono` value) stays on one line at its content's width.
    */
   lines?: 1 | undefined;
   /** A second, muted line under the content. */
@@ -350,10 +358,17 @@ function Stacked({ label, children }: { label: ReactNode; children: ReactNode })
 const isText = (node: unknown): node is string | number =>
   typeof node === "string" || typeof node === "number";
 
-/** Prose: at least one part, every one text. An empty cell (a bone) is not prose and keeps no width. */
+/**
+ * Prose: words in the cell itself, alone or among inline parts (a sentence with a link or a code in
+ * it), a fragment's parts counted as the cell's own. A cell of elements alone, joined by nothing but spaces, is not prose; nor is an empty cell (a
+ * bone), which keeps no width.
+ */
 function isProse(children: ReactNode): boolean {
-  const parts = Children.toArray(children);
-  return parts.length > 0 && parts.every(isText);
+  return Children.toArray(children).some((part) =>
+    isValidElement<{ children?: ReactNode }>(part) && part.type === Fragment
+      ? isProse(part.props.children)
+      : isText(part) && String(part).trim() !== "",
+  );
 }
 
 /** What a cell holds: the content, cut to one line when `truncate` (its full text in a tooltip while cut), then the `secondary` line. */
