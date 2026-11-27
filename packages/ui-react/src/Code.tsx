@@ -6,7 +6,7 @@ import { Truncated } from "./truncated.js";
 
 /**
  * Inline code: mono, on a subtle inset background. It takes the surrounding text colour and size (a
- * touch smaller, for the mono face). `lines={1}` keeps a long value (a hash, a path) on one line,
+ * touch smaller, for the mono face, and never under 14px). `lines={1}` keeps a long value (a hash, a path) on one line,
  * cut with an ellipsis, and shows its whole text in a tooltip while it is cut; `breakWords` instead breaks a long unbroken
  * value at the edge of its box, as `Text` does.
  */
@@ -26,7 +26,7 @@ export function Code({
   breakWords?: boolean | undefined;
 } & Passthrough): ReactElement {
   const look = cx(
-    "rounded bg-slate-100 px-1 py-0.5 font-mono text-[0.9em]",
+    "rounded bg-slate-100 px-1 py-0.5 font-mono text-[length:max(0.9em,0.875rem)]",
     layoutClass(undefined, lines),
     breakWords && "break-words",
   );
