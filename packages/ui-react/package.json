@@ -1,6 +1,6 @@
 {
   "name": "@slashsuite/ui-react",
-  "version": "0.16.2",
+  "version": "0.16.3",
   "description": "UISlash React components: primitives, typography roles and a safe Markdown renderer, written against Tailwind v4 utilities. Pair with a theme from @slashsuite/themes.",
   "keywords": [
     "components",
