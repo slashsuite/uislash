@@ -1,9 +1,10 @@
 import { execFileSync } from "node:child_process";
 import { expect, test, type Locator, type Page } from "@playwright/test";
+import type { checkPattern as CheckPattern } from "@ui-sdk/core/testing";
 
 declare global {
   /** Set by `check-pattern.entry.ts`, once the bundle is in the page. */
-  var checkPattern: (root: Element, pattern: string) => Promise<void>;
+  var checkPattern: typeof CheckPattern;
 }
 
 /**
@@ -31,7 +32,7 @@ interface Case {
   open?: (page: Page) => Promise<void>;
   /** The pattern's root element. */
   root: (page: Page) => Locator;
-  pattern: string;
+  pattern: Parameters<typeof CheckPattern>[1];
 }
 
 const cases: Record<string, Case> = {
@@ -47,8 +48,8 @@ const cases: Record<string, Case> = {
     pattern: "combobox",
   },
   "Popover trigger (disclosure)": {
-    story: "feedback-popover--default",
-    root: (page) => page.getByRole("button", { name: "Filters" }),
+    story: "feedback-popover--do-popover",
+    root: (page) => page.getByRole("button", { name: "Build details" }),
     pattern: "disclosure",
   },
   "Tabs (tabs)": {
