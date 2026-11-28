@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Button, ColourSchemeToggle, SiteSearch, type SiteSearchItem } from "@slashsuite/ui-react";
 import * as examples from "../../../packages/ui-react/docs/examples/SiteSearch.examples.js";
+import { until } from "./openByTrigger";
 
 const meta: Meta = { title: "Navigation/SiteSearch" };
 export default meta;
@@ -33,26 +34,6 @@ export const Default: S = {
     </div>
   ),
 };
-
-/**
- * Resolves with what `find` returns, checking again on every DOM change and focus move. No timer or
- * frame: the visual capture pauses the page clock, so neither would ever fire.
- */
-function until<T>(find: () => T | null | undefined): Promise<T> {
-  return new Promise((resolve) => {
-    const check = () => {
-      const found = find();
-      if (!found) return;
-      observer.disconnect();
-      document.removeEventListener("focusin", check);
-      resolve(found);
-    };
-    const observer = new MutationObserver(check);
-    observer.observe(document.body, { subtree: true, childList: true, attributes: true });
-    document.addEventListener("focusin", check);
-    check();
-  });
-}
 
 /** Click the trigger on screen, wait for the open dialog to focus its field, then type `text`. */
 async function openAndType(canvasElement: HTMLElement, text: string): Promise<HTMLDialogElement> {

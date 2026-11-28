@@ -3,18 +3,23 @@ import { useState, type MouseEvent, type ReactNode } from "react";
 import { Button, Dialog, Kbd, KeyValue, KeyValueList, Stack, Text } from "@slashsuite/ui-react";
 import { sampleScenes } from "../../../packages/ui-react/docs/examples/sampleScene.js";
 import * as examples from "../../../packages/ui-react/docs/examples/Dialog.examples.js";
+import { openByTrigger } from "./openByTrigger";
 
 const meta: Meta = { title: "Feedback/Dialog" };
 export default meta;
 type S = StoryObj;
 
+/** Opens the story's dialog with its "Open" button, as a person would. */
+const openOnLoad: NonNullable<S["play"]> = ({ canvasElement }) =>
+  openByTrigger(canvasElement, "Open", () => document.querySelector("dialog[open]"));
+
 /** Close through the `<dialog>` so it animates out; `onClose` then unmounts it. Setting the parent's state here would cut the exit animation short. */
 const closeDialog = (event: MouseEvent<HTMLElement>) =>
   event.currentTarget.closest("dialog")?.close();
 
-/** Open when the story loads; Esc or the backdrop closes it, and the button opens it again. */
+/** Shut until its button opens it (`openOnLoad` does, as the story loads); Esc or the backdrop closes it, and the focus goes back to the button. */
 function Opened({ children }: { children: (close: () => void) => ReactNode }) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   return (
     <div className="p-6">
       <Button variant="outline" onClick={() => setOpen(true)}>
@@ -26,6 +31,7 @@ function Opened({ children }: { children: (close: () => void) => ReactNode }) {
 }
 
 export const Default: S = {
+  play: openOnLoad,
   render: () => (
     <Opened>
       {(close) => (
@@ -51,6 +57,7 @@ export const Default: S = {
 
 /** The shortcut list: a small dialog with a body and nothing to do but read it, so no footer: the close button in the corner is the way out. */
 export const Small: S = {
+  play: openOnLoad,
   render: () => (
     <Opened>
       {(close) => (
@@ -73,6 +80,7 @@ export const Small: S = {
 };
 
 export const TitleOnly: S = {
+  play: openOnLoad,
   render: () => <Opened>{(close) => <Dialog title="Saved" onClose={close} />}</Opened>,
 };
 
@@ -94,6 +102,7 @@ export const DontForm: S = {
 
 /** `width="lg"` (640px): a wider form or a table. `sm` is 320px and `md`, the default, 440px. */
 export const Large: S = {
+  play: openOnLoad,
   render: () => (
     <Opened>
       {(close) => (
@@ -127,6 +136,7 @@ export const Large: S = {
  * is the way out.
  */
 export const Full: S = {
+  play: openOnLoad,
   render: () => (
     <Opened>
       {(close) => (

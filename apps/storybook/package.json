@@ -26,6 +26,7 @@
     "@types/bun": "catalog:",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
+    "@ui-sdk/core": "0.1.0-beta.19",
     "storybook": "^10.6.8",
     "tailwindcss": "catalog:",
     "vite": "catalog:",
