@@ -182,12 +182,13 @@ export function useFlowLayout(
     label: e.label ? (measured[edgeKey(index)] ?? guessLabel(e.label)) : undefined,
   }));
   const key = JSON.stringify([direction, options.spacing, layoutNodes, layoutEdges]);
-  // The key holds every input the layout reads, so the layout reruns only when one changes.
-  const drawn = useMemo(
-    () => layoutFlow(layoutNodes, layoutEdges, direction, options.spacing),
-    // oxlint-disable-next-line react-hooks/exhaustive-deps -- keyed on the serialised input above
-    [key],
-  );
+  // The layout reads its input back from the key, so the key is its one dependency and the layout
+  // reruns only when a size, an id or a gap changes, not on every render's fresh arrays.
+  const drawn = useMemo(() => {
+    const [d, spacing, n, e]: [FlowDirection, FlowSpacing | null, LayoutNode[], LayoutEdge[]] =
+      JSON.parse(key);
+    return layoutFlow(n, e, d, spacing ?? undefined);
+  }, [key]);
 
   useLayoutEffect(() => {
     const root = canvas.current;
