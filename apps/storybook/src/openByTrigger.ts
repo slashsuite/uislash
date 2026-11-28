@@ -37,3 +37,7 @@ export async function openByTrigger(
   trigger.click();
   await until(opened);
 }
+
+/** A Dialog story's `play`: opens it with its "Open" button, so Esc gives the focus back to it. */
+export const openDialog = ({ canvasElement }: { canvasElement: HTMLElement }) =>
+  openByTrigger(canvasElement, "Open", () => document.querySelector("dialog[open]"));

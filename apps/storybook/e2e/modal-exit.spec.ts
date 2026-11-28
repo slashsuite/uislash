@@ -80,3 +80,10 @@ test("Dialog: with reduced motion it closes at once", async ({ page }) => {
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog", { includeHidden: true })).toHaveCount(0, { timeout: 150 });
 });
+
+test("Dialog: opened by its button, Esc gives the focus back to the button", async ({ page }) => {
+  await page.goto(story("feedback-dialog--default"));
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("button", { name: "Open" })).toBeFocused();
+});
