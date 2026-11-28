@@ -20,7 +20,7 @@
     "storybook": "moon run storybook:storybook"
   },
   "devDependencies": {
-    "@moonrepo/cli": "2.6.5",
+    "@moonrepo/cli": "2.6.6",
     "@nx/js": "24.0.6",
     "@playwright/test": "1.65.1",
     "@types/bun": "catalog:",
@@ -48,7 +48,7 @@
   },
   "catalogs": {
     "react": {
-      "@types/react": "^19.3.0",
+      "@types/react": "^19.3.1",
       "@types/react-dom": "^19.3.0",
       "react": "^19.3.1",
       "react-dom": "^19.3.1"

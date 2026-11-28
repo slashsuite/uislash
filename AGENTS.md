@@ -60,7 +60,7 @@ Overview and the visual matrix list `themes/*.css` and nothing else.
 
 ## The gate
 
-Everything runs through moon 2.6.5 (Bun, strict tsconfig, oxlint + oxfmt, Vitest). Tasks are
+Everything runs through moon 2.6.6 (Bun, strict tsconfig, oxlint + oxfmt, Vitest). Tasks are
 declared in `.moon/workspace.yml`, `.moon/tasks/all.yml` and each project's `moon.yml`, and each
 runs the `package.json` script of its name. moon hashes no dependency's files on its own, so a task
 that reads another project lists that project's files in its inputs; a new cross-project read adds
