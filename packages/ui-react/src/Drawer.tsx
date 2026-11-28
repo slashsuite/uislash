@@ -141,7 +141,7 @@ export type DrawerProps = {
 /**
  * A modal slide-over anchored to the right edge, on the browser's own `<dialog>`: it is opened
  * with `showModal()` on mount, so render it only while it is open. The page behind goes inert, Esc
- * closes it and focus stays inside; a click on the scrim (the `<dialog>` element itself, not its
+ * closes it and Tab wraps inside it; a click on the scrim (the `<dialog>` element itself, not its
  * contents) closes it too, and on touch a swipe to the right drags it off (a short one springs
  * back). The header holds the title, an optional `description` under it and a close button; the
  * body scrolls between it and an optional pinned `footer`, and a scroll in it never carries on to

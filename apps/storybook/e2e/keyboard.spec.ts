@@ -14,7 +14,7 @@ test("Drawer: focus stays inside, Esc closes it and the scrim closes it", async 
   await page.goto(story("feedback-drawer--default"));
   const drawer = page.getByRole("dialog", { name: "HC-65 · Tabs" });
   await expect(drawer).toBeVisible();
-  // The page behind is inert: Tab cycles the drawer (and the browser's own UI), never the Open button.
+  // The page behind is inert and Tab wraps inside the drawer: never the Open button.
   const behind = page.getByRole("button", { name: "Open", exact: true });
   for (let press = 0; press < 6; press++) {
     await page.keyboard.press("Tab");
@@ -33,6 +33,38 @@ test("Drawer: focus stays inside, Esc closes it and the scrim closes it", async 
   await page.getByRole("button", { name: "Open" }).click();
   await page.getByRole("button", { name: "Close" }).click();
   await expect(drawer).toBeHidden();
+});
+
+test("Dialog: Tab from the last control wraps to the first, and Shift+Tab back", async ({
+  page,
+}) => {
+  await page.goto(story("feedback-dialog--default"));
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toBeVisible();
+  // The close button comes last in the keyboard order, Cancel first.
+  const close = dialog.getByRole("button", { name: "Close" });
+  const cancel = dialog.getByRole("button", { name: "Cancel" });
+  await close.focus();
+  await page.keyboard.press("Tab");
+  await expect(cancel).toBeFocused();
+  await page.keyboard.press("Shift+Tab");
+  await expect(close).toBeFocused();
+});
+
+test("ConfirmDialog: Esc cancels it and gives the focus back to its button", async ({ page }) => {
+  await page.goto(story("feedback-confirmdialog--default"));
+  const dialog = page.getByRole("alertdialog", { name: "Delete build?" });
+  const gone = page.getByRole("alertdialog", { includeHidden: true });
+  // The story opens it on load; Esc cancels that one, then its button opens it again.
+  await expect(dialog).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(gone).toHaveCount(0);
+  const opener = page.getByRole("button", { name: "Delete build" });
+  await opener.click();
+  await expect(dialog).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(gone).toHaveCount(0);
+  await expect(opener).toBeFocused();
 });
 
 test("Lightbox: the arrows step, Esc and the scrim close it, the photo does not", async ({

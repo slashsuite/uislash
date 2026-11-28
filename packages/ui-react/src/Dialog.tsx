@@ -157,7 +157,7 @@ export function BodyContext({ children }: { children: ReactNode }): ReactElement
 
 /**
  * A modal on the browser's own `<dialog>`: it is opened with `showModal()` on mount, so render it
- * only while it is open. The page behind goes inert, Esc closes it and focus stays inside; a click
+ * only while it is open. The page behind goes inert, Esc closes it and Tab wraps inside it; a click
  * on the backdrop (the `<dialog>` element itself, not its contents) closes it too, and so does the
  * close button in its top corner, which every dialog has. The close button comes last in the
  * keyboard order, so the open focuses the first field, not it. A windowed dialog is never taller

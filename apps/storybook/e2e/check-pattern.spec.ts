@@ -13,11 +13,6 @@ declare global {
  * rule, so a failing case reads as the list of what to fix. The function is bundled once per worker
  * for the browser (`check-pattern.entry.ts`), since its modules import `#dev`, which a page cannot
  * resolve.
- *
- * Not checked: a modal `Dialog` and `ConfirmDialog` are the browser's own `<dialog>`, whose Tab
- * goes from the last control to the browser before it wraps, where the pattern wants it to wrap at
- * once; and a `Popover` panel is not modal and leaves the focus on its trigger, which the pattern's
- * modal dialog does not allow. Its trigger is checked as a disclosure.
  */
 const bundle = execFileSync(
   "bun",
@@ -33,7 +28,17 @@ interface Case {
   /** The pattern's root element. */
   root: (page: Page) => Locator;
   pattern: Parameters<typeof CheckPattern>[1];
+  /**
+   * Rules the check's own key presses cannot drive here, each with its proof elsewhere. Its keys
+   * are untrusted events, and the browser closes its own `<dialog>` or popover only on a trusted
+   * Esc, so "Escape should close it" fails on every native one; `keyboard.spec.ts`, `modal-exit.spec.ts`
+   * and `popover.spec.ts` press the real Esc on each and check the focus goes back.
+   */
+  untrustedEscape?: true;
 }
+
+/** The problem a native `<dialog>` or popover gets from the check's untrusted Esc. */
+const escapeRule = /^- .*: Escape should close it \(APG (dialog \(modal\)|alert dialog)\)\.$/;
 
 const cases: Record<string, Case> = {
   "Menu (menu)": {
@@ -47,10 +52,24 @@ const cases: Record<string, Case> = {
     root: (page) => page.getByRole("combobox"),
     pattern: "combobox",
   },
-  "Popover trigger (disclosure)": {
+  "Dialog (dialog)": {
+    story: "feedback-dialog--default",
+    root: (page) => page.getByRole("dialog"),
+    pattern: "dialog",
+    untrustedEscape: true,
+  },
+  "ConfirmDialog (alertdialog)": {
+    story: "feedback-confirmdialog--default",
+    root: (page) => page.getByRole("alertdialog"),
+    pattern: "alertdialog",
+    untrustedEscape: true,
+  },
+  "Popover panel (dialog)": {
     story: "feedback-popover--do-popover",
-    root: (page) => page.getByRole("button", { name: "Build details" }),
-    pattern: "disclosure",
+    open: (page) => page.getByRole("button", { name: "Build details" }).click(),
+    root: (page) => page.getByRole("dialog"),
+    pattern: "dialog",
+    untrustedEscape: true,
   },
   "Tabs (tabs)": {
     story: "navigation-tabs--default",
@@ -89,14 +108,14 @@ const cases: Record<string, Case> = {
   },
 };
 
-for (const [name, { story, open, root, pattern }] of Object.entries(cases)) {
+for (const [name, { story, open, root, pattern, untrustedEscape }] of Object.entries(cases)) {
   test(`${name} meets its pattern`, async ({ page }) => {
     await page.goto(`/iframe.html?id=${story}&viewMode=story`);
     await open?.(page);
     const widget = root(page);
     await expect(widget).toBeVisible();
     await page.addScriptTag({ content: bundle });
-    const problems = await widget.evaluate(async (element, kind) => {
+    const message = await widget.evaluate(async (element, kind) => {
       try {
         await globalThis.checkPattern(element, kind);
         return "";
@@ -104,6 +123,11 @@ for (const [name, { story, open, root, pattern }] of Object.entries(cases)) {
         return error instanceof Error ? error.message : String(error);
       }
     }, pattern);
-    expect(problems).toBe("");
+    // The message is a heading line, then one "- " line per problem.
+    const problems = message
+      .split("\n")
+      .filter((line) => !line.startsWith("checkPattern found"))
+      .filter((line) => !(untrustedEscape && escapeRule.test(line)));
+    expect(problems.join("\n")).toBe("");
   });
 }

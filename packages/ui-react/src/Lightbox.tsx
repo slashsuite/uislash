@@ -93,7 +93,7 @@ export type LightboxProps = {
 /**
  * A full-screen photo or video viewer on the browser's own `<dialog>`: it is opened with
  * `showModal()` on mount, so render it only while it is open. The page behind goes inert, Esc
- * closes it and focus stays inside; a click on the scrim around the media and its text closes it
+ * closes it and Tab wraps inside it; a click on the scrim around the media and its text closes it
  * too. The scrim stays near-black with light text in every theme. `onPrevious` and `onNext` add
  * step buttons and the arrow keys.
  */
