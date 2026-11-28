@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useEffect, useState, type MouseEvent, type ReactNode } from "react";
 import { Button, Dialog, Field, Input, Stack, Text } from "@slashsuite/ui-react";
+import { openDialog } from "./openByTrigger";
 
 const meta: Meta = { title: "Feedback/Dialog" };
 export default meta;
@@ -10,9 +11,9 @@ type S = StoryObj;
 const closeDialog = (event: MouseEvent<HTMLElement>) =>
   event.currentTarget.closest("dialog")?.close();
 
-/** Open when the story loads; Esc or the backdrop closes it, and the button opens it again. */
+/** Shut until its button opens it (`openDialog` does, as the story loads); Esc or the backdrop closes it, and the focus goes back to the button. */
 function Opened({ children }: { children: (close: () => void) => ReactNode }) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   return (
     <div className="p-6">
       <Button variant="outline" onClick={() => setOpen(true)}>
@@ -44,6 +45,7 @@ const cancelAndAccept = (
  * body takes a tab stop (it holds nothing focusable) so the arrow keys scroll it.
  */
 export const Tall: S = {
+  play: openDialog,
   render: () => (
     <Opened>
       {(close) => (
@@ -66,6 +68,7 @@ export const Tall: S = {
 
 /** A form dialog after a failed submit: its `error` sits between the fields and the buttons. */
 export const FormError: S = {
+  play: openDialog,
   render: () => (
     <Opened>
       {(close) => (
@@ -100,11 +103,13 @@ export const FormError: S = {
 
 /** A tall form: the first field still has focus on open, and the body scrolls to the rest. */
 export const TallForm: S = {
+  play: openDialog,
   render: () => <Opened>{(close) => <SegmentForm close={close} />}</Opened>,
 };
 
 /** A tall form after a failed submit: the error stays on screen above the buttons while the body scrolls. */
 export const TallFormError: S = {
+  play: openDialog,
   render: () => (
     <Opened>
       {(close) => (
@@ -156,6 +161,7 @@ function FocusOnOpen({ label }: { label: string }) {
  * body clips what paints outside it, so its padding keeps the whole outline in view.
  */
 export const FocusAtTheBottom: S = {
+  play: openDialog,
   render: () => (
     <Opened>
       {(close) => (
@@ -176,6 +182,7 @@ export const FocusAtTheBottom: S = {
 
 /** The first field is focused: its outline against the top edge of the scrolling body. */
 export const FocusAtTheTop: S = {
+  play: openDialog,
   render: () => (
     <Opened>
       {(close) => (

@@ -32,7 +32,7 @@ export const overlayPages: ComponentPage[] = [
       ],
     },
     accessibility: [
-      "A Dialog is the browser's own `<dialog>` opened with `showModal()`: the page behind goes inert, focus stays inside it and Esc closes it.",
+      "A Dialog is the browser's own `<dialog>` opened with `showModal()`: the page behind goes inert, Tab and Shift+Tab wrap inside it and Esc closes it.",
       "The fade and slide are switched off under `prefers-reduced-motion: reduce`, and then it closes at once.",
       "It is named by its `title`, an `h2`, through `aria-labelledby`.",
       'A click on the backdrop closes it, and so do the close button and a submit of a `<form method="dialog">`; every close calls `onClose`.',
@@ -70,7 +70,7 @@ export const overlayPages: ComponentPage[] = [
       ],
     },
     accessibility: [
-      "A Drawer is the browser's own `<dialog>` opened with `showModal()`: the page behind goes inert, focus stays inside it and Esc closes it.",
+      "A Drawer is the browser's own `<dialog>` opened with `showModal()`: the page behind goes inert, Tab and Shift+Tab wrap inside it and Esc closes it.",
       "It is named by its `title`, an `h2`, through `aria-labelledby`.",
       'The header\'s close button is an `IconButton` named by `closeLabel` ("Close" by default); a click on the scrim closes it too.',
       "On a touch screen a swipe to the right drags it off: past a third of its width, or a quick flick, closes it, and a shorter one springs back. A vertical swipe scrolls the body, and a swipe that starts in a field or a slider is the field's own.",
@@ -135,7 +135,7 @@ export const overlayPages: ComponentPage[] = [
       dont: ["Do not draw your own scrim for media; a question about a photo is a `Dialog`."],
     },
     accessibility: [
-      "A Lightbox is the browser's own `<dialog>` opened with `showModal()`: the page behind goes inert, focus stays inside it and Esc closes it.",
+      "A Lightbox is the browser's own `<dialog>` opened with `showModal()`: the page behind goes inert, Tab and Shift+Tab wrap inside it and Esc closes it.",
       "It is named by `label` through `aria-label`; give the `<img>` its own `alt`.",
       "The close, previous and next buttons are named Close, Previous and Next (`closeLabel`, `previousLabel` and `nextLabel` for another language), and keep a light focus ring that shows on the dark scrim in every theme.",
       "A click on the scrim around the media closes it; a click on the media or its text does not.",
@@ -168,7 +168,7 @@ export const overlayPages: ComponentPage[] = [
       ],
     },
     accessibility: [
-      "It is an `alertdialog` on the browser's own `<dialog>`: the page behind goes inert, focus stays inside and Esc closes it.",
+      "It is an `alertdialog` on the browser's own `<dialog>`: the page behind goes inert, Tab and Shift+Tab wrap inside it and Esc closes it.",
       "It is named by its `title` and described by its `description`, so a screen reader reads the question and the consequence as it opens.",
       "It opens on Cancel, so Enter or Space pressed by habit cancels rather than destroys.",
       "Esc, the backdrop and the close button all cancel, as Cancel does; only the confirm button runs the action.",
@@ -195,7 +195,7 @@ export const overlayPages: ComponentPage[] = [
       ],
     },
     accessibility: [
-      "It is a `Dialog`: native `<dialog>`, page behind inert, focus kept inside, Esc closes, named by its `title`.",
+      "It is a `Dialog`: native `<dialog>`, page behind inert, Tab wraps inside, Esc closes, named by its `title`.",
       "The input has focus when it opens and is named by `label`.",
       "The submit button is never disabled: an empty submit marks the field invalid, shows `emptyReason` as its error (announced politely) and moves the focus to it. Typing clears the error.",
       "While `onSubmit` is pending the button is busy (`aria-busy`); a rejection shows in the field's error line, announced politely from a live region inside the dialog.",
@@ -229,7 +229,7 @@ export const overlayPages: ComponentPage[] = [
     },
     accessibility: [
       "It is the browser's own popover: a click outside it, Esc or the trigger closes it, and Esc puts the focus back on the trigger.",
-      "It is not modal: the page stays usable, and Tab moves from the trigger into the panel and on.",
+      "Opening it moves the focus into the panel. It is not modal: the page stays usable, and Tab moves on through the panel and out of it.",
       "The trigger says whether it is open (`aria-expanded`), and the panel is a `dialog` named by `label`.",
       "Where the browser positions by anchor, the panel sits under the trigger and flips above when there is no room; elsewhere it shows in the middle of the screen.",
     ],

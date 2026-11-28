@@ -2716,7 +2716,7 @@
   },
   "Dialog": {
     "name": "Dialog",
-    "description": "A modal on the browser's own `<dialog>`: it is opened with `showModal()` on mount, so render it\nonly while it is open. The page behind goes inert, Esc closes it and focus stays inside; a click\non the backdrop (the `<dialog>` element itself, not its contents) closes it too, and so does the\nclose button in its top corner, which every dialog has. The close button comes last in the\nkeyboard order, so the open focuses the first field, not it. A windowed dialog is never taller\nthan the screen: a tall body scrolls and the title and footer stay on screen, and a scroll inside\nit never carries on to the page behind.",
+    "description": "A modal on the browser's own `<dialog>`: it is opened with `showModal()` on mount, so render it\nonly while it is open. The page behind goes inert, Esc closes it and Tab wraps inside it; a click\non the backdrop (the `<dialog>` element itself, not its contents) closes it too, and so does the\nclose button in its top corner, which every dialog has. The close button comes last in the\nkeyboard order, so the open focuses the first field, not it. A windowed dialog is never taller\nthan the screen: a tall body scrolls and the title and footer stay on screen, and a scroll inside\nit never carries on to the page behind.",
     "props": [
       {
         "name": "closeLabel",
@@ -3015,7 +3015,7 @@
   },
   "Drawer": {
     "name": "Drawer",
-    "description": "A modal slide-over anchored to the right edge, on the browser's own `<dialog>`: it is opened\nwith `showModal()` on mount, so render it only while it is open. The page behind goes inert, Esc\ncloses it and focus stays inside; a click on the scrim (the `<dialog>` element itself, not its\ncontents) closes it too, and on touch a swipe to the right drags it off (a short one springs\nback). The header holds the title, an optional `description` under it and a close button; the\nbody scrolls between it and an optional pinned `footer`, and a scroll in it never carries on to\nthe page behind. `onSubmit` makes it a form and `error` shows what went wrong with the submit, as\non a `Dialog`.",
+    "description": "A modal slide-over anchored to the right edge, on the browser's own `<dialog>`: it is opened\nwith `showModal()` on mount, so render it only while it is open. The page behind goes inert, Esc\ncloses it and Tab wraps inside it; a click on the scrim (the `<dialog>` element itself, not its\ncontents) closes it too, and on touch a swipe to the right drags it off (a short one springs\nback). The header holds the title, an optional `description` under it and a close button; the\nbody scrolls between it and an optional pinned `footer`, and a scroll in it never carries on to\nthe page behind. `onSubmit` makes it a form and `error` shows what went wrong with the submit, as\non a `Dialog`.",
     "props": [
       {
         "name": "closeLabel",
@@ -4455,7 +4455,7 @@
   },
   "Lightbox": {
     "name": "Lightbox",
-    "description": "A full-screen photo or video viewer on the browser's own `<dialog>`: it is opened with\n`showModal()` on mount, so render it only while it is open. The page behind goes inert, Esc\ncloses it and focus stays inside; a click on the scrim around the media and its text closes it\ntoo. The scrim stays near-black with light text in every theme. `onPrevious` and `onNext` add\nstep buttons and the arrow keys.",
+    "description": "A full-screen photo or video viewer on the browser's own `<dialog>`: it is opened with\n`showModal()` on mount, so render it only while it is open. The page behind goes inert, Esc\ncloses it and Tab wraps inside it; a click on the scrim around the media and its text closes it\ntoo. The scrim stays near-black with light text in every theme. `onPrevious` and `onNext` add\nstep buttons and the arrow keys.",
     "props": [
       {
         "name": "caption",
@@ -5873,7 +5873,7 @@
   },
   "Popover": {
     "name": "Popover",
-    "description": "A button that opens a small panel of content beside it: a detail, a short list, a filter. It is\nthe browser's own popover, rendered in place: a click outside it, Esc or the trigger closes it,\nand the focus goes back to the trigger. It is not modal: the page stays usable, and Tab moves from\nthe trigger into the panel and on. A list of actions is a `Menu`; a question to answer first is a\n`Dialog`. `data-*` and `aria-*` land on the trigger.",
+    "description": "A button that opens a small panel of content beside it: a detail, a short list, a filter. It is\nthe browser's own popover, rendered in place: a click outside it, Esc or the trigger closes it,\nand the focus goes back to the trigger. Opening it moves the focus into the panel. It is not\nmodal: the page stays usable, and Tab moves on through the panel and out of it. A list of actions is a `Menu`; a question to answer first is a\n`Dialog`. `data-*` and `aria-*` land on the trigger.",
     "props": [
       {
         "name": "children",

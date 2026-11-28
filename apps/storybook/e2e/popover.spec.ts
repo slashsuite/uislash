@@ -4,7 +4,7 @@ import { expect, test } from "@playwright/test";
  * A Popover is the browser's own popover: jsdom runs neither `popovertarget` nor light dismiss, so
  * the open, Esc and the click away are checked only here.
  */
-test("the trigger opens the panel, and Esc closes it with the focus back on the trigger", async ({
+test("the trigger opens the panel with the focus in it, and Esc closes it with the focus back on the trigger", async ({
   page,
 }) => {
   await page.goto("/iframe.html?id=feedback-popover--do-popover&viewMode=story");
@@ -16,7 +16,8 @@ test("the trigger opens the panel, and Esc closes it with the focus back on the 
   await expect(panel).toBeInViewport();
   await expect(panel.getByText("982a166")).toBeVisible();
   await expect(trigger).toHaveAttribute("aria-expanded", "true");
-  await panel.getByText("Shots").click();
+  // Opening it put the focus in the panel, so Esc hands it back to the trigger.
+  await expect(panel).toBeFocused();
   await page.keyboard.press("Escape");
   await expect(panel).toBeHidden();
   await expect(trigger).toBeFocused();

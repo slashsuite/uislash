@@ -61,8 +61,8 @@ function Face({ icon, label, size }: { icon: IconName | undefined; label: string
 /**
  * A button that opens a small panel of content beside it: a detail, a short list, a filter. It is
  * the browser's own popover, rendered in place: a click outside it, Esc or the trigger closes it,
- * and the focus goes back to the trigger. It is not modal: the page stays usable, and Tab moves from
- * the trigger into the panel and on. A list of actions is a `Menu`; a question to answer first is a
+ * and the focus goes back to the trigger. Opening it moves the focus into the panel. It is not
+ * modal: the page stays usable, and Tab moves on through the panel and out of it. A list of actions is a `Menu`; a question to answer first is a
  * `Dialog`. `data-*` and `aria-*` land on the trigger.
  */
 export function Popover({
@@ -78,9 +78,13 @@ export function Popover({
   const anchor = `--hc-pop${id.replaceAll(/[^a-zA-Z0-9_-]/g, "")}`;
   const panel = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
+  // An open on mount (`defaultOpen`) leaves the focus where it is: nobody asked for the panel.
+  const onMount = useRef(false);
 
   useEffect(() => {
-    if (defaultOpen) panel.current?.showPopover();
+    if (!defaultOpen) return;
+    onMount.current = true;
+    panel.current?.showPopover();
   }, [defaultOpen]);
 
   // The tooltip's props come after the caller's, merged with them; its anchor joins the panel's.
@@ -116,7 +120,17 @@ export function Popover({
         aria-label={label}
         // A click on its text keeps the focus in the panel, so Esc returns it to the trigger.
         tabIndex={-1}
-        onToggle={(event: ToggleEvent<HTMLDivElement>) => setOpen(event.newState === "open")}
+        onToggle={(event: ToggleEvent<HTMLDivElement>) => {
+          const opening = event.newState === "open";
+          setOpen(opening);
+          // Into the panel, so Esc hands the focus back to the trigger (the browser does only
+          // when the focus is inside it). The panel itself, not its first control, so a click
+          // does not ring a control the person did not choose.
+          const el = event.currentTarget;
+          const asked = !onMount.current;
+          onMount.current = false;
+          if (opening && asked && !el.contains(el.ownerDocument.activeElement)) el.focus();
+        }}
         className={PANEL}
         style={{ positionAnchor: anchor }}
       >

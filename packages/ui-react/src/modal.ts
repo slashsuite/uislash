@@ -1,4 +1,5 @@
 import { type RefObject, useLayoutEffect, useRef, useSyncExternalStore } from "react";
+import { TABBABLE } from "./scrollStop.js";
 
 /** Resolves when the transitions running on the dialog (and its backdrop) have ended. */
 async function exitTransitions(dialog: HTMLDialogElement): Promise<void> {
@@ -6,6 +7,44 @@ async function exitTransitions(dialog: HTMLDialogElement): Promise<void> {
   if (typeof dialog.getAnimations !== "function") return;
   const running = dialog.getAnimations({ subtree: true }).filter((a) => "transitionProperty" in a);
   await Promise.allSettled(running.map((a) => a.finished));
+}
+
+/** The tab stops inside `dialog`, in tab order: shown (jsdom has no `checkVisibility`) and not inert. */
+function tabStops(dialog: HTMLDialogElement): HTMLElement[] {
+  return [...dialog.querySelectorAll<HTMLElement>(TABBABLE)].filter(
+    (el) =>
+      (typeof el.checkVisibility !== "function" || el.checkVisibility()) && !el.closest("[inert]"),
+  );
+}
+
+/**
+ * Keeps Tab and Shift+Tab inside an open modal, wrapping from the last tab stop to the first and
+ * back (WAI-ARIA APG, dialog). The browser's own modal `<dialog>` lets Tab leave the page for the
+ * browser's toolbar before it comes back.
+ */
+const plainTab = (event: KeyboardEvent) =>
+  event.key === "Tab" &&
+  !event.defaultPrevented &&
+  !event.altKey &&
+  !event.ctrlKey &&
+  !event.metaKey;
+
+function wrapTab(dialog: HTMLDialogElement) {
+  return (event: KeyboardEvent) => {
+    if (!plainTab(event)) return;
+    const stops = tabStops(dialog);
+    const first = stops[0];
+    const last = stops.at(-1);
+    const active = dialog.ownerDocument.activeElement;
+    if (!first || !last) {
+      event.preventDefault();
+      return;
+    }
+    const leaving = event.shiftKey ? active === first || active === dialog : active === last;
+    if (!leaving) return;
+    event.preventDefault();
+    (event.shiftKey ? last : first).focus();
+  };
 }
 
 /** How many of the library's modals are open, and who wants to hear when that changes. */
@@ -32,7 +71,8 @@ export function useModalOpen(): boolean {
 }
 
 /**
- * Opens the `<dialog>` with `showModal()` on mount and closes it on unmount. Closing on unmount
+ * Opens the `<dialog>` with `showModal()` on mount and closes it on unmount, and keeps Tab inside it
+ * while it is open (`wrapTab`). Closing on unmount
  * (not just on Esc or the backdrop) hands focus back to the opener and drops the inert page behind
  * when the parent unmounts the dialog, and keeps StrictMode's second mount from reopening an open one.
  *
@@ -50,9 +90,12 @@ export function useModal(
     const el = dialog.current;
     mounted.current = true;
     el?.showModal();
+    const trap = el ? wrapTab(el) : undefined;
+    if (el && trap) el.addEventListener("keydown", trap);
     opened(1);
     return () => {
       mounted.current = false;
+      if (el && trap) el.removeEventListener("keydown", trap);
       el?.close();
       opened(-1);
     };
