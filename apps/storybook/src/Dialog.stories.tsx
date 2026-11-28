@@ -9,7 +9,6 @@ const meta: Meta = { title: "Feedback/Dialog" };
 export default meta;
 type S = StoryObj;
 
-/** Opens the story's dialog with its "Open" button, as a person would. */
 /** Close through the `<dialog>` so it animates out; `onClose` then unmounts it. Setting the parent's state here would cut the exit animation short. */
 const closeDialog = (event: MouseEvent<HTMLElement>) =>
   event.currentTarget.closest("dialog")?.close();
