@@ -43,17 +43,21 @@ describe("StateMachine's layout", () => {
     expect([...sizes]).toEqual(["254x134"]);
   });
 
-  // The bounds sit just above today's layout (1539 by 2596, gaps of 48 to 72). The layout before
-  // (nine dots' room, FlowDiagram's gaps) was 1631 by 2800 with gaps up to 80, and fails both.
+  // The area bound sits just above today's layout (1562 by 2588). The layout before (nine dots'
+  // room, FlowDiagram's gaps) was 1631 by 2800, and fails it.
   it("keeps the role machine's area in bounds", () => {
     const layout = roleLayout();
     expect(layout.width * layout.height).toBeLessThanOrEqual(4_100_000);
   });
 
+  // The rank separation is pinned (`MACHINE_SPACING.rank`), so a gap grows past it only by the
+  // arrow tracks the router adds, 8px each. dagre 3.1.4 places some boxes differently, and the gap
+  // before `reviewing` needs one more track (72 to 80); two gaps shrank and the whole is shorter.
+  // A gap past 80 means more tracks than that, or a rank separation that moved.
   it("keeps the gap between adjacent ranks in bounds, and tightest at the start", () => {
     const gaps = rankGaps(roleLayout());
     expect(gaps).toHaveLength(13);
-    expect(Math.max(...gaps)).toBeLessThanOrEqual(72);
+    expect(Math.max(...gaps)).toBeLessThanOrEqual(80);
     // The first ranks are one box each, joined by labelled arrows: no wide empty band before them.
     expect(gaps.slice(0, 3)).toEqual([48, 48, 48]);
   });
