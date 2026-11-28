@@ -17,10 +17,12 @@ import {
 // its new place waits hidden for the same time; a dot that stays in its box but changes slot (one
 // before it left, or one came in) slides from its old slot to its new one (`translate`, from the
 // `--hc-sm-dx` and `--hc-sm-dy` it is given), under two keyframe names taken in turn so a second
-// slide restarts. Nothing is timed in script: each ends on its own `animationend`. With reduced
+// slide restarts. Nothing is timed in script: each ends on its own `animationend`. A run's last
+// frame is hidden, so a landed run looks the same before and after that event removes it (a shot
+// taken once the animations are finished never catches it sitting on its new dot). With reduced
 // motion the run is hidden and over at once (so it still ends), and every dot is in its new place
 // at once.
-export const moveCss = `[data-hc-sm-travel]{offset-anchor:center;offset-rotate:0deg;animation:hc-sm-travel .6s ease-in-out forwards}[data-hc-sm-arrive]{animation:hc-sm-arrive .6s linear}[data-hc-sm-shift="a"]{animation:hc-sm-shift-a .6s ease-in-out}[data-hc-sm-shift="b"]{animation:hc-sm-shift-b .6s ease-in-out}@keyframes hc-sm-travel{from{offset-distance:0%}to{offset-distance:100%}}@keyframes hc-sm-arrive{from,to{visibility:hidden}}@keyframes hc-sm-shift-a{from{translate:var(--hc-sm-dx) var(--hc-sm-dy)}}@keyframes hc-sm-shift-b{from{translate:var(--hc-sm-dx) var(--hc-sm-dy)}}@media (prefers-reduced-motion:reduce){[data-hc-sm-travel]{visibility:hidden;animation-duration:1ms}[data-hc-sm-arrive],[data-hc-sm-shift]{animation:none}}`;
+export const moveCss = `[data-hc-sm-travel]{offset-anchor:center;offset-rotate:0deg;animation:hc-sm-travel .6s ease-in-out forwards}[data-hc-sm-arrive]{animation:hc-sm-arrive .6s linear}[data-hc-sm-shift="a"]{animation:hc-sm-shift-a .6s ease-in-out}[data-hc-sm-shift="b"]{animation:hc-sm-shift-b .6s ease-in-out}@keyframes hc-sm-travel{from{offset-distance:0%}to{offset-distance:100%;visibility:hidden}}@keyframes hc-sm-arrive{from,to{visibility:hidden}}@keyframes hc-sm-shift-a{from{translate:var(--hc-sm-dx) var(--hc-sm-dy)}}@keyframes hc-sm-shift-b{from{translate:var(--hc-sm-dx) var(--hc-sm-dy)}}@media (prefers-reduced-motion:reduce){[data-hc-sm-travel]{visibility:hidden;animation-duration:1ms}[data-hc-sm-arrive],[data-hc-sm-shift]{animation:none}}`;
 
 /**
  * Where an item's dot sits: its box, its slot there (`null` when it is one of the dots a full box
